@@ -1,5 +1,5 @@
 {
-    "name": "reusableNestedUnit",
+    "name": "@dependency/reusableNestedUnit",
     "version": "0.1.0",
-    "main": "entrypoint.js"
+    "main": "./source/entrypoint.js"
 }
