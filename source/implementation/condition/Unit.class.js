@@ -1,7 +1,7 @@
-import { classDecorator as prototypeChainDebug} from 'appscript/module/prototypeChainDebug'
-import { add, execute, applyMixin, conditional, executeOnceForEachInstance } from 'appscript/utilityFunction/decoratorUtility.js'
-import { extendedSubclassPattern } from 'appscript/utilityFunction/extendedSubclassPattern.js'
-import { curried as getTableDocumentCurried } from "appscript/utilityFunction/database/query/getTableDocument.query.js";
+import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
+import { add, execute, applyMixin, conditional, executeOnceForEachInstance } from '@dependency/commonPattern/source/decoratorUtility.js'
+import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
+import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/getTableDocument.query.js";
 
 let databasePrefix = 'condition_'
 let getDocument = {

@@ -1,6 +1,6 @@
-import { classDecorator as prototypeChainDebug} from 'appscript/module/prototypeChainDebug'
-import { add, execute, applyMixin, conditional } from 'appscript/utilityFunction/decoratorUtility.js'
-import promiseProperRace from 'appscript/utilityFunction/promiseProperRace.js'
+import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
+import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
+import promiseProperRace from '@dependency/promiseProperRace'
 
 export default ({ Superclass }) => {
     let self = 

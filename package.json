@@ -1,5 +1,11 @@
 {
-    "name": "@dependency/reusableNestedUnit",
+    "name": "@dependency/nodeRelationshipGraph", 
     "version": "0.1.0",
-    "main": "./source/entrypoint.js"
+    "main": "./source/entrypoint.js",
+    "dependencies": {
+        "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug",
+        "@dependency/databaseUtility": "https://github.com/AppScriptIO/databaseUtility",
+        "@dependency/commonPattern": "https://github.com/AppScriptIO/commonPattern"
+
+    }
 }

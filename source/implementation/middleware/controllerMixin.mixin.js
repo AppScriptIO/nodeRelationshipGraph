@@ -1,6 +1,6 @@
 import { Mixin } from 'mixwith'
-import { classDecorator as prototypeChainDebug} from 'appscript/module/prototypeChainDebug'
-import { add, execute, applyMixin, conditional } from 'appscript/utilityFunction/decoratorUtility.js'
+import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
+import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import assert from "assert"
 
 /**

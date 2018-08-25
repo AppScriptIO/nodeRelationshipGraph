@@ -1,9 +1,9 @@
 import r from 'rethinkdb'
-import { classDecorator as prototypeChainDebug} from 'appscript/module/prototypeChainDebug'
-import { add, execute, applyMixin, conditional } from 'appscript/utilityFunction/decoratorUtility.js'
-import { extendedSubclassPattern } from 'appscript/utilityFunction/extendedSubclassPattern.js'
-import { curried as getTableDocumentCurried } from "appscript/utilityFunction/database/query/getTableDocument.query.js";
-import promiseProperRace from 'appscript/utilityFunction/promiseProperRace.js'
+import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
+import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
+import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
+import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/getTableDocument.query.js";
+import promiseProperRace from '@dependency/promiseProperRace'
 
 let databasePrefix = 'condition_'
 let getDocument = {

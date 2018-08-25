@@ -2,8 +2,8 @@ import { Mixin } from 'mixwith'
 import _ from 'underscore'
 import { default as Application } from '../../../../class/Application.class.js'
 import filesystem from 'fs'
-import { classDecorator as prototypeChainDebug} from 'appscript/module/prototypeChainDebug'
-import { add, execute, applyMixin, conditional } from 'appscript/utilityFunction/decoratorUtility.js'
+import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
+import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import assert from "assert"
 import path from 'path'
 

@@ -1,4 +1,4 @@
-import ModuleContext from 'appscript/module/ModuleContext'
+import ModuleContext from '@dependency/moduleContext'
 import { ControllerFunction } from './Controller.class.js'
 import NestedUnitFunction from './NestedUnit.class.js' // Tree
 import UnitFunction from './Unit.class.js' // Unit
