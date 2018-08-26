@@ -11,7 +11,11 @@ module.exports = {
         container: [ // entrypoint configuration map, paths are relative to external app.
             {
                 key: 'test',
-                path: `${appDeploymentLifecyclePath}/containerScript/test/test.js`,
+                path: `${appDeploymentLifecyclePath}/containerScript/test`,
+            },
+            {
+                key: 'sleep',
+                path: `${appDeploymentLifecyclePath}/containerScript/sleep`,
             }
         ]
     }
