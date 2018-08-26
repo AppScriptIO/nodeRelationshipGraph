@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "dependencies": {
         "@dependency/hostCLIAdapter": "https://github.com/AppScriptIO/hostCLIAdapter",
-        "@dependency/appDeploymentEnvironment": "https://github.com/AppScriptIO/appDeploymentEnvironment",
+        "@dependency/appDeploymentManager": "https://github.com/AppScriptIO/appDeploymentManager",
         "@dependency/appDeploymentLifecycle": "https://github.com/AppScriptIO/appDeploymentLifecycle",
         "resolve": "^1.8.1"
     },
