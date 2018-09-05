@@ -3,7 +3,12 @@ const   projectPath = "/project";
 const appDeploymentLifecyclePath = path.dirname( require.resolve(`@dependency/appDeploymentLifecycle/package.json`) ) 
 
 module.exports = {
-    projectPath,
+    directory: {
+        projectPath,
+        application: {
+            containerAbsolutePath: `${projectPath}/application`
+        }
+    },
     script: {
         hostMachine: {
             path: './setup/script/hostMachine' // relative to applicaiton repository root.

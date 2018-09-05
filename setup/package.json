@@ -2,11 +2,11 @@
     "name": "@root/setup",
     "version": "1.0.0",
     "dependencies": {
-        "@dependency/hostCLIAdapter": "https://github.com/AppScriptIO/hostCLIAdapter",
-        "@dependency/appDeploymentManager": "https://github.com/AppScriptIO/appDeploymentManager",
         "@dependency/appDeploymentLifecycle": "https://github.com/AppScriptIO/appDeploymentLifecycle",
+        "@dependency/appDeploymentManager": "https://github.com/AppScriptIO/appDeploymentManager",
+        "@dependency/hostCLIAdapter": "https://github.com/AppScriptIO/hostCLIAdapter",
+        "@dependency/javascriptTestRunner": "https://github.com/AppScriptIO/javascriptTestRunner",
         "resolve": "^1.8.1"
     },
     "main": "./entrypoint.js"
-
 }
