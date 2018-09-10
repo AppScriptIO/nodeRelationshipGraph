@@ -1,7 +1,7 @@
 import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
 import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
-import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/getTableDocument.query.js";
+import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/query/getTableDocument.query.js";
 import { exec, execSync, spawn, spawnSync } from 'child_process'
 
 let databasePrefix = 'shellscript_'

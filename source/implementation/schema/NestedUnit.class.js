@@ -3,7 +3,7 @@ import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChain
 import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import promiseProperRace from '@dependency/promiseProperRace'
 import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
-import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/getTableDocument.query.js";
+import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/query/getTableDocument.query.js";
 
 let databasePrefix = 'schema_'
 let getDocument = {

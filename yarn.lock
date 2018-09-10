@@ -4,12 +4,48 @@
 
 "@dependency/commonPattern@https://github.com/AppScriptIO/commonPattern":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/commonPattern#cda3f7cb90515516b59833c753ed3dd7fe3ddbda"
+  resolved "https://github.com/AppScriptIO/commonPattern#d769991196bf668d639a67cfb72af2939adef679"
+  dependencies:
+    promise-events "^0.1.4"
 
 "@dependency/databaseUtility@https://github.com/AppScriptIO/databaseUtility":
   version "1.0.0"
   resolved "https://github.com/AppScriptIO/databaseUtility#2a8da76d345a208b69e2932972cc6ef2a3c760cf"
 
+"@dependency/moduleContext@https://github.com/AppScriptIO/moduleContext":
+  version "0.1.0"
+  resolved "https://github.com/AppScriptIO/moduleContext#e6d5a02a6367c5e803d5d544657294f37d9bcc29"
+
+"@dependency/multiplePrototypeChain@https://github.com/AppScriptIO/multiplePrototypeChain":
+  version "0.1.0"
+  resolved "https://github.com/AppScriptIO/multiplePrototypeChain#dbdd8c60a75de4f73115277066e0adc8bca51379"
+
+"@dependency/populateObjectPropertyFromObject@https://github.com/AppScriptIO/populateObjectPropertyFromObject":
+  version "0.1.0"
+  resolved "https://github.com/AppScriptIO/populateObjectPropertyFromObject#c273ea228a523d02525b708f2a8cb63f19ad47fb"
+
+"@dependency/promiseProperRace@https://github.com/AppScriptIO/promiseProperRace":
+  version "1.0.0"
+  resolved "https://github.com/AppScriptIO/promiseProperRace#05ae8cf3e0cf2ec5c73221b6f6411b9562be0409"
+
 "@dependency/prototypeChainDebug@https://github.com/AppScriptIO/prototypeChainDebug":
   version "0.1.0"
-  resolved "https://github.com/AppScriptIO/prototypeChainDebug#1d75703fe130cba52909ce0fae36058d704a8d6f"
+  resolved "https://github.com/AppScriptIO/prototypeChainDebug#53b89c4a6078af636c137171fd0161dba216fc1b"
+
+"bluebird@>= 2.3.2 < 3":
+  version "2.11.0"
+  resolved "http://registry.npmjs.org/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
+
+mixwith@*:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/mixwith/-/mixwith-0.1.1.tgz#c8995918c5b61fbfda9ad377a857cd47750541c0"
+
+promise-events@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/promise-events/-/promise-events-0.1.4.tgz#3c88fae97e448da68f7fcf19d4ee308d6e432d5b"
+
+rethinkdb@*:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/rethinkdb/-/rethinkdb-2.3.3.tgz#3dc6586e22fa1dabee0d254e64bd0e379fad2f72"
+  dependencies:
+    bluebird ">= 2.3.2 < 3"

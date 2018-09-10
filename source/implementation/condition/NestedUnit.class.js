@@ -2,7 +2,7 @@ import r from 'rethinkdb'
 import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
 import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
-import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/getTableDocument.query.js";
+import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/query/getTableDocument.query.js";
 import promiseProperRace from '@dependency/promiseProperRace'
 
 let databasePrefix = 'condition_'

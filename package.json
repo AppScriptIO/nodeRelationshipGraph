@@ -5,7 +5,13 @@
     "dependencies": {
         "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug",
         "@dependency/databaseUtility": "https://github.com/AppScriptIO/databaseUtility",
-        "@dependency/commonPattern": "https://github.com/AppScriptIO/commonPattern"
+        "@dependency/multiplePrototypeChain": "https://github.com/AppScriptIO/multiplePrototypeChain",
+        "@dependency/commonPattern": "https://github.com/AppScriptIO/commonPattern",
+        "@dependency/moduleContext": "https://github.com/AppScriptIO/moduleContext",
+        "@dependency/populateObjectPropertyFromObject": "https://github.com/AppScriptIO/populateObjectPropertyFromObject",
+        "@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace",
+        "mixwith": "*",
+        "rethinkdb": "*"
 
     }
 }

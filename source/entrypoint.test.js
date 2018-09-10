@@ -1,6 +1,6 @@
 import assert from 'assert'
 import createStaticInstanceClasses from './entrypoint.js'
-import { default as Application } from '../../class/Application.class.js'
+// import { default as Application } from '../../class/Application.class.js'
 
 describe('ReusableNestedUnit module - Connecting class inhiritance dynamically', () => {
 
@@ -85,7 +85,7 @@ describe('ReusableNestedUnit module - Connecting class inhiritance dynamically',
 
     })
 
-    describe.only('Check new instance chain when using mixinController', () => {
+    describe('Check new instance chain when using mixinController', () => {
         const mixinController = (require('./implementation/condition').default).ControllerMixin
         let ClassChain = mixinController({ Superclass: class S {} }) /* return Specific implementation Controller */
         class Subclass extends ClassChain {}
