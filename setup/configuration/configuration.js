@@ -1,26 +1,38 @@
 const path = require('path')
-const   projectPath = "/project";
-const appDeploymentLifecyclePath = path.dirname( require.resolve(`@dependency/appDeploymentLifecycle/package.json`) ) 
+const projectPath = "/project";
+const resolvedModule = {
+    get appDeploymentLifecyclePath() { return path.dirname( require.resolve(`@dependency/appDeploymentLifecycle/package.json`) )  },
+    get javascriptTestRunnerPath() { return path.dirname( require.resolve(`@dependency/javascriptTestRunner/package.json`) ) }
+}
 
 module.exports = {
     directory: {
         projectPath,
         application: {
+            hostAbsolutePath: path.resolve(`${__dirname}/../..`),
             containerAbsolutePath: `${projectPath}/application`
         }
     },
     script: {
-        hostMachine: {
-            path: './setup/script/hostMachine' // relative to applicaiton repository root.
-        },
+        hostMachine: [
+            { // example for module path
+                type: 'module',
+                key: 'containerManager',
+                path: './setup/node_modules/@dependency/appDeploymentManager/setup/script/bin/containerManager.js'
+            },
+            {
+                type: 'directory',
+                path: './setup/script/hostMachine' // relative to applicaiton repository root.
+            }
+        ],
         container: [ // entrypoint configuration map, paths are relative to external app.
             {
                 key: 'test',
-                path: `${appDeploymentLifecyclePath}/containerScript/test`,
+                path: `${resolvedModule.javascriptTestRunnerPath}/setup/script/bin/javascriptTestRunner.js`,
             },
             {
                 key: 'sleep',
-                path: `${appDeploymentLifecyclePath}/containerScript/sleep`,
+                path: `${resolvedModule.appDeploymentLifecyclePath}/containerScript/sleep`,
             }
         ]
     }
