@@ -35,6 +35,15 @@ export default ({ Superclass }) => {
                             process.exit(childProcess.status)
                         }
                     break;
+                    case 'spawnIgnoreError':
+                        try {
+                            console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument}`)
+                            childProcess = spawnSync(this.command, this.argument, this.option)
+                            if(childProcess.status > 0) throw childProcess.error
+                        } catch (error) {
+                            console.log(childProcess.status)
+                        }
+                    break;
                     case 'spawnAsynchronous':
                         try {
                             console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument}`)                            
