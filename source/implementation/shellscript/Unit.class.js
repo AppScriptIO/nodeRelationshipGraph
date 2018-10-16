@@ -28,7 +28,7 @@ export default ({ Superclass }) => {
                 switch (this.implementation) {
                     case 'spawn':
                         try {
-                            console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument}`)
+                            console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument.join(' ')}`)
                             childProcess = spawnSync(this.command, this.argument, this.option)
                             if(childProcess.status > 0) throw childProcess.error
                         } catch (error) {
@@ -37,7 +37,7 @@ export default ({ Superclass }) => {
                     break;
                     case 'spawnIgnoreError':
                         try {
-                            console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument}`)
+                            console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument.join(' ')}`)
                             childProcess = spawnSync(this.command, this.argument, this.option)
                             if(childProcess.status > 0) throw childProcess.error
                         } catch (error) {
@@ -46,7 +46,7 @@ export default ({ Superclass }) => {
                     break;
                     case 'spawnAsynchronous':
                         try {
-                            console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument}`)                            
+                            console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument.join(' ')}`)                            
                             childProcess = spawn(this.command, this.argument, this.option)
                             if(childProcess.status > 0) throw childProcess.error
                         } catch (error) {
