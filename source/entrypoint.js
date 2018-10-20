@@ -16,6 +16,11 @@ let counter = [] // allows to have a unique set of relations among different nes
  * Commands → execute tasks inside above context.
  * ⇓
  * returns results
+ * 
+ * 
+ * USAGE: 
+ * 1. create new context for subclasses.
+ * 2. use new context as base for subclasses.
  */
 
 /**
