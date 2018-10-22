@@ -3,28 +3,55 @@ import { ControllerFunction } from './Controller.class.js'
 import NestedUnitFunction from './NestedUnit.class.js' // Tree
 import UnitFunction from './Unit.class.js' // Unit
 
+let implementationTypeObject = {
+    get Middleware() {
+        return require('./implementation/middleware').default
+    }, 
+    get Condition() {
+        return require('./implementation/condition').default
+    },
+    get Template() {
+        return require('./implementation/template').default
+    },
+    get Shellscript() {
+        return require('./implementation/shellscript').default
+    },
+    get Schema() {
+        return require('./implementation/schema').default
+    }
+}
+
 let counter = [] // allows to have a unique set of relations among different nested unit classes (Tree of classes).
 
 /**
  * API: 
  * Static class tree generator
- * ⇓
+ *  ⇓
  * Copy of static class tree → Unique static context for class tree.
- * ⇓
+ *  ⇓
  * new Contex with specific variables → soft linked context for subsequent calls.
- * ⇓
+ *  ⇓
  * Commands → execute tasks inside above context.
- * ⇓
+ *  ⇓
  * returns results
  * 
  * 
  * USAGE: 
  * 1. create new context for subclasses.
  * 2. use new context as base for subclasses.
+ *     
+    import createStaticInstanceClasses from '@dependency/nodeRelationshipGraph'
+    let ShellscriptController = await createStaticInstanceClasses({
+        <!-- implementationType: 'Shellscript', --> 
+        cacheName: true, 
+        rethinkdbConnection: connection
+    })
+    ShellscriptController.initializeNestedUnit('X') // each unit will call the implementation it needs.
+
  */
 
 /**
- * Create connections between static classes (constructors) in a required way. 
+ * Create connections between static classes (constructors) in a required/wanted way. 
  * @return {Object} Related Classes 
  */
 function createStaticInstanceClasses({
@@ -43,26 +70,15 @@ function createStaticInstanceClasses({
 
     // load specific implementation functions (class producers).
     let implementationConfig;
-    switch (implementationType) {
-        case 'Middleware':
-            implementationConfig = require('./implementation/middleware').default
-        break;
-        case 'Condition':
-            implementationConfig = require('./implementation/condition').default
-        break;
-        case 'Template':
-            implementationConfig = require('./implementation/template').default
-        break;
-        case 'Shellscript':
-            implementationConfig = require('./implementation/shellscript').default
-        break;
-        case 'Schema':
-            implementationConfig = require('./implementation/schema').default
-        break;
-        default:
-            // Dynamic implementation - not restricted to specific initialization algorithm, rather choosen from setting of each node in the traversed graph.
-            
-        break;
+    for (let key in implementationTypeObject) {
+        if(implementationType == key) {
+            implementationConfig = implementationTypeObject[key] // which will execute getter function and require the module.
+            break;
+        }
+    }
+    // default:
+    if(!implementationConfig) {
+        // Dynamic implementation - not restricted to specific initialization algorithm, rather choosen from setting of each node in the traversed graph.
     }
 
     // Choose to create a cached context or anonymous garbage collected one.
