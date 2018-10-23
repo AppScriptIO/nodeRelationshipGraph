@@ -10,7 +10,7 @@ import path from 'path'
 /**
  * @description Extends a class by super class and adds some common functionality.
  */
-export default Mixin(({ Superclass }) => {
+export let ControllerMixin = Mixin(({ Superclass }) => {
     let self = 
     @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
     class TemplateMixin extends Superclass {

@@ -1,7 +1,7 @@
 import ModuleContext from '@dependency/moduleContext'
 import { ControllerFunction } from './Controller.class.js'
-import NestedUnitFunction from './NestedUnit.class.js' // Tree
-import UnitFunction from './Unit.class.js' // Unit
+import { NestedUnitFunction } from './NestedUnit.class.js' // Tree
+import { UnitFunction } from './Unit.class.js' // Unit
 
 let implementationTypeObject = {
     get Middleware() {
@@ -20,8 +20,6 @@ let implementationTypeObject = {
         return require('./implementation/schema').default
     }
 }
-
-let counter = [] // allows to have a unique set of relations among different nested unit classes (Tree of classes).
 
 /**
  * API: 
@@ -43,7 +41,7 @@ let counter = [] // allows to have a unique set of relations among different nes
     import createStaticInstanceClasses from '@dependency/nodeRelationshipGraph'
     let ShellscriptController = await createStaticInstanceClasses({
         <!-- implementationType: 'Shellscript', --> 
-        cacheName: true, 
+        cacheName: 'z', 
         rethinkdbConnection: connection
     })
     ShellscriptController.initializeNestedUnit('X') // each unit will call the implementation it needs.
@@ -58,73 +56,46 @@ function createStaticInstanceClasses({
     Superclass, /* Usually the higher Application class */
     /* When defined the exported classes include the specific implementation for node initialization (class tree of ReusableNestedUnit will include a specific implementation class), i.e. all subsequent nodes are executed using the speicifc algorithm of the implementaiton. */
     implementationType, // Specific node class implementation for node instance initialization.
-    cacheName = false, /* {Boolean || String} */
+    cacheName = null, /* {String} */
     rethinkdbConnection
 } = {}) {
-    // Used as caching key.
-    let automaticCacheNaming;
-    if(cacheName && typeof cacheName == 'boolean') {
-        automaticCacheNaming = true
-        cacheName = implementationType
-    }
 
     // load specific implementation functions (class producers).
-    let implementationConfig;
+    let specificImplementationConfig;
     for (let key in implementationTypeObject) {
         if(implementationType == key) {
-            implementationConfig = implementationTypeObject[key] // which will execute getter function and require the module.
+            specificImplementationConfig = implementationTypeObject[key] // which will execute getter function and require the module.
             break;
         }
     }
     // default:
-    if(!implementationConfig) {
+    if(!specificImplementationConfig) {
         // Dynamic implementation - not restricted to specific initialization algorithm, rather choosen from setting of each node in the traversed graph.
     }
 
     // Choose to create a cached context or anonymous garbage collected one.
-    const MC = ModuleContext({ referenceName: implementationType /*  used to combine all related contexts under same object */ })
-    
-    // Create new context for the modules using proxy.
-    let ControllerFunc = new MC({ target: ControllerFunction })
-    let NestedUnitFunc = new MC({ target: NestedUnitFunction })
-    let UnitFunc = new MC({ target: UnitFunction })
-    const SpecificNestedUnitFunc = new MC({ target: implementationConfig.NestedUnitFunction })
-    const SpecificUnitFunc = new MC({ target: implementationConfig.UnitFunction })
-    
-    if(cacheName) {
-        // Choose unique names to cache the related classes with.
-        ControllerFunc.moduleContext.cacheName = `${cacheName}ReusableController`
-        NestedUnitFunc.moduleContext.cacheName = `${cacheName}ReusableNestedUnit`
-        UnitFunc.moduleContext.cacheName = `${cacheName}ReusableUnit`
-        SpecificNestedUnitFunc.moduleContext.cacheName = `${cacheName}SpecificNestedUnit`
-        SpecificUnitFunc.moduleContext.cacheName = `${cacheName}SpecificUnit`
-    
-        if(automaticCacheNaming) {
-            counter[cacheName] = counter[cacheName] || 0
-            ControllerFunc.moduleContext.cacheName += `${counter[cacheName]}`
-            NestedUnitFunc.moduleContext.cacheName += `${counter[cacheName]}`
-            UnitFunc.moduleContext.cacheName += `${counter[cacheName]}`
-            SpecificNestedUnitFunc.moduleContext.cacheName += `${counter[cacheName]}`
-            SpecificUnitFunc.moduleContext.cacheName += `${counter[cacheName]}`
-            counter[cacheName] ++         
-        }
+    const MC = ModuleContext({ cacheReferenceName: `ModuleContext-${implementationType}` /*  used to combine all related contexts under same object */ })
+        
+    function connectClassPrototype() {
+        // Call class producer functions to return a new class with the specific connections.
+        let Controller = ControllerFunction({
+            methodInstanceName: cacheName,
+            Superclass,
+            mixin: specificImplementationConfig.ControllerMixin, 
+            rethinkdbConnection
+        })
+        let NestedUnit = NestedUnitFunction({ Superclass: Controller })
+        let Unit = UnitFunction({ Superclass: Controller })
+        specificImplementationConfig.NestedUnitFunction({ Superclass: NestedUnit })
+        specificImplementationConfig.UnitFunction({ Superclass: Unit })
+        Controller.eventEmitter.emit('addSubclass') // register subclasses that are listening for the event to register themselves in extendedSubclass.static array.
+        
+        // return Controller in which it holds the tree structure.
+        return Controller
     }
-
-    // Call class producer functions to return a new class with the specific connections.
-    let Controller = ControllerFunc({
-        methodInstanceName: cacheName,
-        Superclass,
-        mixin: implementationConfig.ControllerMixin, 
-        rethinkdbConnection
-    })
-    let NestedUnit = NestedUnitFunc({ Superclass: Controller })
-    let Unit = UnitFunc({ Superclass: Controller })
-    SpecificNestedUnitFunc({ Superclass: NestedUnit })
-    SpecificUnitFunc({ Superclass: Unit })
-    Controller.eventEmitter.emit('addSubclass') // register subclasses that are listening for the event to register themselves in extendedSubclass.static array.
-    
-    // return Controller in which it holds the tree structure.
-    return Controller
+    // Create new context for the modules using proxy. And cache them with unique names if 'cacheName' is set.
+    const connectClassPrototypeProxied = new MC({ target: connectClassPrototype, cacheName: (cacheName) ? `${cacheName}` : null  })
+    return connectClassPrototypeProxied()
 }
 
 export default createStaticInstanceClasses

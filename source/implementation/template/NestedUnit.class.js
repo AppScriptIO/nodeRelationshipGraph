@@ -12,7 +12,7 @@ let getDocument = {
     NestedUnit: getTableDocumentCurried({ databaseName: 'webappSetting', tableName: `${databasePrefix}nestedUnit` }),
 }
 
-export default ({ Superclass }) => {
+export function NestedUnitFunction({ Superclass }) {
     let self = 
         @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })  
         @execute({ 

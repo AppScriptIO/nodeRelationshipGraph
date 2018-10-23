@@ -9,7 +9,7 @@ let getDocument = {
     File: getTableDocumentCurried({ databaseName: 'webappSetting', tableName: `${databasePrefix}file` })
 }
 
-export default ({ Superclass }) => {
+export function UnitFunction({ Superclass }) {
     let self = 
         @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
         @execute({

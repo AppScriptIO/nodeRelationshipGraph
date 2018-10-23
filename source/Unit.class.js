@@ -2,7 +2,7 @@ import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChain
 import { add, execute, applyMixin, conditional, executeOnceForEachInstance } from '@dependency/commonPattern/source/decoratorUtility.js'
 import assert from 'assert'
 
-export default ({ Superclass }) => {
+export function UnitFunction({ Superclass }) {
     let self =
     @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
     class RUnit extends Superclass {

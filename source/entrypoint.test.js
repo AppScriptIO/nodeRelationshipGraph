@@ -1,8 +1,20 @@
+process.env['SZN_DEBUG'] = true
 import assert from 'assert'
 import createStaticInstanceClasses from './entrypoint.js'
 // import { default as Application } from '../../class/Application.class.js'
 
 describe('ReusableNestedUnit module - Connecting class inhiritance dynamically', () => {
+
+    // describe('Debugging purposes', () => {
+    //     let Controller; 
+
+    //     Controller = createStaticInstanceClasses({
+    //         Superclass: null, 
+    //         implementationType: 'Middleware',
+    //         cacheName: false
+    //     })
+        
+    // })
 
     describe('Creating static classes without cache', () => {
         
@@ -15,25 +27,6 @@ describe('ReusableNestedUnit module - Connecting class inhiritance dynamically',
             Superclass: null, 
             implementationType: 'Middleware',
             cacheName: false
-        })
-
-        it('Should return different class references', () => {
-            assert.notStrictEqual(Controller1, Controller2)
-        })
-    
-    })
-    
-    describe('Caching static classes using automatic naming', () => {
-
-        let Controller1 = createStaticInstanceClasses({ 
-            Superclass: null, 
-            implementationType: 'Middleware',
-            cacheName: true
-        })
-        let Controller2 = createStaticInstanceClasses({ 
-            Superclass: null, 
-            implementationType: 'Middleware',
-            cacheName: true
         })
 
         it('Should return different class references', () => {
@@ -61,7 +54,7 @@ describe('ReusableNestedUnit module - Connecting class inhiritance dynamically',
     
     })
 
-    describe('Caching static classes using different same passed cacheName', () => {
+    describe('Caching static classes using same passed cacheName', () => {
         
         let Controller1 = createStaticInstanceClasses({ 
             Superclass: null, 

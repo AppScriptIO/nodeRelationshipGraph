@@ -2,7 +2,7 @@ import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChain
 import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import promiseProperRace from '@dependency/promiseProperRace'
 
-export default ({ Superclass }) => {
+export function NestedUnitFunction({ Superclass }) {
     let self = 
     @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
     class RNestedUnit extends Superclass {
