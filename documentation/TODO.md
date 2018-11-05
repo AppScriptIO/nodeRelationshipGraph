@@ -13,6 +13,7 @@ e.g.
     })
     ShellscriptController.initializeNestedUnit('X') // each unit will call the implementation it needs.
 ```
+- Dynamic implementation - add explanation + create a dynamic implementation where each node decides what implementation to use.
 ___
 ### TODO:
  1. create static instance of class with no specific node initialization implemenation (shellscript, template, condition, etc.).
@@ -28,3 +29,18 @@ ___
 - TODO: Generally for nestedUnit parent-child passed arguments - create a context for each instance where values could be stored and used by a child from its parent, rather than saving the arguments to the 'nestedUnitInstance' or sometimes to the 'unit' variable.
 - Independent implementation from Rethinkdb database. i.e. allow usage of different databases as pluggable adapter option.
 - GPU accelarated node graph propagation. i.e. use GPU to read the node graph in async & sync mode.
+- Use gRPC for traversing graphs in a subprocess, this will allow plugin implementations for traversing graphs to be executed in their own process (any error will be neatly handled by the host process).
+- Use multiple prototypal inheritance for creation of context for the for each nodeRelationshipGraph instance. 
+i.e. 
+_Current behavior_
+    ```
+    let nodeRelationshipGraph = new NodeRelationshipGraph()
+    let Controller = nodeRelationshipGraph.createStaticInstanceClasses()
+    // `createContext` creates an object that inherites from Controller
+    let controller = await Controller.createContext({})
+    // `traverseGraph` is non static, so it can be called using using `node` instance objects. 
+    await controller.traverseGraph({ nodeKey: 'node-key-1' })
+    // The instances created by `traverseGraph` will be cached in the `controller` object. 
+    ```
+    _Proposed_
+    instead of relying on the same controller for inheriting `node` objects, and `controller` context object, use multiple inheritance to group & cache related `node` objects. e.g. use `nodeRelationshipGraph` class as a `controller` object creation that stores cache and common shared values, and that will be inheriting `node` objects together with the `Controller` class (multiple parents).
