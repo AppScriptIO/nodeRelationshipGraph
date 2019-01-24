@@ -2,16 +2,22 @@
     "name": "@dependency/nodeRelationshipGraph", 
     "version": "0.1.0",
     "main": "./source/entrypoint.js",
+    "scripts": {
+        "setup": "yarn install --production=false",
+        "test": "yarn run scriptManager scriptKeyToInvoke=test testType=unitTest debug"
+    },
     "dependencies": {
-        "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug",
         "@dependency/databaseUtility": "https://github.com/AppScriptIO/databaseUtility",
         "@dependency/multiplePrototypeChain": "https://github.com/AppScriptIO/multiplePrototypeChain",
         "@dependency/commonPattern": "https://github.com/AppScriptIO/commonPattern",
         "@dependency/moduleContext": "https://github.com/AppScriptIO/moduleContext",
         "@dependency/populateObjectPropertyFromObject": "https://github.com/AppScriptIO/populateObjectPropertyFromObject",
         "@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace",
+        "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug",
         "mixwith": "*",
         "rethinkdb": "*"
-
+    },
+    "devDependencies": {
+        
     }
 }

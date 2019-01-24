@@ -21,6 +21,7 @@ ___
  3. During transversing each node will have instructions for the type of implementation to use.
 ___
 ###
+- Make adapter just like plugin when registered, with support for multiple adapters and choosing a default one to use.
 - Add ability to pass previous middleware nested unit option arguments to the next. Not through middleware context, rather using option/setting argument (just like the nested unit properties contain). This allows chaining of middleware. (May require implementing middleware pattern that's executed immediately in the nested unit, rather than composing an array for koa to execute.)
 - Change names of nested unit following list in microsoft visio file (scheme where concepts are written). (Relationship graph, unit, resource) with the related new data structure.
 - Node relationship graph - add feature to skip current node in case no unit key is specified (will remove the need to create container node using empty unit data) e.g. middleware container uses passthrough middleware.
@@ -44,3 +45,12 @@ _Current behavior_
     ```
     _Proposed_
     instead of relying on the same controller for inheriting `node` objects, and `controller` context object, use multiple inheritance to group & cache related `node` objects. e.g. use `nodeRelationshipGraph` class as a `controller` object creation that stores cache and common shared values, and that will be inheriting `node` objects together with the `Controller` class (multiple parents).
+- Pattern for implementation hooks for functions -  idea for function hooks that can execute implementations. e.g. `iterateConnection` function that has many different implemenations like 'chronological', 'allPromise', 'raceFirstPromise'
+```
+    @console(function() {
+    // [1] define different implemenations of the `iterateConnection` function.
+    // [2] add them to the function object together twith helper function to retrieve them and get the matching one using the implementation name/key.
+    // [3] when executed an inner hook (inside the `iterateConnection` scope) will invoke the implementation required using added helper function through `arguments.callee` property.
+     })
+```
+- 

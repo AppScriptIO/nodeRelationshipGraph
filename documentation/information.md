@@ -1,6 +1,6 @@
 ### nodeRelationshipGraph concepts
 
-- Relationship Graph: conveying of relational information. Directed graph. _Terminolog: ReusableNestedUnit_
+- Relationship Graph: conveying of relational information. Directed graph. _Terminolog: ReusableNestedUnit_ 
 - Trees: herarchies - nested treemaps = is a connected unweighted acyclic graph
 - node - _similar terminology: nestedUnit_
 - Unit: data item / record. Resource implementation
@@ -20,8 +20,23 @@ ___
 • Regarding Api of Api - Data about data is called metadata, and therefore api about an apit is metaApi. Used to create visual programming app, that reads the language api to choose AST options.
 ___
 ## Design Patterns
-Modular Application Architecture / Plugin-based architecture / plugin-based application / Plugin System Structure / Extending modules using a plugin architecture
-- https://stackoverflow.com/questions/10763006/plugin-architecture-in-web-apps-examples-or-code-snippets
+- Modular Application Architecture / Plugin-based architecture / plugin-based application / Plugin System Structure / Extending modules using a plugin architecture
+https://stackoverflow.com/questions/10763006/plugin-architecture-in-web-apps-examples-or-code-snippets
+- A concept of prototype chain where constructors could be instantiated separately, creating a prototype chain with objects that are not strictly attached by a first contructor call. 
+e.g. 
+    ```
+    let pluginContext = new PluginContext()
+    let cacheContext = new CacheContext()
+    // will create a chain with parameter objects involved.
+    let controller = new Controller({ cacheContext, pluginContext })
+    // will create a chain with parameter objects involved where one of them is dynamically changed, and the rest are shared accross "controler" instances.
+    let controller = new Controller({ new CacheContext(), pluginContext })
+    ```
+    What the current behaviour of Javascript prototypal inheritance is that constructor creates a single object that delagates to constructor prototypes. What is missing is a way to allow delegation to upper dynamically created objects that relate to superconstructors (upper level classes) when needed. This allows to share context between specific instances and divide them into groups that do not affect each other and are soft linked (i.e. the shared context can be garbage collected like the instances that are part of it).
 - 
 ___
 ## Concept/Abstraction visual programming - programming using abstractions in a visual interface.
+Naming proposal - just like `abstract syntax tree`, call it `abstract node graph`, `abstract visual programming`
+
+___
+[Development TODO list](/documentation/TODO.md)
