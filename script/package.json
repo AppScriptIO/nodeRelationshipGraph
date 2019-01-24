@@ -1,0 +1,10 @@
+{
+    "name": "@root/setup",
+    "version": "1.0.0",
+    "dependencies": {
+        "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
+        "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager",
+        "@dependency/javascriptTestRunner": "https://github.com/AppScriptIO/javascriptTestRunner",
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation"
+    }
+}
