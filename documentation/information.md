@@ -1,3 +1,10 @@
+### Usage examples
+Different applications may use this module:
+- AST representation in NoSQL database.
+- Task/command runner with ability for synchronous or async execution.
+- Template system for creating complex templates. 
+- etc.
+
 ### nodeRelationshipGraph concepts
 
 - Relationship Graph: conveying of relational information. Directed graph. _Terminolog: ReusableNestedUnit_ 
