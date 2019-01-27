@@ -673,27 +673,43 @@
 
 "@dependency/JSModuleTypeCheck@https://github.com/AppScriptIO/JSModuleTypeCheck":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/JSModuleTypeCheck#09e1f2e301fa153ebe915522e8b24477bd76e92e"
+  resolved "https://github.com/AppScriptIO/JSModuleTypeCheck#d43f29e5e0e33339cfd0940d8298f4609fe8b0c8"
+
+"@dependency/ModuleContext@https://github.com/AppScriptIO/moduleContext", "@dependency/moduleContext@https://github.com/AppScriptIO/moduleContext":
+  version "0.1.0"
+  resolved "https://github.com/AppScriptIO/moduleContext#9cf259dcb224434a5084ce896a6d3f1e53f15d53"
 
 "@dependency/addModuleResolutionPath@https://github.com/AppScriptIO/addModuleResolutionPath":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/addModuleResolutionPath#e55f2af7f4794b48290d4cb7175cdb22ab63d65c"
+  resolved "https://github.com/AppScriptIO/addModuleResolutionPath#43a8f852e97901d138e90faf140a1d654b799ae2"
+
+"@dependency/commonPattern@https://github.com/AppScriptIO/commonPattern":
+  version "1.0.0"
+  resolved "https://github.com/AppScriptIO/commonPattern#b266afc5e78a939ce6f7f21d4526265232bc39aa"
+  dependencies:
+    promise-events "^0.1.4"
 
 "@dependency/configuration@https://github.com/AppScriptIO/configurationManagement", "@dependency/configurationManagement@https://github.com/AppScriptIO/configurationManagement":
   version "1.0.0"
   resolved "https://github.com/AppScriptIO/configurationManagement#e2f231d875d43456f727bd541741c3f73f83c1cf"
 
+"@dependency/databaseUtility@https://github.com/AppScriptIO/databaseUtility":
+  version "1.0.0"
+  resolved "https://github.com/AppScriptIO/databaseUtility#0642c8e7c4acf11d693048ceb5e76c787e1916c2"
+  dependencies:
+    "@dependency/namedCurry" "https://github.com/AppScriptIO/namedCurry"
+
 "@dependency/deploymentScript@https://github.com/AppScriptIO/deploymentScript":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/deploymentScript#1c82b60950430606cd9d1cec3f92992d0e039325"
+  resolved "https://github.com/AppScriptIO/deploymentScript#db91cf55f849cfcd7176154d7d4c6cb45ecd3eea"
 
 "@dependency/installNodeJSModule@https://github.com/AppScriptIO/installNodeJSModule":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/installNodeJSModule#d0a5694b97363fdce72cbf99addfdb34b7cded84"
+  resolved "https://github.com/AppScriptIO/installNodeJSModule#4079184b9a2cec2cb3403d219a503e19d21456e2"
 
 "@dependency/javascriptTestRunner@https://github.com/AppScriptIO/javascriptTestRunner":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/javascriptTestRunner#a806d9ea88ab4b19b3c9209319efc1e2a2be3aab"
+  resolved "https://github.com/AppScriptIO/javascriptTestRunner#0d45051acee50624de37c81ca1c4f5cd327eae90"
   dependencies:
     "@dependency/javascriptTranspilation" "https://github.com/AppScriptIO/javascriptTranspilation"
     "@dependency/parseKeyValuePairSeparatedBySymbol" "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol"
@@ -731,27 +747,47 @@
 
 "@dependency/listDirectoryContent@https://github.com/AppScriptIO/listDirectoryContent":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/listDirectoryContent#c7e1b38e85c8c80346214111b8d9dad1328c7e9e"
+  resolved "https://github.com/AppScriptIO/listDirectoryContent#a0eb0b8040049e4f79b0b7ffc5e8cb53a4b04a35"
 
 "@dependency/moduleScopePattern@https://github.com/AppScriptIO/moduleScopePattern":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/moduleScopePattern#73c23abb415489ef971c00a1aa6d040d6a26c43c"
+  resolved "https://github.com/AppScriptIO/moduleScopePattern#f089e41f95978ea10aedf47be78bbff63816d046"
   dependencies:
     "@dependency/recursiveCreateDirectory" "https://github.com/AppScriptIO/recursiveCreateDirectory"
 
+"@dependency/multiplePrototypeChain@https://github.com/AppScriptIO/multiplePrototypeChain":
+  version "0.1.0"
+  resolved "https://github.com/AppScriptIO/multiplePrototypeChain#a721c17605531c9106e55f94f1af5733f47f9e47"
+
+"@dependency/namedCurry@https://github.com/AppScriptIO/namedCurry":
+  version "1.0.0"
+  resolved "https://github.com/AppScriptIO/namedCurry#d56619361796a1fa06348e723f084e7907c479a3"
+
 "@dependency/parseKeyValuePairSeparatedBySymbol@https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol":
   version "0.1.0"
-  resolved "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol#b4aa509ea1fe2b2fd73a7f30a347751a25d49fbc"
+  resolved "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol#ba69107177de3446d161ef6cf6ed557b01205de3"
   dependencies:
     "@dependency/javascriptTranspilation" "https://github.com/AppScriptIO/javascriptTranspilation"
 
+"@dependency/populateObjectPropertyFromObject@https://github.com/AppScriptIO/populateObjectPropertyFromObject":
+  version "0.1.0"
+  resolved "https://github.com/AppScriptIO/populateObjectPropertyFromObject#f7bdcc34dac4b5f6fba11a4826bb6c47efdc4329"
+
+"@dependency/promiseProperRace@https://github.com/AppScriptIO/promiseProperRace":
+  version "1.0.0"
+  resolved "https://github.com/AppScriptIO/promiseProperRace#2e4f41de60a3834984a53bd39e44937c8149104c"
+
+"@dependency/prototypeChainDebug@https://github.com/AppScriptIO/prototypeChainDebug":
+  version "0.1.0"
+  resolved "https://github.com/AppScriptIO/prototypeChainDebug#d62a20fd750a6aa103e69fbc4ab685669fce1ae9"
+
 "@dependency/recursiveCreateDirectory@https://github.com/AppScriptIO/recursiveCreateDirectory":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/recursiveCreateDirectory#e0b86231c760d674837612fd8f5f064a3edf9387"
+  resolved "https://github.com/AppScriptIO/recursiveCreateDirectory#0e7152863e26a73fe3ceb257c121872bd08055fb"
 
 "@dependency/scriptExecution@https://github.com/AppScriptIO/scriptExecution":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/scriptExecution#928901c9a76338abf7acf552bb110e4009c0c06e"
+  resolved "https://github.com/AppScriptIO/scriptExecution#2349a222a570793b4285ca4447395770e463aec4"
   dependencies:
     "@dependency/JSModuleTypeCheck" "https://github.com/AppScriptIO/JSModuleTypeCheck"
     "@dependency/configuration" "https://github.com/AppScriptIO/configurationManagement"
@@ -761,7 +797,7 @@
 
 "@dependency/scriptManager@https://github.com/AppScriptIO/scriptManager":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/scriptManager#46c83be5c0b1cb25e286d2c97b30fabae44bf207"
+  resolved "https://github.com/AppScriptIO/scriptManager#78a3c01eaf1a7bfe443499a8580d3ae8193a4300"
   dependencies:
     "@dependency/JSModuleTypeCheck" "https://github.com/AppScriptIO/JSModuleTypeCheck"
     "@dependency/addModuleResolutionPath" "https://github.com/AppScriptIO/addModuleResolutionPath"
@@ -2233,9 +2269,9 @@ camelcase@^5.0.0:
   integrity sha512-faqwZqnWxbxn+F1d399ygeamQNy3lPp/H9H6rNrqYh4FSVCtcY+3cub1MxA8o9mDd55mM8Aghuu/kuyYA6VTsA==
 
 caniuse-lite@^1.0.30000929:
-  version "1.0.30000930"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000930.tgz#c238bab82bedb462bcbdc61d0334932dcc084d8a"
-  integrity sha512-KD+pw9DderBLB8CGqBzYyFWpnrPVOEjsjargU/CvkNyg60od3cxSPTcTeMPhxJhDbkQPWvOz5BAyBzNl/St9vg==
+  version "1.0.30000932"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000932.tgz#d01763e9ce77810962ca7391ff827b5949ce4272"
+  integrity sha512-4bghJFItvzz8m0T3lLZbacmEY9X1Z2AtIzTr7s7byqZIOumASfr4ynDx7rtm0J85nDmx8vsgR6vnaSoeU8Oh0A==
 
 capture-stack-trace@^1.0.0:
   version "1.0.1"
@@ -2741,9 +2777,9 @@ eastasianwidth@^0.2.0:
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
 electron-to-chromium@^1.3.103:
-  version "1.3.106"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.106.tgz#672183160e783cb546cff83d9a98d5f69cd91874"
-  integrity sha512-eXX45p4q9CRxG0G8D3ZBZYSdN3DnrcZfrFvt6VUr1u7aKITEtRY/xwWzJ/UZcWXa7DMqPu/pYwuZ6Nm+bl0GmA==
+  version "1.3.108"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.108.tgz#2e79a6fcaa4b3e7c75abf871505bda8e268c910e"
+  integrity sha512-/QI4hMpAh48a1Sea6PALGv+kuVne9A2EWGd8HrWHMdYhIzGtbhVVHh6heL5fAzGaDnZuPyrlWJRl8WPm4RyiQQ==
 
 empower-core@^0.5.0:
   version "0.5.0"
@@ -4084,6 +4120,11 @@ mixin-deep@^1.2.0:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
 
+mixwith@*:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/mixwith/-/mixwith-0.1.1.tgz#c8995918c5b61fbfda9ad377a857cd47750541c0"
+  integrity sha1-yJlZGMW2H7/amtN3qFfNR3UFQcA=
+
 mkdirp@0.5.1, mkdirp@^0.5.0, mkdirp@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
@@ -4207,9 +4248,9 @@ node-pre-gyp@^0.10.0:
     tar "^4"
 
 node-releases@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.3.tgz#aad9ce0dcb98129c753f772c0aa01360fb90fbd2"
-  integrity sha512-6VrvH7z6jqqNFY200kdB6HdzkgM96Oaj9v3dqGfgp6mF+cHmU4wyQKZ2/WPDRVoR0Jz9KqbamaBN0ZhdUaysUQ==
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.5.tgz#1dbee1380742125fe99e0476c456670bf3590b89"
+  integrity sha512-6C2K0x1QlYTz9wCueMN/DVZFcBVg/qsj2k9iV5gV/+OvG4KNrl7Nu7TWbWFQ3/Z2V10qVFQWtj5Xa+VBodcI6g==
   dependencies:
     semver "^5.3.0"
 
@@ -4809,6 +4850,11 @@ process-nextick-args@~2.0.0:
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.0.tgz#a37d732f4271b4ab1ad070d35508e8290788ffaa"
   integrity sha512-MtEC1TqN0EU5nephaJ4rAtThHtC86dNN9qCuEhtshvpVBkAW5ZO7BASN9REnF9eoXGcRub+pFuKEpOHE+HbEMw==
 
+promise-events@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/promise-events/-/promise-events-0.1.4.tgz#3c88fae97e448da68f7fcf19d4ee308d6e432d5b"
+  integrity sha1-PIj66X5EjaaPf88Z1O4wjW5DLVs=
+
 promise-polyfill@^6.0.1:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/promise-polyfill/-/promise-polyfill-6.1.0.tgz#dfa96943ea9c121fca4de9b5868cb39d3472e057"
@@ -5125,7 +5171,7 @@ ret@~0.1.10:
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
   integrity sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==
 
-rethinkdb@^2.3.3:
+rethinkdb@*, rethinkdb@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/rethinkdb/-/rethinkdb-2.3.3.tgz#3dc6586e22fa1dabee0d254e64bd0e379fad2f72"
   integrity sha1-PcZYbiL6HavuDSVOZL0ON5+tL3I=

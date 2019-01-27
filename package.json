@@ -1,5 +1,5 @@
 {
-    "name": "@dependency/nodeRelationshipGraph", 
+    "name": "@dependency/nodeRelationshipGraph",
     "version": "0.1.0",
     "main": "./source/entrypoint.js",
     "scripts": {
@@ -7,10 +7,11 @@
         "test": "yarn run scriptManager scriptKeyToInvoke=test testType=unitTest debug"
     },
     "dependencies": {
-        "@dependency/databaseUtility": "https://github.com/AppScriptIO/databaseUtility",
-        "@dependency/multiplePrototypeChain": "https://github.com/AppScriptIO/multiplePrototypeChain",
+        "@dependency/ModuleContext": "https://github.com/AppScriptIO/moduleContext",
         "@dependency/commonPattern": "https://github.com/AppScriptIO/commonPattern",
+        "@dependency/databaseUtility": "https://github.com/AppScriptIO/databaseUtility",
         "@dependency/moduleContext": "https://github.com/AppScriptIO/moduleContext",
+        "@dependency/multiplePrototypeChain": "https://github.com/AppScriptIO/multiplePrototypeChain",
         "@dependency/populateObjectPropertyFromObject": "https://github.com/AppScriptIO/populateObjectPropertyFromObject",
         "@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace",
         "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug",
@@ -18,6 +19,9 @@
         "rethinkdb": "*"
     },
     "devDependencies": {
-        
+        "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
+        "@dependency/javascriptTestRunner": "https://github.com/AppScriptIO/javascriptTestRunner",
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation",
+        "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager"
     }
 }
