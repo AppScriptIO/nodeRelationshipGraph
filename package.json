@@ -4,7 +4,8 @@
     "main": "./source/entrypoint.js",
     "scripts": {
         "setup": "yarn install --production=false",
-        "test": "yarn run scriptManager scriptKeyToInvoke=test testType=unitTest debug"
+        "test": "yarn scriptManager test \".runTest({ testPath: './test' })\"",
+        "sleep": "yarn run scriptManager sleep '.setInterval()' "
     },
     "dependencies": {
         "@dependency/ModuleContext": "https://github.com/AppScriptIO/moduleContext",
@@ -19,9 +20,9 @@
         "rethinkdb": "*"
     },
     "devDependencies": {
+        "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager",
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
         "@dependency/javascriptTestRunner": "https://github.com/AppScriptIO/javascriptTestRunner",
-        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation",
-        "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager"
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation"
     }
 }

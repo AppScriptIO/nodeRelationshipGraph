@@ -18,8 +18,14 @@ module.exports = {
         },
         {
             key: 'test',
-            type: 'script',
-            path: `${resolvedModule.javascriptTestRunner}/source/entrypoint/cli/transpilation.entrypoint.js`,
-        }  
+            type: 'module',
+            methodName: 'runTest',
+            adapterFunction: ({ callback, args }) => {
+                // change api to specific script parameter name
+                args[0].targetProject = args[0].api.project
+                return () => callback(...args) // specific interface of the callback
+            },
+            path: `${resolvedModule.javascriptTestRunner}/source/entrypoint/module/transpilation.entrypoint.js`,
+        }
     ]
 }
