@@ -3,9 +3,7 @@ const { script } = require('./script.config.js')
 
 module.exports = {
     directory: {
-        application: {
-            rootPath: path.resolve(`${__dirname}/..`),
-        }
+        root: path.resolve(`${__dirname}/..`),
     },
     script
 }
