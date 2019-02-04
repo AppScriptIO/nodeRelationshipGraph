@@ -1,11 +1,11 @@
 {
     "name": "@dependency/nodeRelationshipGraph",
     "version": "0.1.0",
-    "main": "./source/entrypoint.js",
+    "main": "./source/entrypoint/api/transpilation.entrypoint.js",
     "scripts": {
         "setup": "yarn install --production=false",
-        "test": "yarn scriptManager test \".runTest({ testPath: './test' })\"",
-        "sleep": "yarn run scriptManager sleep '.setInterval()' "
+        "sleep": "yarn run scriptManager sleep '.setInterval()' ",
+        "test": "yarn run scriptManager test \"({ testPath: './test' })\""
     },
     "dependencies": {
         "@dependency/ModuleContext": "https://github.com/AppScriptIO/moduleContext",
@@ -22,7 +22,6 @@
     "devDependencies": {
         "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager",
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
-        "@dependency/javascriptTestRunner": "https://github.com/AppScriptIO/javascriptTestRunner",
         "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation"
     }
 }
