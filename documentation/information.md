@@ -47,3 +47,7 @@ Naming proposal - just like `abstract syntax tree`, call it `abstract node graph
 
 ___
 [Development TODO list](/documentation/TODO.md)
+
+___
+
+### 🔑 License: [MIT](/.github/LICENSE)

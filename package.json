@@ -2,6 +2,9 @@
     "name": "@dependency/nodeRelationshipGraph",
     "version": "0.1.0",
     "main": "./source/entrypoint/api/transpilation.entrypoint.js",
+    "files": [
+        "./distribution"
+    ],
     "scripts": {
         "setup": "yarn install --production=false",
         "sleep": "yarn run scriptManager sleep '.setInterval()' ",
