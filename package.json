@@ -1,7 +1,7 @@
 {
     "name": "@dependency/nodeRelationshipGraph",
     "version": "0.1.0",
-    "main": "./source/entrypoint/api/transpilation.entrypoint.js",
+    "main": "./source/entrypoint/programmaticApi/transpilation.entrypoint.js",
     "files": [
         "./distribution"
     ],

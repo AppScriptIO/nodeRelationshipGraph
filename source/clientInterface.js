@@ -1,12 +1,9 @@
 import assert from 'assert'
-import { linkConstructor } from '../prototypeChain/linkConstructor.js'
+import { linkConstructor } from './prototypeChain/linkConstructor.js'
 import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import { createProxyHandlerReflectedToTargetObject, addRequiredPropertyForConstructorProxy } from '@dependency/commonPattern/source/proxyUtility.js'
-import { shallowMergeNonExistingPropertyOnly } from '../utility/shallowObjectMerge.js'
+import { shallowMergeNonExistingPropertyOnly } from './utility/shallowObjectMerge.js'
 
-/** 
- * Constructor which creates 
- */
 const self = 
     @execute({ staticMethod: 'initializeStaticClass', args: [], self: true })
     class ClientInterfaceClass {
@@ -71,7 +68,7 @@ const self =
                 }
             )
             
-            proxyHandler = addRequiredPropertyForConstructorProxy({ proxyHandler }) // IMPORTANT: ensures that constructor proxy traps comply with spec.
+            proxyHandler = addRequiredPropertyForConstructorProxy({ proxyHandler }) // IMPORTANT: ensures that constructor proxy traps comply with Ecmascript proxy specification.
             return new Proxy(function() {} /* Enables traps for 'apply' & 'construct' */, proxyHandler)
         }
 
@@ -119,15 +116,20 @@ const self =
         }
     }
 
-
-/*
- * • Apply => Create constructor with specific implementation, manipulating the behavior of the instance creation. 
- * • Construct => Create instance from default class. E.g. Node subclass instance.
-*/
-const clientInterface = new Proxy(self, {
+/** 
+ * The client interface allows to interact with the module in multiple ways. i.e. it doesn't contain the core logic, but the wiring simplifying the configuration & usage of the different componenets of this module.
+ * It defines: 
+ *      - The initialization behavior - e.g. through instantiation (executing interface as constructor with `new` keyword) or executing the interface by calling (executing interface as function).
+ *              • Apply => Create constructor with specific implementation, manipulating the behavior of the instance creation. 
+ *              • Construct => Create instance from default class. E.g. Node subclass instance.
+ *      - Sets default parameters for the different components of the module.
+ *      - Manages interface instances allowing to create new interface from a previously configured interface instance. (TODO: This feature could be separated as its own module)
+ *      - Provides a consistent exposed client interface - allowing easier refactoring of internal components when needed.
+ */
+export const clientInterface = new Proxy(self, {
     apply(target, thisArg, argumentsList) {
-        let { proxiedInstance: clientInterface } = new self(...argumentsList)
-        return clientInterface
+        let { proxiedInstance: configuredInterface } = new self(...argumentsList)
+        return configuredInterface
 
         // // Choose to create a cached context or anonymous garbage collected one.
         // const MC = ModuleContext({ cacheReferenceName: `ModuleContext-${'1'}` /*  used to combine all related contexts under same object */ })
@@ -144,6 +146,3 @@ const clientInterface = new Proxy(self, {
     construct: self.constructGraphInstance
 })
 
-export {
-    clientInterface,
-}

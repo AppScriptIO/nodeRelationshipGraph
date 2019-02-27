@@ -1,3 +1,5 @@
+// TODO: rename `shellscript.js` to `taskScript.js` as shell scripts are only part of the execution types possible.
+
 /**
  * implementationType = executeScript
  * @description when first called "this" context is assigned to the AppInstance for the comming request. And on subsequest calls it is assigned to the nestedUnit instance.
