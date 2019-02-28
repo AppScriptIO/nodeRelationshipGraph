@@ -9,9 +9,15 @@ Different applications may use this module:
 
 - Relationship Graph: conveying of relational information. Directed graph. _Terminolog: ReusableNestedUnit_ 
 - Trees: herarchies - nested treemaps = is a connected unweighted acyclic graph
-- node - _similar terminology: nestedUnit_
-- Unit: data item / record. Resource implementation
-- File: Resource record
+- Node - _similar terminology: nestedUnit_
+   
+    e.g. Data: { Type: ‘reference’ || ‘value’, key: ‘XYZ’ }
+- DataItem/Unit/Record: Resource implementation
+    
+    e.g. { Type: ‘reference’, importModuleName: ‘’, executionType: ‘’ }
+- Resource/File: Resource record
+    
+    e.g. { type: 'file', path: '' }
 https://medium.freecodecamp.org/all-you-need-to-know-about-tree-data-structures-bceacb85490c
 - port: _similar terminology = junction, synapse, group, insetionPoint, inlet/outlet, channel, junctionPoint, portal, relationship, relation_
 - source/destination nodes - are nodes that make up the edges of a connection. _Or start/end nodes_

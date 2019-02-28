@@ -13,9 +13,9 @@ e.g.
     })
     ShellscriptController.initializeNestedUnit('X') // each unit will call the implementation it needs.
 ```
-- Dynamic implementation - add explanation + create a dynamic implementation where each node decides what implementation to use.
 ___
 ### TODO:
+- Dynamic implementation - add explanation + create a dynamic implementation where each node decides what implementation to use.
  1. create static instance of class with no specific node initialization implemenation (shellscript, template, condition, etc.).
  2. start transversing the node graph. 
  3. During transversing each node will have instructions for the type of implementation to use.
