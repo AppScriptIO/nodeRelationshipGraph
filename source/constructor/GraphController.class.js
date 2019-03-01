@@ -16,12 +16,16 @@ import { superclassInstanceContextPattern, cacheInstance } from '@dependency/com
 export function GraphControllerFunction({
     Superclass = EventEmitter, // defaulting to EventEmitter and not Object / Function because extending Object/Function manipulates this prototype in new calls for some reason.
     methodInstanceName,
+    // TODO: deal with different ways to add mixins
     mixin, 
+    mixinArray = [/*commonMethod*/]
     // rethinkdbConnection = (!!Superclass) && Superclass.rethinkdbConnection
 } = {}) {
     // if(Superclass) Superclass.rethinkdbConnection = rethinkdbConnection // Setting this variable on Controller class below causes issues, which maybe related to the way rethinkdb is called or the proxies encapsulating the class.
     
-    let mixinArray = [/*commonMethod*/]
+    /**
+     * Used through method `traverseGraph`
+     */
     let self = 
         @add({ to: 'static'}, { 
             createInstance,
