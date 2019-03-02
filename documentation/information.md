@@ -46,7 +46,7 @@ e.g.
     let controller = new Controller({ new CacheContext(), pluginContext })
     ```
     What the current behaviour of Javascript prototypal inheritance is that constructor creates a single object that delagates to constructor prototypes. What is missing is a way to allow delegation to upper dynamically created objects that relate to superconstructors (upper level classes) when needed. This allows to share context between specific instances and divide them into groups that do not affect each other and are soft linked (i.e. the shared context can be garbage collected like the instances that are part of it).
-- 
+- Class generators - wrapping classes with functions allows generating classes on demand that extend a variable superclass.
 ___
 ## Concept/Abstraction visual programming - programming using abstractions in a visual interface.
 Naming proposal - just like `abstract syntax tree`, call it `abstract node graph`, `abstract visual programming`
