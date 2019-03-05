@@ -5,6 +5,42 @@ import { Graph, Plugin, InstanceContext, linkConstructor } from '../source/scrip
 import { databaseModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memoryModelAdapter.js'
 import * as graphData from './asset/graphData' // load sample data
 
+
+suite.only('Test classes', () => {
+
+
+    class Node {}
+    class DataItem {}
+    class Controller {}
+    class Context {}
+
+    const p = new Proxy(function(){}, {
+
+    })
+    console.log(p)
+
+
+
+    class Context {
+    }
+
+    let c = new Context()
+        
+
+    
+    class Node extends c {}
+
+    console.log(Node)
+
+    test('', async () => {
+        assert(true, '')
+    })
+
+
+
+})
+
+
 suite('Interface integration with the module in different initialization scenarios', () => {
     suite('Initializing interface instance by function calling (Reflect.apply)', () => {
         let configuredGraph = Graph({ pluginInstance: null, contextInstance: null, constructorPrototypeChain: null })

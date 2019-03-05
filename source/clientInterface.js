@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { linkConstructor } from './prototypeChain/linkConstructor.js'
-import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
+import { add, execute, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import { createProxyHandlerReflectedToTargetObject, addRequiredPropertyForConstructorProxy } from '@dependency/commonPattern/source/proxyUtility.js'
 import { shallowMergeNonExistingPropertyOnly } from './utility/shallowObjectMerge.js'
 
@@ -59,13 +59,14 @@ class GraphControllerConfiguration {
 
         // attach context and plugins to the Controller - allowing custom prototypal chain creation on instance instantiation through usage of proxies. 
         let graphController = new GraphController({
-            // add plugins and context properties/extensions
-            plugin: pluginInstance,
-            context: contextInstance,
-            cache: cacheInstance,
+            additionalDelegatedChain: {
+                plugin: pluginInstance,
+                context: contextInstance,
+                cache: cacheInstance,
+            },
             // TODO: Maybe create proxy and add the plugins to the proxy in some way to alter the behavior.
-            Node: new Proxy(Node, {}), 
-            DataItem: new Proxy(DataItem, {}), 
+            // Node: new Proxy(Node, {}), 
+            // DataItem: new Proxy(DataItem, {}), 
         })
         // GraphController.getSubclass('Node') // relies on the static method added to the class constructor.
         // controller.getSubclass('Node') // relies on the context added prototype function "getSubclass"
@@ -127,7 +128,7 @@ class ClientInterfaceClass extends GraphControllerConfiguration {
             }
         )
         proxyHandler = addRequiredPropertyForConstructorProxy({ proxyHandler }) // IMPORTANT: ensures that constructor proxy traps comply with Ecmascript proxy specification.
-        return new Proxy(function() {} /* Enables traps for 'apply' & 'construct' */, proxyHandler)
+        return new Proxy(function() {} /* Constructable - Enables traps for 'apply' & 'construct' */, proxyHandler)
     }
 
     /* Create new interface instance using another passed instance as an initial object (using an instance as a base for creating another one). */

@@ -3,7 +3,6 @@ import ModuleContext from '@dependency/moduleContext'
 import { GraphControllerFunction } from '../constructor/GraphController.class.js'
 import { NodeFunction } from '../constructor/Node.class.js' // Tree
 import { DataItemFunction } from '../constructor/DataItem.class.js' // Unit
-import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 
 /**
  * PrototypeHierarchyGenerator - for performance this function should be executed on load-time (program startup time where afterwards its ready to take requests)
@@ -38,7 +37,7 @@ export function linkConstructor({
     // add subclass - either specific or reusable depending on the last chained subclass
     GraphController.eventEmitter.emit('addSubclass') // register subclasses that are listening for the event to register themselves in extendedSubclass.static array.
     
-    // return Controller in which it holds the tree structure.
+    // return the linked tree of constructors.
     return {
         GraphController, 
         DataItem: specificDataItem || DataItem,

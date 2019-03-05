@@ -1,5 +1,5 @@
 import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
-import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
+import { add, execute, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
 import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/query/getTableDocument.query.js";
 

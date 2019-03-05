@@ -1,10 +1,17 @@
 import assert from 'assert'
 import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
-import { add, execute, applyMixin, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
+import { add, execute, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
+import { usingGenericInstance as populateInstancePropertyFromJson, usingThis as populateInstancePropertyFromJson_this } from '@dependency/populateObjectPropertyFromObject'
 
 export function NodeFunction({ Superclass, getDocumentQuery } = {}) {
     let self = 
+    @add({ to: 'static'}, { 
+        populateInstancePropertyFromJson,
+    })
+    @add({ to: 'prototype'}, {
+        populateInstancePropertyFromJson_this
+    })
     @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
     @execute({ staticMethod: 'initializeStaticClass', args: [] })
     @extendedSubclassPattern.Subclass() // in case specificNestedUnit subclass isn't registered, this class will be used as Controller subclass when called. 
