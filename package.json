@@ -16,14 +16,15 @@
         "@dependency/databaseUtility": "git+https://github.com/AppScriptIO/databaseUtility.git",
         "@dependency/moduleContext": "https://github.com/AppScriptIO/moduleContext",
         "@dependency/multiplePrototypeChain": "git+https://github.com/AppScriptIO/multiplePrototypeChain.git",
-        "@dependency/populateObjectPropertyFromObject": "git+https://github.com/AppScriptIO/populateObjectPropertyFromObject.git",
         "@dependency/promiseProperRace": "git+https://github.com/AppScriptIO/promiseProperRace.git",
         "@dependency/prototypeChainDebug": "git+https://github.com/AppScriptIO/prototypeChainDebug.git",
         "rethinkdb": "*"
     },
     "devDependencies": {
-        "@dependency/scriptManager": "git+https://github.com/AppScriptIO/scriptManager.git",
+        "eslint": "^5.15.1",
+        "babel-eslint": "^10.0.1",
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
-        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation"
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation",
+        "@dependency/scriptManager": "git+https://github.com/AppScriptIO/scriptManager.git"
     }
 }
