@@ -48,7 +48,7 @@ const self = class Plugin {
     }
 
     /**
-     * Retrieve plugin implementation according to parameter hierarchy selection.
+     * Retrieve plugin implementation according to parameter hierarchy (priority order) selection.
      * 1. Passed 'implementation' parameter.
      * 2. Default 'implementation' set in the 'defaultPlugin'. 
      * 3. Fallback to first item in plugin object.

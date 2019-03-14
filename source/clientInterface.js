@@ -50,6 +50,8 @@ class GraphControllerConfiguration {
         interfaceInstance = GraphControllerConfiguration.defaultClientInterfaceInstance, // used to extract GraphController parameters
         argumentList
     } = {}) {
+
+        // [1] Create constructor link
         let { GraphController, Node, DataItem } =  interfaceInstance.constructorPrototypeChain,     
             pluginInstance = interfaceInstance.pluginInstance,
             contextInstance = interfaceInstance.contextInstance, // traversalImplementationType: 'aggregateIntoArray' 
@@ -57,8 +59,9 @@ class GraphControllerConfiguration {
 
         // assert(this.databaseModelAdapter, '• `databaseModelAdapter` Should be set. either default `rethinkdbConnection` parameter for the default adapter object is not set, or adapter is missing.' )
 
+        // [2] Add additional instances
         // attach context and plugins to the Controller - allowing custom prototypal chain creation on instance instantiation through usage of proxies. 
-        let graphController = new GraphController({
+        let graphController = new interfaceProxy({
             additionalDelegatedChain: {
                 plugin: pluginInstance,
                 context: contextInstance,
@@ -71,18 +74,16 @@ class GraphControllerConfiguration {
         // GraphController.getSubclass('Node') // relies on the static method added to the class constructor.
         // controller.getSubclass('Node') // relies on the context added prototype function "getSubclass"
         
-        return graphController.traverseGraph({ nodeKey: 'x' })
-
+        // [3] Traverse Graph
         // wrap instance construction with passed object context (thisArg.pluginInstance, thisArg.contextInstance) with plugin and context added to prototype chain.
-        // let graphTraversalResult = graphController.traverseGraph(argumentsList)
+        let graphTraversalResult = graphController.traverseGraph(argumentsList)
 
         /** TODO: 
          * the returned node created, the proxy will wrap the instance in the new prototype chain. 
          * While subsequent internal calls, won't be affected.
          * => Therefore the constructors used by the controller to create internal instances should be configurable. 
         */
-        
-        // return graphTraversalResult
+        return graphTraversalResult
     }
 }
 
@@ -142,6 +143,10 @@ class ClientInterfaceClass extends GraphControllerConfiguration {
     
 }
 export const Graph = new Proxy(ClientInterfaceClass, {
+
+    /**
+     * Produce a configured interface.
+     */
     apply(target, thisArg, argumentsList) {
         let { proxiedInstance: configuredInterface } = new ClientInterfaceClass(...argumentsList)
         return configuredInterface
@@ -158,7 +163,10 @@ export const Graph = new Proxy(ClientInterfaceClass, {
         // if(!databaseModelAdapter && rethinkdbConnection)
         //     databaseModelAdapter = rethinkDBModelAdapter({ rethinkdbConnection })
     }, 
-    // bypass `ClientInterfaceClass` proxy.
+    /**
+     * Execute graph using default configurations.
+     * bypass `ClientInterfaceClass` proxy.
+     */
     construct(target, argumentList, proxiedInterfaceClass) {
         return GraphControllerConfiguration.constructGraphInstance({ argumentList })
     }

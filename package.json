@@ -8,7 +8,9 @@
     "scripts": {
         "setup": "yarn install --production=false",
         "sleep": "yarn run scriptManager sleep '.setInterval()' ",
-        "test": "yarn run scriptManager test \"({ testPath: './test' })\""
+        "test": "yarn run scriptManager test \"({ testPath: './test' })\"",
+        "check-types": "tsc --project ./configuration/typescript.config.json",
+        "check-types:watch": "tsc --project ./configuration/typescript.config.json --watch"
     },
     "dependencies": {
         "@dependency/classMixin": "git+https://github.com/AppScriptIO/classMixin.git",
@@ -21,10 +23,10 @@
         "rethinkdb": "*"
     },
     "devDependencies": {
-        "eslint": "^5.15.1",
-        "babel-eslint": "^10.0.1",
+        "@dependency/scriptManager": "git+https://github.com/AppScriptIO/scriptManager.git",
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
         "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation",
-        "@dependency/scriptManager": "git+https://github.com/AppScriptIO/scriptManager.git"
+        "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis",
+        "typescript": "^3.3.3333"
     }
 }

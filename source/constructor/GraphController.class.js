@@ -1,14 +1,15 @@
+/* eslint-disable prettier/prettier */
 import EventEmitter from 'events'
 import assert from 'assert'
 import { mix, decorator as applyMixin } from '@dependency/classMixin'
-import createInstance from '@dependency/commonPattern/source/createInstance.staticMethod'
+import createInstance from '../utility/createInstanceStaticMethod.js'
 import addStaticSubclassToClassArray from '@dependency/commonPattern/source/addStaticSubclassToClassArray.staticMethod'
 import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
 import { add, execute, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
 import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
 import { superclassInstanceContextPattern, cacheInstance } from '@dependency/commonPattern/source/superclassInstanceContextPattern.js'
 
-export function GraphControllerFunction({
+export function GraphControllerFunction({  
     Superclass = EventEmitter, // defaulting to EventEmitter and not Object / Function because extending Object/Function manipulates this prototype in new calls for some reason.
     methodInstanceName,
     mixin, 
@@ -35,6 +36,7 @@ export function GraphControllerFunction({
         @superclassInstanceContextPattern() // applied on the mixin i.e. specific controller.
         class GraphController extends Superclass {
             
+            // Configure multiple chain in a proxy that will wrap GraphController
             ownConstructor({
                 additionalDelegatedChain = {} // array of additional prototype chain (prototypes/objects/instances) to be added to the delegated prototype chain of the instances produced by the methods of the Graph controller.
             }) {
@@ -47,7 +49,6 @@ export function GraphControllerFunction({
 
             constructor({}) {
                 super()
-                // TODO: Configure here multiple chain proxies ? 
                 return this
             }
 

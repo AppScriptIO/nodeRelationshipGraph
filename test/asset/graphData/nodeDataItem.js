@@ -1,5 +1,5 @@
 export let nodeArray = [
-    {
+    { 
         label: { name: 'node' }, 
         key: 'node-key-1',
         dataItem: {
