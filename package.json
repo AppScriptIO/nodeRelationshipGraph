@@ -9,8 +9,7 @@
         "setup": "yarn install --production=false",
         "sleep": "yarn run scriptManager sleep '.setInterval()' ",
         "test": "yarn run scriptManager test \"({ testPath: './test' })\"",
-        "check-types": "tsc --project ./configuration/typescript.config.json",
-        "check-types:watch": "tsc --project ./configuration/typescript.config.json --watch"
+        "generateTypes": "tsc --project ./configuration/typescript.config.json"
     },
     "dependencies": {
         "@dependency/classMixin": "git+https://github.com/AppScriptIO/classMixin.git",
