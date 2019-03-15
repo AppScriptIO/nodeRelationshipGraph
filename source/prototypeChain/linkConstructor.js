@@ -1,8 +1,8 @@
 import assert from 'assert'
 import ModuleContext from '@dependency/moduleContext'
-import { GraphControllerFunction } from '../constructor/GraphController.class.js'
-import { NodeFunction } from '../constructor/Node.class.js' // Tree
-import { DataItemFunction } from '../constructor/DataItem.class.js' // Unit
+import { GraphControllerFunction } from '../constructable/GraphController.class.js'
+import { NodeFunction } from '../constructable/Node.class.js' // Tree
+import { DataItemFunction } from '../constructable/DataItem.class.js' // Unit
 
 /**
  * PrototypeHierarchyGenerator - for performance this function should be executed on load-time (program startup time where afterwards its ready to take requests)
