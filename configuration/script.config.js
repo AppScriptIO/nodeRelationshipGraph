@@ -4,8 +4,8 @@ const resolvedModule = {
     return path.dirname(require.resolve(`@dependency/deploymentScript/package.json`))
   },
 }
- 
-module.exports =           {    
+
+module.exports = {
   script: [
     {
       type: 'directory',

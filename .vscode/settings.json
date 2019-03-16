@@ -11,9 +11,11 @@
     "javascript.format.enable": false,
     "[typescript]": {
         "editor.formatOnSave": false,
+        "editor.formatOnPaste": false,
     },
     "[javascript]": {
         "editor.formatOnSave": false,
+        "editor.formatOnPaste": false,
     },
     "typescript.validate.enable": true, // enable/disable default VSCode Typescript validator.
     "javascript.validate.enable": false, // disable default VSCode Javascript validator.
@@ -42,13 +44,10 @@
         }
     ],
     "eslint.packageManager": "yarn",
-    "eslint.alwaysShowStatus": false,
+    "eslint.alwaysShowStatus": true,
     "eslint.provideLintTask": true,
     "eslint.codeAction.showDocumentation": {
         "enable": true
     },
-    "typescript.check.npmIsInstalled": false,
-    // "prettier.eslintIntegration": true,
-    // "prettier.requireConfig": true,
-
+    "typescript.check.npmIsInstalled": false
 }

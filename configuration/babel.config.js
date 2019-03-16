@@ -1,5 +1,3 @@
 const { getBabelConfig } = require('@dependency/javascriptTranspilation')
 
-module.exports = (api) => {
-  return getBabelConfig('serverRuntime.BabelConfig.js').babelConfig
-}
+module.exports = api => getBabelConfig('serverRuntime.BabelConfig.js').babelConfig

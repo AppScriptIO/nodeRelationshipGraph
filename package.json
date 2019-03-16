@@ -22,10 +22,10 @@
         "rethinkdb": "*"
     },
     "devDependencies": {
-        "@dependency/scriptManager": "git+https://github.com/AppScriptIO/scriptManager.git",
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
-        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation",
         "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis",
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation",
+        "@dependency/scriptManager": "git+https://github.com/AppScriptIO/scriptManager.git",
         "typescript": "^3.3.3333"
     }
 }
