@@ -2,7 +2,7 @@ process.env['SZN_DEBUG'] = true
 import assert from 'assert'
 import { assert as chaiAssertion } from 'chai'
 
-import { GraphElementFunction, PluginFunction } from '../source/script.js'
+import { GraphElementFunction, PluginFunction, Graph } from '../source/script.js'
 import { databaseModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memoryModelAdapter.js'
 import * as graphData from './asset/graphData' // load sample data
 
@@ -14,7 +14,8 @@ suite('Graph Element - construct', () => {
   //     chaiAssertion.deepEqual(instance, graphData.nodeDataItem.nodeArray[0])
   //   })
   // }
-  { //! Incomplete
+  {
+    //! Incomplete
     let GraphElement = GraphElementFunction()
     let Plugin = PluginFunction()
     let plugin = new Plugin(
@@ -35,13 +36,13 @@ suite('Graph Element - construct', () => {
         constructor: 'data',
       },
     )
-    let configuredGraphElement1 = GraphElement({ plugin: plugin })
-    let configuredGraphElement2 = GraphElement({ plugin: plugin })
-    let configuredGraphElement3 = GraphElement({ plugin: plugin })
+    let configuredGraphElement1 = GraphElement({ plugin })
+    // // let configuredGraphElement2 = configuredGraphElement1('plugin2')
+    // // let configuredGraphElement3 = configuredGraphElement2('plugin3')
     let instance = new configuredGraphElement1({ key: 'X1' })
-    console.log(instance)
+    // console.log(instance)
     test('instace should be created with database entry', () => {
-      chaiAssertion.deepEqual()
+      // chaiAssertion.deepEqual(GraphElement.prototype.constructor, configuredGraphElement2.prototype.constructor)
     })
   }
 })

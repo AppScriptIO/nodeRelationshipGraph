@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { inherits as extend } from 'util'
-import inheritNull from '../utility/extendFromNull.js'
+import { extendFromNull as inheritNull } from '../utility/extendConstructable.js'
 
 /**
  ** Plugin system for supporting different graph implementation and database adapters.
