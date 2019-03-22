@@ -127,7 +127,7 @@ export function GraphElementFunction({ superConstructor = null } = {}) {
   }
 
   let selfInstance = new self()
-  console.log(selfInstance |> Object.getPrototypeOf |> Object.getPrototypeOf)
+  // console.log(selfInstance |> Object.getPrototypeOf |> Object.getPrototypeOf)
   const proxiedSelf = selfInstance::selfInstance.createClientInterface.construct()
   return proxiedSelf
 }
