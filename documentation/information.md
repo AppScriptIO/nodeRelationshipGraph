@@ -52,6 +52,16 @@ e.g.
         interface function `call` --> for constructor config
     - `Instance Construction` - create object delegated to specific prototype chain.
         interface constractable `new` --> for instance creation.
+- **Entity design pattern specification**: 
+    - Through each `entitiy` programmatic api is exposed, which will be used to construct instance, configure constructors, and create client interfaces. 
+    - Implementations can be registered for the following behaviors: 
+        - __Prototype delegated instance__
+        - __Configurable constructor instance__
+        - __Client interface__
+    - Techniques for achieving such design are: 
+        - Symbols usage to implement a hidden api on the `entity`/object.
+        - inheritance specially used to share `entitiy` pattern methods.
+        
 ___
 ## Concept/Abstraction visual programming - programming using abstractions in a visual interface.
 Naming proposal - just like `abstract syntax tree`, call it `abstract node graph`, `abstract visual programming`
