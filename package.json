@@ -23,9 +23,9 @@
     },
     "devDependencies": {
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
-        "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis",
         "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation",
         "@dependency/scriptManager": "git+https://github.com/AppScriptIO/scriptManager.git",
+        "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis",
         "typescript": "^3.3.3333"
     }
 }

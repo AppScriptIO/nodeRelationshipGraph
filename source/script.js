@@ -1,3 +1,4 @@
+export * from './constructable/Entity.class.js'
 export * from './clientInterface.js'
 export * from './constructable/InstanceContext.class.js'
 export * from './constructable/CacheInstance.class.js'

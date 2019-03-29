@@ -57,10 +57,11 @@ e.g.
     - Implementations can be registered for the following behaviors: 
         - __Prototype delegated instance__
         - __Configurable constructor instance__
-        - __Client interface__
+        - __Client interface__ : exposing `construct`, `apply` handlers or built-in functionality / language features using the natively defined Symbols.
     - Techniques for achieving such design are: 
-        - Symbols usage to implement a hidden api on the `entity`/object.
+        - Symbols usage to implement a hidden api on the `entity`/object. Meta-level keys are used to prevent clashes and separate  normal keys from the meta-level ones implemented.
         - inheritance specially used to share `entitiy` pattern methods.
+    - 
         
 ___
 ## Concept/Abstraction visual programming - programming using abstractions in a visual interface.
