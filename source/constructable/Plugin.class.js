@@ -14,7 +14,6 @@ Object.assign(Plugin, {
     getDefaultPlugin: Symbol('getDefaultPlugin'),
   },
   prototypeDelegation: Object.create(Object.prototype),
-  constructable: function() {},
 })
 
 Object.assign(Plugin.prototypeDelegation, {
@@ -76,6 +75,7 @@ Plugin[Entity.reference.prototypeInstance.setter.prototypeDelegation]({
   // default prototypeDelegation
   defaultPrototype: Plugin.prototypeDelegation,
   entity: Plugin,
+  // constructable: function() {},
 })
 
 Plugin[Entity.reference.prototypeInstance.setter.instantiate]({
@@ -103,4 +103,17 @@ Plugin[Entity.reference.prototypeInstance.setter.initialize]({
     //   Object.assign(this, data) // apply data to instance
     return instanceObject
   },
+})
+
+Object.assign(Plugin, {
+  clientInterface: Plugin[Entity.reference.clientInterface.method.construct]([
+    {
+      configuredConstructable: Plugin[Entity.reference.configuredConstructable.method.construct]([
+        {
+          instantiateImplementationKey: 'defaultPrototype',
+          initializeImplementationKey: 'data',
+        },
+      ]),
+    },
+  ]),
 })

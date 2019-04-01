@@ -7,74 +7,29 @@ import { databaseModelAdapterFunction } from '../source/implementationPlugin/dat
 import * as graphData from './asset/graphData' // load sample data
 
 suite('Entity', () => {
-  let configuredPlugin = Plugin[Entity.reference.configuredConstructable.method.construct]([
-    {
-      instantiateImplementationKey: 'defaultPrototype',
-      initializeImplementationKey: 'data',
-    },
-  ])
-  let plugin = configuredPlugin[Entity.reference.prototypeInstance.method.construct.instantiate]()
-  configuredPlugin[Entity.reference.prototypeInstance.method.construct.initialize](
-    [
-      {
-        pluginList: {
-          databaseModelAdapter: {
-            // database simple memory adapter
-            memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
-          },
-        },
-        defaultPlugin: {
-          databaseModelAdapter: 'memoryModelAdapter',
-        },
+  let plugin = new Plugin.clientInterface({
+    pluginList: {
+      databaseModelAdapter: {
+        // database simple memory adapter
+        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
       },
-    ],
-    {
-      instanceObject: plugin,
     },
-  )
-  console.log(plugin)
+    defaultPlugin: {
+      databaseModelAdapter: 'memoryModelAdapter',
+    },
+  })
 
-  // let plugin = Plugin[Entity.reference.prototypeInstance.method.construct.instantiate]([], { implementationKey: 'defaultPrototype' })
-  // Plugin[Entity.reference.prototypeInstance.method.construct.initialize](
-  //   [
-  //     {
-  //       pluginList: {
-  //         databaseModelAdapter: {
-  //           // database simple memory adapter
-  //           memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
-  //         },
-  //       },
-  //       defaultPlugin: {
-  //         databaseModelAdapter: 'memoryModelAdapter',
-  //       },
-  //     },
-  //   ],
-  //   {
-  //     implementationKey: 'data',
-  //     instanceObject: plugin,
-  //   },
-  // )
+  let interfaceGraphElement = GraphElement.clientInterface({
+    configuredConstructable: GraphElement[Entity.reference.configuredConstructable.method.construct]([
+      {
+        instantiateImplementationKey: 'defaultPrototype',
+        initializeImplementationKey: 'data',
+      },
+    ]),
+  })
 
-  // console.log(plugin)
-
-  // let interfaceGraphElement = GraphElement[Entity.reference.clientInterface.construct]([], { implementationKey: 'constructableInterface' })
-  // let i2 = interfaceGraphElement()
-
-  // let configuredGraphElement = GraphElement[Entity.reference.configuredConstructable.construct](
-  //   [
-  //     {
-  //       plugin,
-  //     },
-  //   ],
-  //   {
-  //     implementationKey: 'default',
-  //   },
-  // )
-
-  // console.log(configuredGraphElement)
-
-  // let instance = GraphElement[Entity.reference.prototypeInstance.method.construct.instantiate]([], { implementationKey: 'defaultPrototype' })
-  // GraphElement[Entity.reference.prototypeInstance.method.construct.initialize]([{ data: { key: 'x2' } }], { implementationKey: 'data', instanceObject: instance })
+  let element1 = new interfaceGraphElement({ data: { key: 'x' } })
+  let element2 = new GraphElement.clientInterface({ data: { key: 'x' } })
 
   //     return new Proxy(GraphElement, {
   //       apply(target, thisArg, argumentsList) {

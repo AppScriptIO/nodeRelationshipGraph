@@ -57,7 +57,7 @@ Object.assign(Entity, {
       },
       fallbackImplementation: {
         construct: Symbol('Entity:configuredConstructable.fallbackImplementation.construct'),
-        defaultConstruct: Symbol('Entity:configuredConstructable.fallbackImplementation.defaultConstruct'),
+        defaultConstructKey: Symbol('Entity:configuredConstructable.fallbackImplementation.defaultConstructKey'),
       },
       setter: {
         construct: Symbol('Entity:configuredConstructable.setter.construct'),
@@ -73,6 +73,10 @@ Object.assign(Entity, {
       },
       implementation: {
         construct: Symbol('Entity:clientInterface.implementation.construct'),
+      },
+      fallbackImplementation: {
+        construct: Symbol('Entity:clientInterface.fallbackImplementation.construct'),
+        defaultConstructKey: Symbol('Entity:clientInterface.fallbackImplementation.defaultConstructKey'),
       },
       setter: {
         construct: Symbol('Entity:clientInterface.setter.construct'),
@@ -150,7 +154,7 @@ Object.assign(Entity.prototypeDelegation, {
     return this
   },
   [Entity.reference.configuredConstructable.implementation.construct]: {
-    [Entity.reference.configuredConstructable.fallbackImplementation.defaultConstruct]([{ instantiateImplementationKey, initializeImplementationKey } = {}], { self = this, entityInstance } = {}) {
+    [Entity.reference.configuredConstructable.fallbackImplementation.defaultConstructKey]([{ instantiateImplementationKey, initializeImplementationKey } = {}], { self = this, entityInstance } = {}) {
       // using function object as an instance allows to use `construct` & `apply` with Proxy.
       entityInstance ||= self[Entity.reference.prototypeInstance.method.construct.instantiate]([], { implementationKey: 'entityPrototype' })
       entityInstance[Entity.reference.prototypeInstance.fallbackImplementation.instantiate] = instantiateImplementationKey
@@ -158,16 +162,16 @@ Object.assign(Entity.prototypeDelegation, {
       return entityInstance
     },
   },
-  [Entity.reference.configuredConstructable.fallbackImplementation.construct]: Entity.reference.configuredConstructable.fallbackImplementation.defaultConstruct,
+  [Entity.reference.configuredConstructable.fallbackImplementation.construct]: Entity.reference.configuredConstructable.fallbackImplementation.defaultConstructKey,
   /**
    * Client Interface
    **/
-  [Entity.reference.clientInterface.method.construct]: function(args = [], { implementationKey, instanceObject, self = this }: { implementationKey: string } = {}) {
-    instanceObject ||= self::self[Entity.reference.clientInterface.implementation.construct]([], { implementationKey: 'default' })
+  [Entity.reference.clientInterface.method.construct](args = [], { implementationKey, interfaceTarget, self = this }: { implementationKey: string } = {}) {
+    implementationKey ||= self[Entity.reference.clientInterface.fallbackImplementation.construct]
     // Allows for configuring constructable target recursively.
     if (!implementationKey) throw new Error('• No implementation constructor key passed.')
     const implementationFunc = self[Entity.reference.clientInterface.getter.construct](implementationKey)
-    return self::implementationFunc(args, { interfaceTarget: instanceObject })
+    return self::implementationFunc(args, { interfaceTarget })
   },
   [Entity.reference.clientInterface.getter.construct](implementationKey: String) {
     return this[Entity.reference.clientInterface.implementation.construct][implementationKey]
@@ -177,4 +181,26 @@ Object.assign(Entity.prototypeDelegation, {
     Object.assign(this[Entity.reference.clientInterface.implementation.construct], implementation)
     return this
   },
+  [Entity.reference.clientInterface.implementation.construct]: {
+    [Entity.reference.clientInterface.fallbackImplementation.defaultConstructKey]([{ configuredConstructable }], { self = this, interfaceTarget } = {}) {
+      interfaceTarget ||= self
+      const proxiedTarget = new Proxy(
+        function() {} || interfaceTarget,
+        Object.assign({
+          apply(target, thisArg, argumentList) {
+            return self[Entity.reference.clientInterface.method.construct](argumentList)
+          },
+          construct(target, argumentList, proxiedTarget) {
+            let instanceObject = configuredConstructable[Entity.reference.prototypeInstance.method.construct.instantiate]()
+            configuredConstructable[Entity.reference.prototypeInstance.method.construct.initialize](argumentList, {
+              instanceObject: instanceObject,
+            })
+            return instanceObject
+          },
+        }),
+      )
+      return proxiedTarget
+    },
+  },
+  [Entity.reference.clientInterface.fallbackImplementation.construct]: Entity.reference.clientInterface.fallbackImplementation.defaultConstructKey,
 })
