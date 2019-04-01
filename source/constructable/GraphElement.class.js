@@ -22,58 +22,74 @@ export function GraphElementFunction({ superConstructor = null } = {}) {
   return proxiedSelf
 }
 
-export const GraphElement = {
-  get [Symbol.species]() {
-    return GraphElement
+export const GraphElement = Object.assign(Entity.prototypeDelegation)
+
+Object.assign(GraphElement, {
+  // get [Symbol.species]() {
+  //   return GraphElement
+  // },
+  reference: {},
+  prototypeDelegation: Object.create(null),
+})
+
+Object.assign(GraphElement.prototypeDelegation, {
+  getKey: function(key) {
+    return this.key
   },
-  prototypeDelegation: {},
-}
+})
 
-GraphElement.prototypeDelegation.constructor = GraphElement
-Object.setPrototypeOf(GraphElement, Entity.prototypeDelegation)
+GraphElement[Entity.reference.prototypeInstance.setter.prototypeDelegation]({
+  default: GraphElement.prototypeDelegation,
+})
 
-GraphElement[Entity.reference.prototypeInstance.setter.implementation]({
-  data([{ data }: { data: GraphElementData }], { instanceObject, prototypeDelegation } = {}) {
-    prototypeDelegation ||= GraphElement.prototypeDelegation
+GraphElement[Entity.reference.prototypeInstance.setter.instantiate]({
+  defaultPrototype({ instanceObject, prototypeDelegation } = {}) {
+    prototypeDelegation ||= GraphElement[Entity.reference.prototypeInstance.getter.prototypeDelegation]('default')
     instanceObject ||= Object.create(prototypeDelegation)
+    return instanceObject
+  },
+})
+
+GraphElement[Entity.reference.prototypeInstance.setter.initialize]({
+  data([{ data }: { data: GraphElementData }], { instanceObject } = {}) {
     Object.assign(instanceObject, data) // apply data to instance
     return instanceObject
   },
+  //* constructor that is made to work with the plugin functionality.
   key([{ key }: { key: string | number }], { instanceObject, prototypeDelegation }) {
     instanceObject.key = key
     let data = true || instanceObject.plugin.databaseModelAdapter({ key: instanceObject.key })
-    console.log(data)
     Object.assign(instanceObject, data)
     return instanceObject
   },
 })
 
-GraphElement[Entity.reference.configuredConstructable.setter.implementation]({
-  default(args, { self = this, instanceObject }) {
-    instanceObject ||= Object.create(GraphElement)
-    // Execute default instance constructor
-    instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'data' })
-    return instanceObject
-  },
-  plugin(args, { self = this, instanceObject }) {
-    //! Apply multiple inheritance from argument list instances.
-    instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'key' })
-    return instanceObject
-  },
+GraphElement[Entity.reference.configuredConstructable.setter.construct]({
+  // default(args, { self = this, instanceObject }) {
+  //   //! create and instance with plugin object and context.
+  //   instanceObject ||= Object.create(GraphElement)
+  //   // Execute default instance constructor
+  //   instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'data' })
+  //   return instanceObject
+  // },
+  // plugin(args, { self = this, instanceObject }) {
+  //   //! Apply multiple inheritance from argument list instances.
+  //   instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'key' })
+  //   return instanceObject
+  // },
 })
 
-GraphElement[Entity.reference.clientInterface.setter.implementation]({
+GraphElement[Entity.reference.clientInterface.setter.construct]({
   constructableInterface(args, { interfaceTarget, self = this }) {
     const proxiedTarget = new Proxy(
       function() {} || interfaceTarget,
       Object.assign({
         apply(target, thisArg, argumentsList) {
-          let instanceObject = self::self[Entity.reference.configuredConstructable.construct](argumentsList, { implementationKey: 'default' })
-          return self::self[Entity.reference.clientInterface.construct]([], { instanceObject, implementationKey: 'constructableInterface' })
+          let instanceObject = self[Entity.reference.configuredConstructable.method.construct](argumentsList, { implementationKey: 'default' })
+          return self[Entity.reference.clientInterface.method.construct]([], { instanceObject, implementationKey: 'constructableInterface' })
         },
         construct(target, argumentList, proxiedTarget) {
-          console.log('construct')
-          // return target.prototypeDelegatedInstance(...argumentList)
+          return target.prototypeDelegatedInstance(...argumentList)
         },
       }),
     )

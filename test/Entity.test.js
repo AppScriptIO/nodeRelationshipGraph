@@ -1,62 +1,80 @@
 process.env['SZN_DEBUG'] = true
 import assert from 'assert'
 import { assert as chaiAssertion } from 'chai'
-
-import { PluginFunction, Graph, GraphElement, Entity } from '../source/script.js'
+import util from 'util'
+import { Plugin, Graph, GraphElement, Entity } from '../source/script.js'
 import { databaseModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memoryModelAdapter.js'
 import * as graphData from './asset/graphData' // load sample data
 
 suite('Entity', () => {
-  let Plugin = PluginFunction()
-  let plugin = new Plugin(
+  let configuredPlugin = Plugin[Entity.reference.configuredConstructable.method.construct]([
+    {
+      instantiateImplementationKey: 'defaultPrototype',
+      initializeImplementationKey: 'data',
+    },
+  ])
+  let plugin = configuredPlugin[Entity.reference.prototypeInstance.method.construct.instantiate]()
+  configuredPlugin[Entity.reference.prototypeInstance.method.construct.initialize](
     [
       {
-        databaseModelAdapter: {
-          // database simple memory adapter
-          memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
+        pluginList: {
+          databaseModelAdapter: {
+            // database simple memory adapter
+            memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
+          },
         },
-      },
-      {
         defaultPlugin: {
           databaseModelAdapter: 'memoryModelAdapter',
         },
       },
     ],
     {
-      constructor: 'data',
+      instanceObject: plugin,
     },
   )
+  console.log(plugin)
 
-  let interfaceGraphElement = GraphElement[Entity.reference.clientInterface.construct]([], { implementationKey: 'constructableInterface' })
-  let i2 = interfaceGraphElement()
-  console.log(i2)
+  // let plugin = Plugin[Entity.reference.prototypeInstance.method.construct.instantiate]([], { implementationKey: 'defaultPrototype' })
+  // Plugin[Entity.reference.prototypeInstance.method.construct.initialize](
+  //   [
+  //     {
+  //       pluginList: {
+  //         databaseModelAdapter: {
+  //           // database simple memory adapter
+  //           memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
+  //         },
+  //       },
+  //       defaultPlugin: {
+  //         databaseModelAdapter: 'memoryModelAdapter',
+  //       },
+  //     },
+  //   ],
+  //   {
+  //     implementationKey: 'data',
+  //     instanceObject: plugin,
+  //   },
+  // )
 
-  let configuredGraphElement = GraphElement[Entity.reference.configuredConstructable.construct](
-    [
-      {
-        plugin,
-      },
-    ],
-    {
-      implementationKey: 'default',
-    },
-  )
+  // console.log(plugin)
 
-  console.log(configuredGraphElement)
+  // let interfaceGraphElement = GraphElement[Entity.reference.clientInterface.construct]([], { implementationKey: 'constructableInterface' })
+  // let i2 = interfaceGraphElement()
 
-  let instance
-  instance = GraphElement[Entity.reference.prototypeInstance.construct](
-    [
-      {
-        data: { key: 'X1' },
-      },
-    ],
-    {
-      implementationKey: 'data',
-    },
-  )
+  // let configuredGraphElement = GraphElement[Entity.reference.configuredConstructable.construct](
+  //   [
+  //     {
+  //       plugin,
+  //     },
+  //   ],
+  //   {
+  //     implementationKey: 'default',
+  //   },
+  // )
 
-  console.log(instance.constructor)
+  // console.log(configuredGraphElement)
+
+  // let instance = GraphElement[Entity.reference.prototypeInstance.method.construct.instantiate]([], { implementationKey: 'defaultPrototype' })
+  // GraphElement[Entity.reference.prototypeInstance.method.construct.initialize]([{ data: { key: 'x2' } }], { implementationKey: 'data', instanceObject: instance })
 
   //     return new Proxy(GraphElement, {
   //       apply(target, thisArg, argumentsList) {

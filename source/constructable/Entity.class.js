@@ -1,8 +1,6 @@
-function extendSymbol(targetObject, symbolObject) {
-  Object.assign(targetObject, symbolObject)
-}
+export const Entity = Object.create(null)
 
-export const Entity = {
+Object.assign(Entity, {
   createDelegatedObject: function({ target = this } = {}) {
     let instance = Object.create(target.prototype)
     return instance
@@ -23,100 +21,160 @@ export const Entity = {
   // programmaticAPIReference for the target extedning object to use.
   reference: {
     prototypeInstance: {
-      construct: Symbol('Entity:prototypeInstance.construct'),
-      implementation: Symbol('Entity:prototypeInstance.implementation'),
+      method: {
+        construct: {
+          instantiate: Symbol('Entity:prototypeInstance.method.construct.instantiate'),
+          initialize: Symbol('Entity:prototypeInstance.method.construct.initialize'),
+        },
+      },
+      implementation: {
+        prototypeDelegation: Symbol('Entity:prototypeInstance.implementation.prototypeDelegation'),
+        instantiate: Symbol('Entity:prototypeInstance.implementation.instantiate'),
+        initialize: Symbol('Entity:prototypeInstance.implementation.initialize'),
+      },
+      fallbackImplementation: {
+        instantiate: Symbol('Entity:prototypeInstance.fallbackImplementation.instantiate'),
+        initialize: Symbol('Entity:prototypeInstance.fallbackImplementation.initialize'),
+      },
       setter: {
-        implementation: Symbol('Entity:prototypeInstance.setter.implementation'),
+        prototypeDelegation: Symbol('Entity:prototypeInstance.setter.prototypeDelegation'),
+        instantiate: Symbol('Entity:prototypeInstance.setter.instantiate'),
+        initialize: Symbol('Entity:prototypeInstance.setter.initialize'),
       },
       getter: {
-        implementation: Symbol('Entity:prototypeInstance.getter.implementation'),
+        prototypeDelegation: Symbol('Entity:prototypeInstance.getter.prototypeDelegation'),
+        instantiate: Symbol('Entity:prototypeInstance.getter.instantiate'),
+        initialize: Symbol('Entity:prototypeInstance.getter.initialize'),
       },
     },
 
     configuredConstructable: {
-      construct: Symbol('Entity:configuredConstructable.construct'),
-      implementation: Symbol('Entity:configuredConstructable.implementation'),
+      method: {
+        construct: Symbol('Entity:configuredConstructable.method.construct'),
+      },
+      implementation: {
+        construct: Symbol('Entity:configuredConstructable.implementation.construct'),
+      },
+      fallbackImplementation: {
+        construct: Symbol('Entity:configuredConstructable.fallbackImplementation.construct'),
+        defaultConstruct: Symbol('Entity:configuredConstructable.fallbackImplementation.defaultConstruct'),
+      },
       setter: {
-        implementation: Symbol('Entity:configuredConstructable.setter.implementation'),
+        construct: Symbol('Entity:configuredConstructable.setter.construct'),
       },
       getter: {
-        implementation: Symbol('Entity:configuredConstructable.getter.implementation'),
+        construct: Symbol('Entity:configuredConstructable.getter.construct'),
       },
     },
 
     clientInterface: {
-      construct: Symbol('Entity:clientInterface.construct'),
-      implementation: Symbol('Entity:clientInterface.implementation'),
+      method: {
+        construct: Symbol('Entity:clientInterface.method.construct'),
+      },
+      implementation: {
+        construct: Symbol('Entity:clientInterface.implementation.construct'),
+      },
       setter: {
-        implementation: Symbol('Entity:clientInterface.setter.implementation'),
+        construct: Symbol('Entity:clientInterface.setter.construct'),
       },
       getter: {
-        implementation: Symbol('Entity:clientInterface.getter.implementation'),
+        construct: Symbol('Entity:clientInterface.getter.construct'),
       },
     },
   },
-}
-
-/**
- * Prototype instance
- */
-Object.assign(Entity.prototypeDelegation, {
-  [Entity.reference.prototypeInstance.construct](args = [], { implementationKey, instanceObject, self = this }: { implementationKey: String } = {}) {
-    // instanceObject ||= self.createDelegatedObject()
-    // instanceObject.plugin = args[0]
-    if (!implementationKey) throw new Error('• No implementation constructor key passed.')
-    const implementationFunc = self[Entity.reference.prototypeInstance.getter.implementation](implementationKey)
-    return self::implementationFunc(args, { instanceObject }) // redirect construct to particular implementation.
-  },
-  [Entity.reference.prototypeInstance.getter.implementation](implementationKey: String) {
-    return this[Entity.reference.prototypeInstance.implementation][implementationKey]
-  },
-  [Entity.reference.prototypeInstance.setter.implementation](implementation: Object) {
-    this[Entity.reference.prototypeInstance.implementation] ||= {}
-    Object.assign(this[Entity.reference.prototypeInstance.implementation], implementation)
-    return this
-  },
 })
 
-/**
- * Constructor instance
- * Config constructors - constructors that produce a configured constructable
- **/
 Object.assign(Entity.prototypeDelegation, {
-  [Entity.reference.configuredConstructable.construct](args = [], { implementationKey, instanceObject, self = this } = {}) {
-    // instanceObject ||= self::self.createDelegatedFunction() // function object as an instance allows to use `construct` & `apply` with Proxy.
-    // instanceObject.plugin = args[0]
-    if (!implementationKey) throw new Error('• No implementation constructor key passed.')
-    const implementationFunc = self[Entity.reference.configuredConstructable.getter.implementation](implementationKey)
-    return self::implementationFunc(args, { instanceObject })
+  /**
+   * Prototype Delegation
+   */
+  [Entity.reference.prototypeInstance.getter.prototypeDelegation](implementationKey: String) {
+    return this[Entity.reference.prototypeInstance.implementation.prototypeDelegation][implementationKey]
   },
-  [Entity.reference.configuredConstructable.getter.implementation](implementationKey: String) {
-    return this[Entity.reference.configuredConstructable.implementation][implementationKey]
-  },
-  [Entity.reference.configuredConstructable.setter.implementation](implementation: Object) {
-    this[Entity.reference.configuredConstructable.implementation] ||= {}
-    Object.assign(this[Entity.reference.configuredConstructable.implementation], implementation)
+  [Entity.reference.prototypeInstance.setter.prototypeDelegation](implementation: Object) {
+    this[Entity.reference.prototypeInstance.implementation.prototypeDelegation] ||= {}
+    // set constractor property on prototype
+    for (const key of Object.keys(implementation)) {
+      implementation[key].constructor = this
+    }
+    Object.assign(this[Entity.reference.prototypeInstance.implementation.prototypeDelegation], implementation)
     return this
   },
-})
-
-/**
- * Client Interface
- **/
-Object.assign(Entity.prototypeDelegation, {
-  [Entity.reference.clientInterface.construct]: function(args = [], { implementationKey, instanceObject, self = this }: { implementationKey: string } = {}) {
-    instanceObject ||= self::self[Entity.reference.configuredConstructable.construct]([], { implementationKey: 'default' })
+  /**
+   * Prototype instance
+   */
+  [Entity.reference.prototypeInstance.method.construct.instantiate](args = [], { implementationKey, instanceObject, prototypeDelegation, self = this }: { implementationKey: String } = {}) {
+    implementationKey ||= self[Entity.reference.prototypeInstance.fallbackImplementation.instantiate]
+    if (!implementationKey) throw new Error('• No implementation constructor key passed.')
+    const implementationFunc = self[Entity.reference.prototypeInstance.getter.instantiate](implementationKey)
+    return implementationFunc(args, { instanceObject, prototypeDelegation }) // redirect construct to particular implementation.
+  },
+  [Entity.reference.prototypeInstance.getter.instantiate](implementationKey: String) {
+    return this[Entity.reference.prototypeInstance.implementation.instantiate][implementationKey]
+  },
+  [Entity.reference.prototypeInstance.setter.instantiate](implementation: Object) {
+    this[Entity.reference.prototypeInstance.implementation.instantiate] ||= {}
+    Object.assign(this[Entity.reference.prototypeInstance.implementation.instantiate], implementation)
+    return this
+  },
+  [Entity.reference.prototypeInstance.method.construct.initialize](args = [], { implementationKey, instanceObject, self = this }: { implementationKey: String } = {}) {
+    implementationKey ||= self[Entity.reference.prototypeInstance.fallbackImplementation.initialize]
+    if (!implementationKey) throw new Error('• No implementation constructor key passed.')
+    const implementationFunc = self[Entity.reference.prototypeInstance.getter.initialize](implementationKey)
+    return implementationFunc(args, { instanceObject }) // redirect construct to particular implementation.
+  },
+  [Entity.reference.prototypeInstance.getter.initialize](implementationKey: String) {
+    return this[Entity.reference.prototypeInstance.implementation.initialize][implementationKey]
+  },
+  [Entity.reference.prototypeInstance.setter.initialize](implementation: Object) {
+    this[Entity.reference.prototypeInstance.implementation.initialize] ||= {}
+    Object.assign(this[Entity.reference.prototypeInstance.implementation.initialize], implementation)
+    return this
+  },
+  /**
+   * Constructor instance
+   * Config constructors - constructors that produce a configured constructable
+   **/
+  [Entity.reference.configuredConstructable.method.construct](args = [], { implementationKey, entityInstance, self = this } = {}) {
+    implementationKey ||= self[Entity.reference.configuredConstructable.fallbackImplementation.construct]
+    if (!implementationKey) throw new Error('• No implementation constructor key passed.')
+    const implementationFunc = self[Entity.reference.configuredConstructable.getter.construct](implementationKey)
+    return self::implementationFunc(args, { entityInstance })
+  },
+  [Entity.reference.configuredConstructable.getter.construct](implementationKey: String) {
+    return this[Entity.reference.configuredConstructable.implementation.construct][implementationKey]
+  },
+  [Entity.reference.configuredConstructable.setter.construct](implementation: Object) {
+    this[Entity.reference.configuredConstructable.implementation.construct] ||= {}
+    Object.assign(this[Entity.reference.configuredConstructable.implementation.construct], implementation)
+    return this
+  },
+  [Entity.reference.configuredConstructable.implementation.construct]: {
+    [Entity.reference.configuredConstructable.fallbackImplementation.defaultConstruct]([{ instantiateImplementationKey, initializeImplementationKey } = {}], { self = this, entityInstance } = {}) {
+      // using function object as an instance allows to use `construct` & `apply` with Proxy.
+      entityInstance ||= self[Entity.reference.prototypeInstance.method.construct.instantiate]([], { implementationKey: 'entityPrototype' })
+      entityInstance[Entity.reference.prototypeInstance.fallbackImplementation.instantiate] = instantiateImplementationKey
+      entityInstance[Entity.reference.prototypeInstance.fallbackImplementation.initialize] = initializeImplementationKey
+      return entityInstance
+    },
+  },
+  [Entity.reference.configuredConstructable.fallbackImplementation.construct]: Entity.reference.configuredConstructable.fallbackImplementation.defaultConstruct,
+  /**
+   * Client Interface
+   **/
+  [Entity.reference.clientInterface.method.construct]: function(args = [], { implementationKey, instanceObject, self = this }: { implementationKey: string } = {}) {
+    instanceObject ||= self::self[Entity.reference.clientInterface.implementation.construct]([], { implementationKey: 'default' })
     // Allows for configuring constructable target recursively.
     if (!implementationKey) throw new Error('• No implementation constructor key passed.')
-    const implementationFunc = self[Entity.reference.clientInterface.getter.implementation](implementationKey)
+    const implementationFunc = self[Entity.reference.clientInterface.getter.construct](implementationKey)
     return self::implementationFunc(args, { interfaceTarget: instanceObject })
   },
-  [Entity.reference.clientInterface.getter.implementation](implementationKey: String) {
-    return this[Entity.reference.clientInterface.implementation][implementationKey]
+  [Entity.reference.clientInterface.getter.construct](implementationKey: String) {
+    return this[Entity.reference.clientInterface.implementation.construct][implementationKey]
   },
-  [Entity.reference.clientInterface.setter.implementation](implementation: Object) {
-    this[Entity.reference.clientInterface.implementation] ||= {}
-    Object.assign(this[Entity.reference.clientInterface.implementation], implementation)
+  [Entity.reference.clientInterface.setter.construct](implementation: Object) {
+    this[Entity.reference.clientInterface.implementation.construct] ||= {}
+    Object.assign(this[Entity.reference.clientInterface.implementation.construct], implementation)
     return this
   },
 })
