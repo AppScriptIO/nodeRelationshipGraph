@@ -73,19 +73,19 @@ Object.assign(Plugin.prototypeDelegation, {
 
 Plugin[Entity.reference.prototypeInstance.setter.prototypeDelegation]({
   // default prototypeDelegation
-  defaultPrototype: Plugin.prototypeDelegation,
-  entity: Plugin,
+  prototypeDelegation: Plugin.prototypeDelegation,
+  entityClass: Plugin,
   // constructable: function() {},
 })
 
 Plugin[Entity.reference.prototypeInstance.setter.instantiate]({
-  defaultPrototype({ instanceObject, prototypeDelegation } = {}) {
-    prototypeDelegation ||= Plugin[Entity.reference.prototypeInstance.getter.prototypeDelegation]('defaultPrototype')
+  [Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey]({ instanceObject, prototypeDelegation } = {}) {
+    prototypeDelegation ||= Plugin[Entity.reference.prototypeInstance.getter.prototypeDelegation]('prototypeDelegation')
     instanceObject ||= Object.create(prototypeDelegation)
     return instanceObject
   },
-  entityPrototype({ instanceObject, prototypeDelegation }) {
-    prototypeDelegation ||= Plugin[Entity.reference.prototypeInstance.getter.prototypeDelegation]('entity')
+  [Entity.reference.prototypeInstance.fallbackImplementation.instantiateEntityInstanceKey]({ instanceObject, prototypeDelegation }) {
+    prototypeDelegation ||= Plugin[Entity.reference.prototypeInstance.getter.prototypeDelegation]('entityClass')
     instanceObject ||= Object.create(prototypeDelegation)
     return instanceObject
   },
@@ -110,7 +110,7 @@ Object.assign(Plugin, {
     {
       configuredConstructable: Plugin[Entity.reference.configuredConstructable.method.construct]([
         {
-          instantiateImplementationKey: 'defaultPrototype',
+          instantiateImplementationKey: Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey,
           initializeImplementationKey: 'data',
         },
       ]),

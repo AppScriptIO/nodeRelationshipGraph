@@ -39,18 +39,18 @@ Object.assign(GraphElement.prototypeDelegation, {
 })
 
 GraphElement[Entity.reference.prototypeInstance.setter.prototypeDelegation]({
-  default: GraphElement.prototypeDelegation,
-  entity: GraphElement,
+  prototypeDelegation: GraphElement.prototypeDelegation,
+  entityClass: GraphElement,
 })
 
 GraphElement[Entity.reference.prototypeInstance.setter.instantiate]({
-  defaultPrototype({ instanceObject, prototypeDelegation } = {}) {
-    prototypeDelegation ||= GraphElement[Entity.reference.prototypeInstance.getter.prototypeDelegation]('default')
+  [Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey]({ instanceObject, prototypeDelegation } = {}) {
+    prototypeDelegation ||= GraphElement[Entity.reference.prototypeInstance.getter.prototypeDelegation]('prototypeDelegation')
     instanceObject ||= Object.create(prototypeDelegation)
     return instanceObject
   },
-  entityPrototype({ instanceObject, prototypeDelegation }) {
-    prototypeDelegation ||= GraphElement[Entity.reference.prototypeInstance.getter.prototypeDelegation]('entity')
+  [Entity.reference.prototypeInstance.fallbackImplementation.instantiateEntityInstanceKey]({ instanceObject, prototypeDelegation }) {
+    prototypeDelegation ||= GraphElement[Entity.reference.prototypeInstance.getter.prototypeDelegation]('entityClass')
     instanceObject ||= Object.create(prototypeDelegation)
     return instanceObject
   },
@@ -71,30 +71,23 @@ GraphElement[Entity.reference.prototypeInstance.setter.initialize]({
 })
 
 GraphElement[Entity.reference.configuredConstructable.setter.construct]({
-  default(args, { self = this, instanceObject }) {
-    //! create and instance with plugin object and context.
-    instanceObject ||= Object.create(GraphElement)
-    // Execute default instance constructor
-    instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'data' })
-    return instanceObject
-  },
   plugin(args, { self = this, instanceObject }) {
+    instanceObject ||= Object.create(GraphElement)
     //! Apply multiple inheritance from argument list instances.
     instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'key' })
     return instanceObject
   },
 })
 
-const configuredConstructable = GraphElement[Entity.reference.configuredConstructable.method.construct]([
-  {
-    instantiateImplementationKey: 'defaultPrototype',
-    initializeImplementationKey: 'data',
-  },
-])
 Object.assign(GraphElement, {
   clientInterface: GraphElement[Entity.reference.clientInterface.method.construct]([
     {
-      configuredConstructable,
+      configuredConstructable: GraphElement[Entity.reference.configuredConstructable.method.construct]([
+        {
+          instantiateImplementationKey: Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey,
+          initializeImplementationKey: 'data',
+        },
+      ]),
     },
   ]),
 })

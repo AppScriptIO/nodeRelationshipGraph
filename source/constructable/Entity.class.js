@@ -35,6 +35,8 @@ Object.assign(Entity, {
       fallbackImplementation: {
         instantiate: Symbol('Entity:prototypeInstance.fallbackImplementation.instantiate'),
         initialize: Symbol('Entity:prototypeInstance.fallbackImplementation.initialize'),
+        instantiateEntityInstanceKey: Symbol('Entity:prototypeInstance.fallbackImplementation.instantiateEntityInstanceKey'),
+        instantiatePrototypeInstanceKey: Symbol('Entity:prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey'),
       },
       setter: {
         prototypeDelegation: Symbol('Entity:prototypeInstance.setter.prototypeDelegation'),
@@ -104,6 +106,7 @@ Object.assign(Entity.prototypeDelegation, {
     Object.assign(this[Entity.reference.prototypeInstance.implementation.prototypeDelegation], implementation)
     return this
   },
+
   /**
    * Prototype instance
    */
@@ -135,6 +138,7 @@ Object.assign(Entity.prototypeDelegation, {
     Object.assign(this[Entity.reference.prototypeInstance.implementation.initialize], implementation)
     return this
   },
+
   /**
    * Constructor instance
    * Config constructors - constructors that produce a configured constructable
@@ -156,13 +160,16 @@ Object.assign(Entity.prototypeDelegation, {
   [Entity.reference.configuredConstructable.implementation.construct]: {
     [Entity.reference.configuredConstructable.fallbackImplementation.defaultConstructKey]([{ instantiateImplementationKey, initializeImplementationKey } = {}], { self = this, entityInstance } = {}) {
       // using function object as an instance allows to use `construct` & `apply` with Proxy.
-      entityInstance ||= self[Entity.reference.prototypeInstance.method.construct.instantiate]([], { implementationKey: 'entityPrototype' })
+      entityInstance ||= self[Entity.reference.prototypeInstance.method.construct.instantiate]([], {
+        implementationKey: Entity.reference.prototypeInstance.fallbackImplementation.instantiateEntityInstanceKey,
+      })
       entityInstance[Entity.reference.prototypeInstance.fallbackImplementation.instantiate] = instantiateImplementationKey
       entityInstance[Entity.reference.prototypeInstance.fallbackImplementation.initialize] = initializeImplementationKey
       return entityInstance
     },
   },
   [Entity.reference.configuredConstructable.fallbackImplementation.construct]: Entity.reference.configuredConstructable.fallbackImplementation.defaultConstructKey,
+
   /**
    * Client Interface
    **/
