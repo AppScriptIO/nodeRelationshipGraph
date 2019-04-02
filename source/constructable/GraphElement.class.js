@@ -6,7 +6,7 @@ interface GraphElementData {
   [key: string]: any; // optional other fields
 }
 
-export const GraphElement = Entity.constructEntity({ description: 'GraphElement' })
+export const GraphElement = new Entity.clientInterface({ description: 'GraphElement', instanceType: 'object' })
 
 Object.assign(GraphElement.prototypeDelegation, {
   getKey: function(key) {

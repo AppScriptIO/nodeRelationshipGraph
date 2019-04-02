@@ -73,6 +73,10 @@ export function GraphControllerFunction({
                 let nodeInstance = await this.createNodeInstance({ nodeKey }) // returns a node object (instance) 
                 // [2] Forward call to instance's traverse graph
                 
+                //execute to complete
+                // intercepting execution & keeping control
+                //{nextNode, } = traverse*(Node)
+
                 // let iteratorObject = Traverse*(Node)
                 // let result = iteratorObject.next()
                 // let result = iteratorObject.next()

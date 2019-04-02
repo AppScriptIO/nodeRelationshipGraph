@@ -24,6 +24,7 @@ Object.assign(Entity, {
         initialize: Symbol('Entity:prototypeInstance.fallbackImplementation.initialize'),
         instantiatePrototypeInstanceKey: Symbol('Entity:prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey'),
         instantiateEntityInstanceKey: Symbol('Entity:prototypeInstance.fallbackImplementation.instantiateEntityInstanceKey'),
+        instantiateCreateDelegatedFunctionKey: Symbol('Entity:prototypeInstance.fallbackImplementation.instantiateCreateDelegatedFunctionKey'),
         prototypeDelegationInstance: Symbol('Entity:prototypeInstance.fallbackImplementation.prototypeDelegationInstance'),
         prototypeDelegationEntityClass: Symbol('Entity:prototypeInstance.fallbackImplementation.prototypeDelegationEntityClass'),
       },
@@ -80,7 +81,7 @@ Object.assign(Entity, {
   nestedPropertyDelegatedLookup({ target, directProperty, nestedProperty }) {
     let value
     do {
-      value = target[directProperty][nestedProperty]
+      if (target.hasOwnProperty(directProperty) && target[directProperty].hasOwnProperty(nestedProperty)) value = target[directProperty][nestedProperty]
       target = Object.getPrototypeOf(target)
     } while (!value && target != null)
     return value
@@ -91,40 +92,6 @@ Object.assign(Entity, {
         value: {},
       })
     Object.assign(target[ownProperty], value)
-    return target
-  },
-  createDelegatedObject({ delegationTarget = this } = {}) {
-    return Object.create(delegationTarget)
-  },
-  createDelegatedFunction({ delegationTarget = this, description } = {}) {
-    const createConstructable = new Function(
-      `return function ${
-        description // returns an anonymous function, that when called produces a named function.
-      }(){
-        throw new Error('• Construction should not be reached, rather the proxy wrapping it should deal with the construct handler.')
-      }`,
-    )
-
-    let constructable = createConstructable()
-    Object.setPrototypeOf(constructable, delegationTarget)
-    return constructable
-  },
-  constructEntity({ description, target } = {}) {
-    // target ||= Entity.createDelegatedFunction({ delegationTarget: Entity.prototypeDelegation, description }) // create instance based on function.
-    target ||= Entity.createDelegatedObject({ delegationTarget: Entity.prototypeDelegation }) // create instance based on object.
-
-    Object.assign(target, {
-      self: Symbol(description),
-      // get [Symbol.species]() {
-      //   return GraphElement
-      // },
-      reference: Object.create(null),
-      prototypeDelegation: Object.create(null),
-    })
-    target[Entity.reference.prototypeInstance.setter.prototypeDelegation]({
-      [Entity.reference.prototypeInstance.fallbackImplementation.prototypeDelegationInstance]: target.prototypeDelegation,
-      [Entity.reference.prototypeInstance.fallbackImplementation.prototypeDelegationEntityClass]: target,
-    })
     return target
   },
 })
@@ -168,14 +135,27 @@ Object.assign(Entity.prototypeDelegation, {
     return Entity.mergeOwnNestedProperty({ target: this, ownProperty: Entity.reference.prototypeInstance.implementation.instantiate, value: implementation })
   },
   [Entity.reference.prototypeInstance.implementation.instantiate]: {
-    [Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey]({ instanceObject, prototypeDelegation, self = this } = {}) {
+    [Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey]([], { instanceObject, prototypeDelegation, self = this } = {}) {
       prototypeDelegation ||= self[Entity.reference.prototypeInstance.getter.prototypeDelegation](Entity.reference.prototypeInstance.fallbackImplementation.prototypeDelegationInstance)
       instanceObject ||= Object.create(prototypeDelegation)
       return instanceObject
     },
-    [Entity.reference.prototypeInstance.fallbackImplementation.instantiateEntityInstanceKey]({ instanceObject, prototypeDelegation, self = this }) {
+    [Entity.reference.prototypeInstance.fallbackImplementation.instantiateEntityInstanceKey]([], { instanceObject, prototypeDelegation, self = this }) {
       prototypeDelegation ||= self[Entity.reference.prototypeInstance.getter.prototypeDelegation](Entity.reference.prototypeInstance.fallbackImplementation.prototypeDelegationEntityClass)
       instanceObject ||= Object.create(prototypeDelegation)
+      return instanceObject
+    },
+    [Entity.reference.prototypeInstance.fallbackImplementation.instantiateCreateDelegatedFunctionKey]([{ description }], { instanceObject, prototypeDelegation, self = this }) {
+      const createConstructable = new Function(
+        `return function ${
+          description // returns an anonymous function, that when called produces a named function.
+        }(){
+          throw new Error('• Construction should not be reached, rather the proxy wrapping it should deal with the construct handler.')
+        }`,
+      )
+      prototypeDelegation ||= self[Entity.reference.prototypeInstance.getter.prototypeDelegation](Entity.reference.prototypeInstance.fallbackImplementation.prototypeDelegationInstance)
+      instanceObject ||= createConstructable()
+      Object.setPrototypeOf(instanceObject, prototypeDelegation)
       return instanceObject
     },
   },
@@ -275,3 +255,75 @@ Object.assign(Entity.prototypeDelegation, {
 
 // prevent accidental manipulation of delegated prototype
 deepFreeze({ object: Entity.prototypeDelegation, getPropertyImplementation: Object.getOwnPropertySymbols })
+
+/**
+ * Set own constructors and client itnerface
+ */
+Object.setPrototypeOf(Entity, Entity.prototypeDelegation)
+Entity[Entity.reference.prototypeInstance.setter.prototypeDelegation]({
+  [Entity.reference.prototypeInstance.fallbackImplementation.prototypeDelegationInstance]: Entity.prototypeDelegation, // createDelegatedObject for instance
+  [Entity.reference.prototypeInstance.fallbackImplementation.prototypeDelegationEntityClass]: Entity,
+})
+Entity[Entity.reference.prototypeInstance.setter.initialize]({
+  initializeEntityInstance([{ description }], { instanceObject } = {}) {
+    Object.assign(instanceObject, {
+      self: Symbol(description),
+      // get [Symbol.species]() {
+      //   return GraphElement
+      // },
+      reference: Object.create(null),
+      prototypeDelegation: Object.create(null),
+    })
+    instanceObject[Entity.reference.prototypeInstance.setter.prototypeDelegation]({
+      [Entity.reference.prototypeInstance.fallbackImplementation.prototypeDelegationInstance]: instanceObject.prototypeDelegation,
+      [Entity.reference.prototypeInstance.fallbackImplementation.prototypeDelegationEntityClass]: instanceObject,
+    })
+    return instanceObject
+  },
+})
+Entity[Entity.reference.clientInterface.setter.construct]({
+  [Entity.reference.clientInterface.fallbackImplementation.defaultConstructKey]([{ configuredConstructable }], { self = this, interfaceTarget } = {}) {
+    interfaceTarget ||= self
+    const proxiedTarget = new Proxy(
+      function() {} || interfaceTarget,
+      Object.assign({
+        construct(target, [{ description, instanceType }: { instanceType: 'object' | 'function' } = {}], proxiedTarget) {
+          let instance
+          switch (instanceType) {
+            case 'function':
+              instance = configuredConstructable[Entity.reference.prototypeInstance.method.construct.instantiate]([{ description }], {
+                implementationKey: Entity.reference.prototypeInstance.fallbackImplementation.instantiateCreateDelegatedFunctionKey,
+              })
+              break
+            case 'object':
+              instance = configuredConstructable[Entity.reference.prototypeInstance.method.construct.instantiate]([{ description }], {
+                implementationKey: Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey,
+              })
+              break
+            default:
+              throw new Error('• instanceType is not recognized as an option.')
+              break
+          }
+          configuredConstructable[Entity.reference.prototypeInstance.method.construct.initialize]([{ description }], {
+            instanceObject: instance,
+          })
+          return instance
+        },
+      }),
+    )
+    return proxiedTarget
+  },
+})
+
+/**
+ * Create client interface
+ */
+Entity.clientInterface = Entity[Entity.reference.clientInterface.method.construct]([
+  {
+    configuredConstructable: Entity[Entity.reference.configuredConstructable.method.construct]([
+      {
+        initializeImplementationKey: 'initializeEntityInstance',
+      },
+    ]),
+  },
+])

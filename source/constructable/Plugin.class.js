@@ -4,7 +4,7 @@ import { Entity } from './Entity.class.js'
 /**
  ** Plugin system for supporting different graph implementation and database adapters.
  */
-export const Plugin = Entity.constructEntity({ description: 'Plugin' })
+export const Plugin = new Entity.clientInterface({ description: 'Plugin', instanceType: 'object' })
 
 Object.assign(Plugin, {
   reference: {
