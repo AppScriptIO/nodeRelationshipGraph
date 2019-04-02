@@ -211,3 +211,6 @@ Object.assign(Entity.prototypeDelegation, {
   },
   [Entity.reference.clientInterface.fallbackImplementation.construct]: Entity.reference.clientInterface.fallbackImplementation.defaultConstructKey,
 })
+
+// prevent accidental manipulation of delegated prototype
+deepFreezePropertySymbol(Entity.prototypeDelegation)
