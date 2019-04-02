@@ -1,21 +1,18 @@
-export function deepFreezePropertyName(object) {
+let hasOwnProperty = Object.prototype.hasOwnProperty
+
+export function deepFreeze({ object, getPropertyImplementation = Object.getOwnPropertyNames }: { getPropertyImplementation: Object.getOwnPropertyNames | Object.getOwnPropertySymbols } = {}) {
   Object.freeze(object)
 
-  Object.getOwnPropertyNames(object).forEach(function(prop) {
-    if (object.hasOwnProperty(prop) && object[prop] !== null && (typeof object[prop] === 'object' || typeof object[prop] === 'function') && !Object.isFrozen(object[prop])) {
-      deepFreezePropertyName(object[prop])
-    }
-  })
-
-  return object
-}
-
-export function deepFreezePropertySymbol(object) {
-  Object.freeze(object)
-
-  Object.getOwnPropertySymbols(object).forEach(function(symbol) {
-    if (object.hasOwnProperty(symbol) && object[symbol] !== null && (typeof object[symbol] === 'object' || typeof object[symbol] === 'function') && !Object.isFrozen(object[symbol])) {
-      deepFreezePropertySymbol(object[symbol])
+  let isFunction = typeof object === 'function'
+  getPropertyImplementation(object).forEach(function(property) {
+    if (
+      hasOwnProperty.call(object, property) &&
+      object[property] !== null &&
+      (isFunction ? property !== 'caller' && property !== 'callee' && property !== 'arguments' : true) &&
+      (typeof object[property] === 'object' || typeof object[property] === 'function') &&
+      !Object.isFrozen(object[property])
+    ) {
+      deepFreeze({ object: object[property], getPropertyImplementation })
     }
   })
 

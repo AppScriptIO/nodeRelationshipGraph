@@ -1,4 +1,4 @@
-import { deepFreezePropertySymbol } from '../utility/deepObjectFreeze.js'
+import { deepFreeze } from '../utility/deepObjectFreeze.js'
 
 export const Entity = Object.create(null)
 
@@ -274,4 +274,4 @@ Object.assign(Entity.prototypeDelegation, {
 })
 
 // prevent accidental manipulation of delegated prototype
-deepFreezePropertySymbol(Entity.prototypeDelegation)
+deepFreeze({ object: Entity.prototypeDelegation, getPropertyImplementation: Object.getOwnPropertySymbols })
