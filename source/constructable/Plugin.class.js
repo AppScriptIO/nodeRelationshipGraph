@@ -4,7 +4,7 @@ import { Entity } from './Entity.class.js'
 /**
  ** Plugin system for supporting different graph implementation and database adapters.
  */
-export const Plugin = Object.create(Entity.prototypeDelegation)
+export const Plugin = Entity.constructEntity({ description: 'Plugin' })
 
 Object.assign(Plugin, {
   reference: {
@@ -13,7 +13,6 @@ Object.assign(Plugin, {
     getPlugin: Symbol('getPlugin'),
     getDefaultPlugin: Symbol('getDefaultPlugin'),
   },
-  prototypeDelegation: Object.create(Object.prototype),
 })
 
 Object.assign(Plugin.prototypeDelegation, {
@@ -71,26 +70,6 @@ Object.assign(Plugin.prototypeDelegation, {
   },
 })
 
-Plugin[Entity.reference.prototypeInstance.setter.prototypeDelegation]({
-  // default prototypeDelegation
-  prototypeDelegation: Plugin.prototypeDelegation,
-  entityClass: Plugin,
-  // constructable: function() {},
-})
-
-Plugin[Entity.reference.prototypeInstance.setter.instantiate]({
-  [Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey]({ instanceObject, prototypeDelegation } = {}) {
-    prototypeDelegation ||= Plugin[Entity.reference.prototypeInstance.getter.prototypeDelegation]('prototypeDelegation')
-    instanceObject ||= Object.create(prototypeDelegation)
-    return instanceObject
-  },
-  [Entity.reference.prototypeInstance.fallbackImplementation.instantiateEntityInstanceKey]({ instanceObject, prototypeDelegation }) {
-    prototypeDelegation ||= Plugin[Entity.reference.prototypeInstance.getter.prototypeDelegation]('entityClass')
-    instanceObject ||= Object.create(prototypeDelegation)
-    return instanceObject
-  },
-})
-
 Plugin[Entity.reference.prototypeInstance.setter.initialize]({
   data([{ pluginList, defaultPlugin } = {}], { instanceObject }) {
     instanceObject.defaultPlugin = {} // default plugins implementations
@@ -105,15 +84,13 @@ Plugin[Entity.reference.prototypeInstance.setter.initialize]({
   },
 })
 
-Object.assign(Plugin, {
-  clientInterface: Plugin[Entity.reference.clientInterface.method.construct]([
-    {
-      configuredConstructable: Plugin[Entity.reference.configuredConstructable.method.construct]([
-        {
-          instantiateImplementationKey: Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey,
-          initializeImplementationKey: 'data',
-        },
-      ]),
-    },
-  ]),
-})
+Plugin.clientInterface = Plugin[Entity.reference.clientInterface.method.construct]([
+  {
+    configuredConstructable: Plugin[Entity.reference.configuredConstructable.method.construct]([
+      {
+        instantiateImplementationKey: Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey,
+        initializeImplementationKey: 'data',
+      },
+    ]),
+  },
+])
