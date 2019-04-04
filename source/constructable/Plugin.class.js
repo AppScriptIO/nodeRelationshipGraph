@@ -1,96 +1,111 @@
 import assert from 'assert'
-import { Entity } from './Entity.class.js'
+import { Entity } from './Entity/Entity.class.js'
 
 /**
  ** Plugin system for supporting different graph implementation and database adapters.
  */
-export const Plugin = new Entity.clientInterface({ description: 'Plugin', instanceType: 'object' })
-
-Object.assign(Plugin, {
-  reference: {
-    registerPlugin: Symbol('registerPlugin'),
-    setDefaultPlugin: Symbol('setDefaultPlugin'),
-    getPlugin: Symbol('getPlugin'),
-    getDefaultPlugin: Symbol('getDefaultPlugin'),
+export const Reference = {
+  plugin: {
+    list: Symbol('Plugin:plugin.list'),
+    getter: Symbol('Plugin:plugin.getter'),
+    setter: Symbol('Plugin:plugin.setter'),
+    fallback: {
+      list: Symbol('Plugin:plugin.fallback.list'),
+      getter: Symbol('Plugin:plugin.fallback.getter'), // plugin.fallback.getter
+      setter: Symbol('Plugin:plugin.fallback.setter'),
+    },
   },
-})
+}
 
-Object.assign(Plugin.prototypeDelegation, {
-  // register plugins where each plugin has multiple implementations
-  [Plugin.reference.registerPlugin](
+export const Prototype = {
+  [Reference.plugin.setter](
     /**
+     * register plugins where each plugin has multiple implementations
      *  {
-     *      [pluginKey]: {
+     *      [groupKey]: {
      *          [implementationKey]: <function>
      *      }
      *  }
      */
-    pluginList, // plugin keys matching the above class instance properties
+    pluginList, // plugin groupKeys matching the above class instance properties
+    self = this,
   ) {
+    self[Reference.plugin.list] ||= {}
     // add plugins to existing ones
-    Object.entries(pluginList).forEach(([pluginKey, pluginImplementationList]) => {
-      assert(this[pluginKey], '• plugin key isn`t supported. Trying to add a plugin that the Plugin class does`t support.')
-      this[pluginKey] = Object.assign(this[pluginKey], pluginImplementationList)
+    Object.entries(pluginList).forEach(([groupKey, implementationList]) => {
+      assert(self[Reference.plugin.list][groupKey], '• plugin groupKey isn`t supported. Trying to add a plugin that the Plugin class does`t support.')
+      self[Reference.plugin.list][groupKey] = Object.assign(self[Reference.plugin.list][groupKey], implementationList)
     })
   },
-
-  /**
-   * Set default plugin implementation to be retrived.
-   */
-  [Plugin.reference.setDefaultPlugin](defaultPluginList) {
-    this.defaultPlugin = Object.assign(this.defaultPlugin, defaultPluginList)
-  },
-
   /**
    * Retrieve plugin implementation according to parameter hierarchy (priority order) selection.
    * 1. Passed 'implementation' parameter.
-   * 2. Default 'implementation' set in the 'defaultPlugin'.
+   * 2. Default 'implementation' set in the '[Plugin:plugin.fallback.list]'.
    * 3. Fallback to first item in plugin object.
    */
-  [Plugin.reference.getPlugin]({
-    plugin, // the plugin group (object of implementations)
+  [Reference.plugin.getter]({
+    pluginGroupKey, // the plugin group (object of implementations)
     implementation = null, // specific plugin implementation
+    self = this,
   }) {
-    assert(plugin, '• "plugin" parameter must be set.')
+    assert(pluginGroupKey, '• "plugin" parameter must be set.')
 
     // return specific plugin
-    if (implementation) return this[plugin][implementation]
+    if (implementation) return self[Reference.plugin.list][pluginGroupKey][implementation]
 
     // return default plugin if set.
-    let defaultImplementation = this[Plugin.reference.getDefaultPlugin]({ plugin })
-    if (defaultImplementation) return this[plugin][defaultImplementation]
+    let defaultImplementation = self[Reference.plugin.fallback.getter]({ pluginGroupKey })
+    if (defaultImplementation) return self[Reference.plugin.list][pluginGroupKey][defaultImplementation]
 
     // return first plugin implementation in the iterator
-    let firstItemKey = Object.keys(this[plugin])[0]
-    return this[plugin][firstItemKey]
+    let firstItemKey = Object.groupKeys(self[Reference.plugin.list][pluginGroupKey])[0]
+    return self[Reference.plugin.list][pluginGroupKey][firstItemKey]
   },
+  [Reference.plugin.fallback.setter](defaultPluginList: Object, self = this) {
+    self[Reference.plugin.fallback.list] ||= {}
+    Object.assign(self[Reference.plugin.fallback.list], defaultPluginList)
+  },
+  [Reference.plugin.fallback.getter]({ pluginGroupKey }) {
+    return self[Reference.plugin.fallback.list][pluginGroupKey]
+  },
+}
 
-  [Plugin.reference.getDefaultPlugin]({ plugin }) {
-    return this.defaultPlugin[plugin]
-  },
+export const Plugin = new Entity.clientInterface({ description: 'Plugin', instanceType: 'object' })
+
+Object.assign(Plugin, {
+  reference: Reference,
+  prototypeDelegation: Prototype,
 })
 
-Plugin[Entity.reference.prototypeInstance.setter.initialize]({
+Plugin[Entity.reference.instance.initialize.setter.list]({
   data([{ pluginList, defaultPlugin } = {}], { instanceObject }) {
-    instanceObject.defaultPlugin = {} // default plugins implementations
-    // supported plugin keys - Each plugin is an object with multiple registered implementations
+    instanceObject[plugin.fallback.list] = {} // default plugins implementations
+    // supported plugin groupKeys - Each plugin is an object with multiple registered implementations
     instanceObject.databaseModelAdapter = {} // database model functions for retriving node, dataItem, and other documents. should be async functions
     instanceObject.graphTraversalImplementation = {}
 
-    instanceObject[Plugin.reference.registerPlugin](pluginList)
-    if (defaultPlugin) instanceObject[Plugin.reference.setDefaultPlugin](defaultPlugin) // set default plugins in case passed
+    instanceObject[Reference.plugin.setter](pluginList)
+    if (defaultPlugin) instanceObject[Reference.plugin.fallback.setter](defaultPlugin) // set default plugins in case passed
     //   Object.assign(this, data) // apply data to instance
     return instanceObject
   },
 })
 
-Plugin.clientInterface = Plugin[Entity.reference.clientInterface.method.construct]([
+// Create client interface
+const configuredConstructable = Plugin[Entity.reference.configuredConstructable.switch]([
   {
-    configuredConstructable: Plugin[Entity.reference.configuredConstructable.method.construct]([
-      {
-        instantiateImplementationKey: Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey,
-        initializeImplementationKey: 'data',
-      },
-    ]),
+    description: 'pluginConstructable',
+    instantiateImplementationKey: Entity.reference.instance.instantiate.key.prototypeObjectInstance,
+    initializeImplementationKey: 'data',
   },
 ])
+Plugin.clientInterface = Plugin[Entity.reference.clientInterface.switch](
+  [
+    {
+      configuredConstructable,
+    },
+  ],
+  {
+    implementationKey: Entity.reference.clientInterface.key.prototypeConstruct,
+  },
+)

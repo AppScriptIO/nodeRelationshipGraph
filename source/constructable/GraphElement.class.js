@@ -1,4 +1,4 @@
-import { Entity } from './Entity.class.js'
+import { Entity } from './Entity/Entity.class.js'
 
 interface GraphElementData {
   label: object;
@@ -6,19 +6,22 @@ interface GraphElementData {
   [key: string]: any; // optional other fields
 }
 
-export const GraphElement = new Entity.clientInterface({ description: 'GraphElement', instanceType: 'object' })
-
-Object.assign(GraphElement.prototypeDelegation, {
+const Prototype = {
   getKey: function(key) {
     return this.key
   },
+}
+
+const Reference = {}
+
+export const GraphElement = new Entity.clientInterface({ description: 'GraphElement', instanceType: 'object' })
+
+Object.assign(GraphElement, {
+  prototypeDelegation: Prototype,
+  reference: Reference,
 })
 
-GraphElement[Entity.reference.prototypeInstance.setter.initialize]({
-  data([{ data }: { data: GraphElementData }], { instanceObject } = {}) {
-    Object.assign(instanceObject, data) // apply data to instance
-    return instanceObject
-  },
+GraphElement[Entity.reference.instance.initialize.setter.list]({
   //* constructor that is made to work with the plugin functionality.
   key([{ key }: { key: string | number }], { instanceObject, prototypeDelegation }) {
     instanceObject.key = key
@@ -27,22 +30,32 @@ GraphElement[Entity.reference.prototypeInstance.setter.initialize]({
     return instanceObject
   },
 })
-
-GraphElement[Entity.reference.configuredConstructable.setter.construct]({
+GraphElement[Entity.reference.configuredConstructable.setter.list]({
   plugin(args, { self = this, instanceObject }) {
     instanceObject ||= Object.create(GraphElement)
     //! Apply multiple inheritance from argument list instances.
-    instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'key' })
+    // instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'key' })
     return instanceObject
   },
 })
 
-GraphElement.clientInterface = GraphElement[Entity.reference.clientInterface.method.construct]([
+// Create client interface
+GraphElement.clientInterface1 = GraphElement[Entity.reference.clientInterface.switch]([
   {
-    configuredConstructable: GraphElement[Entity.reference.configuredConstructable.method.construct]([
+    configuredConstructable: GraphElement[Entity.reference.configuredConstructable.switch]([
       {
-        instantiateImplementationKey: Entity.reference.prototypeInstance.fallbackImplementation.instantiatePrototypeInstanceKey,
-        initializeImplementationKey: 'data',
+        instantiateImplementationKey: Entity.reference.instance.instantiate.key.prototypeObjectInstance,
+        initializeImplementationKey: Entity.reference.instance.initialize.key.data,
+      },
+    ]),
+  },
+])
+GraphElement.clientInterface2 = GraphElement[Entity.reference.clientInterface.switch]([
+  {
+    configuredConstructable: GraphElement[Entity.reference.configuredConstructable.switch]([
+      {
+        instantiateImplementationKey: Entity.reference.instance.instantiate.key.prototypeObjectInstance,
+        initializeImplementationKey: 'key',
       },
     ]),
   },

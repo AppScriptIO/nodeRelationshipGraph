@@ -18,7 +18,7 @@ suite('Entity', () => {
       databaseModelAdapter: 'memoryModelAdapter',
     },
   })
-  console.log(plugin)
-  let element = new GraphElement.clientInterface({ data: { key: 'x' } })
-  console.log(element)
+  // console.log(plugin)
+  // let element = new GraphElement.clientInterface({ data: { key: 'x' } })
+  // console.log(element)
 })
