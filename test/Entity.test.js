@@ -7,17 +7,18 @@ import { databaseModelAdapterFunction } from '../source/implementationPlugin/dat
 import * as graphData from './asset/graphData' // load sample data
 
 suite('Entity', () => {
-  let plugin = new Plugin.clientInterface({
-    pluginList: {
-      databaseModelAdapter: {
-        // database simple memory adapter
-        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
-      },
-    },
-    defaultPlugin: {
-      databaseModelAdapter: 'memoryModelAdapter',
-    },
-  })
+  Entity
+  // let plugin = new Plugin.clientInterface({
+  //   pluginList: {
+  //     databaseModelAdapter: {
+  //       // database simple memory adapter
+  //       memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
+  //     },
+  //   },
+  //   defaultPlugin: {
+  //     databaseModelAdapter: 'memoryModelAdapter',
+  //   },
+  // })
   // console.log(plugin)
   // let element = new GraphElement.clientInterface({ data: { key: 'x' } })
   // console.log(element)

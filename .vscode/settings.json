@@ -49,5 +49,6 @@
     "eslint.codeAction.showDocumentation": {
         "enable": true
     },
-    "typescript.check.npmIsInstalled": false
+    "typescript.check.npmIsInstalled": false,
+    "eslint.enable": true
 }
