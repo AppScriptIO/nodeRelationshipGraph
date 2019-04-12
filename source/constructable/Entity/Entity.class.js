@@ -1,27 +1,34 @@
 import { Reference } from './Reference.js'
 import { Prototype } from './Prototype.js'
 
-const result =
-  Prototype[Reference.configuredConstructable.switch]({ implementationKey: Reference.configuredConstructable.key.constructable })
+const toplevelConfiguredConstructable =
+  Prototype[Reference.configuredConstructable.switch]({ implementationKey: Reference.configuredConstructable.key.toplevelConstructable })
+  |> (g => {
+    g.next('intermittent')
+    return g.next().value
+  })
+
+let Entity =
+  toplevelConfiguredConstructable[Reference.instance.instantiate.switch]()
+  |> (g => {
+    g.next('intermittent')
+    return g.next({ description: 'Entity' }).value
+  })
+
+toplevelConfiguredConstructable[Reference.instance.initialize.switch]()
   |> (g => {
     g.next('intermittent')
     return g.next({
-      description: 'constructableForClientInterface',
-      initializeFallback: Reference.instance.initialize.key.entityInstance,
+      description: 'Entity',
+      instanceObject: Entity,
     }).value
   })
-console.log(result |> Object.getOwnPropertySymbols)
 
-// let { value: argObject } = configuredConstructable.next('intermittent')
-// Object.assign(argObject.initialize, {})
-// Object.assign(argObject.instantiate, {})
-// let entityInstance = configuredConstructable.next(argObject)
+console.log(Entity.reference)
 
-// console.log('complete')
-// console.log(entityInstance)
+// client interface
 
-// const E = ''
-
+// export const Entity = new configuredConstructable()
 // export const Entity = Object.create(Prototype, {
 //   prototypeDelegation: {
 //     writable: false,

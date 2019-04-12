@@ -1,0 +1,1 @@
+- `yield*` does not allow for passing arguments to the implicit `next` it calls. i.e. `yield*` will call next on the iterable without arguments, if the iterable was already initialized or uses `function.sent` proposal, the `next` call from `yield*` will not pass arguments, and cannot be controlled.

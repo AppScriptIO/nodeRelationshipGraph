@@ -34,6 +34,7 @@ export const Reference = {
       fallback: Symbol('Entity:instance.instantiate.fallback'),
       list: Symbol('Entity:instance.instantiate.list'),
       key: {
+        prototype: Symbol('Entity:instance.instantiate.key.prototype'),
         prototypeObjectInstance: Symbol('Entity:instance.instantiate.key.prototypeObjectInstance'),
         prototypeFunctionInstance: Symbol('Entity:instance.instantiate.key.prototypeFunctionInstance'),
         entityObjectInstance: Symbol('Entity:instance.instantiate.key.entityObjectInstance'),
@@ -54,6 +55,7 @@ export const Reference = {
       key: {
         data: Symbol('Entity:instance.initialize.key.data'),
         entityInstance: Symbol('Entity:instance.initialize.key.entityInstance'),
+        toplevelEntityInstance: Symbol('Entity:instance.initialize.key.toplevelEntityInstance'),
         configurableConstructor: Symbol('Entity:instance.initialize.key.configurableConstructor'),
       },
     },
@@ -71,6 +73,7 @@ export const Reference = {
     list: Symbol('Entity:configuredConstructable.list'),
     key: {
       constructable: Symbol('Entity:configuredConstructable.key.constructable'),
+      toplevelConstructable: Symbol('Entity:configuredConstructable.key.toplevelConstructable'),
     },
   },
 
