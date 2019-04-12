@@ -224,7 +224,7 @@ Prototype[Reference.instance.instantiate.list]
         switch (objectType) {
           case 'function':
             instanceObject ||= createConstructableWithoutContructor(description)
-            instanceObject |> Object.setPrototypeOf(prototypeDelegation)
+            Object.setPrototypeOf(instanceObject, prototypeDelegation)
             break
           case 'object':
           default:
@@ -234,50 +234,34 @@ Prototype[Reference.instance.instantiate.list]
         instanceObject.constructor = self[Reference.prototypeDelegation.getter.list](constructorPrototypeSymbol)
         return instanceObject
       },
-      [Reference.instance.instantiate.key.configuredConstructableInstance]([], { instanceObject, prototypeDelegation, self = this }) {
-        prototypeDelegation ||= self
-        instanceObject ||= Object.create(prototypeDelegation)
-        instanceObject.constructor = self
-        return instanceObject
-      },
-      [Reference.instance.instantiate.key.prototypeObjectInstance]() {
+      [Reference.instance.instantiate.key.prototypeInstance]({ instanceType = 'object' }: { instanceType: 'object' | 'function' }) {
         let args = arguments[0]
         let implementationFunc = Prototype[Reference.instance.instantiate.getter.list](Reference.instance.instantiate.key.prototype)
         let instance = this::implementationFunc(
           Object.assign(args, {
             instancePrototypeSymbol: Reference.prototypeDelegation.key.entityPrototype,
             constructorPrototypeSymbol: Reference.prototypeDelegation.key.entityClass,
-            objectType: 'object',
+            objectType: instanceType,
           }),
         )
         return instance
       },
-      [Reference.instance.instantiate.key.prototypeFunctionInstance]() {
+      [Reference.instance.instantiate.key.entityInstance]({ instanceType = 'object' }: { instanceType: 'object' | 'function' }) {
         let args = arguments[0]
         let implementationFunc = Prototype[Reference.instance.instantiate.getter.list](Reference.instance.instantiate.key.prototype)
         return this::implementationFunc(
           Object.assign(args, {
             instancePrototypeSymbol: Reference.prototypeDelegation.key.entityPrototype,
             constructorPrototypeSymbol: Reference.prototypeDelegation.key.entityClass,
-            objectType: 'function',
+            objectType: instanceType,
           }),
         )
       },
-      [Reference.instance.instantiate.key.entityObjectInstance]() {
-        let args = arguments[0]
-        let implementationFunc = Prototype[Reference.instance.instantiate.getter.list](Reference.instance.instantiate.key.prototype)
-        return this::implementationFunc(Object.assign(args, { objectType: 'object' }))
-      },
-      [Reference.instance.instantiate.key.entityFunctionInstance]() {
-        let args = arguments[0]
-        let implementationFunc = Prototype[Reference.instance.instantiate.getter.list](Reference.instance.instantiate.key.prototype)
-        return this::implementationFunc(
-          Object.assign(args, {
-            instancePrototypeSymbol: Reference.prototypeDelegation.key.entityPrototype,
-            constructorPrototypeSymbol: Reference.prototypeDelegation.key.entityClass,
-            objectType: 'function',
-          }),
-        )
+      [Reference.instance.instantiate.key.configuredConstructableInstance]({ instanceObject, prototypeDelegation, self = this }) {
+        prototypeDelegation ||= self
+        instanceObject ||= Object.create(prototypeDelegation)
+        instanceObject.constructor = self
+        return instanceObject
       },
     }))
 
@@ -289,9 +273,7 @@ Prototype[Reference.instance.initialize.list]
         return instanceObject
       },
       [Reference.instance.initialize.key.configurableConstructor]({ description, instanceObject } = {}) {
-        mergeNonexistentProperties(instanceObject, {
-          self: Symbol(description),
-        })
+        mergeNonexistentProperties(instanceObject, { self: Symbol(description) })
         return instanceObject
       },
       [Reference.instance.initialize.key.entityInstance]({ description, instanceObject, reference, prototypeDelegation } = {}) {
@@ -330,8 +312,8 @@ Prototype[Reference.configuredConstructable.list]
         initializeFallback,
         self = this,
         entityInstance,
-        instantiateSwitchSymbol,
-        initializeSwitchSymbol,
+        instantiateSwitchSymbol = Reference.instance.instantiate.key.entityInstance,
+        initializeSwitchSymbol = Reference.instance.initialize.key.entityInstance,
       } = {}) {
         const shouldHandOverControl = executionControl.shouldHandOver(function.sent)
         const step = [
@@ -388,9 +370,9 @@ Prototype[Reference.configuredConstructable.list]
         let entityInstance =
           this::implementationFunc({
             description: description,
-            instantiateFallback: Reference.instance.instantiate.key.prototypeObjectInstance,
+            instantiateFallback: Reference.instance.instantiate.key.prototypeInstance,
             initializeFallback: Reference.instance.initialize.key.toplevelEntityInstance,
-            instantiateSwitchSymbol: Reference.instance.instantiate.key.entityObjectInstance,
+            instantiateSwitchSymbol: Reference.instance.instantiate.key.entityInstance,
             initializeSwitchSymbol: Reference.instance.initialize.key.entityInstance,
           })
           |> (iterateConstructable => {
@@ -405,7 +387,7 @@ Prototype[Reference.configuredConstructable.list]
 Prototype[Reference.clientInterface.list]
   |> (_ =>
     Object.assign(_, {
-      [Reference.clientInterface.key.prototypeConstruct]([{ configuredConstructable }], { self = this, interfaceTarget } = {}) {
+      [Reference.clientInterface.key.prototypeConstruct]({ configuredConstructable, self = this, interfaceTarget } = {}) {
         interfaceTarget ||= self
         const proxiedTarget = new Proxy(
           function() {} || interfaceTarget,
@@ -424,43 +406,45 @@ Prototype[Reference.clientInterface.list]
         )
         return proxiedTarget
       },
-      [Reference.clientInterface.key.entityConstruct]([{ configuredConstructable }], { self = this, interfaceTarget } = {}) {
+      [Reference.clientInterface.key.entityConstruct]({ configuredConstructable, self = this, interfaceTarget } = {}) {
         interfaceTarget ||= self
         const proxiedTarget = new Proxy(
           function() {} || interfaceTarget,
           Object.assign({
-            apply(target, thisArg, [[{ description } = {}] = []]) {
-              //! move to configurable constructor
-              let instance = self[Reference.instance.instantiate.switch]([], {
-                implementationKey: Reference.instance.instantiate.key.configuredConstructableInstance,
-              })
-              self[Reference.instance.initialize.switch]([{ description }], {
-                instanceObject: instance,
-                implementationKey: Reference.instance.initialize.key.configurableConstructor,
-              })
-
+            apply(target, thisArg, [{ description } = {}]) {
+              let instance =
+                self[Reference.instance.instantiate.switch]({ implementationKey: Reference.instance.instantiate.key.configuredConstructableInstance })
+                |> (g => {
+                  g.next('intermittent')
+                  return g.next({ description }).value
+                })
+              self[Reference.instance.initialize.switch]({ implementationKey: Reference.instance.initialize.key.configurableConstructor })
+                |> (g => {
+                  g.next('intermittent')
+                  return g.next({ description, instanceObject: instance }).value
+                })
               return instance
             },
             construct(target, [{ description, instanceType }: { instanceType: 'object' | 'function' } = {}], proxiedTarget) {
-              let instance
-              switch (instanceType) {
-                case 'function':
-                  instance = configuredConstructable[Reference.instance.instantiate.switch]([{ description }], {
-                    implementationKey: Reference.instance.instantiate.key.entityFunctionInstance,
-                  })
-                  break
-                case 'object':
-                  instance = configuredConstructable[Reference.instance.instantiate.switch]([], {
-                    implementationKey: Reference.instance.instantiate.key.entityObjectInstance,
-                  })
-                  break
-                default:
-                  throw new Error('• instanceType is not recognized as an option.')
-                  break
-              }
-              configuredConstructable[Reference.instance.initialize.switch]([{ description }], {
-                instanceObject: instance,
-              })
+              let instance =
+                configuredConstructable[Reference.instance.instantiate.switch]()
+                |> (g => {
+                  g.next('intermittent')
+                  return g.next({
+                    instanceType,
+                    description,
+                  }).value
+                })
+
+              configuredConstructable[Reference.instance.initialize.switch]()
+                |> (g => {
+                  g.next('intermittent')
+                  return g.next({
+                    description,
+                    instanceObject: instance,
+                  }).value
+                })
+
               return instance
             },
           }),
@@ -471,3 +455,19 @@ Prototype[Reference.clientInterface.list]
 
 // prevent accidental manipulation of delegated prototype
 deepFreeze({ object: Prototype, getPropertyImplementation: Object.getOwnPropertySymbols })
+
+export const toplevelConfiguredConstructable =
+  Prototype[Reference.configuredConstructable.switch]({ implementationKey: Reference.configuredConstructable.key.toplevelConstructable })
+  |> (g => {
+    g.next('intermittent')
+    return g.next().value
+  })
+
+toplevelConfiguredConstructable.clientInterface =
+  Prototype[Reference.clientInterface.switch]({ implementationKey: Reference.clientInterface.key.entityConstruct })
+  |> (g => {
+    g.next('intermittent')
+    return g.next({
+      configuredConstructable: toplevelConfiguredConstructable,
+    }).value
+  })

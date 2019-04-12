@@ -35,8 +35,7 @@ export const Reference = {
       list: Symbol('Entity:instance.instantiate.list'),
       key: {
         prototype: Symbol('Entity:instance.instantiate.key.prototype'),
-        prototypeObjectInstance: Symbol('Entity:instance.instantiate.key.prototypeObjectInstance'),
-        prototypeFunctionInstance: Symbol('Entity:instance.instantiate.key.prototypeFunctionInstance'),
+        prototypeInstance: Symbol('Entity:instance.instantiate.key.prototypeInstance'),
         entityObjectInstance: Symbol('Entity:instance.instantiate.key.entityObjectInstance'),
         entityFunctionInstance: Symbol('Entity:instance.instantiate.key.entityFunctionInstance'),
         configuredConstructableInstance: Symbol('Entity:instance.instantiate.key.configuredConstructableInstance'),
