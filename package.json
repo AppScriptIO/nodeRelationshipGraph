@@ -19,6 +19,7 @@
         "@dependency/multiplePrototypeChain": "git+https://github.com/AppScriptIO/multiplePrototypeChain.git",
         "@dependency/promiseProperRace": "git+https://github.com/AppScriptIO/promiseProperRace.git",
         "@dependency/prototypeChainDebug": "git+https://github.com/AppScriptIO/prototypeChainDebug.git",
+        "@dependency/entity": "https://github.com/AppScriptIO/entity",
         "rethinkdb": "*"
     },
     "devDependencies": {

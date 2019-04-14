@@ -1,4 +1,4 @@
-import { Entity } from './Entity/Entity.class.js'
+import { Entity } from '@dependency/entity'
 
 interface GraphElementData {
   label: object;

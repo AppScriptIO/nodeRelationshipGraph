@@ -2,7 +2,7 @@ process.env['SZN_DEBUG'] = true
 import assert from 'assert'
 import { assert as chaiAssertion } from 'chai'
 import util from 'util'
-import { Plugin, Graph, GraphElement, Entity } from '../source/script.js'
+import { Entity } from '@dependency/entity'
 import { databaseModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memoryModelAdapter.js'
 import * as graphData from './asset/graphData' // load sample data
 

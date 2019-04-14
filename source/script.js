@@ -1,4 +1,4 @@
-export * from './constructable/Entity/Entity.class.js'
+export * from '@dependency/entity'
 export * from './clientInterface.js'
 export * from './constructable/InstanceContext.class.js'
 export * from './constructable/CacheInstance.class.js'

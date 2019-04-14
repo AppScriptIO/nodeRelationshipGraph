@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { Entity } from './Entity/Entity.class.js'
+import { Entity } from '@dependency/entity'
 
 /**
  ** Plugin system for supporting different graph implementation and database adapters.
