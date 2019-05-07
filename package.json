@@ -9,21 +9,21 @@
         "generateTypes": "tsc --project ./configuration/typescript.config.json"
     },
     "dependencies": {
-        "@dependency/classMixin": "git+https://github.com/AppScriptIO/classMixin.git",
-        "@dependency/commonPattern": "git+https://github.com/AppScriptIO/commonPattern.git",
-        "@dependency/databaseUtility": "git+https://github.com/AppScriptIO/databaseUtility.git",
+        "@dependency/classMixin": "https://github.com/AppScriptIO/classMixin#semver:^1.x.x",
+        "@dependency/commonPattern": "https://github.com/AppScriptIO/commonPattern#semver:^1.x.x",
+        "@dependency/databaseUtility": "https://github.com/AppScriptIO/databaseUtility#semver:^1.x.x",
         "@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^1.x.x",
         "@dependency/moduleContext": "https://github.com/AppScriptIO/moduleContext#semver:^1.x.x",
-        "@dependency/multiplePrototypeChain": "git+https://github.com/AppScriptIO/multiplePrototypeChain.git",
-        "@dependency/promiseProperRace": "git+https://github.com/AppScriptIO/promiseProperRace.git",
-        "@dependency/prototypeChainDebug": "git+https://github.com/AppScriptIO/prototypeChainDebug.git",
+        "@dependency/multiplePrototypeChain": "https://github.com/AppScriptIO/multiplePrototypeChain#semver:^1.x.x",
+        "@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace",
+        "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug",
         "rethinkdb": "*"
     },
     "devDependencies": {
-        "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
-        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
+        "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^1.x.x",
         "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis#semver:^1.x.x",
-        "@dependency/scriptManager": "git+https://github.com/AppScriptIO/scriptManager.git",
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
+        "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager",
         "typescript": "^3.3.3333"
     }
 }

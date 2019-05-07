@@ -102,7 +102,7 @@ GraphControllerConfiguration
        *      - Provides a consistent exposed client interface - allowing easier refactoring of internal components when needed.
        */
       constructor(...args) {
-        super(...args)
+        // super(...args)
         const instance = this
         return {
           instance, // for internal usage inside this file.
