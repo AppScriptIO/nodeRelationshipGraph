@@ -7,7 +7,22 @@ import { DataItemFunction } from '../constructable/DataItem.class.js' // Unit
 /**
  * PrototypeHierarchyGenerator - for performance this function should be executed on load-time (program startup time where afterwards its ready to take requests)
  * Create connections between static classes (constructors) in a required/wanted way.
- * @return {Object} Related Classes
+ * @return {Object} Related/Connected Classes
+ * 
+ * e.g.      
+  let Controller1 = createStaticInstanceClasses({
+      Superclass: null,
+      implementationType: 'Middleware',
+      cacheName: 'x',
+  })
+  OR 
+  let constructorPrototypeChain = linkConstructor({
+        specificClassImplementation: {
+          GraphControllerMixin: null,
+          NodeFunction: null,
+          DataItemFunction: null,
+        },
+      }),
  */
 // TODO: implement `curryNamedInvokeManually` using `curryNamed` module (check module's todo list)
 // execute curried version, where parameters could be passed in steps

@@ -5,24 +5,25 @@
  * @param  {function} getDocumentQueryCallback
  * @return {instance} class instance
  */
-export default async function (controllerInstanceArray, dataKey, getDocumentQueryCallback) {
-    let Class = this
-    
-    // [1] Create new instance 
-    let instance;
-    if(!(dataKey in controllerInstanceArray)) {
-        instance = await new Class(dataKey)
-        controllerInstanceArray[dataKey] = instance
-    } else {
-        instance = controllerInstanceArray[dataKey] // Preserved between requests. Causes problems
-    }
+export default async function(controllerInstanceArray, dataKey, getDocumentQueryCallback) {
+  let Class = this
 
-    // [2] Populate properties.
-    if(!('jsonData' in instance)) { // if not already populated with data.
-        let jsonData = await getDocumentQueryCallback(Class.rethinkdbConnection, dataKey)
-        await Object.assign(instance, jsonData)
-        instance.jsonData = jsonData
-    }
+  // [1] Create new instance
+  let instance
+  if (!(dataKey in controllerInstanceArray)) {
+    instance = await new Class(dataKey)
+    controllerInstanceArray[dataKey] = instance
+  } else {
+    instance = controllerInstanceArray[dataKey] // Preserved between requests. Causes problems
+  }
 
-    return instance // return the newly cr
+  // [2] Populate properties.
+  if (!('jsonData' in instance)) {
+    // if not already populated with data.
+    let jsonData = await getDocumentQueryCallback(Class.rethinkdbConnection, dataKey)
+    await Object.assign(instance, jsonData)
+    instance.jsonData = jsonData
+  }
+
+  return instance // return the newly cr
 }

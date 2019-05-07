@@ -8,16 +8,17 @@ interface GraphElementData {
 
 export const GraphElement = new Entity.clientInterface({ description: 'GraphElement', instanceType: 'object' })
 
-GraphElement.prototypeDelegation
+GraphElement.prototype
   |> (_ =>
     Object.assign(_, {
       getKey: function(key) {
         return this.key
       },
     }))
+
 GraphElement.reference |> (_ => Object.assign(_, {}))
 
-GraphElement[Entity.reference.instance.initialize.setter.list]({
+GraphElement[Reference.initialize.setter.list]({
   //* constructor that is made to work with the plugin functionality.
   key([{ key }: { key: string | number }], { instanceObject, prototypeDelegation }) {
     instanceObject.key = key
@@ -26,7 +27,7 @@ GraphElement[Entity.reference.instance.initialize.setter.list]({
     return instanceObject
   },
 })
-GraphElement[Entity.reference.configuredConstructable.setter.list]({
+GraphElement[Reference.constructor.setter.list]({
   plugin(args, { self = this, instanceObject }) {
     instanceObject ||= Object.create(GraphElement)
     //! Apply multiple inheritance from argument list instances.
@@ -37,16 +38,16 @@ GraphElement[Entity.reference.configuredConstructable.setter.list]({
 
 // Create client interface
 let configuredConstructable =
-  GraphElement[Entity.reference.configuredConstructable.switch]({ implementationKey: Entity.reference.configuredConstructable.key.prototypeInstanceConstructable })
+  GraphElement[Reference.constructor.switch]({ implementationKey: Reference.constructor.key.configuredConstructable })
   |> (g => {
     g.next('intermittent')
     return g.next({
       description: 'EntityConstructableForClientInterfaceData',
-      initializeFallback: Entity.reference.instance.initialize.key.data,
+      initializeFallback: Reference.initialize.key.data,
     }).value
   })
 GraphElement.clientInterfaceData =
-  GraphElement[Entity.reference.clientInterface.switch]({ implementationKey: Entity.reference.clientInterface.key.prototypeConstruct })
+  GraphElement[Reference.clientInterface.switch]({ implementationKey: Reference.clientInterface.key.prototypeConstruct })
   |> (g => {
     g.next('intermittent')
     return g.next({ configuredConstructable }).value

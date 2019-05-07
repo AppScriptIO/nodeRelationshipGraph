@@ -21,7 +21,7 @@ Plugin.reference
       },
     }))
 
-Plugin.prototypeDelegation
+Plugin.prototype
   |> (_ =>
     Object.assign(_, {
       [Plugin.reference.plugin.setter](
@@ -38,6 +38,7 @@ Plugin.prototypeDelegation
       ) {
         self[Plugin.reference.plugin.list] ||= {
           databaseModelAdapter: {},
+          graphTraversalImplementation: {},
         }
         // add plugins to existing ones
         Object.entries(pluginList).forEach(([groupKey, implementationList]) => {
@@ -78,7 +79,7 @@ Plugin.prototypeDelegation
       },
     }))
 
-Plugin[Entity.reference.instance.initialize.setter.list]({
+Plugin[Constructable.reference.initialize.setter.list]({
   data({ data = {}, instanceObject }) {
     let { defaultPlugin, pluginList } = data
     instanceObject[Plugin.reference.plugin.fallback.list] = {} // default plugins implementations
@@ -95,7 +96,7 @@ Plugin[Entity.reference.instance.initialize.setter.list]({
 
 // Client itnerface
 let configuredConstructable =
-  Plugin[Entity.reference.configuredConstructable.switch]({ implementationKey: Entity.reference.configuredConstructable.key.prototypeInstanceConstructable })
+  Plugin[Constructable.reference.constructor.switch]({ implementationKey: Constructable.reference.constructor.key.configuredConstructable })
   |> (g => {
     g.next('intermittent')
     return g.next({
