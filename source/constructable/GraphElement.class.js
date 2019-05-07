@@ -1,54 +1,55 @@
-import { Entity } from '@dependency/entity'
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.GraphElement = void 0;var _entity = require("@dependency/entity");var _ref, _ref2, _GraphElement$Referen, _GraphElement$Referen2;
 
-interface GraphElementData {
-  label: object;
-  key: string | number;
-  [key: string]: any; // optional other fields
-}
 
-export const GraphElement = new Entity.clientInterface({ description: 'GraphElement', instanceType: 'object' })
 
-GraphElement.prototype
-  |> (_ =>
-    Object.assign(_, {
-      getKey: function(key) {
-        return this.key
-      },
-    }))
 
-GraphElement.reference |> (_ => Object.assign(_, {}))
+
+
+
+const GraphElement = new _entity.Entity.clientInterface({ description: 'GraphElement', instanceType: 'object' });exports.GraphElement = GraphElement;
+
+_ref = GraphElement.prototype,
+
+Object.assign(_ref, {
+  getKey: function (key) {
+    return this.key;
+  } });
+
+
+_ref2 = GraphElement.reference, Object.assign(_ref2, {});
 
 GraphElement[Reference.initialize.setter.list]({
-  //* constructor that is made to work with the plugin functionality.
-  key([{ key }: { key: string | number }], { instanceObject, prototypeDelegation }) {
-    instanceObject.key = key
-    let data = true || instanceObject.plugin.databaseModelAdapter({ key: instanceObject.key })
-    Object.assign(instanceObject, data)
-    return instanceObject
-  },
-})
+
+  key([{ key }], { instanceObject, prototypeDelegation }) {
+    instanceObject.key = key;
+    let data = true || instanceObject.plugin.databaseModelAdapter({ key: instanceObject.key });
+    Object.assign(instanceObject, data);
+    return instanceObject;
+  } });
+
 GraphElement[Reference.constructor.setter.list]({
   plugin(args, { self = this, instanceObject }) {
-    instanceObject ||= Object.create(GraphElement)
-    //! Apply multiple inheritance from argument list instances.
-    // instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'key' })
-    return instanceObject
-  },
-})
+    instanceObject || (instanceObject = Object.create(GraphElement));
 
-// Create client interface
-let configuredConstructable =
-  GraphElement[Reference.constructor.switch]({ implementationKey: Reference.constructor.key.configuredConstructable })
-  |> (g => {
-    g.next('intermittent')
-    return g.next({
-      description: 'EntityConstructableForClientInterfaceData',
-      initializeFallback: Reference.initialize.key.data,
-    }).value
-  })
-GraphElement.clientInterfaceData =
-  GraphElement[Reference.clientInterface.switch]({ implementationKey: Reference.clientInterface.key.prototypeConstruct })
-  |> (g => {
-    g.next('intermittent')
-    return g.next({ configuredConstructable }).value
-  })
+
+    return instanceObject;
+  } });
+
+
+
+let configuredConstructable = (_GraphElement$Referen =
+GraphElement[Reference.constructor.switch]({ implementationKey: Reference.constructor.key.configuredConstructable }), (
+g => {
+  g.next('intermittent');
+  return g.next({
+    description: 'EntityConstructableForClientInterfaceData',
+    initializeFallback: Reference.initialize.key.data }).
+  value;
+})(_GraphElement$Referen));
+GraphElement.clientInterfaceData = (_GraphElement$Referen2 =
+GraphElement[Reference.clientInterface.switch]({ implementationKey: Reference.clientInterface.key.prototypeConstruct }), (
+g => {
+  g.next('intermittent');
+  return g.next({ configuredConstructable }).value;
+})(_GraphElement$Referen2));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL0dyYXBoRWxlbWVudC5jbGFzcy5qcyJdLCJuYW1lcyI6WyJHcmFwaEVsZW1lbnQiLCJFbnRpdHkiLCJjbGllbnRJbnRlcmZhY2UiLCJkZXNjcmlwdGlvbiIsImluc3RhbmNlVHlwZSIsInByb3RvdHlwZSIsIk9iamVjdCIsImFzc2lnbiIsIl8iLCJnZXRLZXkiLCJrZXkiLCJyZWZlcmVuY2UiLCJSZWZlcmVuY2UiLCJpbml0aWFsaXplIiwic2V0dGVyIiwibGlzdCIsImluc3RhbmNlT2JqZWN0IiwicHJvdG90eXBlRGVsZWdhdGlvbiIsImRhdGEiLCJwbHVnaW4iLCJkYXRhYmFzZU1vZGVsQWRhcHRlciIsImNvbnN0cnVjdG9yIiwiYXJncyIsInNlbGYiLCJjcmVhdGUiLCJjb25maWd1cmVkQ29uc3RydWN0YWJsZSIsInN3aXRjaCIsImltcGxlbWVudGF0aW9uS2V5IiwiZyIsIm5leHQiLCJpbml0aWFsaXplRmFsbGJhY2siLCJ2YWx1ZSIsImNsaWVudEludGVyZmFjZURhdGEiLCJwcm90b3R5cGVDb25zdHJ1Y3QiXSwibWFwcGluZ3MiOiJ5R0FBQSw0Qzs7Ozs7Ozs7QUFRTyxNQUFNQSxZQUFZLEdBQUcsSUFBSUMsZUFBT0MsZUFBWCxDQUEyQixFQUFFQyxXQUFXLEVBQUUsY0FBZixFQUErQkMsWUFBWSxFQUFFLFFBQTdDLEVBQTNCLENBQXJCLEM7O0FBRVAsT0FBQUosWUFBWSxDQUFDSyxTQUFiOztBQUVJQyxNQUFNLENBQUNDLE1BQVAsQ0FBY0MsSUFBZCxFQUFpQjtBQUNmQyxFQUFBQSxNQUFNLEVBQUUsVUFBU0MsR0FBVCxFQUFjO0FBQ3BCLFdBQU8sS0FBS0EsR0FBWjtBQUNELEdBSGMsRUFBakIsQ0FGSjs7O0FBUUEsUUFBQVYsWUFBWSxDQUFDVyxTQUFiLEVBQWdDTCxNQUFNLENBQUNDLE1BQVAsQ0FBY0MsS0FBZCxFQUFpQixFQUFqQixDQUFoQzs7QUFFQVIsWUFBWSxDQUFDWSxTQUFTLENBQUNDLFVBQVYsQ0FBcUJDLE1BQXJCLENBQTRCQyxJQUE3QixDQUFaLENBQStDOztBQUU3Q0wsRUFBQUEsR0FBRyxDQUFDLENBQUMsRUFBRUEsR0FBRixFQUFELENBQUQsRUFBc0MsRUFBRU0sY0FBRixFQUFrQkMsbUJBQWxCLEVBQXRDLEVBQStFO0FBQ2hGRCxJQUFBQSxjQUFjLENBQUNOLEdBQWYsR0FBcUJBLEdBQXJCO0FBQ0EsUUFBSVEsSUFBSSxHQUFHLFFBQVFGLGNBQWMsQ0FBQ0csTUFBZixDQUFzQkMsb0JBQXRCLENBQTJDLEVBQUVWLEdBQUcsRUFBRU0sY0FBYyxDQUFDTixHQUF0QixFQUEzQyxDQUFuQjtBQUNBSixJQUFBQSxNQUFNLENBQUNDLE1BQVAsQ0FBY1MsY0FBZCxFQUE4QkUsSUFBOUI7QUFDQSxXQUFPRixjQUFQO0FBQ0QsR0FQNEMsRUFBL0M7O0FBU0FoQixZQUFZLENBQUNZLFNBQVMsQ0FBQ1MsV0FBVixDQUFzQlAsTUFBdEIsQ0FBNkJDLElBQTlCLENBQVosQ0FBZ0Q7QUFDOUNJLEVBQUFBLE1BQU0sQ0FBQ0csSUFBRCxFQUFPLEVBQUVDLElBQUksR0FBRyxJQUFULEVBQWVQLGNBQWYsRUFBUCxFQUF3QztBQUM1Q0EsSUFBQUEsY0FBYyxLQUFkQSxjQUFjLEdBQUtWLE1BQU0sQ0FBQ2tCLE1BQVAsQ0FBY3hCLFlBQWQsQ0FBTCxDQUFkOzs7QUFHQSxXQUFPZ0IsY0FBUDtBQUNELEdBTjZDLEVBQWhEOzs7O0FBVUEsSUFBSVMsdUJBQXVCO0FBQ3pCekIsWUFBWSxDQUFDWSxTQUFTLENBQUNTLFdBQVYsQ0FBc0JLLE1BQXZCLENBQVosQ0FBMkMsRUFBRUMsaUJBQWlCLEVBQUVmLFNBQVMsQ0FBQ1MsV0FBVixDQUFzQlgsR0FBdEIsQ0FBMEJlLHVCQUEvQyxFQUEzQyxDQUR5QjtBQUVyQkcsQ0FBQyxJQUFJO0FBQ1BBLEVBQUFBLENBQUMsQ0FBQ0MsSUFBRixDQUFPLGNBQVA7QUFDQSxTQUFPRCxDQUFDLENBQUNDLElBQUYsQ0FBTztBQUNaMUIsSUFBQUEsV0FBVyxFQUFFLDJDQUREO0FBRVoyQixJQUFBQSxrQkFBa0IsRUFBRWxCLFNBQVMsQ0FBQ0MsVUFBVixDQUFxQkgsR0FBckIsQ0FBeUJRLElBRmpDLEVBQVA7QUFHSmEsRUFBQUEsS0FISDtBQUlELENBUndCLHlCQUEzQjtBQVNBL0IsWUFBWSxDQUFDZ0MsbUJBQWI7QUFDRWhDLFlBQVksQ0FBQ1ksU0FBUyxDQUFDVixlQUFWLENBQTBCd0IsTUFBM0IsQ0FBWixDQUErQyxFQUFFQyxpQkFBaUIsRUFBRWYsU0FBUyxDQUFDVixlQUFWLENBQTBCUSxHQUExQixDQUE4QnVCLGtCQUFuRCxFQUEvQyxDQURGO0FBRU1MLENBQUMsSUFBSTtBQUNQQSxFQUFBQSxDQUFDLENBQUNDLElBQUYsQ0FBTyxjQUFQO0FBQ0EsU0FBT0QsQ0FBQyxDQUFDQyxJQUFGLENBQU8sRUFBRUosdUJBQUYsRUFBUCxFQUFvQ00sS0FBM0M7QUFDRCxDQUxIIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgRW50aXR5IH0gZnJvbSAnQGRlcGVuZGVuY3kvZW50aXR5J1xuXG5pbnRlcmZhY2UgR3JhcGhFbGVtZW50RGF0YSB7XG4gIGxhYmVsOiBvYmplY3Q7XG4gIGtleTogc3RyaW5nIHwgbnVtYmVyO1xuICBba2V5OiBzdHJpbmddOiBhbnk7IC8vIG9wdGlvbmFsIG90aGVyIGZpZWxkc1xufVxuXG5leHBvcnQgY29uc3QgR3JhcGhFbGVtZW50ID0gbmV3IEVudGl0eS5jbGllbnRJbnRlcmZhY2UoeyBkZXNjcmlwdGlvbjogJ0dyYXBoRWxlbWVudCcsIGluc3RhbmNlVHlwZTogJ29iamVjdCcgfSlcblxuR3JhcGhFbGVtZW50LnByb3RvdHlwZVxuICB8PiAoXyA9PlxuICAgIE9iamVjdC5hc3NpZ24oXywge1xuICAgICAgZ2V0S2V5OiBmdW5jdGlvbihrZXkpIHtcbiAgICAgICAgcmV0dXJuIHRoaXMua2V5XG4gICAgICB9LFxuICAgIH0pKVxuXG5HcmFwaEVsZW1lbnQucmVmZXJlbmNlIHw+IChfID0+IE9iamVjdC5hc3NpZ24oXywge30pKVxuXG5HcmFwaEVsZW1lbnRbUmVmZXJlbmNlLmluaXRpYWxpemUuc2V0dGVyLmxpc3RdKHtcbiAgLy8qIGNvbnN0cnVjdG9yIHRoYXQgaXMgbWFkZSB0byB3b3JrIHdpdGggdGhlIHBsdWdpbiBmdW5jdGlvbmFsaXR5LlxuICBrZXkoW3sga2V5IH06IHsga2V5OiBzdHJpbmcgfCBudW1iZXIgfV0sIHsgaW5zdGFuY2VPYmplY3QsIHByb3RvdHlwZURlbGVnYXRpb24gfSkge1xuICAgIGluc3RhbmNlT2JqZWN0LmtleSA9IGtleVxuICAgIGxldCBkYXRhID0gdHJ1ZSB8fCBpbnN0YW5jZU9iamVjdC5wbHVnaW4uZGF0YWJhc2VNb2RlbEFkYXB0ZXIoeyBrZXk6IGluc3RhbmNlT2JqZWN0LmtleSB9KVxuICAgIE9iamVjdC5hc3NpZ24oaW5zdGFuY2VPYmplY3QsIGRhdGEpXG4gICAgcmV0dXJuIGluc3RhbmNlT2JqZWN0XG4gIH0sXG59KVxuR3JhcGhFbGVtZW50W1JlZmVyZW5jZS5jb25zdHJ1Y3Rvci5zZXR0ZXIubGlzdF0oe1xuICBwbHVnaW4oYXJncywgeyBzZWxmID0gdGhpcywgaW5zdGFuY2VPYmplY3QgfSkge1xuICAgIGluc3RhbmNlT2JqZWN0IHx8PSBPYmplY3QuY3JlYXRlKEdyYXBoRWxlbWVudClcbiAgICAvLyEgQXBwbHkgbXVsdGlwbGUgaW5oZXJpdGFuY2UgZnJvbSBhcmd1bWVudCBsaXN0IGluc3RhbmNlcy5cbiAgICAvLyBpbnN0YW5jZU9iamVjdC5wcm90b3R5cGVEZWxlZ2F0ZWRJbnN0YW5jZSA9ICguLi5hcmd1bWVudExpc3QpID0+IHNlbGY6OnNlbGYucHJvdG90eXBlRGVsZWdhdGVkSW5zdGFuY2UuY29uc3RydWN0KGFyZ3VtZW50TGlzdCwgeyBpbXBsZW1lbnRhdGlvbktleTogJ2tleScgfSlcbiAgICByZXR1cm4gaW5zdGFuY2VPYmplY3RcbiAgfSxcbn0pXG5cbi8vIENyZWF0ZSBjbGllbnQgaW50ZXJmYWNlXG5sZXQgY29uZmlndXJlZENvbnN0cnVjdGFibGUgPVxuICBHcmFwaEVsZW1lbnRbUmVmZXJlbmNlLmNvbnN0cnVjdG9yLnN3aXRjaF0oeyBpbXBsZW1lbnRhdGlvbktleTogUmVmZXJlbmNlLmNvbnN0cnVjdG9yLmtleS5jb25maWd1cmVkQ29uc3RydWN0YWJsZSB9KVxuICB8PiAoZyA9PiB7XG4gICAgZy5uZXh0KCdpbnRlcm1pdHRlbnQnKVxuICAgIHJldHVybiBnLm5leHQoe1xuICAgICAgZGVzY3JpcHRpb246ICdFbnRpdHlDb25zdHJ1Y3RhYmxlRm9yQ2xpZW50SW50ZXJmYWNlRGF0YScsXG4gICAgICBpbml0aWFsaXplRmFsbGJhY2s6IFJlZmVyZW5jZS5pbml0aWFsaXplLmtleS5kYXRhLFxuICAgIH0pLnZhbHVlXG4gIH0pXG5HcmFwaEVsZW1lbnQuY2xpZW50SW50ZXJmYWNlRGF0YSA9XG4gIEdyYXBoRWxlbWVudFtSZWZlcmVuY2UuY2xpZW50SW50ZXJmYWNlLnN3aXRjaF0oeyBpbXBsZW1lbnRhdGlvbktleTogUmVmZXJlbmNlLmNsaWVudEludGVyZmFjZS5rZXkucHJvdG90eXBlQ29uc3RydWN0IH0pXG4gIHw+IChnID0+IHtcbiAgICBnLm5leHQoJ2ludGVybWl0dGVudCcpXG4gICAgcmV0dXJuIGcubmV4dCh7IGNvbmZpZ3VyZWRDb25zdHJ1Y3RhYmxlIH0pLnZhbHVlXG4gIH0pXG4iXX0=

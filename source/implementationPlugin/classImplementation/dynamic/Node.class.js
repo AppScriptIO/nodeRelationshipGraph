@@ -1,14 +1,15 @@
-import r from 'rethinkdb'
-import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
-import { add, execute, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
-import promiseProperRace from '@dependency/promiseProperRace'
-import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.NodeFunction = NodeFunction;
+var _prototypeChainDebug = require("@dependency/prototypeChainDebug");
+var _decoratorUtility = require("@dependency/commonPattern/source/decoratorUtility.js");
 
-export function NodeFunction({ Superclass }) {
-    let self = 
-        @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
-        @extendedSubclassPattern.Subclass()            
-        class ImplementationNode extends Superclass {
-        }
-    return self
+var _extendedSubclassPattern = require("@dependency/commonPattern/source/extendedSubclassPattern.js");
+
+function NodeFunction({ Superclass }) {var _dec, _dec2, _class;
+  let self = (_dec =
+  (0, _decoratorUtility.conditional)({ decorator: _prototypeChainDebug.classDecorator, condition: process.env.SZN_DEBUG }), _dec2 =
+  _extendedSubclassPattern.extendedSubclassPattern.Subclass(), _dec(_class = _dec2(_class = class
+  ImplementationNode extends Superclass {}) || _class) || _class);
+
+  return self;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9jbGFzc0ltcGxlbWVudGF0aW9uL2R5bmFtaWMvTm9kZS5jbGFzcy5qcyJdLCJuYW1lcyI6WyJOb2RlRnVuY3Rpb24iLCJTdXBlcmNsYXNzIiwic2VsZiIsImRlY29yYXRvciIsInByb3RvdHlwZUNoYWluRGVidWciLCJjb25kaXRpb24iLCJwcm9jZXNzIiwiZW52IiwiU1pOX0RFQlVHIiwiZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4iLCJTdWJjbGFzcyIsIkltcGxlbWVudGF0aW9uTm9kZSJdLCJtYXBwaW5ncyI6IjtBQUNBO0FBQ0E7O0FBRUE7O0FBRU8sU0FBU0EsWUFBVCxDQUFzQixFQUFFQyxVQUFGLEVBQXRCLEVBQXNDO0FBQ3pDLE1BQUlDLElBQUk7QUFDSCxxQ0FBWSxFQUFFQyxTQUFTLEVBQUVDLG1DQUFiLEVBQWtDQyxTQUFTLEVBQUVDLE9BQU8sQ0FBQ0MsR0FBUixDQUFZQyxTQUF6RCxFQUFaLENBREc7QUFFSEMsbURBQXdCQyxRQUF4QixFQUZHLCtCQUNKO0FBRU1DLEVBQUFBLGtCQUZOLFNBRWlDVixVQUZqQyxDQUU0QyxFQUh4Qyx1QkFBUjs7QUFLQSxTQUFPQyxJQUFQO0FBQ0giLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgciBmcm9tICdyZXRoaW5rZGInXHJcbmltcG9ydCB7IGNsYXNzRGVjb3JhdG9yIGFzIHByb3RvdHlwZUNoYWluRGVidWd9IGZyb20gJ0BkZXBlbmRlbmN5L3Byb3RvdHlwZUNoYWluRGVidWcnXHJcbmltcG9ydCB7IGFkZCwgZXhlY3V0ZSwgY29uZGl0aW9uYWwgfSBmcm9tICdAZGVwZW5kZW5jeS9jb21tb25QYXR0ZXJuL3NvdXJjZS9kZWNvcmF0b3JVdGlsaXR5LmpzJ1xyXG5pbXBvcnQgcHJvbWlzZVByb3BlclJhY2UgZnJvbSAnQGRlcGVuZGVuY3kvcHJvbWlzZVByb3BlclJhY2UnXHJcbmltcG9ydCB7IGV4dGVuZGVkU3ViY2xhc3NQYXR0ZXJuIH0gZnJvbSAnQGRlcGVuZGVuY3kvY29tbW9uUGF0dGVybi9zb3VyY2UvZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4uanMnXHJcblxyXG5leHBvcnQgZnVuY3Rpb24gTm9kZUZ1bmN0aW9uKHsgU3VwZXJjbGFzcyB9KSB7XHJcbiAgICBsZXQgc2VsZiA9IFxyXG4gICAgICAgIEBjb25kaXRpb25hbCh7IGRlY29yYXRvcjogcHJvdG90eXBlQ2hhaW5EZWJ1ZywgY29uZGl0aW9uOiBwcm9jZXNzLmVudi5TWk5fREVCVUcgfSlcclxuICAgICAgICBAZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4uU3ViY2xhc3MoKSAgICAgICAgICAgIFxyXG4gICAgICAgIGNsYXNzIEltcGxlbWVudGF0aW9uTm9kZSBleHRlbmRzIFN1cGVyY2xhc3Mge1xyXG4gICAgICAgIH1cclxuICAgIHJldHVybiBzZWxmXHJcbn0iXX0=

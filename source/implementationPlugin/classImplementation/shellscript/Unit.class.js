@@ -1,21 +1,22 @@
-import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
-import { add, execute, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
-import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
-import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/query/getTableDocument.query.js";
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.UnitFunction = UnitFunction;var _prototypeChainDebug = require("@dependency/prototypeChainDebug");
+var _decoratorUtility = require("@dependency/commonPattern/source/decoratorUtility.js");
+var _extendedSubclassPattern = require("@dependency/commonPattern/source/extendedSubclassPattern.js");
+var _getTableDocumentQuery = require("@dependency/databaseUtility/source/query/getTableDocument.query.js");
 
-let databasePrefix = 'shellscript_'
+let databasePrefix = 'shellscript_';
 let getDocument = {
-    'Unit': getTableDocumentCurried({ databaseName: 'webappSetting', tableName: `${databasePrefix}unit` })
-}
+  'Unit': (0, _getTableDocumentQuery.curried)({ databaseName: 'webappSetting', tableName: `${databasePrefix}unit` }) };
 
-export function UnitFunction({ Superclass }) {
-    let self = 
-        @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
-        @execute({
-            staticMethod: 'initializeStaticClass', 
-            args: [ getDocument['Unit'] ]
-        })
-        @extendedSubclassPattern.Subclass()
-        class Unit extends Superclass {}
-    return self
+
+function UnitFunction({ Superclass }) {var _dec, _dec2, _dec3, _class;
+  let self = (_dec =
+  (0, _decoratorUtility.conditional)({ decorator: _prototypeChainDebug.classDecorator, condition: process.env.SZN_DEBUG }), _dec2 =
+  (0, _decoratorUtility.execute)({
+    staticMethod: 'initializeStaticClass',
+    args: [getDocument['Unit']] }), _dec3 =
+
+  _extendedSubclassPattern.extendedSubclassPattern.Subclass(), _dec(_class = _dec2(_class = _dec3(_class = class
+  Unit extends Superclass {}) || _class) || _class) || _class);
+  return self;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9jbGFzc0ltcGxlbWVudGF0aW9uL3NoZWxsc2NyaXB0L1VuaXQuY2xhc3MuanMiXSwibmFtZXMiOlsiZGF0YWJhc2VQcmVmaXgiLCJnZXREb2N1bWVudCIsImRhdGFiYXNlTmFtZSIsInRhYmxlTmFtZSIsIlVuaXRGdW5jdGlvbiIsIlN1cGVyY2xhc3MiLCJzZWxmIiwiZGVjb3JhdG9yIiwicHJvdG90eXBlQ2hhaW5EZWJ1ZyIsImNvbmRpdGlvbiIsInByb2Nlc3MiLCJlbnYiLCJTWk5fREVCVUciLCJzdGF0aWNNZXRob2QiLCJhcmdzIiwiZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4iLCJTdWJjbGFzcyIsIlVuaXQiXSwibWFwcGluZ3MiOiIrR0FBQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQSxJQUFJQSxjQUFjLEdBQUcsY0FBckI7QUFDQSxJQUFJQyxXQUFXLEdBQUc7QUFDZCxVQUFRLG9DQUF3QixFQUFFQyxZQUFZLEVBQUUsZUFBaEIsRUFBaUNDLFNBQVMsRUFBRyxHQUFFSCxjQUFlLE1BQTlELEVBQXhCLENBRE0sRUFBbEI7OztBQUlPLFNBQVNJLFlBQVQsQ0FBc0IsRUFBRUMsVUFBRixFQUF0QixFQUFzQztBQUN6QyxNQUFJQyxJQUFJO0FBQ0gscUNBQVksRUFBRUMsU0FBUyxFQUFFQyxtQ0FBYixFQUFrQ0MsU0FBUyxFQUFFQyxPQUFPLENBQUNDLEdBQVIsQ0FBWUMsU0FBekQsRUFBWixDQURHO0FBRUgsaUNBQVE7QUFDTEMsSUFBQUEsWUFBWSxFQUFFLHVCQURUO0FBRUxDLElBQUFBLElBQUksRUFBRSxDQUFFYixXQUFXLENBQUMsTUFBRCxDQUFiLENBRkQsRUFBUixDQUZHOztBQU1IYyxtREFBd0JDLFFBQXhCLEVBTkcsOENBQ0o7QUFNTUMsRUFBQUEsSUFOTixTQU1tQlosVUFObkIsQ0FNOEIsRUFQMUIsa0NBQVI7QUFRQSxTQUFPQyxJQUFQO0FBQ0giLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBjbGFzc0RlY29yYXRvciBhcyBwcm90b3R5cGVDaGFpbkRlYnVnfSBmcm9tICdAZGVwZW5kZW5jeS9wcm90b3R5cGVDaGFpbkRlYnVnJ1xyXG5pbXBvcnQgeyBhZGQsIGV4ZWN1dGUsIGNvbmRpdGlvbmFsIH0gZnJvbSAnQGRlcGVuZGVuY3kvY29tbW9uUGF0dGVybi9zb3VyY2UvZGVjb3JhdG9yVXRpbGl0eS5qcydcclxuaW1wb3J0IHsgZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4gfSBmcm9tICdAZGVwZW5kZW5jeS9jb21tb25QYXR0ZXJuL3NvdXJjZS9leHRlbmRlZFN1YmNsYXNzUGF0dGVybi5qcydcclxuaW1wb3J0IHsgY3VycmllZCBhcyBnZXRUYWJsZURvY3VtZW50Q3VycmllZCB9IGZyb20gXCJAZGVwZW5kZW5jeS9kYXRhYmFzZVV0aWxpdHkvc291cmNlL3F1ZXJ5L2dldFRhYmxlRG9jdW1lbnQucXVlcnkuanNcIjtcclxuXHJcbmxldCBkYXRhYmFzZVByZWZpeCA9ICdzaGVsbHNjcmlwdF8nXHJcbmxldCBnZXREb2N1bWVudCA9IHtcclxuICAgICdVbml0JzogZ2V0VGFibGVEb2N1bWVudEN1cnJpZWQoeyBkYXRhYmFzZU5hbWU6ICd3ZWJhcHBTZXR0aW5nJywgdGFibGVOYW1lOiBgJHtkYXRhYmFzZVByZWZpeH11bml0YCB9KVxyXG59XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gVW5pdEZ1bmN0aW9uKHsgU3VwZXJjbGFzcyB9KSB7XHJcbiAgICBsZXQgc2VsZiA9IFxyXG4gICAgICAgIEBjb25kaXRpb25hbCh7IGRlY29yYXRvcjogcHJvdG90eXBlQ2hhaW5EZWJ1ZywgY29uZGl0aW9uOiBwcm9jZXNzLmVudi5TWk5fREVCVUcgfSlcclxuICAgICAgICBAZXhlY3V0ZSh7XHJcbiAgICAgICAgICAgIHN0YXRpY01ldGhvZDogJ2luaXRpYWxpemVTdGF0aWNDbGFzcycsIFxyXG4gICAgICAgICAgICBhcmdzOiBbIGdldERvY3VtZW50WydVbml0J10gXVxyXG4gICAgICAgIH0pXHJcbiAgICAgICAgQGV4dGVuZGVkU3ViY2xhc3NQYXR0ZXJuLlN1YmNsYXNzKClcclxuICAgICAgICBjbGFzcyBVbml0IGV4dGVuZHMgU3VwZXJjbGFzcyB7fVxyXG4gICAgcmV0dXJuIHNlbGZcclxufSJdfQ==

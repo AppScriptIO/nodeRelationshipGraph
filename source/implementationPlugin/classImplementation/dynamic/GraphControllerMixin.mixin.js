@@ -1,17 +1,18 @@
-import { Mixin } from '@dependency/classMixin'
-import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
-import { add, execute, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
-import assert from "assert"
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.GraphControllerMixin = void 0;var _classMixin = require("@dependency/classMixin");
+var _prototypeChainDebug = require("@dependency/prototypeChainDebug");
+var _decoratorUtility = require("@dependency/commonPattern/source/decoratorUtility.js");
 
-/**
- * // Dynamic implementation - not restricted to specific initialization algorithm, rather choosen from setting of each node in the traversed graph.
- * @description Extends a class by super class and adds some common functionality.
- */
-export let GraphControllerMixin = Mixin(({ Superclass }) => {
-    let self = 
-    @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })    
-    class DynamicMixinController extends Superclass {
-    }
-    
-    return self
-})
+
+
+
+
+
+let GraphControllerMixin = (0, _classMixin.Mixin)(({ Superclass }) => {var _dec, _class;
+  let self = (_dec =
+  (0, _decoratorUtility.conditional)({ decorator: _prototypeChainDebug.classDecorator, condition: process.env.SZN_DEBUG }), _dec(_class = class
+  DynamicMixinController extends Superclass {}) || _class);
+
+
+  return self;
+});exports.GraphControllerMixin = GraphControllerMixin;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9jbGFzc0ltcGxlbWVudGF0aW9uL2R5bmFtaWMvR3JhcGhDb250cm9sbGVyTWl4aW4ubWl4aW4uanMiXSwibmFtZXMiOlsiR3JhcGhDb250cm9sbGVyTWl4aW4iLCJTdXBlcmNsYXNzIiwic2VsZiIsImRlY29yYXRvciIsInByb3RvdHlwZUNoYWluRGVidWciLCJjb25kaXRpb24iLCJwcm9jZXNzIiwiZW52IiwiU1pOX0RFQlVHIiwiRHluYW1pY01peGluQ29udHJvbGxlciJdLCJtYXBwaW5ncyI6ImlIQUFBO0FBQ0E7QUFDQTs7Ozs7OztBQU9PLElBQUlBLG9CQUFvQixHQUFHLHVCQUFNLENBQUMsRUFBRUMsVUFBRixFQUFELEtBQW9CO0FBQ3hELE1BQUlDLElBQUk7QUFDUCxxQ0FBWSxFQUFFQyxTQUFTLEVBQUVDLG1DQUFiLEVBQWtDQyxTQUFTLEVBQUVDLE9BQU8sQ0FBQ0MsR0FBUixDQUFZQyxTQUF6RCxFQUFaLENBRE8sZ0JBQ1I7QUFDTUMsRUFBQUEsc0JBRE4sU0FDcUNSLFVBRHJDLENBQ2dELEVBRnhDLFlBQVI7OztBQUtBLFNBQU9DLElBQVA7QUFDSCxDQVBpQyxDQUEzQixDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgTWl4aW4gfSBmcm9tICdAZGVwZW5kZW5jeS9jbGFzc01peGluJ1xyXG5pbXBvcnQgeyBjbGFzc0RlY29yYXRvciBhcyBwcm90b3R5cGVDaGFpbkRlYnVnfSBmcm9tICdAZGVwZW5kZW5jeS9wcm90b3R5cGVDaGFpbkRlYnVnJ1xyXG5pbXBvcnQgeyBhZGQsIGV4ZWN1dGUsIGNvbmRpdGlvbmFsIH0gZnJvbSAnQGRlcGVuZGVuY3kvY29tbW9uUGF0dGVybi9zb3VyY2UvZGVjb3JhdG9yVXRpbGl0eS5qcydcclxuaW1wb3J0IGFzc2VydCBmcm9tIFwiYXNzZXJ0XCJcclxuXHJcbi8qKlxyXG4gKiAvLyBEeW5hbWljIGltcGxlbWVudGF0aW9uIC0gbm90IHJlc3RyaWN0ZWQgdG8gc3BlY2lmaWMgaW5pdGlhbGl6YXRpb24gYWxnb3JpdGhtLCByYXRoZXIgY2hvb3NlbiBmcm9tIHNldHRpbmcgb2YgZWFjaCBub2RlIGluIHRoZSB0cmF2ZXJzZWQgZ3JhcGguXHJcbiAqIEBkZXNjcmlwdGlvbiBFeHRlbmRzIGEgY2xhc3MgYnkgc3VwZXIgY2xhc3MgYW5kIGFkZHMgc29tZSBjb21tb24gZnVuY3Rpb25hbGl0eS5cclxuICovXHJcbmV4cG9ydCBsZXQgR3JhcGhDb250cm9sbGVyTWl4aW4gPSBNaXhpbigoeyBTdXBlcmNsYXNzIH0pID0+IHtcclxuICAgIGxldCBzZWxmID0gXHJcbiAgICBAY29uZGl0aW9uYWwoeyBkZWNvcmF0b3I6IHByb3RvdHlwZUNoYWluRGVidWcsIGNvbmRpdGlvbjogcHJvY2Vzcy5lbnYuU1pOX0RFQlVHIH0pICAgIFxyXG4gICAgY2xhc3MgRHluYW1pY01peGluQ29udHJvbGxlciBleHRlbmRzIFN1cGVyY2xhc3Mge1xyXG4gICAgfVxyXG4gICAgXHJcbiAgICByZXR1cm4gc2VsZlxyXG59KSJdfQ==

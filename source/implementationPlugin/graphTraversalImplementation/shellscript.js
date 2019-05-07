@@ -1,83 +1,84 @@
-// TODO: rename `shellscript.js` to `taskScript.js` as shell scripts are only part of the execution types possible.
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.shellscript = shellscript;
 
-/**
- * implementationType = executeScript
- * @description when first called "this" context is assigned to the AppInstance for the comming request. And on subsequest calls it is assigned to the nestedUnit instance.
- * 
- * @param {any} {nestedUnitKey} 
- * @returns { Object || False } Object containing instruction settings to be used through an implementing module.
- */
-import { exec, execSync, spawn, spawnSync } from 'child_process'
 
-export function shellscript({ thisArg }) { // function wrapper to set thisArg on implementaion object functions.
 
-    let self = {
-        async executeDataItem({
-            dataItem,
-            nodeInstance = thisArg,
-            executionType
-        }) {
-            // execute command
-            await dataItemInstance.executeScript()
-        },
-        // dataItem instance methods
-        async executeScript() {
-            let message = ` _____                          _        
+
+
+
+
+
+var _child_process = require("child_process");
+
+function shellscript({ thisArg }) {
+
+  let self = {
+    async executeDataItem({
+      dataItem,
+      nodeInstance = thisArg,
+      executionType })
+    {
+
+      await dataItemInstance.executeScript();
+    },
+
+    async executeScript() {
+      let message = ` _____                          _        
 | ____|__  __ ___   ___  _   _ | |_  ___ 
 |  _|  \\ \\/ // _ \\ / __|| | | || __|/ _ \\
 | |___  >  <|  __/| (__ | |_| || |_|  __/    
 |_____|/_/\\_\\\\___| \\___| \\__,_| \\__|\\___|`;
-            let childProcess;
-            switch (this.implementation) {
-                case 'spawn':
-                    try {
-                        console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument.join(' ')}`)
-                        childProcess = spawnSync(this.command, this.argument, this.option)
-                        if(childProcess.status > 0) throw childProcess.error
-                    } catch (error) {
-                        process.exit(childProcess.status)
-                    }
-                break;
-                case 'spawnIgnoreError':
-                    try {
-                        console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument.join(' ')}`)
-                        childProcess = spawnSync(this.command, this.argument, this.option)
-                        if(childProcess.status > 0) throw childProcess.error
-                    } catch (error) {
-                        console.log(childProcess.status)
-                    }
-                break;
-                case 'spawnAsynchronous':
-                    try {
-                        console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`${this.command} ${this.argument.join(' ')}`)                            
-                        childProcess = spawn(this.command, this.argument, this.option)
-                        if(childProcess.status > 0) throw childProcess.error
-                    } catch (error) {
-                        process.exit(childProcess.status)
-                    }
-                break;
-                case 'file':
-                    try {
-                        console.log(message); console.log(`\x1b[45m%s\x1b[0m`,`shellscript file: ${this.filename}, shellscriptPath: ${this.shellscriptPath}`)                            
-                        this.option.cwd = this.shellscriptPath
-                        execSync(`sh ${this.filename}`, this.option)
-                    } catch (error) {
-                        throw error
-                        process.exit(1)
-                    }
-                break;
-                default:
-                    console.log('X shellscriptUnit.implementation does not match any option.')
-                break;
-            }
-            // important to prevent 'unable to re-open stdin' error between shells.
-            await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution.
-        }
+      let childProcess;
+      switch (this.implementation) {
+        case 'spawn':
+          try {
+            console.log(message);console.log(`\x1b[45m%s\x1b[0m`, `${this.command} ${this.argument.join(' ')}`);
+            childProcess = (0, _child_process.spawnSync)(this.command, this.argument, this.option);
+            if (childProcess.status > 0) throw childProcess.error;
+          } catch (error) {
+            process.exit(childProcess.status);
+          }
+          break;
+        case 'spawnIgnoreError':
+          try {
+            console.log(message);console.log(`\x1b[45m%s\x1b[0m`, `${this.command} ${this.argument.join(' ')}`);
+            childProcess = (0, _child_process.spawnSync)(this.command, this.argument, this.option);
+            if (childProcess.status > 0) throw childProcess.error;
+          } catch (error) {
+            console.log(childProcess.status);
+          }
+          break;
+        case 'spawnAsynchronous':
+          try {
+            console.log(message);console.log(`\x1b[45m%s\x1b[0m`, `${this.command} ${this.argument.join(' ')}`);
+            childProcess = (0, _child_process.spawn)(this.command, this.argument, this.option);
+            if (childProcess.status > 0) throw childProcess.error;
+          } catch (error) {
+            process.exit(childProcess.status);
+          }
+          break;
+        case 'file':
+          try {
+            console.log(message);console.log(`\x1b[45m%s\x1b[0m`, `shellscript file: ${this.filename}, shellscriptPath: ${this.shellscriptPath}`);
+            this.option.cwd = this.shellscriptPath;
+            (0, _child_process.execSync)(`sh ${this.filename}`, this.option);
+          } catch (error) {
+            throw error;
+            process.exit(1);
+          }
+          break;
+        default:
+          console.log('X shellscriptUnit.implementation does not match any option.');
+          break;}
 
-    }
-    
-    Object.keys(self).forEach(function(key) {
-        self[key] = self[key].bind(thisArg)
-    }, {})
-    return self
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } };
+
+
+
+  Object.keys(self).forEach(function (key) {
+    self[key] = self[key].bind(thisArg);
+  }, {});
+  return self;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9ncmFwaFRyYXZlcnNhbEltcGxlbWVudGF0aW9uL3NoZWxsc2NyaXB0LmpzIl0sIm5hbWVzIjpbInNoZWxsc2NyaXB0IiwidGhpc0FyZyIsInNlbGYiLCJleGVjdXRlRGF0YUl0ZW0iLCJkYXRhSXRlbSIsIm5vZGVJbnN0YW5jZSIsImV4ZWN1dGlvblR5cGUiLCJkYXRhSXRlbUluc3RhbmNlIiwiZXhlY3V0ZVNjcmlwdCIsIm1lc3NhZ2UiLCJjaGlsZFByb2Nlc3MiLCJpbXBsZW1lbnRhdGlvbiIsImNvbnNvbGUiLCJsb2ciLCJjb21tYW5kIiwiYXJndW1lbnQiLCJqb2luIiwib3B0aW9uIiwic3RhdHVzIiwiZXJyb3IiLCJwcm9jZXNzIiwiZXhpdCIsImZpbGVuYW1lIiwic2hlbGxzY3JpcHRQYXRoIiwiY3dkIiwiUHJvbWlzZSIsInJlc29sdmUiLCJzZXRUaW1lb3V0IiwiT2JqZWN0Iiwia2V5cyIsImZvckVhY2giLCJrZXkiLCJiaW5kIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7QUFTQTs7QUFFTyxTQUFTQSxXQUFULENBQXFCLEVBQUVDLE9BQUYsRUFBckIsRUFBa0M7O0FBRXJDLE1BQUlDLElBQUksR0FBRztBQUNQLFVBQU1DLGVBQU4sQ0FBc0I7QUFDbEJDLE1BQUFBLFFBRGtCO0FBRWxCQyxNQUFBQSxZQUFZLEdBQUdKLE9BRkc7QUFHbEJLLE1BQUFBLGFBSGtCLEVBQXRCO0FBSUc7O0FBRUMsWUFBTUMsZ0JBQWdCLENBQUNDLGFBQWpCLEVBQU47QUFDSCxLQVJNOztBQVVQLFVBQU1BLGFBQU4sR0FBc0I7QUFDbEIsVUFBSUMsT0FBTyxHQUFJOzs7O2lEQUFmO0FBS0EsVUFBSUMsWUFBSjtBQUNBLGNBQVEsS0FBS0MsY0FBYjtBQUNJLGFBQUssT0FBTDtBQUNJLGNBQUk7QUFDQUMsWUFBQUEsT0FBTyxDQUFDQyxHQUFSLENBQVlKLE9BQVosRUFBc0JHLE9BQU8sQ0FBQ0MsR0FBUixDQUFhLG1CQUFiLEVBQWlDLEdBQUUsS0FBS0MsT0FBUSxJQUFHLEtBQUtDLFFBQUwsQ0FBY0MsSUFBZCxDQUFtQixHQUFuQixDQUF3QixFQUEzRTtBQUN0Qk4sWUFBQUEsWUFBWSxHQUFHLDhCQUFVLEtBQUtJLE9BQWYsRUFBd0IsS0FBS0MsUUFBN0IsRUFBdUMsS0FBS0UsTUFBNUMsQ0FBZjtBQUNBLGdCQUFHUCxZQUFZLENBQUNRLE1BQWIsR0FBc0IsQ0FBekIsRUFBNEIsTUFBTVIsWUFBWSxDQUFDUyxLQUFuQjtBQUMvQixXQUpELENBSUUsT0FBT0EsS0FBUCxFQUFjO0FBQ1pDLFlBQUFBLE9BQU8sQ0FBQ0MsSUFBUixDQUFhWCxZQUFZLENBQUNRLE1BQTFCO0FBQ0g7QUFDTDtBQUNBLGFBQUssa0JBQUw7QUFDSSxjQUFJO0FBQ0FOLFlBQUFBLE9BQU8sQ0FBQ0MsR0FBUixDQUFZSixPQUFaLEVBQXNCRyxPQUFPLENBQUNDLEdBQVIsQ0FBYSxtQkFBYixFQUFpQyxHQUFFLEtBQUtDLE9BQVEsSUFBRyxLQUFLQyxRQUFMLENBQWNDLElBQWQsQ0FBbUIsR0FBbkIsQ0FBd0IsRUFBM0U7QUFDdEJOLFlBQUFBLFlBQVksR0FBRyw4QkFBVSxLQUFLSSxPQUFmLEVBQXdCLEtBQUtDLFFBQTdCLEVBQXVDLEtBQUtFLE1BQTVDLENBQWY7QUFDQSxnQkFBR1AsWUFBWSxDQUFDUSxNQUFiLEdBQXNCLENBQXpCLEVBQTRCLE1BQU1SLFlBQVksQ0FBQ1MsS0FBbkI7QUFDL0IsV0FKRCxDQUlFLE9BQU9BLEtBQVAsRUFBYztBQUNaUCxZQUFBQSxPQUFPLENBQUNDLEdBQVIsQ0FBWUgsWUFBWSxDQUFDUSxNQUF6QjtBQUNIO0FBQ0w7QUFDQSxhQUFLLG1CQUFMO0FBQ0ksY0FBSTtBQUNBTixZQUFBQSxPQUFPLENBQUNDLEdBQVIsQ0FBWUosT0FBWixFQUFzQkcsT0FBTyxDQUFDQyxHQUFSLENBQWEsbUJBQWIsRUFBaUMsR0FBRSxLQUFLQyxPQUFRLElBQUcsS0FBS0MsUUFBTCxDQUFjQyxJQUFkLENBQW1CLEdBQW5CLENBQXdCLEVBQTNFO0FBQ3RCTixZQUFBQSxZQUFZLEdBQUcsMEJBQU0sS0FBS0ksT0FBWCxFQUFvQixLQUFLQyxRQUF6QixFQUFtQyxLQUFLRSxNQUF4QyxDQUFmO0FBQ0EsZ0JBQUdQLFlBQVksQ0FBQ1EsTUFBYixHQUFzQixDQUF6QixFQUE0QixNQUFNUixZQUFZLENBQUNTLEtBQW5CO0FBQy9CLFdBSkQsQ0FJRSxPQUFPQSxLQUFQLEVBQWM7QUFDWkMsWUFBQUEsT0FBTyxDQUFDQyxJQUFSLENBQWFYLFlBQVksQ0FBQ1EsTUFBMUI7QUFDSDtBQUNMO0FBQ0EsYUFBSyxNQUFMO0FBQ0ksY0FBSTtBQUNBTixZQUFBQSxPQUFPLENBQUNDLEdBQVIsQ0FBWUosT0FBWixFQUFzQkcsT0FBTyxDQUFDQyxHQUFSLENBQWEsbUJBQWIsRUFBaUMscUJBQW9CLEtBQUtTLFFBQVMsc0JBQXFCLEtBQUtDLGVBQWdCLEVBQTdHO0FBQ3RCLGlCQUFLTixNQUFMLENBQVlPLEdBQVosR0FBa0IsS0FBS0QsZUFBdkI7QUFDQSx5Q0FBVSxNQUFLLEtBQUtELFFBQVMsRUFBN0IsRUFBZ0MsS0FBS0wsTUFBckM7QUFDSCxXQUpELENBSUUsT0FBT0UsS0FBUCxFQUFjO0FBQ1osa0JBQU1BLEtBQU47QUFDQUMsWUFBQUEsT0FBTyxDQUFDQyxJQUFSLENBQWEsQ0FBYjtBQUNIO0FBQ0w7QUFDQTtBQUNJVCxVQUFBQSxPQUFPLENBQUNDLEdBQVIsQ0FBWSw2REFBWjtBQUNKLGdCQXhDSjs7O0FBMkNBLFlBQU0sSUFBSVksT0FBSixDQUFZQyxPQUFPLElBQUlDLFVBQVUsQ0FBQ0QsT0FBRCxFQUFVLEdBQVYsQ0FBakMsQ0FBTjtBQUNILEtBN0RNLEVBQVg7Ozs7QUFpRUFFLEVBQUFBLE1BQU0sQ0FBQ0MsSUFBUCxDQUFZM0IsSUFBWixFQUFrQjRCLE9BQWxCLENBQTBCLFVBQVNDLEdBQVQsRUFBYztBQUNwQzdCLElBQUFBLElBQUksQ0FBQzZCLEdBQUQsQ0FBSixHQUFZN0IsSUFBSSxDQUFDNkIsR0FBRCxDQUFKLENBQVVDLElBQVYsQ0FBZS9CLE9BQWYsQ0FBWjtBQUNILEdBRkQsRUFFRyxFQUZIO0FBR0EsU0FBT0MsSUFBUDtBQUNIIiwic291cmNlc0NvbnRlbnQiOlsiLy8gVE9ETzogcmVuYW1lIGBzaGVsbHNjcmlwdC5qc2AgdG8gYHRhc2tTY3JpcHQuanNgIGFzIHNoZWxsIHNjcmlwdHMgYXJlIG9ubHkgcGFydCBvZiB0aGUgZXhlY3V0aW9uIHR5cGVzIHBvc3NpYmxlLlxyXG5cclxuLyoqXHJcbiAqIGltcGxlbWVudGF0aW9uVHlwZSA9IGV4ZWN1dGVTY3JpcHRcclxuICogQGRlc2NyaXB0aW9uIHdoZW4gZmlyc3QgY2FsbGVkIFwidGhpc1wiIGNvbnRleHQgaXMgYXNzaWduZWQgdG8gdGhlIEFwcEluc3RhbmNlIGZvciB0aGUgY29tbWluZyByZXF1ZXN0LiBBbmQgb24gc3Vic2VxdWVzdCBjYWxscyBpdCBpcyBhc3NpZ25lZCB0byB0aGUgbmVzdGVkVW5pdCBpbnN0YW5jZS5cclxuICogXHJcbiAqIEBwYXJhbSB7YW55fSB7bmVzdGVkVW5pdEtleX0gXHJcbiAqIEByZXR1cm5zIHsgT2JqZWN0IHx8IEZhbHNlIH0gT2JqZWN0IGNvbnRhaW5pbmcgaW5zdHJ1Y3Rpb24gc2V0dGluZ3MgdG8gYmUgdXNlZCB0aHJvdWdoIGFuIGltcGxlbWVudGluZyBtb2R1bGUuXHJcbiAqL1xyXG5pbXBvcnQgeyBleGVjLCBleGVjU3luYywgc3Bhd24sIHNwYXduU3luYyB9IGZyb20gJ2NoaWxkX3Byb2Nlc3MnXHJcblxyXG5leHBvcnQgZnVuY3Rpb24gc2hlbGxzY3JpcHQoeyB0aGlzQXJnIH0pIHsgLy8gZnVuY3Rpb24gd3JhcHBlciB0byBzZXQgdGhpc0FyZyBvbiBpbXBsZW1lbnRhaW9uIG9iamVjdCBmdW5jdGlvbnMuXHJcblxyXG4gICAgbGV0IHNlbGYgPSB7XHJcbiAgICAgICAgYXN5bmMgZXhlY3V0ZURhdGFJdGVtKHtcclxuICAgICAgICAgICAgZGF0YUl0ZW0sXHJcbiAgICAgICAgICAgIG5vZGVJbnN0YW5jZSA9IHRoaXNBcmcsXHJcbiAgICAgICAgICAgIGV4ZWN1dGlvblR5cGVcclxuICAgICAgICB9KSB7XHJcbiAgICAgICAgICAgIC8vIGV4ZWN1dGUgY29tbWFuZFxyXG4gICAgICAgICAgICBhd2FpdCBkYXRhSXRlbUluc3RhbmNlLmV4ZWN1dGVTY3JpcHQoKVxyXG4gICAgICAgIH0sXHJcbiAgICAgICAgLy8gZGF0YUl0ZW0gaW5zdGFuY2UgbWV0aG9kc1xyXG4gICAgICAgIGFzeW5jIGV4ZWN1dGVTY3JpcHQoKSB7XHJcbiAgICAgICAgICAgIGxldCBtZXNzYWdlID0gYCBfX19fXyAgICAgICAgICAgICAgICAgICAgICAgICAgXyAgICAgICAgXHJcbnwgX19fX3xfXyAgX18gX19fICAgX19fICBfICAgXyB8IHxfICBfX18gXHJcbnwgIF98ICBcXFxcIFxcXFwvIC8vIF8gXFxcXCAvIF9ffHwgfCB8IHx8IF9ffC8gXyBcXFxcXHJcbnwgfF9fXyAgPiAgPHwgIF9fL3wgKF9fIHwgfF98IHx8IHxffCAgX18vICAgIFxyXG58X19fX198L18vXFxcXF9cXFxcXFxcXF9fX3wgXFxcXF9fX3wgXFxcXF9fLF98IFxcXFxfX3xcXFxcX19ffGA7XHJcbiAgICAgICAgICAgIGxldCBjaGlsZFByb2Nlc3M7XHJcbiAgICAgICAgICAgIHN3aXRjaCAodGhpcy5pbXBsZW1lbnRhdGlvbikge1xyXG4gICAgICAgICAgICAgICAgY2FzZSAnc3Bhd24nOlxyXG4gICAgICAgICAgICAgICAgICAgIHRyeSB7XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnNvbGUubG9nKG1lc3NhZ2UpOyBjb25zb2xlLmxvZyhgXFx4MWJbNDVtJXNcXHgxYlswbWAsYCR7dGhpcy5jb21tYW5kfSAke3RoaXMuYXJndW1lbnQuam9pbignICcpfWApXHJcbiAgICAgICAgICAgICAgICAgICAgICAgIGNoaWxkUHJvY2VzcyA9IHNwYXduU3luYyh0aGlzLmNvbW1hbmQsIHRoaXMuYXJndW1lbnQsIHRoaXMub3B0aW9uKVxyXG4gICAgICAgICAgICAgICAgICAgICAgICBpZihjaGlsZFByb2Nlc3Muc3RhdHVzID4gMCkgdGhyb3cgY2hpbGRQcm9jZXNzLmVycm9yXHJcbiAgICAgICAgICAgICAgICAgICAgfSBjYXRjaCAoZXJyb3IpIHtcclxuICAgICAgICAgICAgICAgICAgICAgICAgcHJvY2Vzcy5leGl0KGNoaWxkUHJvY2Vzcy5zdGF0dXMpXHJcbiAgICAgICAgICAgICAgICAgICAgfVxyXG4gICAgICAgICAgICAgICAgYnJlYWs7XHJcbiAgICAgICAgICAgICAgICBjYXNlICdzcGF3bklnbm9yZUVycm9yJzpcclxuICAgICAgICAgICAgICAgICAgICB0cnkge1xyXG4gICAgICAgICAgICAgICAgICAgICAgICBjb25zb2xlLmxvZyhtZXNzYWdlKTsgY29uc29sZS5sb2coYFxceDFiWzQ1bSVzXFx4MWJbMG1gLGAke3RoaXMuY29tbWFuZH0gJHt0aGlzLmFyZ3VtZW50LmpvaW4oJyAnKX1gKVxyXG4gICAgICAgICAgICAgICAgICAgICAgICBjaGlsZFByb2Nlc3MgPSBzcGF3blN5bmModGhpcy5jb21tYW5kLCB0aGlzLmFyZ3VtZW50LCB0aGlzLm9wdGlvbilcclxuICAgICAgICAgICAgICAgICAgICAgICAgaWYoY2hpbGRQcm9jZXNzLnN0YXR1cyA+IDApIHRocm93IGNoaWxkUHJvY2Vzcy5lcnJvclxyXG4gICAgICAgICAgICAgICAgICAgIH0gY2F0Y2ggKGVycm9yKSB7XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnNvbGUubG9nKGNoaWxkUHJvY2Vzcy5zdGF0dXMpXHJcbiAgICAgICAgICAgICAgICAgICAgfVxyXG4gICAgICAgICAgICAgICAgYnJlYWs7XHJcbiAgICAgICAgICAgICAgICBjYXNlICdzcGF3bkFzeW5jaHJvbm91cyc6XHJcbiAgICAgICAgICAgICAgICAgICAgdHJ5IHtcclxuICAgICAgICAgICAgICAgICAgICAgICAgY29uc29sZS5sb2cobWVzc2FnZSk7IGNvbnNvbGUubG9nKGBcXHgxYls0NW0lc1xceDFiWzBtYCxgJHt0aGlzLmNvbW1hbmR9ICR7dGhpcy5hcmd1bWVudC5qb2luKCcgJyl9YCkgICAgICAgICAgICAgICAgICAgICAgICAgICAgXHJcbiAgICAgICAgICAgICAgICAgICAgICAgIGNoaWxkUHJvY2VzcyA9IHNwYXduKHRoaXMuY29tbWFuZCwgdGhpcy5hcmd1bWVudCwgdGhpcy5vcHRpb24pXHJcbiAgICAgICAgICAgICAgICAgICAgICAgIGlmKGNoaWxkUHJvY2Vzcy5zdGF0dXMgPiAwKSB0aHJvdyBjaGlsZFByb2Nlc3MuZXJyb3JcclxuICAgICAgICAgICAgICAgICAgICB9IGNhdGNoIChlcnJvcikge1xyXG4gICAgICAgICAgICAgICAgICAgICAgICBwcm9jZXNzLmV4aXQoY2hpbGRQcm9jZXNzLnN0YXR1cylcclxuICAgICAgICAgICAgICAgICAgICB9XHJcbiAgICAgICAgICAgICAgICBicmVhaztcclxuICAgICAgICAgICAgICAgIGNhc2UgJ2ZpbGUnOlxyXG4gICAgICAgICAgICAgICAgICAgIHRyeSB7XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnNvbGUubG9nKG1lc3NhZ2UpOyBjb25zb2xlLmxvZyhgXFx4MWJbNDVtJXNcXHgxYlswbWAsYHNoZWxsc2NyaXB0IGZpbGU6ICR7dGhpcy5maWxlbmFtZX0sIHNoZWxsc2NyaXB0UGF0aDogJHt0aGlzLnNoZWxsc2NyaXB0UGF0aH1gKSAgICAgICAgICAgICAgICAgICAgICAgICAgICBcclxuICAgICAgICAgICAgICAgICAgICAgICAgdGhpcy5vcHRpb24uY3dkID0gdGhpcy5zaGVsbHNjcmlwdFBhdGhcclxuICAgICAgICAgICAgICAgICAgICAgICAgZXhlY1N5bmMoYHNoICR7dGhpcy5maWxlbmFtZX1gLCB0aGlzLm9wdGlvbilcclxuICAgICAgICAgICAgICAgICAgICB9IGNhdGNoIChlcnJvcikge1xyXG4gICAgICAgICAgICAgICAgICAgICAgICB0aHJvdyBlcnJvclxyXG4gICAgICAgICAgICAgICAgICAgICAgICBwcm9jZXNzLmV4aXQoMSlcclxuICAgICAgICAgICAgICAgICAgICB9XHJcbiAgICAgICAgICAgICAgICBicmVhaztcclxuICAgICAgICAgICAgICAgIGRlZmF1bHQ6XHJcbiAgICAgICAgICAgICAgICAgICAgY29uc29sZS5sb2coJ1ggc2hlbGxzY3JpcHRVbml0LmltcGxlbWVudGF0aW9uIGRvZXMgbm90IG1hdGNoIGFueSBvcHRpb24uJylcclxuICAgICAgICAgICAgICAgIGJyZWFrO1xyXG4gICAgICAgICAgICB9XHJcbiAgICAgICAgICAgIC8vIGltcG9ydGFudCB0byBwcmV2ZW50ICd1bmFibGUgdG8gcmUtb3BlbiBzdGRpbicgZXJyb3IgYmV0d2VlbiBzaGVsbHMuXHJcbiAgICAgICAgICAgIGF3YWl0IG5ldyBQcm9taXNlKHJlc29sdmUgPT4gc2V0VGltZW91dChyZXNvbHZlLCA1MDApKSAvLyB3YWl0IHggc2Vjb25kcyBiZWZvcmUgbmV4dCBzY3JpcHQgZXhlY3V0aW9uLlxyXG4gICAgICAgIH1cclxuXHJcbiAgICB9XHJcbiAgICBcclxuICAgIE9iamVjdC5rZXlzKHNlbGYpLmZvckVhY2goZnVuY3Rpb24oa2V5KSB7XHJcbiAgICAgICAgc2VsZltrZXldID0gc2VsZltrZXldLmJpbmQodGhpc0FyZylcclxuICAgIH0sIHt9KVxyXG4gICAgcmV0dXJuIHNlbGZcclxufSJdfQ==

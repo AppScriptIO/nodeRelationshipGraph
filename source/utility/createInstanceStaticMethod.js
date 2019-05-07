@@ -1,29 +1,30 @@
-/**
- * Create unit instance, query data, and populate json data to instance.
- * @param  {array} controllerInstanceArray
- * @param  {string} dataKey
- * @param  {function} getDocumentQueryCallback
- * @return {instance} class instance
- */
-export default async function(controllerInstanceArray, dataKey, getDocumentQueryCallback) {
-  let Class = this
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.default = _default;
 
-  // [1] Create new instance
-  let instance
+
+
+
+
+
+async function _default(controllerInstanceArray, dataKey, getDocumentQueryCallback) {
+  let Class = this;
+
+
+  let instance;
   if (!(dataKey in controllerInstanceArray)) {
-    instance = await new Class(dataKey)
-    controllerInstanceArray[dataKey] = instance
+    instance = await new Class(dataKey);
+    controllerInstanceArray[dataKey] = instance;
   } else {
-    instance = controllerInstanceArray[dataKey] // Preserved between requests. Causes problems
+    instance = controllerInstanceArray[dataKey];
   }
 
-  // [2] Populate properties.
+
   if (!('jsonData' in instance)) {
-    // if not already populated with data.
-    let jsonData = await getDocumentQueryCallback(Class.rethinkdbConnection, dataKey)
-    await Object.assign(instance, jsonData)
-    instance.jsonData = jsonData
+
+    let jsonData = await getDocumentQueryCallback(Class.rethinkdbConnection, dataKey);
+    await Object.assign(instance, jsonData);
+    instance.jsonData = jsonData;
   }
 
-  return instance // return the newly cr
+  return instance;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS91dGlsaXR5L2NyZWF0ZUluc3RhbmNlU3RhdGljTWV0aG9kLmpzIl0sIm5hbWVzIjpbImNvbnRyb2xsZXJJbnN0YW5jZUFycmF5IiwiZGF0YUtleSIsImdldERvY3VtZW50UXVlcnlDYWxsYmFjayIsIkNsYXNzIiwiaW5zdGFuY2UiLCJqc29uRGF0YSIsInJldGhpbmtkYkNvbm5lY3Rpb24iLCJPYmplY3QiLCJhc3NpZ24iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7QUFPZSx3QkFBZUEsdUJBQWYsRUFBd0NDLE9BQXhDLEVBQWlEQyx3QkFBakQsRUFBMkU7QUFDeEYsTUFBSUMsS0FBSyxHQUFHLElBQVo7OztBQUdBLE1BQUlDLFFBQUo7QUFDQSxNQUFJLEVBQUVILE9BQU8sSUFBSUQsdUJBQWIsQ0FBSixFQUEyQztBQUN6Q0ksSUFBQUEsUUFBUSxHQUFHLE1BQU0sSUFBSUQsS0FBSixDQUFVRixPQUFWLENBQWpCO0FBQ0FELElBQUFBLHVCQUF1QixDQUFDQyxPQUFELENBQXZCLEdBQW1DRyxRQUFuQztBQUNELEdBSEQsTUFHTztBQUNMQSxJQUFBQSxRQUFRLEdBQUdKLHVCQUF1QixDQUFDQyxPQUFELENBQWxDO0FBQ0Q7OztBQUdELE1BQUksRUFBRSxjQUFjRyxRQUFoQixDQUFKLEVBQStCOztBQUU3QixRQUFJQyxRQUFRLEdBQUcsTUFBTUgsd0JBQXdCLENBQUNDLEtBQUssQ0FBQ0csbUJBQVAsRUFBNEJMLE9BQTVCLENBQTdDO0FBQ0EsVUFBTU0sTUFBTSxDQUFDQyxNQUFQLENBQWNKLFFBQWQsRUFBd0JDLFFBQXhCLENBQU47QUFDQUQsSUFBQUEsUUFBUSxDQUFDQyxRQUFULEdBQW9CQSxRQUFwQjtBQUNEOztBQUVELFNBQU9ELFFBQVA7QUFDRCIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxyXG4gKiBDcmVhdGUgdW5pdCBpbnN0YW5jZSwgcXVlcnkgZGF0YSwgYW5kIHBvcHVsYXRlIGpzb24gZGF0YSB0byBpbnN0YW5jZS5cclxuICogQHBhcmFtICB7YXJyYXl9IGNvbnRyb2xsZXJJbnN0YW5jZUFycmF5XHJcbiAqIEBwYXJhbSAge3N0cmluZ30gZGF0YUtleVxyXG4gKiBAcGFyYW0gIHtmdW5jdGlvbn0gZ2V0RG9jdW1lbnRRdWVyeUNhbGxiYWNrXHJcbiAqIEByZXR1cm4ge2luc3RhbmNlfSBjbGFzcyBpbnN0YW5jZVxyXG4gKi9cclxuZXhwb3J0IGRlZmF1bHQgYXN5bmMgZnVuY3Rpb24oY29udHJvbGxlckluc3RhbmNlQXJyYXksIGRhdGFLZXksIGdldERvY3VtZW50UXVlcnlDYWxsYmFjaykge1xyXG4gIGxldCBDbGFzcyA9IHRoaXNcclxuXHJcbiAgLy8gWzFdIENyZWF0ZSBuZXcgaW5zdGFuY2VcclxuICBsZXQgaW5zdGFuY2VcclxuICBpZiAoIShkYXRhS2V5IGluIGNvbnRyb2xsZXJJbnN0YW5jZUFycmF5KSkge1xyXG4gICAgaW5zdGFuY2UgPSBhd2FpdCBuZXcgQ2xhc3MoZGF0YUtleSlcclxuICAgIGNvbnRyb2xsZXJJbnN0YW5jZUFycmF5W2RhdGFLZXldID0gaW5zdGFuY2VcclxuICB9IGVsc2Uge1xyXG4gICAgaW5zdGFuY2UgPSBjb250cm9sbGVySW5zdGFuY2VBcnJheVtkYXRhS2V5XSAvLyBQcmVzZXJ2ZWQgYmV0d2VlbiByZXF1ZXN0cy4gQ2F1c2VzIHByb2JsZW1zXHJcbiAgfVxyXG5cclxuICAvLyBbMl0gUG9wdWxhdGUgcHJvcGVydGllcy5cclxuICBpZiAoISgnanNvbkRhdGEnIGluIGluc3RhbmNlKSkge1xyXG4gICAgLy8gaWYgbm90IGFscmVhZHkgcG9wdWxhdGVkIHdpdGggZGF0YS5cclxuICAgIGxldCBqc29uRGF0YSA9IGF3YWl0IGdldERvY3VtZW50UXVlcnlDYWxsYmFjayhDbGFzcy5yZXRoaW5rZGJDb25uZWN0aW9uLCBkYXRhS2V5KVxyXG4gICAgYXdhaXQgT2JqZWN0LmFzc2lnbihpbnN0YW5jZSwganNvbkRhdGEpXHJcbiAgICBpbnN0YW5jZS5qc29uRGF0YSA9IGpzb25EYXRhXHJcbiAgfVxyXG5cclxuICByZXR1cm4gaW5zdGFuY2UgLy8gcmV0dXJuIHRoZSBuZXdseSBjclxyXG59XHJcbiJdfQ==

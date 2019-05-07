@@ -1,44 +1,45 @@
-import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
-import { add, execute, conditional, executeOnceForEachInstance } from '@dependency/commonPattern/source/decoratorUtility.js'
-import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
-import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/query/getTableDocument.query.js";
+"use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.UnitFunction = UnitFunction;var _applyDecoratedDescriptor2 = _interopRequireDefault(require("@babel/runtime/helpers/applyDecoratedDescriptor"));var _prototypeChainDebug = require("@dependency/prototypeChainDebug");
+var _decoratorUtility = require("@dependency/commonPattern/source/decoratorUtility.js");
+var _extendedSubclassPattern = require("@dependency/commonPattern/source/extendedSubclassPattern.js");
+var _getTableDocumentQuery = require("@dependency/databaseUtility/source/query/getTableDocument.query.js");
 
-let databasePrefix = 'condition_'
+let databasePrefix = 'condition_';
 let getDocument = {
-    Unit: getTableDocumentCurried({ databaseName: 'webappSetting', tableName: `${databasePrefix}unit` }),
-    File: getTableDocumentCurried({ databaseName: 'webappSetting', tableName: `${databasePrefix}file` }),
-}
+  Unit: (0, _getTableDocumentQuery.curried)({ databaseName: 'webappSetting', tableName: `${databasePrefix}unit` }),
+  File: (0, _getTableDocumentQuery.curried)({ databaseName: 'webappSetting', tableName: `${databasePrefix}file` }) };
 
-export function UnitFunction({ Superclass }) {
-    let self = 
-        @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
-        @execute({
-            staticMethod: 'initializeStaticClass', 
-            args: [ getDocument['Unit'] ] 
-        })
-        @extendedSubclassPattern.Subclass()
-        class Unit extends Superclass {
-            async pupolateUnitWithFile() {
-                await super.pupolateUnitWithFile({
-                    getDocument: getDocument['File'],
-                    fileKey: this.fileKey, // valueReturningFile
-                    extract: { destinationKey: 'file' }
-                })
-            }
 
-            @executeOnceForEachInstance()                        
-            async checkCondition() {
-                // [2] require & check condition
-                if(!this.conditionResult) {
-                    let expectedReturn = this.expectedReturn
-                    let filePath = this.file.filePath
-                    let returnedValue = await require(filePath).default(this.portAppInstance)
-                    if(process.env.SZN_DEBUG == 'true' && this.portAppInstance.context.headers.debug == 'true') console.log(`🔀 Comparing conditionKey: ${this.key} ${filePath}. \n • expected: ${expectedReturn} == ${returnedValue}. \n • compare result: ${(returnedValue == expectedReturn)} \n \n`)
-                    this.conditionResult = (returnedValue == expectedReturn) ? true : false;            
-                }
-                return  this.conditionResult
-            }
-        }
-    
-    return self
+function UnitFunction({ Superclass }) {var _dec, _dec2, _dec3, _dec4, _class, _class2;
+  let self = (_dec =
+  (0, _decoratorUtility.conditional)({ decorator: _prototypeChainDebug.classDecorator, condition: process.env.SZN_DEBUG }), _dec2 =
+  (0, _decoratorUtility.execute)({
+    staticMethod: 'initializeStaticClass',
+    args: [getDocument['Unit']] }), _dec3 =
+
+  _extendedSubclassPattern.extendedSubclassPattern.Subclass(), _dec4 =
+
+
+
+
+
+
+
+
+
+  (0, _decoratorUtility.executeOnceForEachInstance)(), _dec(_class = _dec2(_class = _dec3(_class = (_class2 = class Unit extends Superclass {async pupolateUnitWithFile() {await super.pupolateUnitWithFile({ getDocument: getDocument['File'], fileKey: this.fileKey, extract: { destinationKey: 'file' } });}async
+    checkCondition() {
+
+      if (!this.conditionResult) {
+        let expectedReturn = this.expectedReturn;
+        let filePath = this.file.filePath;
+        let returnedValue = await require(filePath).default(this.portAppInstance);
+        if (process.env.SZN_DEBUG == 'true' && this.portAppInstance.context.headers.debug == 'true') console.log(`🔀 Comparing conditionKey: ${this.key} ${filePath}. \n • expected: ${expectedReturn} == ${returnedValue}. \n • compare result: ${returnedValue == expectedReturn} \n \n`);
+        this.conditionResult = returnedValue == expectedReturn ? true : false;
+      }
+      return this.conditionResult;
+    }}, ((0, _applyDecoratedDescriptor2.default)(_class2.prototype, "checkCondition", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "checkCondition"), _class2.prototype)), _class2)) || _class) || _class) || _class);
+
+
+  return self;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9jbGFzc0ltcGxlbWVudGF0aW9uL2NvbmRpdGlvbi9Vbml0LmNsYXNzLmpzIl0sIm5hbWVzIjpbImRhdGFiYXNlUHJlZml4IiwiZ2V0RG9jdW1lbnQiLCJVbml0IiwiZGF0YWJhc2VOYW1lIiwidGFibGVOYW1lIiwiRmlsZSIsIlVuaXRGdW5jdGlvbiIsIlN1cGVyY2xhc3MiLCJzZWxmIiwiZGVjb3JhdG9yIiwicHJvdG90eXBlQ2hhaW5EZWJ1ZyIsImNvbmRpdGlvbiIsInByb2Nlc3MiLCJlbnYiLCJTWk5fREVCVUciLCJzdGF0aWNNZXRob2QiLCJhcmdzIiwiZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4iLCJTdWJjbGFzcyIsInB1cG9sYXRlVW5pdFdpdGhGaWxlIiwiZmlsZUtleSIsImV4dHJhY3QiLCJkZXN0aW5hdGlvbktleSIsImNoZWNrQ29uZGl0aW9uIiwiY29uZGl0aW9uUmVzdWx0IiwiZXhwZWN0ZWRSZXR1cm4iLCJmaWxlUGF0aCIsImZpbGUiLCJyZXR1cm5lZFZhbHVlIiwicmVxdWlyZSIsImRlZmF1bHQiLCJwb3J0QXBwSW5zdGFuY2UiLCJjb250ZXh0IiwiaGVhZGVycyIsImRlYnVnIiwiY29uc29sZSIsImxvZyIsImtleSJdLCJtYXBwaW5ncyI6IndUQUFBO0FBQ0E7QUFDQTtBQUNBOztBQUVBLElBQUlBLGNBQWMsR0FBRyxZQUFyQjtBQUNBLElBQUlDLFdBQVcsR0FBRztBQUNkQyxFQUFBQSxJQUFJLEVBQUUsb0NBQXdCLEVBQUVDLFlBQVksRUFBRSxlQUFoQixFQUFpQ0MsU0FBUyxFQUFHLEdBQUVKLGNBQWUsTUFBOUQsRUFBeEIsQ0FEUTtBQUVkSyxFQUFBQSxJQUFJLEVBQUUsb0NBQXdCLEVBQUVGLFlBQVksRUFBRSxlQUFoQixFQUFpQ0MsU0FBUyxFQUFHLEdBQUVKLGNBQWUsTUFBOUQsRUFBeEIsQ0FGUSxFQUFsQjs7O0FBS08sU0FBU00sWUFBVCxDQUFzQixFQUFFQyxVQUFGLEVBQXRCLEVBQXNDO0FBQ3pDLE1BQUlDLElBQUk7QUFDSCxxQ0FBWSxFQUFFQyxTQUFTLEVBQUVDLG1DQUFiLEVBQWtDQyxTQUFTLEVBQUVDLE9BQU8sQ0FBQ0MsR0FBUixDQUFZQyxTQUF6RCxFQUFaLENBREc7QUFFSCxpQ0FBUTtBQUNMQyxJQUFBQSxZQUFZLEVBQUUsdUJBRFQ7QUFFTEMsSUFBQUEsSUFBSSxFQUFFLENBQUVmLFdBQVcsQ0FBQyxNQUFELENBQWIsQ0FGRCxFQUFSLENBRkc7O0FBTUhnQixtREFBd0JDLFFBQXhCLEVBTkc7Ozs7Ozs7Ozs7QUFnQkMscURBaEJELHlEQUNKLE1BTU1oQixJQU5OLFNBTW1CSyxVQU5uQixDQU04QixDQUMxQixNQUFNWSxvQkFBTixHQUE2QixDQUN6QixNQUFNLE1BQU1BLG9CQUFOLENBQTJCLEVBQzdCbEIsV0FBVyxFQUFFQSxXQUFXLENBQUMsTUFBRCxDQURLLEVBRTdCbUIsT0FBTyxFQUFFLEtBQUtBLE9BRmUsRUFHN0JDLE9BQU8sRUFBRSxFQUFFQyxjQUFjLEVBQUUsTUFBbEIsRUFIb0IsRUFBM0IsQ0FBTixDQUtILENBRUQ7QUFDTUMsSUFBQUEsY0FETixHQUN1Qjs7QUFFbkIsVUFBRyxDQUFDLEtBQUtDLGVBQVQsRUFBMEI7QUFDdEIsWUFBSUMsY0FBYyxHQUFHLEtBQUtBLGNBQTFCO0FBQ0EsWUFBSUMsUUFBUSxHQUFHLEtBQUtDLElBQUwsQ0FBVUQsUUFBekI7QUFDQSxZQUFJRSxhQUFhLEdBQUcsTUFBTUMsT0FBTyxDQUFDSCxRQUFELENBQVAsQ0FBa0JJLE9BQWxCLENBQTBCLEtBQUtDLGVBQS9CLENBQTFCO0FBQ0EsWUFBR25CLE9BQU8sQ0FBQ0MsR0FBUixDQUFZQyxTQUFaLElBQXlCLE1BQXpCLElBQW1DLEtBQUtpQixlQUFMLENBQXFCQyxPQUFyQixDQUE2QkMsT0FBN0IsQ0FBcUNDLEtBQXJDLElBQThDLE1BQXBGLEVBQTRGQyxPQUFPLENBQUNDLEdBQVIsQ0FBYSw4QkFBNkIsS0FBS0MsR0FBSSxJQUFHWCxRQUFTLG9CQUFtQkQsY0FBZSxPQUFNRyxhQUFjLDBCQUEwQkEsYUFBYSxJQUFJSCxjQUFnQixRQUFoTDtBQUM1RixhQUFLRCxlQUFMLEdBQXdCSSxhQUFhLElBQUlILGNBQWxCLEdBQW9DLElBQXBDLEdBQTJDLEtBQWxFO0FBQ0g7QUFDRCxhQUFRLEtBQUtELGVBQWI7QUFDSCxLQXBCeUIsQ0FQMUIsOE5BQVI7OztBQThCQSxTQUFPaEIsSUFBUDtBQUNIIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgY2xhc3NEZWNvcmF0b3IgYXMgcHJvdG90eXBlQ2hhaW5EZWJ1Z30gZnJvbSAnQGRlcGVuZGVuY3kvcHJvdG90eXBlQ2hhaW5EZWJ1ZydcclxuaW1wb3J0IHsgYWRkLCBleGVjdXRlLCBjb25kaXRpb25hbCwgZXhlY3V0ZU9uY2VGb3JFYWNoSW5zdGFuY2UgfSBmcm9tICdAZGVwZW5kZW5jeS9jb21tb25QYXR0ZXJuL3NvdXJjZS9kZWNvcmF0b3JVdGlsaXR5LmpzJ1xyXG5pbXBvcnQgeyBleHRlbmRlZFN1YmNsYXNzUGF0dGVybiB9IGZyb20gJ0BkZXBlbmRlbmN5L2NvbW1vblBhdHRlcm4vc291cmNlL2V4dGVuZGVkU3ViY2xhc3NQYXR0ZXJuLmpzJ1xyXG5pbXBvcnQgeyBjdXJyaWVkIGFzIGdldFRhYmxlRG9jdW1lbnRDdXJyaWVkIH0gZnJvbSBcIkBkZXBlbmRlbmN5L2RhdGFiYXNlVXRpbGl0eS9zb3VyY2UvcXVlcnkvZ2V0VGFibGVEb2N1bWVudC5xdWVyeS5qc1wiO1xyXG5cclxubGV0IGRhdGFiYXNlUHJlZml4ID0gJ2NvbmRpdGlvbl8nXHJcbmxldCBnZXREb2N1bWVudCA9IHtcclxuICAgIFVuaXQ6IGdldFRhYmxlRG9jdW1lbnRDdXJyaWVkKHsgZGF0YWJhc2VOYW1lOiAnd2ViYXBwU2V0dGluZycsIHRhYmxlTmFtZTogYCR7ZGF0YWJhc2VQcmVmaXh9dW5pdGAgfSksXHJcbiAgICBGaWxlOiBnZXRUYWJsZURvY3VtZW50Q3VycmllZCh7IGRhdGFiYXNlTmFtZTogJ3dlYmFwcFNldHRpbmcnLCB0YWJsZU5hbWU6IGAke2RhdGFiYXNlUHJlZml4fWZpbGVgIH0pLFxyXG59XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gVW5pdEZ1bmN0aW9uKHsgU3VwZXJjbGFzcyB9KSB7XHJcbiAgICBsZXQgc2VsZiA9IFxyXG4gICAgICAgIEBjb25kaXRpb25hbCh7IGRlY29yYXRvcjogcHJvdG90eXBlQ2hhaW5EZWJ1ZywgY29uZGl0aW9uOiBwcm9jZXNzLmVudi5TWk5fREVCVUcgfSlcclxuICAgICAgICBAZXhlY3V0ZSh7XHJcbiAgICAgICAgICAgIHN0YXRpY01ldGhvZDogJ2luaXRpYWxpemVTdGF0aWNDbGFzcycsIFxyXG4gICAgICAgICAgICBhcmdzOiBbIGdldERvY3VtZW50WydVbml0J10gXSBcclxuICAgICAgICB9KVxyXG4gICAgICAgIEBleHRlbmRlZFN1YmNsYXNzUGF0dGVybi5TdWJjbGFzcygpXHJcbiAgICAgICAgY2xhc3MgVW5pdCBleHRlbmRzIFN1cGVyY2xhc3Mge1xyXG4gICAgICAgICAgICBhc3luYyBwdXBvbGF0ZVVuaXRXaXRoRmlsZSgpIHtcclxuICAgICAgICAgICAgICAgIGF3YWl0IHN1cGVyLnB1cG9sYXRlVW5pdFdpdGhGaWxlKHtcclxuICAgICAgICAgICAgICAgICAgICBnZXREb2N1bWVudDogZ2V0RG9jdW1lbnRbJ0ZpbGUnXSxcclxuICAgICAgICAgICAgICAgICAgICBmaWxlS2V5OiB0aGlzLmZpbGVLZXksIC8vIHZhbHVlUmV0dXJuaW5nRmlsZVxyXG4gICAgICAgICAgICAgICAgICAgIGV4dHJhY3Q6IHsgZGVzdGluYXRpb25LZXk6ICdmaWxlJyB9XHJcbiAgICAgICAgICAgICAgICB9KVxyXG4gICAgICAgICAgICB9XHJcblxyXG4gICAgICAgICAgICBAZXhlY3V0ZU9uY2VGb3JFYWNoSW5zdGFuY2UoKSAgICAgICAgICAgICAgICAgICAgICAgIFxyXG4gICAgICAgICAgICBhc3luYyBjaGVja0NvbmRpdGlvbigpIHtcclxuICAgICAgICAgICAgICAgIC8vIFsyXSByZXF1aXJlICYgY2hlY2sgY29uZGl0aW9uXHJcbiAgICAgICAgICAgICAgICBpZighdGhpcy5jb25kaXRpb25SZXN1bHQpIHtcclxuICAgICAgICAgICAgICAgICAgICBsZXQgZXhwZWN0ZWRSZXR1cm4gPSB0aGlzLmV4cGVjdGVkUmV0dXJuXHJcbiAgICAgICAgICAgICAgICAgICAgbGV0IGZpbGVQYXRoID0gdGhpcy5maWxlLmZpbGVQYXRoXHJcbiAgICAgICAgICAgICAgICAgICAgbGV0IHJldHVybmVkVmFsdWUgPSBhd2FpdCByZXF1aXJlKGZpbGVQYXRoKS5kZWZhdWx0KHRoaXMucG9ydEFwcEluc3RhbmNlKVxyXG4gICAgICAgICAgICAgICAgICAgIGlmKHByb2Nlc3MuZW52LlNaTl9ERUJVRyA9PSAndHJ1ZScgJiYgdGhpcy5wb3J0QXBwSW5zdGFuY2UuY29udGV4dC5oZWFkZXJzLmRlYnVnID09ICd0cnVlJykgY29uc29sZS5sb2coYPCflIAgQ29tcGFyaW5nIGNvbmRpdGlvbktleTogJHt0aGlzLmtleX0gJHtmaWxlUGF0aH0uIFxcbiDigKIgZXhwZWN0ZWQ6ICR7ZXhwZWN0ZWRSZXR1cm59ID09ICR7cmV0dXJuZWRWYWx1ZX0uIFxcbiDigKIgY29tcGFyZSByZXN1bHQ6ICR7KHJldHVybmVkVmFsdWUgPT0gZXhwZWN0ZWRSZXR1cm4pfSBcXG4gXFxuYClcclxuICAgICAgICAgICAgICAgICAgICB0aGlzLmNvbmRpdGlvblJlc3VsdCA9IChyZXR1cm5lZFZhbHVlID09IGV4cGVjdGVkUmV0dXJuKSA/IHRydWUgOiBmYWxzZTsgICAgICAgICAgICBcclxuICAgICAgICAgICAgICAgIH1cclxuICAgICAgICAgICAgICAgIHJldHVybiAgdGhpcy5jb25kaXRpb25SZXN1bHRcclxuICAgICAgICAgICAgfVxyXG4gICAgICAgIH1cclxuICAgIFxyXG4gICAgcmV0dXJuIHNlbGZcclxufSJdfQ==

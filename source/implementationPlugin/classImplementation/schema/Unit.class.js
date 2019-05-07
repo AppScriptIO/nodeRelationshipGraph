@@ -1,56 +1,57 @@
-import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
-import { add, execute, conditional, executeOnceForEachInstance } from '@dependency/commonPattern/source/decoratorUtility.js'
-import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
-import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/query/getTableDocument.query.js";
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.UnitFunction = UnitFunction;var _prototypeChainDebug = require("@dependency/prototypeChainDebug");
+var _decoratorUtility = require("@dependency/commonPattern/source/decoratorUtility.js");
+var _extendedSubclassPattern = require("@dependency/commonPattern/source/extendedSubclassPattern.js");
+var _getTableDocumentQuery = require("@dependency/databaseUtility/source/query/getTableDocument.query.js");
 
-let databasePrefix = 'schema_'
+let databasePrefix = 'schema_';
 let getDocument = {
-    'Unit': getTableDocumentCurried({ databaseName: 'webappSetting', tableName: `${databasePrefix}unit` }),
-    'File': getTableDocumentCurried({ databaseName: 'webappSetting', tableName: `${databasePrefix}file` }),
+  'Unit': (0, _getTableDocumentQuery.curried)({ databaseName: 'webappSetting', tableName: `${databasePrefix}unit` }),
+  'File': (0, _getTableDocumentQuery.curried)({ databaseName: 'webappSetting', tableName: `${databasePrefix}file` }) };
+
+
+function UnitFunction({ Superclass }) {var _dec, _dec2, _dec3, _class;
+  let self = (_dec =
+  (0, _decoratorUtility.conditional)({ decorator: _prototypeChainDebug.classDecorator, condition: process.env.SZN_DEBUG }), _dec2 =
+  (0, _decoratorUtility.execute)({
+    staticMethod: 'initializeStaticClass',
+    args: [getDocument['Unit']] }), _dec3 =
+
+  _extendedSubclassPattern.extendedSubclassPattern.Subclass(), _dec(_class = _dec2(_class = _dec3(_class = class
+  Unit extends Superclass {
+    async pupolateUnitWithFile() {
+      await super.pupolateUnitWithFile({
+        getDocument: getDocument['File'],
+        fileKey: this.fileKey,
+        extract: { destinationKey: 'file' } });
+
+    }
+
+    async resolveDataset({
+      parentResult = null })
+
+    {
+
+      let dataset;
+      const algorithm = this.file.algorithm;
+      switch (algorithm.type) {
+        case 'file':
+        default:{
+            let module = require(algorithm.path).default;
+            if (typeof module !== 'function') module = module.default;
+            let resolver = module();
+            let resolverArgument = Object.assign(...[this.args, algorithm.argument].filter(Boolean));
+            dataset = await resolver({
+              portClassInstance: this.portAppInstance,
+              args: resolverArgument,
+              parentResult });
+
+          }break;}
+
+
+      return dataset;
+    }}) || _class) || _class) || _class);
+
+
+  return self;
 }
-
-export function UnitFunction({ Superclass }) {
-    let self = 
-        @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
-        @execute({
-            staticMethod: 'initializeStaticClass', 
-            args: [ getDocument['Unit'] ]
-        })
-        @extendedSubclassPattern.Subclass()
-        class Unit extends Superclass {
-            async pupolateUnitWithFile() {
-                await super.pupolateUnitWithFile({
-                    getDocument: getDocument['File'],
-                    fileKey: this.fileKey,
-                    extract: { destinationKey: 'file' }
-                })
-            }
-
-            async resolveDataset({ 
-                parentResult = null,
-                // this.args - nestedUnit args field.
-            }) {
-                // [2] require & check condition
-                let dataset;
-                const algorithm = this.file.algorithm // resolver for dataset
-                switch (algorithm.type) { // in order to choose how to handle the algorithm (as a module ? a file to be imported ?...)
-                    case 'file':
-                    default: {
-                        let module = require(algorithm.path).default
-                        if(typeof module !== 'function') module = module.default // case es6 module loaded with require function (will load it as an object)
-                        let resolver = module() /*initial execute for setting parameter context.*/
-                        let resolverArgument = Object.assign(...[this.args, algorithm.argument].filter(Boolean)) // remove undefined/null/false objects before merging.
-                        dataset = await resolver({
-                            portClassInstance: this.portAppInstance, // contains also portClassInstance.context of the request. 
-                            args: resolverArgument,
-                            parentResult, // parent dataset result.
-                        })
-                    } break;
-                }
-
-                return dataset
-            }
-
-        }
-    return self
-}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9jbGFzc0ltcGxlbWVudGF0aW9uL3NjaGVtYS9Vbml0LmNsYXNzLmpzIl0sIm5hbWVzIjpbImRhdGFiYXNlUHJlZml4IiwiZ2V0RG9jdW1lbnQiLCJkYXRhYmFzZU5hbWUiLCJ0YWJsZU5hbWUiLCJVbml0RnVuY3Rpb24iLCJTdXBlcmNsYXNzIiwic2VsZiIsImRlY29yYXRvciIsInByb3RvdHlwZUNoYWluRGVidWciLCJjb25kaXRpb24iLCJwcm9jZXNzIiwiZW52IiwiU1pOX0RFQlVHIiwic3RhdGljTWV0aG9kIiwiYXJncyIsImV4dGVuZGVkU3ViY2xhc3NQYXR0ZXJuIiwiU3ViY2xhc3MiLCJVbml0IiwicHVwb2xhdGVVbml0V2l0aEZpbGUiLCJmaWxlS2V5IiwiZXh0cmFjdCIsImRlc3RpbmF0aW9uS2V5IiwicmVzb2x2ZURhdGFzZXQiLCJwYXJlbnRSZXN1bHQiLCJkYXRhc2V0IiwiYWxnb3JpdGhtIiwiZmlsZSIsInR5cGUiLCJtb2R1bGUiLCJyZXF1aXJlIiwicGF0aCIsImRlZmF1bHQiLCJyZXNvbHZlciIsInJlc29sdmVyQXJndW1lbnQiLCJPYmplY3QiLCJhc3NpZ24iLCJhcmd1bWVudCIsImZpbHRlciIsIkJvb2xlYW4iLCJwb3J0Q2xhc3NJbnN0YW5jZSIsInBvcnRBcHBJbnN0YW5jZSJdLCJtYXBwaW5ncyI6IitHQUFBO0FBQ0E7QUFDQTtBQUNBOztBQUVBLElBQUlBLGNBQWMsR0FBRyxTQUFyQjtBQUNBLElBQUlDLFdBQVcsR0FBRztBQUNkLFVBQVEsb0NBQXdCLEVBQUVDLFlBQVksRUFBRSxlQUFoQixFQUFpQ0MsU0FBUyxFQUFHLEdBQUVILGNBQWUsTUFBOUQsRUFBeEIsQ0FETTtBQUVkLFVBQVEsb0NBQXdCLEVBQUVFLFlBQVksRUFBRSxlQUFoQixFQUFpQ0MsU0FBUyxFQUFHLEdBQUVILGNBQWUsTUFBOUQsRUFBeEIsQ0FGTSxFQUFsQjs7O0FBS08sU0FBU0ksWUFBVCxDQUFzQixFQUFFQyxVQUFGLEVBQXRCLEVBQXNDO0FBQ3pDLE1BQUlDLElBQUk7QUFDSCxxQ0FBWSxFQUFFQyxTQUFTLEVBQUVDLG1DQUFiLEVBQWtDQyxTQUFTLEVBQUVDLE9BQU8sQ0FBQ0MsR0FBUixDQUFZQyxTQUF6RCxFQUFaLENBREc7QUFFSCxpQ0FBUTtBQUNMQyxJQUFBQSxZQUFZLEVBQUUsdUJBRFQ7QUFFTEMsSUFBQUEsSUFBSSxFQUFFLENBQUViLFdBQVcsQ0FBQyxNQUFELENBQWIsQ0FGRCxFQUFSLENBRkc7O0FBTUhjLG1EQUF3QkMsUUFBeEIsRUFORyw4Q0FDSjtBQU1NQyxFQUFBQSxJQU5OLFNBTW1CWixVQU5uQixDQU04QjtBQUMxQixVQUFNYSxvQkFBTixHQUE2QjtBQUN6QixZQUFNLE1BQU1BLG9CQUFOLENBQTJCO0FBQzdCakIsUUFBQUEsV0FBVyxFQUFFQSxXQUFXLENBQUMsTUFBRCxDQURLO0FBRTdCa0IsUUFBQUEsT0FBTyxFQUFFLEtBQUtBLE9BRmU7QUFHN0JDLFFBQUFBLE9BQU8sRUFBRSxFQUFFQyxjQUFjLEVBQUUsTUFBbEIsRUFIb0IsRUFBM0IsQ0FBTjs7QUFLSDs7QUFFRCxVQUFNQyxjQUFOLENBQXFCO0FBQ2pCQyxNQUFBQSxZQUFZLEdBQUcsSUFERSxFQUFyQjs7QUFHRzs7QUFFQyxVQUFJQyxPQUFKO0FBQ0EsWUFBTUMsU0FBUyxHQUFHLEtBQUtDLElBQUwsQ0FBVUQsU0FBNUI7QUFDQSxjQUFRQSxTQUFTLENBQUNFLElBQWxCO0FBQ0ksYUFBSyxNQUFMO0FBQ0EsZ0JBQVM7QUFDTCxnQkFBSUMsTUFBTSxHQUFHQyxPQUFPLENBQUNKLFNBQVMsQ0FBQ0ssSUFBWCxDQUFQLENBQXdCQyxPQUFyQztBQUNBLGdCQUFHLE9BQU9ILE1BQVAsS0FBa0IsVUFBckIsRUFBaUNBLE1BQU0sR0FBR0EsTUFBTSxDQUFDRyxPQUFoQjtBQUNqQyxnQkFBSUMsUUFBUSxHQUFHSixNQUFNLEVBQXJCO0FBQ0EsZ0JBQUlLLGdCQUFnQixHQUFHQyxNQUFNLENBQUNDLE1BQVAsQ0FBYyxHQUFHLENBQUMsS0FBS3JCLElBQU4sRUFBWVcsU0FBUyxDQUFDVyxRQUF0QixFQUFnQ0MsTUFBaEMsQ0FBdUNDLE9BQXZDLENBQWpCLENBQXZCO0FBQ0FkLFlBQUFBLE9BQU8sR0FBRyxNQUFNUSxRQUFRLENBQUM7QUFDckJPLGNBQUFBLGlCQUFpQixFQUFFLEtBQUtDLGVBREg7QUFFckIxQixjQUFBQSxJQUFJLEVBQUVtQixnQkFGZTtBQUdyQlYsY0FBQUEsWUFIcUIsRUFBRCxDQUF4Qjs7QUFLSCxXQUFDLE1BWk47OztBQWVBLGFBQU9DLE9BQVA7QUFDSCxLQWhDeUIsQ0FQMUIsa0NBQVI7OztBQTBDQSxTQUFPbEIsSUFBUDtBQUNIIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgY2xhc3NEZWNvcmF0b3IgYXMgcHJvdG90eXBlQ2hhaW5EZWJ1Z30gZnJvbSAnQGRlcGVuZGVuY3kvcHJvdG90eXBlQ2hhaW5EZWJ1ZydcclxuaW1wb3J0IHsgYWRkLCBleGVjdXRlLCBjb25kaXRpb25hbCwgZXhlY3V0ZU9uY2VGb3JFYWNoSW5zdGFuY2UgfSBmcm9tICdAZGVwZW5kZW5jeS9jb21tb25QYXR0ZXJuL3NvdXJjZS9kZWNvcmF0b3JVdGlsaXR5LmpzJ1xyXG5pbXBvcnQgeyBleHRlbmRlZFN1YmNsYXNzUGF0dGVybiB9IGZyb20gJ0BkZXBlbmRlbmN5L2NvbW1vblBhdHRlcm4vc291cmNlL2V4dGVuZGVkU3ViY2xhc3NQYXR0ZXJuLmpzJ1xyXG5pbXBvcnQgeyBjdXJyaWVkIGFzIGdldFRhYmxlRG9jdW1lbnRDdXJyaWVkIH0gZnJvbSBcIkBkZXBlbmRlbmN5L2RhdGFiYXNlVXRpbGl0eS9zb3VyY2UvcXVlcnkvZ2V0VGFibGVEb2N1bWVudC5xdWVyeS5qc1wiO1xyXG5cclxubGV0IGRhdGFiYXNlUHJlZml4ID0gJ3NjaGVtYV8nXHJcbmxldCBnZXREb2N1bWVudCA9IHtcclxuICAgICdVbml0JzogZ2V0VGFibGVEb2N1bWVudEN1cnJpZWQoeyBkYXRhYmFzZU5hbWU6ICd3ZWJhcHBTZXR0aW5nJywgdGFibGVOYW1lOiBgJHtkYXRhYmFzZVByZWZpeH11bml0YCB9KSxcclxuICAgICdGaWxlJzogZ2V0VGFibGVEb2N1bWVudEN1cnJpZWQoeyBkYXRhYmFzZU5hbWU6ICd3ZWJhcHBTZXR0aW5nJywgdGFibGVOYW1lOiBgJHtkYXRhYmFzZVByZWZpeH1maWxlYCB9KSxcclxufVxyXG5cclxuZXhwb3J0IGZ1bmN0aW9uIFVuaXRGdW5jdGlvbih7IFN1cGVyY2xhc3MgfSkge1xyXG4gICAgbGV0IHNlbGYgPSBcclxuICAgICAgICBAY29uZGl0aW9uYWwoeyBkZWNvcmF0b3I6IHByb3RvdHlwZUNoYWluRGVidWcsIGNvbmRpdGlvbjogcHJvY2Vzcy5lbnYuU1pOX0RFQlVHIH0pXHJcbiAgICAgICAgQGV4ZWN1dGUoe1xyXG4gICAgICAgICAgICBzdGF0aWNNZXRob2Q6ICdpbml0aWFsaXplU3RhdGljQ2xhc3MnLCBcclxuICAgICAgICAgICAgYXJnczogWyBnZXREb2N1bWVudFsnVW5pdCddIF1cclxuICAgICAgICB9KVxyXG4gICAgICAgIEBleHRlbmRlZFN1YmNsYXNzUGF0dGVybi5TdWJjbGFzcygpXHJcbiAgICAgICAgY2xhc3MgVW5pdCBleHRlbmRzIFN1cGVyY2xhc3Mge1xyXG4gICAgICAgICAgICBhc3luYyBwdXBvbGF0ZVVuaXRXaXRoRmlsZSgpIHtcclxuICAgICAgICAgICAgICAgIGF3YWl0IHN1cGVyLnB1cG9sYXRlVW5pdFdpdGhGaWxlKHtcclxuICAgICAgICAgICAgICAgICAgICBnZXREb2N1bWVudDogZ2V0RG9jdW1lbnRbJ0ZpbGUnXSxcclxuICAgICAgICAgICAgICAgICAgICBmaWxlS2V5OiB0aGlzLmZpbGVLZXksXHJcbiAgICAgICAgICAgICAgICAgICAgZXh0cmFjdDogeyBkZXN0aW5hdGlvbktleTogJ2ZpbGUnIH1cclxuICAgICAgICAgICAgICAgIH0pXHJcbiAgICAgICAgICAgIH1cclxuXHJcbiAgICAgICAgICAgIGFzeW5jIHJlc29sdmVEYXRhc2V0KHsgXHJcbiAgICAgICAgICAgICAgICBwYXJlbnRSZXN1bHQgPSBudWxsLFxyXG4gICAgICAgICAgICAgICAgLy8gdGhpcy5hcmdzIC0gbmVzdGVkVW5pdCBhcmdzIGZpZWxkLlxyXG4gICAgICAgICAgICB9KSB7XHJcbiAgICAgICAgICAgICAgICAvLyBbMl0gcmVxdWlyZSAmIGNoZWNrIGNvbmRpdGlvblxyXG4gICAgICAgICAgICAgICAgbGV0IGRhdGFzZXQ7XHJcbiAgICAgICAgICAgICAgICBjb25zdCBhbGdvcml0aG0gPSB0aGlzLmZpbGUuYWxnb3JpdGhtIC8vIHJlc29sdmVyIGZvciBkYXRhc2V0XHJcbiAgICAgICAgICAgICAgICBzd2l0Y2ggKGFsZ29yaXRobS50eXBlKSB7IC8vIGluIG9yZGVyIHRvIGNob29zZSBob3cgdG8gaGFuZGxlIHRoZSBhbGdvcml0aG0gKGFzIGEgbW9kdWxlID8gYSBmaWxlIHRvIGJlIGltcG9ydGVkID8uLi4pXHJcbiAgICAgICAgICAgICAgICAgICAgY2FzZSAnZmlsZSc6XHJcbiAgICAgICAgICAgICAgICAgICAgZGVmYXVsdDoge1xyXG4gICAgICAgICAgICAgICAgICAgICAgICBsZXQgbW9kdWxlID0gcmVxdWlyZShhbGdvcml0aG0ucGF0aCkuZGVmYXVsdFxyXG4gICAgICAgICAgICAgICAgICAgICAgICBpZih0eXBlb2YgbW9kdWxlICE9PSAnZnVuY3Rpb24nKSBtb2R1bGUgPSBtb2R1bGUuZGVmYXVsdCAvLyBjYXNlIGVzNiBtb2R1bGUgbG9hZGVkIHdpdGggcmVxdWlyZSBmdW5jdGlvbiAod2lsbCBsb2FkIGl0IGFzIGFuIG9iamVjdClcclxuICAgICAgICAgICAgICAgICAgICAgICAgbGV0IHJlc29sdmVyID0gbW9kdWxlKCkgLyppbml0aWFsIGV4ZWN1dGUgZm9yIHNldHRpbmcgcGFyYW1ldGVyIGNvbnRleHQuKi9cclxuICAgICAgICAgICAgICAgICAgICAgICAgbGV0IHJlc29sdmVyQXJndW1lbnQgPSBPYmplY3QuYXNzaWduKC4uLlt0aGlzLmFyZ3MsIGFsZ29yaXRobS5hcmd1bWVudF0uZmlsdGVyKEJvb2xlYW4pKSAvLyByZW1vdmUgdW5kZWZpbmVkL251bGwvZmFsc2Ugb2JqZWN0cyBiZWZvcmUgbWVyZ2luZy5cclxuICAgICAgICAgICAgICAgICAgICAgICAgZGF0YXNldCA9IGF3YWl0IHJlc29sdmVyKHtcclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBvcnRDbGFzc0luc3RhbmNlOiB0aGlzLnBvcnRBcHBJbnN0YW5jZSwgLy8gY29udGFpbnMgYWxzbyBwb3J0Q2xhc3NJbnN0YW5jZS5jb250ZXh0IG9mIHRoZSByZXF1ZXN0LiBcclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFyZ3M6IHJlc29sdmVyQXJndW1lbnQsXHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBwYXJlbnRSZXN1bHQsIC8vIHBhcmVudCBkYXRhc2V0IHJlc3VsdC5cclxuICAgICAgICAgICAgICAgICAgICAgICAgfSlcclxuICAgICAgICAgICAgICAgICAgICB9IGJyZWFrO1xyXG4gICAgICAgICAgICAgICAgfVxyXG5cclxuICAgICAgICAgICAgICAgIHJldHVybiBkYXRhc2V0XHJcbiAgICAgICAgICAgIH1cclxuXHJcbiAgICAgICAgfVxyXG4gICAgcmV0dXJuIHNlbGZcclxufSJdfQ==
