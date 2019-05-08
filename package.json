@@ -1,6 +1,6 @@
 {
     "name": "@dependency/nodeRelationshipGraph",
-    "version": "1.0.0",
+    "version": "1.1.7",
     "main": "./entrypoint/programmaticAPI",
     "scripts": {
         "setup": "yarn install --production=false",
@@ -15,15 +15,15 @@
         "@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^1.x.x",
         "@dependency/moduleContext": "https://github.com/AppScriptIO/moduleContext#semver:^1.x.x",
         "@dependency/multiplePrototypeChain": "https://github.com/AppScriptIO/multiplePrototypeChain#semver:^1.x.x",
-        "@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace",
-        "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug",
+        "@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x",
+        "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug#semver:^1.x.x",
         "rethinkdb": "*"
     },
     "devDependencies": {
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^1.x.x",
         "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis#semver:^1.x.x",
         "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
-        "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager",
+        "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager#semver:^1.x.x",
         "typescript": "^3.3.3333"
     }
 }
