@@ -1,18 +1,19 @@
-// Default database adapter
-import { curried as getTableDocumentCurried } from "@dependency/databaseUtility/source/query/getTableDocument.query.js";
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.rethinkDBModelAdapter = rethinkDBModelAdapter;
+var _getTableDocumentQuery = require("@dependency/databaseUtility/source/query/getTableDocument.query.js");
 
 
-// TODO: deal with `databasePrefix` for different implementations. And changes to names of database units e.g. `nestedUnit` to `node`
-export function rethinkDBModelAdapter({ rethinkdbConnection, databasePrefix, databaseName = 'webappSetting', tableName = `${databasePrefix}nestedUnit` }) {
-    let model = {}
-    // pass rethinkdb connection to default query adapter
-    let _getDocument = {
-        Node: getTableDocumentCurried({ databaseName, tableName })
-    }
 
-    databasePrefix = 'middleware_' || 'condition_' || 'schema_' || 'shellscript_' || 'template_'
-    model.getNodeDocumentQuery = _getDocument['Node']({ connection: rethinkdbConnection, databasePrefix }) // add connection variables
-    model.getDataItemDocumentQuery = _getDocument['DataItem']({ connection: rethinkdbConnection, databasePrefix }) // add connection variables
+function rethinkDBModelAdapter({ rethinkdbConnection, databasePrefix, databaseName = 'webappSetting', tableName = `${databasePrefix}nestedUnit` }) {
+  let model = {};
 
-    return model
+  let _getDocument = {
+    Node: (0, _getTableDocumentQuery.curried)({ databaseName, tableName }) };
+
+
+  databasePrefix = 'middleware_' || 'condition_' || 'schema_' || 'shellscript_' || 'template_';
+  model.getNodeDocumentQuery = _getDocument['Node']({ connection: rethinkdbConnection, databasePrefix });
+  model.getDataItemDocumentQuery = _getDocument['DataItem']({ connection: rethinkdbConnection, databasePrefix });
+
+  return model;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9kYXRhYmFzZU1vZGVsQWRhcHRlci9yZXRoaW5rREJNb2RlbEFkYXB0ZXIuanMiXSwibmFtZXMiOlsicmV0aGlua0RCTW9kZWxBZGFwdGVyIiwicmV0aGlua2RiQ29ubmVjdGlvbiIsImRhdGFiYXNlUHJlZml4IiwiZGF0YWJhc2VOYW1lIiwidGFibGVOYW1lIiwibW9kZWwiLCJfZ2V0RG9jdW1lbnQiLCJOb2RlIiwiZ2V0Tm9kZURvY3VtZW50UXVlcnkiLCJjb25uZWN0aW9uIiwiZ2V0RGF0YUl0ZW1Eb2N1bWVudFF1ZXJ5Il0sIm1hcHBpbmdzIjoiO0FBQ0E7Ozs7QUFJTyxTQUFTQSxxQkFBVCxDQUErQixFQUFFQyxtQkFBRixFQUF1QkMsY0FBdkIsRUFBdUNDLFlBQVksR0FBRyxlQUF0RCxFQUF1RUMsU0FBUyxHQUFJLEdBQUVGLGNBQWUsWUFBckcsRUFBL0IsRUFBbUo7QUFDdEosTUFBSUcsS0FBSyxHQUFHLEVBQVo7O0FBRUEsTUFBSUMsWUFBWSxHQUFHO0FBQ2ZDLElBQUFBLElBQUksRUFBRSxvQ0FBd0IsRUFBRUosWUFBRixFQUFnQkMsU0FBaEIsRUFBeEIsQ0FEUyxFQUFuQjs7O0FBSUFGLEVBQUFBLGNBQWMsR0FBRyxpQkFBaUIsWUFBakIsSUFBaUMsU0FBakMsSUFBOEMsY0FBOUMsSUFBZ0UsV0FBakY7QUFDQUcsRUFBQUEsS0FBSyxDQUFDRyxvQkFBTixHQUE2QkYsWUFBWSxDQUFDLE1BQUQsQ0FBWixDQUFxQixFQUFFRyxVQUFVLEVBQUVSLG1CQUFkLEVBQW1DQyxjQUFuQyxFQUFyQixDQUE3QjtBQUNBRyxFQUFBQSxLQUFLLENBQUNLLHdCQUFOLEdBQWlDSixZQUFZLENBQUMsVUFBRCxDQUFaLENBQXlCLEVBQUVHLFVBQVUsRUFBRVIsbUJBQWQsRUFBbUNDLGNBQW5DLEVBQXpCLENBQWpDOztBQUVBLFNBQU9HLEtBQVA7QUFDSCIsInNvdXJjZXNDb250ZW50IjpbIi8vIERlZmF1bHQgZGF0YWJhc2UgYWRhcHRlclxyXG5pbXBvcnQgeyBjdXJyaWVkIGFzIGdldFRhYmxlRG9jdW1lbnRDdXJyaWVkIH0gZnJvbSBcIkBkZXBlbmRlbmN5L2RhdGFiYXNlVXRpbGl0eS9zb3VyY2UvcXVlcnkvZ2V0VGFibGVEb2N1bWVudC5xdWVyeS5qc1wiO1xyXG5cclxuXHJcbi8vIFRPRE86IGRlYWwgd2l0aCBgZGF0YWJhc2VQcmVmaXhgIGZvciBkaWZmZXJlbnQgaW1wbGVtZW50YXRpb25zLiBBbmQgY2hhbmdlcyB0byBuYW1lcyBvZiBkYXRhYmFzZSB1bml0cyBlLmcuIGBuZXN0ZWRVbml0YCB0byBgbm9kZWBcclxuZXhwb3J0IGZ1bmN0aW9uIHJldGhpbmtEQk1vZGVsQWRhcHRlcih7IHJldGhpbmtkYkNvbm5lY3Rpb24sIGRhdGFiYXNlUHJlZml4LCBkYXRhYmFzZU5hbWUgPSAnd2ViYXBwU2V0dGluZycsIHRhYmxlTmFtZSA9IGAke2RhdGFiYXNlUHJlZml4fW5lc3RlZFVuaXRgIH0pIHtcclxuICAgIGxldCBtb2RlbCA9IHt9XHJcbiAgICAvLyBwYXNzIHJldGhpbmtkYiBjb25uZWN0aW9uIHRvIGRlZmF1bHQgcXVlcnkgYWRhcHRlclxyXG4gICAgbGV0IF9nZXREb2N1bWVudCA9IHtcclxuICAgICAgICBOb2RlOiBnZXRUYWJsZURvY3VtZW50Q3VycmllZCh7IGRhdGFiYXNlTmFtZSwgdGFibGVOYW1lIH0pXHJcbiAgICB9XHJcblxyXG4gICAgZGF0YWJhc2VQcmVmaXggPSAnbWlkZGxld2FyZV8nIHx8ICdjb25kaXRpb25fJyB8fCAnc2NoZW1hXycgfHwgJ3NoZWxsc2NyaXB0XycgfHwgJ3RlbXBsYXRlXydcclxuICAgIG1vZGVsLmdldE5vZGVEb2N1bWVudFF1ZXJ5ID0gX2dldERvY3VtZW50WydOb2RlJ10oeyBjb25uZWN0aW9uOiByZXRoaW5rZGJDb25uZWN0aW9uLCBkYXRhYmFzZVByZWZpeCB9KSAvLyBhZGQgY29ubmVjdGlvbiB2YXJpYWJsZXNcclxuICAgIG1vZGVsLmdldERhdGFJdGVtRG9jdW1lbnRRdWVyeSA9IF9nZXREb2N1bWVudFsnRGF0YUl0ZW0nXSh7IGNvbm5lY3Rpb246IHJldGhpbmtkYkNvbm5lY3Rpb24sIGRhdGFiYXNlUHJlZml4IH0pIC8vIGFkZCBjb25uZWN0aW9uIHZhcmlhYmxlc1xyXG5cclxuICAgIHJldHVybiBtb2RlbFxyXG59Il19

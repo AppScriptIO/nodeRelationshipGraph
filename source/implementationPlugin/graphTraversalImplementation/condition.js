@@ -1,49 +1,50 @@
-/**
- * @description loops through all the insertion points and initializes each one to execute the children specific for it.
- * @description when first called "this" context is assigned to the AppInstance for the comming request. And on subsequest calls it is assigned to the nestedUnit instance.
- * @param {Class Instance} nestedUnitInstance Tree instance of the module using "reusableNestedUnit" pattern. instance should have "initializeInsertionPoint" function & "insertionPoint" Array.
- * @returns undifiend for false or any type of value depending on the module being applied.
- */
-export function condition({thisArg}) { // function wrapper to set thisArg on implementaion object functions.
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.condition = condition;
 
-    let self = {
-        async initializeNestedUnit({ nestedUnitKey, additionalChildNestedUnit = [], pathPointerKey = null}) { // Entrypoint Instance  
-            let conditionMet;
-            if(nestedUnitInstance.unitKey) {
-                let { unitKey:unitKey } = nestedUnitInstance
-                assert(unitKey, `• "${unitKey}" nestedUnit should have a unitKey field. The passed value is either undefined, null, or empty string.`)
-                let unitInstance = await this.getUnit({ unitKey })
-                await unitInstance.pupolateUnitWithFile()
-                conditionMet = await unitInstance.checkCondition()
-            } else { // if no unitKey set, then the neseted unit is considered a holder for other nested units and should pass to the nested children.
-                conditionMet = true
-            }
-            
-            // [3] Iterate over insertion points
-            let callback;
-            if (conditionMet) {
-                callback = await nestedUnitInstance.traversePort({ type: 'returnedFirstValue' })
-                // if all subtrees rejected, get immediate callback
-                if(!callback && 'callback' in  nestedUnitInstance) callback = nestedUnitInstance.callback // fallback to immediate callback of instance.
-            }
 
-            // [4] Callback
-            return (callback) ? callback : false;
-        },
 
-        traversePort: async function returnedFirstValue() {
-            let returned;
-            for (let insertionPoint of this.insertionPoint) {
-                returned = await iteratePort()
-                if (returned) break
-            }
-            return returned;        
-        }
-    
-    }
-    
-    Object.keys(self).forEach(function(key) {
-        self[key] = self[key].bind(thisArg)
-    }, {})
-    return self
+
+
+function condition({ thisArg }) {
+
+  let self = {
+    async initializeNestedUnit({ nestedUnitKey, additionalChildNestedUnit = [], pathPointerKey = null }) {
+      let conditionMet;
+      if (nestedUnitInstance.unitKey) {
+        let { unitKey: unitKey } = nestedUnitInstance;
+        assert(unitKey, `• "${unitKey}" nestedUnit should have a unitKey field. The passed value is either undefined, null, or empty string.`);
+        let unitInstance = await this.getUnit({ unitKey });
+        await unitInstance.pupolateUnitWithFile();
+        conditionMet = await unitInstance.checkCondition();
+      } else {
+        conditionMet = true;
+      }
+
+
+      let callback;
+      if (conditionMet) {
+        callback = await nestedUnitInstance.traversePort({ type: 'returnedFirstValue' });
+
+        if (!callback && 'callback' in nestedUnitInstance) callback = nestedUnitInstance.callback;
+      }
+
+
+      return callback ? callback : false;
+    },
+
+    traversePort: async function returnedFirstValue() {
+      let returned;
+      for (let insertionPoint of this.insertionPoint) {
+        returned = await iteratePort();
+        if (returned) break;
+      }
+      return returned;
+    } };
+
+
+
+  Object.keys(self).forEach(function (key) {
+    self[key] = self[key].bind(thisArg);
+  }, {});
+  return self;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9ncmFwaFRyYXZlcnNhbEltcGxlbWVudGF0aW9uL2NvbmRpdGlvbi5qcyJdLCJuYW1lcyI6WyJjb25kaXRpb24iLCJ0aGlzQXJnIiwic2VsZiIsImluaXRpYWxpemVOZXN0ZWRVbml0IiwibmVzdGVkVW5pdEtleSIsImFkZGl0aW9uYWxDaGlsZE5lc3RlZFVuaXQiLCJwYXRoUG9pbnRlcktleSIsImNvbmRpdGlvbk1ldCIsIm5lc3RlZFVuaXRJbnN0YW5jZSIsInVuaXRLZXkiLCJhc3NlcnQiLCJ1bml0SW5zdGFuY2UiLCJnZXRVbml0IiwicHVwb2xhdGVVbml0V2l0aEZpbGUiLCJjaGVja0NvbmRpdGlvbiIsImNhbGxiYWNrIiwidHJhdmVyc2VQb3J0IiwidHlwZSIsInJldHVybmVkRmlyc3RWYWx1ZSIsInJldHVybmVkIiwiaW5zZXJ0aW9uUG9pbnQiLCJpdGVyYXRlUG9ydCIsIk9iamVjdCIsImtleXMiLCJmb3JFYWNoIiwia2V5IiwiYmluZCJdLCJtYXBwaW5ncyI6Ijs7Ozs7O0FBTU8sU0FBU0EsU0FBVCxDQUFtQixFQUFDQyxPQUFELEVBQW5CLEVBQThCOztBQUVqQyxNQUFJQyxJQUFJLEdBQUc7QUFDUCxVQUFNQyxvQkFBTixDQUEyQixFQUFFQyxhQUFGLEVBQWlCQyx5QkFBeUIsR0FBRyxFQUE3QyxFQUFpREMsY0FBYyxHQUFHLElBQWxFLEVBQTNCLEVBQW9HO0FBQ2hHLFVBQUlDLFlBQUo7QUFDQSxVQUFHQyxrQkFBa0IsQ0FBQ0MsT0FBdEIsRUFBK0I7QUFDM0IsWUFBSSxFQUFFQSxPQUFPLEVBQUNBLE9BQVYsS0FBc0JELGtCQUExQjtBQUNBRSxRQUFBQSxNQUFNLENBQUNELE9BQUQsRUFBVyxNQUFLQSxPQUFRLHdHQUF4QixDQUFOO0FBQ0EsWUFBSUUsWUFBWSxHQUFHLE1BQU0sS0FBS0MsT0FBTCxDQUFhLEVBQUVILE9BQUYsRUFBYixDQUF6QjtBQUNBLGNBQU1FLFlBQVksQ0FBQ0Usb0JBQWIsRUFBTjtBQUNBTixRQUFBQSxZQUFZLEdBQUcsTUFBTUksWUFBWSxDQUFDRyxjQUFiLEVBQXJCO0FBQ0gsT0FORCxNQU1PO0FBQ0hQLFFBQUFBLFlBQVksR0FBRyxJQUFmO0FBQ0g7OztBQUdELFVBQUlRLFFBQUo7QUFDQSxVQUFJUixZQUFKLEVBQWtCO0FBQ2RRLFFBQUFBLFFBQVEsR0FBRyxNQUFNUCxrQkFBa0IsQ0FBQ1EsWUFBbkIsQ0FBZ0MsRUFBRUMsSUFBSSxFQUFFLG9CQUFSLEVBQWhDLENBQWpCOztBQUVBLFlBQUcsQ0FBQ0YsUUFBRCxJQUFhLGNBQWVQLGtCQUEvQixFQUFtRE8sUUFBUSxHQUFHUCxrQkFBa0IsQ0FBQ08sUUFBOUI7QUFDdEQ7OztBQUdELGFBQVFBLFFBQUQsR0FBYUEsUUFBYixHQUF3QixLQUEvQjtBQUNILEtBdkJNOztBQXlCUEMsSUFBQUEsWUFBWSxFQUFFLGVBQWVFLGtCQUFmLEdBQW9DO0FBQzlDLFVBQUlDLFFBQUo7QUFDQSxXQUFLLElBQUlDLGNBQVQsSUFBMkIsS0FBS0EsY0FBaEMsRUFBZ0Q7QUFDNUNELFFBQUFBLFFBQVEsR0FBRyxNQUFNRSxXQUFXLEVBQTVCO0FBQ0EsWUFBSUYsUUFBSixFQUFjO0FBQ2pCO0FBQ0QsYUFBT0EsUUFBUDtBQUNILEtBaENNLEVBQVg7Ozs7QUFvQ0FHLEVBQUFBLE1BQU0sQ0FBQ0MsSUFBUCxDQUFZckIsSUFBWixFQUFrQnNCLE9BQWxCLENBQTBCLFVBQVNDLEdBQVQsRUFBYztBQUNwQ3ZCLElBQUFBLElBQUksQ0FBQ3VCLEdBQUQsQ0FBSixHQUFZdkIsSUFBSSxDQUFDdUIsR0FBRCxDQUFKLENBQVVDLElBQVYsQ0FBZXpCLE9BQWYsQ0FBWjtBQUNILEdBRkQsRUFFRyxFQUZIO0FBR0EsU0FBT0MsSUFBUDtBQUNIIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXHJcbiAqIEBkZXNjcmlwdGlvbiBsb29wcyB0aHJvdWdoIGFsbCB0aGUgaW5zZXJ0aW9uIHBvaW50cyBhbmQgaW5pdGlhbGl6ZXMgZWFjaCBvbmUgdG8gZXhlY3V0ZSB0aGUgY2hpbGRyZW4gc3BlY2lmaWMgZm9yIGl0LlxyXG4gKiBAZGVzY3JpcHRpb24gd2hlbiBmaXJzdCBjYWxsZWQgXCJ0aGlzXCIgY29udGV4dCBpcyBhc3NpZ25lZCB0byB0aGUgQXBwSW5zdGFuY2UgZm9yIHRoZSBjb21taW5nIHJlcXVlc3QuIEFuZCBvbiBzdWJzZXF1ZXN0IGNhbGxzIGl0IGlzIGFzc2lnbmVkIHRvIHRoZSBuZXN0ZWRVbml0IGluc3RhbmNlLlxyXG4gKiBAcGFyYW0ge0NsYXNzIEluc3RhbmNlfSBuZXN0ZWRVbml0SW5zdGFuY2UgVHJlZSBpbnN0YW5jZSBvZiB0aGUgbW9kdWxlIHVzaW5nIFwicmV1c2FibGVOZXN0ZWRVbml0XCIgcGF0dGVybi4gaW5zdGFuY2Ugc2hvdWxkIGhhdmUgXCJpbml0aWFsaXplSW5zZXJ0aW9uUG9pbnRcIiBmdW5jdGlvbiAmIFwiaW5zZXJ0aW9uUG9pbnRcIiBBcnJheS5cclxuICogQHJldHVybnMgdW5kaWZpZW5kIGZvciBmYWxzZSBvciBhbnkgdHlwZSBvZiB2YWx1ZSBkZXBlbmRpbmcgb24gdGhlIG1vZHVsZSBiZWluZyBhcHBsaWVkLlxyXG4gKi9cclxuZXhwb3J0IGZ1bmN0aW9uIGNvbmRpdGlvbih7dGhpc0FyZ30pIHsgLy8gZnVuY3Rpb24gd3JhcHBlciB0byBzZXQgdGhpc0FyZyBvbiBpbXBsZW1lbnRhaW9uIG9iamVjdCBmdW5jdGlvbnMuXHJcblxyXG4gICAgbGV0IHNlbGYgPSB7XHJcbiAgICAgICAgYXN5bmMgaW5pdGlhbGl6ZU5lc3RlZFVuaXQoeyBuZXN0ZWRVbml0S2V5LCBhZGRpdGlvbmFsQ2hpbGROZXN0ZWRVbml0ID0gW10sIHBhdGhQb2ludGVyS2V5ID0gbnVsbH0pIHsgLy8gRW50cnlwb2ludCBJbnN0YW5jZSAgXHJcbiAgICAgICAgICAgIGxldCBjb25kaXRpb25NZXQ7XHJcbiAgICAgICAgICAgIGlmKG5lc3RlZFVuaXRJbnN0YW5jZS51bml0S2V5KSB7XHJcbiAgICAgICAgICAgICAgICBsZXQgeyB1bml0S2V5OnVuaXRLZXkgfSA9IG5lc3RlZFVuaXRJbnN0YW5jZVxyXG4gICAgICAgICAgICAgICAgYXNzZXJ0KHVuaXRLZXksIGDigKIgXCIke3VuaXRLZXl9XCIgbmVzdGVkVW5pdCBzaG91bGQgaGF2ZSBhIHVuaXRLZXkgZmllbGQuIFRoZSBwYXNzZWQgdmFsdWUgaXMgZWl0aGVyIHVuZGVmaW5lZCwgbnVsbCwgb3IgZW1wdHkgc3RyaW5nLmApXHJcbiAgICAgICAgICAgICAgICBsZXQgdW5pdEluc3RhbmNlID0gYXdhaXQgdGhpcy5nZXRVbml0KHsgdW5pdEtleSB9KVxyXG4gICAgICAgICAgICAgICAgYXdhaXQgdW5pdEluc3RhbmNlLnB1cG9sYXRlVW5pdFdpdGhGaWxlKClcclxuICAgICAgICAgICAgICAgIGNvbmRpdGlvbk1ldCA9IGF3YWl0IHVuaXRJbnN0YW5jZS5jaGVja0NvbmRpdGlvbigpXHJcbiAgICAgICAgICAgIH0gZWxzZSB7IC8vIGlmIG5vIHVuaXRLZXkgc2V0LCB0aGVuIHRoZSBuZXNldGVkIHVuaXQgaXMgY29uc2lkZXJlZCBhIGhvbGRlciBmb3Igb3RoZXIgbmVzdGVkIHVuaXRzIGFuZCBzaG91bGQgcGFzcyB0byB0aGUgbmVzdGVkIGNoaWxkcmVuLlxyXG4gICAgICAgICAgICAgICAgY29uZGl0aW9uTWV0ID0gdHJ1ZVxyXG4gICAgICAgICAgICB9XHJcbiAgICAgICAgICAgIFxyXG4gICAgICAgICAgICAvLyBbM10gSXRlcmF0ZSBvdmVyIGluc2VydGlvbiBwb2ludHNcclxuICAgICAgICAgICAgbGV0IGNhbGxiYWNrO1xyXG4gICAgICAgICAgICBpZiAoY29uZGl0aW9uTWV0KSB7XHJcbiAgICAgICAgICAgICAgICBjYWxsYmFjayA9IGF3YWl0IG5lc3RlZFVuaXRJbnN0YW5jZS50cmF2ZXJzZVBvcnQoeyB0eXBlOiAncmV0dXJuZWRGaXJzdFZhbHVlJyB9KVxyXG4gICAgICAgICAgICAgICAgLy8gaWYgYWxsIHN1YnRyZWVzIHJlamVjdGVkLCBnZXQgaW1tZWRpYXRlIGNhbGxiYWNrXHJcbiAgICAgICAgICAgICAgICBpZighY2FsbGJhY2sgJiYgJ2NhbGxiYWNrJyBpbiAgbmVzdGVkVW5pdEluc3RhbmNlKSBjYWxsYmFjayA9IG5lc3RlZFVuaXRJbnN0YW5jZS5jYWxsYmFjayAvLyBmYWxsYmFjayB0byBpbW1lZGlhdGUgY2FsbGJhY2sgb2YgaW5zdGFuY2UuXHJcbiAgICAgICAgICAgIH1cclxuXHJcbiAgICAgICAgICAgIC8vIFs0XSBDYWxsYmFja1xyXG4gICAgICAgICAgICByZXR1cm4gKGNhbGxiYWNrKSA/IGNhbGxiYWNrIDogZmFsc2U7XHJcbiAgICAgICAgfSxcclxuXHJcbiAgICAgICAgdHJhdmVyc2VQb3J0OiBhc3luYyBmdW5jdGlvbiByZXR1cm5lZEZpcnN0VmFsdWUoKSB7XHJcbiAgICAgICAgICAgIGxldCByZXR1cm5lZDtcclxuICAgICAgICAgICAgZm9yIChsZXQgaW5zZXJ0aW9uUG9pbnQgb2YgdGhpcy5pbnNlcnRpb25Qb2ludCkge1xyXG4gICAgICAgICAgICAgICAgcmV0dXJuZWQgPSBhd2FpdCBpdGVyYXRlUG9ydCgpXHJcbiAgICAgICAgICAgICAgICBpZiAocmV0dXJuZWQpIGJyZWFrXHJcbiAgICAgICAgICAgIH1cclxuICAgICAgICAgICAgcmV0dXJuIHJldHVybmVkOyAgICAgICAgXHJcbiAgICAgICAgfVxyXG4gICAgXHJcbiAgICB9XHJcbiAgICBcclxuICAgIE9iamVjdC5rZXlzKHNlbGYpLmZvckVhY2goZnVuY3Rpb24oa2V5KSB7XHJcbiAgICAgICAgc2VsZltrZXldID0gc2VsZltrZXldLmJpbmQodGhpc0FyZylcclxuICAgIH0sIHt9KVxyXG4gICAgcmV0dXJuIHNlbGZcclxufSJdfQ==

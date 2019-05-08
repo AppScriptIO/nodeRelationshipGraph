@@ -1,44 +1,45 @@
-import assert from 'assert'
-import { classDecorator as prototypeChainDebug } from '@dependency/prototypeChainDebug'
-import { add, execute, conditional, executeOnceForEachInstance } from '@dependency/commonPattern/source/decoratorUtility.js'
-import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
+"use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.DataItemFunction = DataItemFunction;var _applyDecoratedDescriptor2 = _interopRequireDefault(require("@babel/runtime/helpers/applyDecoratedDescriptor"));var _assert = _interopRequireDefault(require("assert"));
+var _prototypeChainDebug = require("@dependency/prototypeChainDebug");
+var _decoratorUtility = require("@dependency/commonPattern/source/decoratorUtility.js");
+var _extendedSubclassPattern = require("@dependency/commonPattern/source/extendedSubclassPattern.js");
 
-export function DataItemFunction({ Superclass, getDocumentQuery } = {}) {
-  let self =
-    @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
-    @execute({ staticMethod: 'initializeStaticClass', args: [] })
-    @extendedSubclassPattern.Subclass() // in case specificNestedUnit subclass isn't registered, this class will be used as Controller subclass when called.
-    class DataItem extends Superclass {
-      static getDocumentQuery
+function DataItemFunction({ Superclass, getDocumentQuery } = {}) {var _dec, _dec2, _dec3, _dec4, _class, _class2;
+  let self = (_dec =
+  (0, _decoratorUtility.conditional)({ decorator: _prototypeChainDebug.classDecorator, condition: process.env.SZN_DEBUG }), _dec2 =
+  (0, _decoratorUtility.execute)({ staticMethod: 'initializeStaticClass', args: [] }), _dec3 =
+  _extendedSubclassPattern.extendedSubclassPattern.Subclass(), _dec4 =
 
-      static initializeStaticClass(self) {
-        self.getDocumentQuery = getDocumentQuery
-      }
 
-      constructor(databaseDocumentKey) {
-        super()
-        this.key = databaseDocumentKey
-        return this
-      }
 
-      async initializeDataItem() {
-        // let initializationImplementationType = dataItem.tag.initializationImplementationType
-        console.log('• DataItem class, initializeDataItem function')
-      }
 
-      @executeOnceForEachInstance()
-      async pupolateUnitWithFile({
-        fileKey,
-        getDocument, // function
-        extract = null, // object with two properties - extract: { sourceKey: 'key from source object', destinationKey: 'key to "this" destination' }
-      }) {
-        assert.strictEqual(Object.getPrototypeOf(self.rethinkdbConnection).constructor.name, 'TcpConnection')
-        let file = await getDocument({ key: fileKey, connection: self.rethinkdbConnection })
-        if (extract) this[extract.destinationKey] = extract.sourceKey ? file[extract.sourceKey] : file
-      }
 
-      // TODO: Add function for loading file using the file object settings, i.e. load filepath as es6 module or as regular module with default export.
-    }
 
-  return self
+
+
+
+
+
+
+
+
+
+
+
+
+  (0, _decoratorUtility.executeOnceForEachInstance)(), _dec(_class = _dec2(_class = _dec3(_class = (_class2 = class DataItem extends Superclass {static initializeStaticClass(self) {self.getDocumentQuery = getDocumentQuery;}constructor(databaseDocumentKey) {super();this.key = databaseDocumentKey;return this;}async initializeDataItem() {console.log('• DataItem class, initializeDataItem function');}async
+    pupolateUnitWithFile({
+      fileKey,
+      getDocument,
+      extract = null })
+    {
+      _assert.default.strictEqual(Object.getPrototypeOf(self.rethinkdbConnection).constructor.name, 'TcpConnection');
+      let file = await getDocument({ key: fileKey, connection: self.rethinkdbConnection });
+      if (extract) this[extract.destinationKey] = extract.sourceKey ? file[extract.sourceKey] : file;
+    }}, ((0, _applyDecoratedDescriptor2.default)(_class2.prototype, "pupolateUnitWithFile", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "pupolateUnitWithFile"), _class2.prototype)), _class2)) || _class) || _class) || _class);
+
+
+
+
+  return self;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL0RhdGFJdGVtLmNsYXNzLmpzIl0sIm5hbWVzIjpbIkRhdGFJdGVtRnVuY3Rpb24iLCJTdXBlcmNsYXNzIiwiZ2V0RG9jdW1lbnRRdWVyeSIsInNlbGYiLCJkZWNvcmF0b3IiLCJwcm90b3R5cGVDaGFpbkRlYnVnIiwiY29uZGl0aW9uIiwicHJvY2VzcyIsImVudiIsIlNaTl9ERUJVRyIsInN0YXRpY01ldGhvZCIsImFyZ3MiLCJleHRlbmRlZFN1YmNsYXNzUGF0dGVybiIsIlN1YmNsYXNzIiwiRGF0YUl0ZW0iLCJpbml0aWFsaXplU3RhdGljQ2xhc3MiLCJjb25zdHJ1Y3RvciIsImRhdGFiYXNlRG9jdW1lbnRLZXkiLCJrZXkiLCJpbml0aWFsaXplRGF0YUl0ZW0iLCJjb25zb2xlIiwibG9nIiwicHVwb2xhdGVVbml0V2l0aEZpbGUiLCJmaWxlS2V5IiwiZ2V0RG9jdW1lbnQiLCJleHRyYWN0IiwiYXNzZXJ0Iiwic3RyaWN0RXF1YWwiLCJPYmplY3QiLCJnZXRQcm90b3R5cGVPZiIsInJldGhpbmtkYkNvbm5lY3Rpb24iLCJuYW1lIiwiZmlsZSIsImNvbm5lY3Rpb24iLCJkZXN0aW5hdGlvbktleSIsInNvdXJjZUtleSJdLCJtYXBwaW5ncyI6ImdVQUFBO0FBQ0E7QUFDQTtBQUNBOztBQUVPLFNBQVNBLGdCQUFULENBQTBCLEVBQUVDLFVBQUYsRUFBY0MsZ0JBQWQsS0FBbUMsRUFBN0QsRUFBaUU7QUFDdEUsTUFBSUMsSUFBSTtBQUNMLHFDQUFZLEVBQUVDLFNBQVMsRUFBRUMsbUNBQWIsRUFBa0NDLFNBQVMsRUFBRUMsT0FBTyxDQUFDQyxHQUFSLENBQVlDLFNBQXpELEVBQVosQ0FESztBQUVMLGlDQUFRLEVBQUVDLFlBQVksRUFBRSx1QkFBaEIsRUFBeUNDLElBQUksRUFBRSxFQUEvQyxFQUFSLENBRks7QUFHTEMsbURBQXdCQyxRQUF4QixFQUhLOzs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBc0JILHFEQXRCRyx5REFDTixNQUdNQyxRQUhOLFNBR3VCYixVQUh2QixDQUdrQyxDQUdoQyxPQUFPYyxxQkFBUCxDQUE2QlosSUFBN0IsRUFBbUMsQ0FDakNBLElBQUksQ0FBQ0QsZ0JBQUwsR0FBd0JBLGdCQUF4QixDQUNELENBRURjLFdBQVcsQ0FBQ0MsbUJBQUQsRUFBc0IsQ0FDL0IsUUFDQSxLQUFLQyxHQUFMLEdBQVdELG1CQUFYLENBQ0EsT0FBTyxJQUFQLENBQ0QsQ0FFRCxNQUFNRSxrQkFBTixHQUEyQixDQUV6QkMsT0FBTyxDQUFDQyxHQUFSLENBQVksK0NBQVosRUFDRCxDQUVEO0FBQ01DLElBQUFBLG9CQUROLENBQzJCO0FBQ3pCQyxNQUFBQSxPQUR5QjtBQUV6QkMsTUFBQUEsV0FGeUI7QUFHekJDLE1BQUFBLE9BQU8sR0FBRyxJQUhlLEVBRDNCO0FBS0c7QUFDREMsc0JBQU9DLFdBQVAsQ0FBbUJDLE1BQU0sQ0FBQ0MsY0FBUCxDQUFzQjFCLElBQUksQ0FBQzJCLG1CQUEzQixFQUFnRGQsV0FBaEQsQ0FBNERlLElBQS9FLEVBQXFGLGVBQXJGO0FBQ0EsVUFBSUMsSUFBSSxHQUFHLE1BQU1SLFdBQVcsQ0FBQyxFQUFFTixHQUFHLEVBQUVLLE9BQVAsRUFBZ0JVLFVBQVUsRUFBRTlCLElBQUksQ0FBQzJCLG1CQUFqQyxFQUFELENBQTVCO0FBQ0EsVUFBSUwsT0FBSixFQUFhLEtBQUtBLE9BQU8sQ0FBQ1MsY0FBYixJQUErQlQsT0FBTyxDQUFDVSxTQUFSLEdBQW9CSCxJQUFJLENBQUNQLE9BQU8sQ0FBQ1UsU0FBVCxDQUF4QixHQUE4Q0gsSUFBN0U7QUFDZCxLQTNCK0IsQ0FKNUIsME9BQVI7Ozs7O0FBb0NBLFNBQU83QixJQUFQO0FBQ0QiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgYXNzZXJ0IGZyb20gJ2Fzc2VydCdcbmltcG9ydCB7IGNsYXNzRGVjb3JhdG9yIGFzIHByb3RvdHlwZUNoYWluRGVidWcgfSBmcm9tICdAZGVwZW5kZW5jeS9wcm90b3R5cGVDaGFpbkRlYnVnJ1xuaW1wb3J0IHsgYWRkLCBleGVjdXRlLCBjb25kaXRpb25hbCwgZXhlY3V0ZU9uY2VGb3JFYWNoSW5zdGFuY2UgfSBmcm9tICdAZGVwZW5kZW5jeS9jb21tb25QYXR0ZXJuL3NvdXJjZS9kZWNvcmF0b3JVdGlsaXR5LmpzJ1xuaW1wb3J0IHsgZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4gfSBmcm9tICdAZGVwZW5kZW5jeS9jb21tb25QYXR0ZXJuL3NvdXJjZS9leHRlbmRlZFN1YmNsYXNzUGF0dGVybi5qcydcblxuZXhwb3J0IGZ1bmN0aW9uIERhdGFJdGVtRnVuY3Rpb24oeyBTdXBlcmNsYXNzLCBnZXREb2N1bWVudFF1ZXJ5IH0gPSB7fSkge1xuICBsZXQgc2VsZiA9XG4gICAgQGNvbmRpdGlvbmFsKHsgZGVjb3JhdG9yOiBwcm90b3R5cGVDaGFpbkRlYnVnLCBjb25kaXRpb246IHByb2Nlc3MuZW52LlNaTl9ERUJVRyB9KVxuICAgIEBleGVjdXRlKHsgc3RhdGljTWV0aG9kOiAnaW5pdGlhbGl6ZVN0YXRpY0NsYXNzJywgYXJnczogW10gfSlcbiAgICBAZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4uU3ViY2xhc3MoKSAvLyBpbiBjYXNlIHNwZWNpZmljTmVzdGVkVW5pdCBzdWJjbGFzcyBpc24ndCByZWdpc3RlcmVkLCB0aGlzIGNsYXNzIHdpbGwgYmUgdXNlZCBhcyBDb250cm9sbGVyIHN1YmNsYXNzIHdoZW4gY2FsbGVkLlxuICAgIGNsYXNzIERhdGFJdGVtIGV4dGVuZHMgU3VwZXJjbGFzcyB7XG4gICAgICBzdGF0aWMgZ2V0RG9jdW1lbnRRdWVyeVxuXG4gICAgICBzdGF0aWMgaW5pdGlhbGl6ZVN0YXRpY0NsYXNzKHNlbGYpIHtcbiAgICAgICAgc2VsZi5nZXREb2N1bWVudFF1ZXJ5ID0gZ2V0RG9jdW1lbnRRdWVyeVxuICAgICAgfVxuXG4gICAgICBjb25zdHJ1Y3RvcihkYXRhYmFzZURvY3VtZW50S2V5KSB7XG4gICAgICAgIHN1cGVyKClcbiAgICAgICAgdGhpcy5rZXkgPSBkYXRhYmFzZURvY3VtZW50S2V5XG4gICAgICAgIHJldHVybiB0aGlzXG4gICAgICB9XG5cbiAgICAgIGFzeW5jIGluaXRpYWxpemVEYXRhSXRlbSgpIHtcbiAgICAgICAgLy8gbGV0IGluaXRpYWxpemF0aW9uSW1wbGVtZW50YXRpb25UeXBlID0gZGF0YUl0ZW0udGFnLmluaXRpYWxpemF0aW9uSW1wbGVtZW50YXRpb25UeXBlXG4gICAgICAgIGNvbnNvbGUubG9nKCfigKIgRGF0YUl0ZW0gY2xhc3MsIGluaXRpYWxpemVEYXRhSXRlbSBmdW5jdGlvbicpXG4gICAgICB9XG5cbiAgICAgIEBleGVjdXRlT25jZUZvckVhY2hJbnN0YW5jZSgpXG4gICAgICBhc3luYyBwdXBvbGF0ZVVuaXRXaXRoRmlsZSh7XG4gICAgICAgIGZpbGVLZXksXG4gICAgICAgIGdldERvY3VtZW50LCAvLyBmdW5jdGlvblxuICAgICAgICBleHRyYWN0ID0gbnVsbCwgLy8gb2JqZWN0IHdpdGggdHdvIHByb3BlcnRpZXMgLSBleHRyYWN0OiB7IHNvdXJjZUtleTogJ2tleSBmcm9tIHNvdXJjZSBvYmplY3QnLCBkZXN0aW5hdGlvbktleTogJ2tleSB0byBcInRoaXNcIiBkZXN0aW5hdGlvbicgfVxuICAgICAgfSkge1xuICAgICAgICBhc3NlcnQuc3RyaWN0RXF1YWwoT2JqZWN0LmdldFByb3RvdHlwZU9mKHNlbGYucmV0aGlua2RiQ29ubmVjdGlvbikuY29uc3RydWN0b3IubmFtZSwgJ1RjcENvbm5lY3Rpb24nKVxuICAgICAgICBsZXQgZmlsZSA9IGF3YWl0IGdldERvY3VtZW50KHsga2V5OiBmaWxlS2V5LCBjb25uZWN0aW9uOiBzZWxmLnJldGhpbmtkYkNvbm5lY3Rpb24gfSlcbiAgICAgICAgaWYgKGV4dHJhY3QpIHRoaXNbZXh0cmFjdC5kZXN0aW5hdGlvbktleV0gPSBleHRyYWN0LnNvdXJjZUtleSA/IGZpbGVbZXh0cmFjdC5zb3VyY2VLZXldIDogZmlsZVxuICAgICAgfVxuXG4gICAgICAvLyBUT0RPOiBBZGQgZnVuY3Rpb24gZm9yIGxvYWRpbmcgZmlsZSB1c2luZyB0aGUgZmlsZSBvYmplY3Qgc2V0dGluZ3MsIGkuZS4gbG9hZCBmaWxlcGF0aCBhcyBlczYgbW9kdWxlIG9yIGFzIHJlZ3VsYXIgbW9kdWxlIHdpdGggZGVmYXVsdCBleHBvcnQuXG4gICAgfVxuXG4gIHJldHVybiBzZWxmXG59XG4iXX0=

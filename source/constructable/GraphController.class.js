@@ -1,159 +1,160 @@
-/* eslint-disable prettier/prettier */
-import EventEmitter from 'events'
-import assert from 'assert'
-import { mix, decorator as applyMixin } from '@dependency/classMixin'
-import createInstance from '../utility/createInstanceStaticMethod.js'
-import addStaticSubclassToClassArray from '@dependency/commonPattern/source/addStaticSubclassToClassArray.staticMethod'
-import { classDecorator as prototypeChainDebug} from '@dependency/prototypeChainDebug'
-import { add, execute, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
-import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
-import { superclassInstanceContextPattern, cacheInstance } from '@dependency/commonPattern/source/superclassInstanceContextPattern.js'
+"use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.GraphControllerFunction = GraphControllerFunction;var _applyDecoratedDescriptor2 = _interopRequireDefault(require("@babel/runtime/helpers/applyDecoratedDescriptor"));
+var _events = _interopRequireDefault(require("events"));
+var _assert = _interopRequireDefault(require("assert"));
+var _classMixin = require("@dependency/classMixin");
+var _createInstanceStaticMethod = _interopRequireDefault(require("../utility/createInstanceStaticMethod.js"));
+var _addStaticSubclassToClassArray = _interopRequireDefault(require("@dependency/commonPattern/source/addStaticSubclassToClassArray.staticMethod"));
+var _prototypeChainDebug = require("@dependency/prototypeChainDebug");
+var _decoratorUtility = require("@dependency/commonPattern/source/decoratorUtility.js");
+var _extendedSubclassPattern = require("@dependency/commonPattern/source/extendedSubclassPattern.js");
+var _superclassInstanceContextPattern = require("@dependency/commonPattern/source/superclassInstanceContextPattern.js");
 
-export function GraphControllerFunction({  
-    Superclass = EventEmitter, // defaulting to EventEmitter and not Object / Function because extending Object/Function manipulates this prototype in new calls for some reason.
-    methodInstanceName,
-    mixin, 
-    // rethinkdbConnection = (!!Superclass) && Superclass.rethinkdbConnection,
-} = {}) {
-    // if(Superclass) Superclass.rethinkdbConnection = rethinkdbConnection // Setting this variable on Controller class below causes issues, which maybe related to the way rethinkdb is called or the proxies encapsulating the class.
-    
-    /**
-     * @class
-     * @usage through method `traverseGraph`.
-     */
-    let self = 
-        @add({ to: 'static'}, { 
-            createInstance,
-            addStaticSubclassToClassArray,
-        })
-        @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
-        // Add ability to track exdending subclasses
-        @extendedSubclassPattern.Superclass()
-        // In case the class is an extended subclass of another super class and the subclass tracking pattern is used in the superclass.
-        @conditional({ decorator: extendedSubclassPattern.Subclass(), condition: (methodInstanceName && Superclass && Superclass.addSubclass != undefined ) })
-        @conditional({ condition: mixin, decorator: applyMixin({ mixin }) })
-        // creating objects for `Controller` class, rather than using static classes allows for caching instances during graph traversal in a garbage collected / loosely coupled references that lives only during server-client request.
-        @superclassInstanceContextPattern() // applied on the mixin i.e. specific controller.
-        class GraphController extends Superclass {
-            
-            // Configure multiple chain in a proxy that will wrap GraphController
-            ownConstructor({
-                additionalDelegatedChain = {} // array of additional prototype chain (prototypes/objects/instances) to be added to the delegated prototype chain of the instances produced by the methods of the Graph controller.
-            }) {
-                additionalDelegatedChain.plugin
-                additionalDelegatedChain.context
-                additionalDelegatedChain.cache
+function GraphControllerFunction({
+  Superclass = _events.default,
+  methodInstanceName,
+  mixin } =
 
-                return proxiedInterface // of GraphController
-            }
-
-            constructor({}) {
-                super()
-                return this
-            }
-
-            // intercept a method call to choose the corresponding plugin to execute (setting/assigning the variables values according to passed parameters hierarchy)
-            interceptMethod({ thisArg, implementationType, nodeInstance, argumentsList, methodName }) {
-                let implementationFunction = this.getPlugin({ plugin: 'graphTraversalImplementation', implementation: implementationType })
-                // TODO: add plugin settings that will allow to instantiate plugin depending on its settings - i.e. if function instantiate in a specific way
-                let implementationObject = implementationFunction({ thisArg: nodeInstance })
-                return implementationObject[methodName].apply(thisArg, argumentsList)
-            }
-
-            /**
-             * Create nodeInstace from `nodeKey`, then forward call to `traverseGraph` subclass method
-            */
-            async traverseGraph({ nodeKey }) {
-            }
-            static async traverseGraph({ nodeKey,  }) {
-                // TODO: Usage of async generators will prevent handing the control to called function (against `Run-to-complete` principle), and will allow interceptin the execution mid way.
-                
-                // [1] get node
-                assert(nodeKey, `• ${nodeKey} Key should be present. The passed value is either undefined, null, or empty string.`)
-                let nodeInstance = await this.createNodeInstance({ nodeKey }) // returns a node object (instance) 
-                // [2] Forward call to instance's traverse graph
-                
-                //execute to complete
-                // intercepting execution & keeping control
-                //{nextNode, } = traverse*(Node)
-
-                // let iteratorObject = Traverse*(Node)
-                // let result = iteratorObject.next()
-                // let result = iteratorObject.next()
-                // let result = iteratorObject.next()
-                // result.value.nodeKey
-                // if(result.done) let finalNodeResult.next(result1, result2, result3, result4)
-                // return finalNoderesult;
-
-                return await nodeInstance.traverseGraph(arguments)
-            }
-
-            async initializeDataItem({ dataItemKey }) {
-                assert(dataItemKey, `• Missing "dataItem key" - for dataItemType "reference" a key must exist in "node.dataItem".`)
-                // get data item
-                let dataItemInstance = await this.createDataItemInstance({ dataItemKey })
-                // forward call to instance's implementation
-                await dataItemInstance.initializeDataItem(arguments)
-                return dataItemInstance
-            }
-
-            // Add "createObjectWithPrototypeChain"
-
-            /* @cacheInstance({
-            //     cacheArrayName: 'node',
-            //     keyArgumentName: 'nodeKey'
-            // })
-            // TODO: change name from 'pathPointerKey' to 'nodeConnectionKey'
-            // TODO: change function name from 'getNode'/'getNestedUnit' to 'createNodeInstance'
-             */
-            async createNodeInstance({ nodeKey, additionalChildNestedUnit = [], nodeConnectionKey = null }) {
-                    let nodeSubclass = this.getSubclass({ subclassName: 'ImplementationNode' }) || this.getSubclass({ subclassName: 'Node' }) // get specific subclass or reusable subclass
-                    return await self.createNodeInstance({ nodeKey, additionalChildNestedUnit, nodeConnectionKey, nodeSubclass })
-            }
-            static async createNodeInstance({ nodeKey, additionalChildNestedUnit = [], nodeConnectionKey = null, nodeSubclass }) {
-                console.log(new nodeSubclass()) // TODO: FIx proxy that wraps Node - the returned instance is not an object error.
-                // create instance or get cached instance
-                let instance = await Reflect.construct(nodeSubclass, [ nodeKey ]) // call 'new' on subclass
-
-                // // get json data from database/storage. gets document from database using documentKey and populates the data to the instance. during which 'jsonData' property is set. if it is set, it means that the instance is already populated with data.
-                // if(!('jsonData' in instance)) { // if not already populated with data.
-                //     let getDocumentQuery = instance.constructor.getDocumentQuery
-                //     // TODO: get plugin datatbase adapter
-                //     databaseModelAdapter.getNodeDocumentQuery
-                //     databaseModelAdapter.getDataItemDocumentQuery
-                //     let jsonData = await getDocumentQuery({ key: nodeKey })
-                //     assert(jsonData, `• "${nodeKey}" nestedUnit document must be present in the database, the requested key does not exist in database. The passed value is either undefined, null, or empty string.`)
-                //     await instance.populateInstancePropertyFromJson_this({ jsonData })
-                // }
-
-                return instance
-            }
-
-            @cacheInstance({
-                cacheArrayName: 'dataItem',
-                keyArgumentName: 'dataItemKey'
-            })
-            async createDataItemInstance({ dataItemKey }) {
-                let dataItemSubclass = this.getSubclass({ subclassName: 'ImplementationDataItem' }) || this.getSubclass({ subclassName: 'DataItem' }) // get specific subclass or reusable subclass
-                return await self.createDataItemInstance({ dataItemKey, dataItemSubclass })
-            }
-            static async createDataItemInstance({ dataItemKey, dataItemSubclass }) {
-                // create instance or get cached instance
-                let instance = await Reflect.construct(dataItemSubclass, [ dataItemKey ]) // call 'new' on subclass
-                
-                // get json data from database/storage. gets document from database using documentKey and populates the data to the instance. during which 'jsonData' property is set. if it is set, it means that the instance is already populated with data.
-                if(!('jsonData' in instance)) { // if not already populated with data.
-                    let getDocumentQuery = instance.constructor.getDocumentQuery
-                    let jsonData = await getDocumentQuery({ key: dataItemKey })
-                    assert(jsonData, `• "${dataItemKey}" nestedUnit document must be present in the database, the requested key does not exist in database. The passed value is either undefined, null, or empty string.`)
-                    await instance.populateInstancePropertyFromJson_this({ jsonData })
-                }
-
-                return instance
-            }
-
-        }
+{}) {var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2;
 
 
-    return self
+
+
+
+
+  let self = (_dec =
+  (0, _decoratorUtility.add)({ to: 'static' }, {
+    createInstance: _createInstanceStaticMethod.default,
+    addStaticSubclassToClassArray: _addStaticSubclassToClassArray.default }), _dec2 =
+
+  (0, _decoratorUtility.conditional)({ decorator: _prototypeChainDebug.classDecorator, condition: process.env.SZN_DEBUG }), _dec3 =
+
+  _extendedSubclassPattern.extendedSubclassPattern.Superclass(), _dec4 =
+
+  (0, _decoratorUtility.conditional)({ decorator: _extendedSubclassPattern.extendedSubclassPattern.Subclass(), condition: methodInstanceName && Superclass && Superclass.addSubclass != undefined }), _dec5 =
+  (0, _decoratorUtility.conditional)({ condition: mixin, decorator: (0, _classMixin.decorator)({ mixin }) }), _dec6 =
+
+  (0, _superclassInstanceContextPattern.superclassInstanceContextPattern)(), _dec7 =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  (0, _superclassInstanceContextPattern.cacheInstance)({
+    cacheArrayName: 'dataItem',
+    keyArgumentName: 'dataItemKey' }), _dec(_class = _dec2(_class = _dec3(_class = _dec4(_class = _dec5(_class = _dec6(_class = (_class2 = class GraphController extends Superclass {ownConstructor({ additionalDelegatedChain = {} }) {additionalDelegatedChain.plugin;additionalDelegatedChain.context;additionalDelegatedChain.cache;return proxiedInterface;}constructor({}) {super();return this;}interceptMethod({ thisArg, implementationType, nodeInstance, argumentsList, methodName }) {let implementationFunction = this.getPlugin({ plugin: 'graphTraversalImplementation', implementation: implementationType });let implementationObject = implementationFunction({ thisArg: nodeInstance });return implementationObject[methodName].apply(thisArg, argumentsList);}async traverseGraph({ nodeKey }) {}static async traverseGraph({ nodeKey }) {(0, _assert.default)(nodeKey, `• ${nodeKey} Key should be present. The passed value is either undefined, null, or empty string.`);let nodeInstance = await this.createNodeInstance({ nodeKey });return await nodeInstance.traverseGraph(arguments);}async initializeDataItem({ dataItemKey }) {(0, _assert.default)(dataItemKey, `• Missing "dataItem key" - for dataItemType "reference" a key must exist in "node.dataItem".`);let dataItemInstance = await this.createDataItemInstance({ dataItemKey });await dataItemInstance.initializeDataItem(arguments);return dataItemInstance;}async createNodeInstance({ nodeKey, additionalChildNestedUnit = [], nodeConnectionKey = null }) {let nodeSubclass = this.getSubclass({ subclassName: 'ImplementationNode' }) || this.getSubclass({ subclassName: 'Node' });return await self.createNodeInstance({ nodeKey, additionalChildNestedUnit, nodeConnectionKey, nodeSubclass });}static async createNodeInstance({ nodeKey, additionalChildNestedUnit = [], nodeConnectionKey = null, nodeSubclass }) {console.log(new nodeSubclass());let instance = await Reflect.construct(nodeSubclass, [nodeKey]);return instance;}async
+
+    createDataItemInstance({ dataItemKey }) {
+      let dataItemSubclass = this.getSubclass({ subclassName: 'ImplementationDataItem' }) || this.getSubclass({ subclassName: 'DataItem' });
+      return await self.createDataItemInstance({ dataItemKey, dataItemSubclass });
+    }
+    static async createDataItemInstance({ dataItemKey, dataItemSubclass }) {
+
+      let instance = await Reflect.construct(dataItemSubclass, [dataItemKey]);
+
+
+      if (!('jsonData' in instance)) {
+        let getDocumentQuery = instance.constructor.getDocumentQuery;
+        let jsonData = await getDocumentQuery({ key: dataItemKey });
+        (0, _assert.default)(jsonData, `• "${dataItemKey}" nestedUnit document must be present in the database, the requested key does not exist in database. The passed value is either undefined, null, or empty string.`);
+        await instance.populateInstancePropertyFromJson_this({ jsonData });
+      }
+
+      return instance;
+    }}, ((0, _applyDecoratedDescriptor2.default)(_class2.prototype, "createDataItemInstance", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "createDataItemInstance"), _class2.prototype)), _class2)) || _class) || _class) || _class) || _class) || _class) || _class);
+
+
+
+
+  return self;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL0dyYXBoQ29udHJvbGxlci5jbGFzcy5qcyJdLCJuYW1lcyI6WyJHcmFwaENvbnRyb2xsZXJGdW5jdGlvbiIsIlN1cGVyY2xhc3MiLCJFdmVudEVtaXR0ZXIiLCJtZXRob2RJbnN0YW5jZU5hbWUiLCJtaXhpbiIsInNlbGYiLCJ0byIsImNyZWF0ZUluc3RhbmNlIiwiYWRkU3RhdGljU3ViY2xhc3NUb0NsYXNzQXJyYXkiLCJkZWNvcmF0b3IiLCJwcm90b3R5cGVDaGFpbkRlYnVnIiwiY29uZGl0aW9uIiwicHJvY2VzcyIsImVudiIsIlNaTl9ERUJVRyIsImV4dGVuZGVkU3ViY2xhc3NQYXR0ZXJuIiwiU3ViY2xhc3MiLCJhZGRTdWJjbGFzcyIsInVuZGVmaW5lZCIsImNhY2hlQXJyYXlOYW1lIiwia2V5QXJndW1lbnROYW1lIiwiR3JhcGhDb250cm9sbGVyIiwib3duQ29uc3RydWN0b3IiLCJhZGRpdGlvbmFsRGVsZWdhdGVkQ2hhaW4iLCJwbHVnaW4iLCJjb250ZXh0IiwiY2FjaGUiLCJwcm94aWVkSW50ZXJmYWNlIiwiY29uc3RydWN0b3IiLCJpbnRlcmNlcHRNZXRob2QiLCJ0aGlzQXJnIiwiaW1wbGVtZW50YXRpb25UeXBlIiwibm9kZUluc3RhbmNlIiwiYXJndW1lbnRzTGlzdCIsIm1ldGhvZE5hbWUiLCJpbXBsZW1lbnRhdGlvbkZ1bmN0aW9uIiwiZ2V0UGx1Z2luIiwiaW1wbGVtZW50YXRpb24iLCJpbXBsZW1lbnRhdGlvbk9iamVjdCIsImFwcGx5IiwidHJhdmVyc2VHcmFwaCIsIm5vZGVLZXkiLCJjcmVhdGVOb2RlSW5zdGFuY2UiLCJhcmd1bWVudHMiLCJpbml0aWFsaXplRGF0YUl0ZW0iLCJkYXRhSXRlbUtleSIsImRhdGFJdGVtSW5zdGFuY2UiLCJjcmVhdGVEYXRhSXRlbUluc3RhbmNlIiwiYWRkaXRpb25hbENoaWxkTmVzdGVkVW5pdCIsIm5vZGVDb25uZWN0aW9uS2V5Iiwibm9kZVN1YmNsYXNzIiwiZ2V0U3ViY2xhc3MiLCJzdWJjbGFzc05hbWUiLCJjb25zb2xlIiwibG9nIiwiaW5zdGFuY2UiLCJSZWZsZWN0IiwiY29uc3RydWN0IiwiZGF0YUl0ZW1TdWJjbGFzcyIsImdldERvY3VtZW50UXVlcnkiLCJqc29uRGF0YSIsImtleSIsInBvcHVsYXRlSW5zdGFuY2VQcm9wZXJ0eUZyb21Kc29uX3RoaXMiXSwibWFwcGluZ3MiOiI7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRU8sU0FBU0EsdUJBQVQsQ0FBaUM7QUFDcENDLEVBQUFBLFVBQVUsR0FBR0MsZUFEdUI7QUFFcENDLEVBQUFBLGtCQUZvQztBQUdwQ0MsRUFBQUEsS0FIb0M7O0FBS3BDLEVBTEcsRUFLQzs7Ozs7OztBQU9KLE1BQUlDLElBQUk7QUFDSCw2QkFBSSxFQUFFQyxFQUFFLEVBQUUsUUFBTixFQUFKLEVBQXFCO0FBQ2xCQyxJQUFBQSxjQUFjLEVBQWRBLG1DQURrQjtBQUVsQkMsSUFBQUEsNkJBQTZCLEVBQTdCQSxzQ0FGa0IsRUFBckIsQ0FERzs7QUFLSCxxQ0FBWSxFQUFFQyxTQUFTLEVBQUVDLG1DQUFiLEVBQWtDQyxTQUFTLEVBQUVDLE9BQU8sQ0FBQ0MsR0FBUixDQUFZQyxTQUF6RCxFQUFaLENBTEc7O0FBT0hDLG1EQUF3QmQsVUFBeEIsRUFQRzs7QUFTSCxxQ0FBWSxFQUFFUSxTQUFTLEVBQUVNLGlEQUF3QkMsUUFBeEIsRUFBYixFQUFpREwsU0FBUyxFQUFHUixrQkFBa0IsSUFBSUYsVUFBdEIsSUFBb0NBLFVBQVUsQ0FBQ2dCLFdBQVgsSUFBMEJDLFNBQTNILEVBQVosQ0FURztBQVVILHFDQUFZLEVBQUVQLFNBQVMsRUFBRVAsS0FBYixFQUFvQkssU0FBUyxFQUFFLDJCQUFXLEVBQUVMLEtBQUYsRUFBWCxDQUEvQixFQUFaLENBVkc7O0FBWUgsMkVBWkc7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7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SThDO0FBQzFDLFVBQUlhLGdCQUFnQixHQUFHLEtBQUtQLFdBQUwsQ0FBaUIsRUFBRUMsWUFBWSxFQUFFLHdCQUFoQixFQUFqQixLQUFnRSxLQUFLRCxXQUFMLENBQWlCLEVBQUVDLFlBQVksRUFBRSxVQUFoQixFQUFqQixDQUF2RjtBQUNBLGFBQU8sTUFBTS9DLElBQUksQ0FBQzBDLHNCQUFMLENBQTRCLEVBQUVGLFdBQUYsRUFBZWEsZ0JBQWYsRUFBNUIsQ0FBYjtBQUNIO0FBQ0QsaUJBQWFYLHNCQUFiLENBQW9DLEVBQUVGLFdBQUYsRUFBZWEsZ0JBQWYsRUFBcEMsRUFBdUU7O0FBRW5FLFVBQUlILFFBQVEsR0FBRyxNQUFNQyxPQUFPLENBQUNDLFNBQVIsQ0FBa0JDLGdCQUFsQixFQUFvQyxDQUFFYixXQUFGLENBQXBDLENBQXJCOzs7QUFHQSxVQUFHLEVBQUUsY0FBY1UsUUFBaEIsQ0FBSCxFQUE4QjtBQUMxQixZQUFJSSxnQkFBZ0IsR0FBR0osUUFBUSxDQUFDM0IsV0FBVCxDQUFxQitCLGdCQUE1QztBQUNBLFlBQUlDLFFBQVEsR0FBRyxNQUFNRCxnQkFBZ0IsQ0FBQyxFQUFFRSxHQUFHLEVBQUVoQixXQUFQLEVBQUQsQ0FBckM7QUFDQSw2QkFBT2UsUUFBUCxFQUFrQixNQUFLZixXQUFZLG1LQUFuQztBQUNBLGNBQU1VLFFBQVEsQ0FBQ08scUNBQVQsQ0FBK0MsRUFBRUYsUUFBRixFQUEvQyxDQUFOO0FBQ0g7O0FBRUQsYUFBT0wsUUFBUDtBQUNILEtBcEhvQyxDQWJyQywrUUFBUjs7Ozs7QUFzSUEsU0FBT2xELElBQVA7QUFDSCIsInNvdXJjZXNDb250ZW50IjpbIi8qIGVzbGludC1kaXNhYmxlIHByZXR0aWVyL3ByZXR0aWVyICovXG5pbXBvcnQgRXZlbnRFbWl0dGVyIGZyb20gJ2V2ZW50cydcbmltcG9ydCBhc3NlcnQgZnJvbSAnYXNzZXJ0J1xuaW1wb3J0IHsgbWl4LCBkZWNvcmF0b3IgYXMgYXBwbHlNaXhpbiB9IGZyb20gJ0BkZXBlbmRlbmN5L2NsYXNzTWl4aW4nXG5pbXBvcnQgY3JlYXRlSW5zdGFuY2UgZnJvbSAnLi4vdXRpbGl0eS9jcmVhdGVJbnN0YW5jZVN0YXRpY01ldGhvZC5qcydcbmltcG9ydCBhZGRTdGF0aWNTdWJjbGFzc1RvQ2xhc3NBcnJheSBmcm9tICdAZGVwZW5kZW5jeS9jb21tb25QYXR0ZXJuL3NvdXJjZS9hZGRTdGF0aWNTdWJjbGFzc1RvQ2xhc3NBcnJheS5zdGF0aWNNZXRob2QnXG5pbXBvcnQgeyBjbGFzc0RlY29yYXRvciBhcyBwcm90b3R5cGVDaGFpbkRlYnVnfSBmcm9tICdAZGVwZW5kZW5jeS9wcm90b3R5cGVDaGFpbkRlYnVnJ1xuaW1wb3J0IHsgYWRkLCBleGVjdXRlLCBjb25kaXRpb25hbCB9IGZyb20gJ0BkZXBlbmRlbmN5L2NvbW1vblBhdHRlcm4vc291cmNlL2RlY29yYXRvclV0aWxpdHkuanMnXG5pbXBvcnQgeyBleHRlbmRlZFN1YmNsYXNzUGF0dGVybiB9IGZyb20gJ0BkZXBlbmRlbmN5L2NvbW1vblBhdHRlcm4vc291cmNlL2V4dGVuZGVkU3ViY2xhc3NQYXR0ZXJuLmpzJ1xuaW1wb3J0IHsgc3VwZXJjbGFzc0luc3RhbmNlQ29udGV4dFBhdHRlcm4sIGNhY2hlSW5zdGFuY2UgfSBmcm9tICdAZGVwZW5kZW5jeS9jb21tb25QYXR0ZXJuL3NvdXJjZS9zdXBlcmNsYXNzSW5zdGFuY2VDb250ZXh0UGF0dGVybi5qcydcblxuZXhwb3J0IGZ1bmN0aW9uIEdyYXBoQ29udHJvbGxlckZ1bmN0aW9uKHsgIFxuICAgIFN1cGVyY2xhc3MgPSBFdmVudEVtaXR0ZXIsIC8vIGRlZmF1bHRpbmcgdG8gRXZlbnRFbWl0dGVyIGFuZCBub3QgT2JqZWN0IC8gRnVuY3Rpb24gYmVjYXVzZSBleHRlbmRpbmcgT2JqZWN0L0Z1bmN0aW9uIG1hbmlwdWxhdGVzIHRoaXMgcHJvdG90eXBlIGluIG5ldyBjYWxscyBmb3Igc29tZSByZWFzb24uXG4gICAgbWV0aG9kSW5zdGFuY2VOYW1lLFxuICAgIG1peGluLCBcbiAgICAvLyByZXRoaW5rZGJDb25uZWN0aW9uID0gKCEhU3VwZXJjbGFzcykgJiYgU3VwZXJjbGFzcy5yZXRoaW5rZGJDb25uZWN0aW9uLFxufSA9IHt9KSB7XG4gICAgLy8gaWYoU3VwZXJjbGFzcykgU3VwZXJjbGFzcy5yZXRoaW5rZGJDb25uZWN0aW9uID0gcmV0aGlua2RiQ29ubmVjdGlvbiAvLyBTZXR0aW5nIHRoaXMgdmFyaWFibGUgb24gQ29udHJvbGxlciBjbGFzcyBiZWxvdyBjYXVzZXMgaXNzdWVzLCB3aGljaCBtYXliZSByZWxhdGVkIHRvIHRoZSB3YXkgcmV0aGlua2RiIGlzIGNhbGxlZCBvciB0aGUgcHJveGllcyBlbmNhcHN1bGF0aW5nIHRoZSBjbGFzcy5cbiAgICBcbiAgICAvKipcbiAgICAgKiBAY2xhc3NcbiAgICAgKiBAdXNhZ2UgdGhyb3VnaCBtZXRob2QgYHRyYXZlcnNlR3JhcGhgLlxuICAgICAqL1xuICAgIGxldCBzZWxmID0gXG4gICAgICAgIEBhZGQoeyB0bzogJ3N0YXRpYyd9LCB7IFxuICAgICAgICAgICAgY3JlYXRlSW5zdGFuY2UsXG4gICAgICAgICAgICBhZGRTdGF0aWNTdWJjbGFzc1RvQ2xhc3NBcnJheSxcbiAgICAgICAgfSlcbiAgICAgICAgQGNvbmRpdGlvbmFsKHsgZGVjb3JhdG9yOiBwcm90b3R5cGVDaGFpbkRlYnVnLCBjb25kaXRpb246IHByb2Nlc3MuZW52LlNaTl9ERUJVRyB9KVxuICAgICAgICAvLyBBZGQgYWJpbGl0eSB0byB0cmFjayBleGRlbmRpbmcgc3ViY2xhc3Nlc1xuICAgICAgICBAZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4uU3VwZXJjbGFzcygpXG4gICAgICAgIC8vIEluIGNhc2UgdGhlIGNsYXNzIGlzIGFuIGV4dGVuZGVkIHN1YmNsYXNzIG9mIGFub3RoZXIgc3VwZXIgY2xhc3MgYW5kIHRoZSBzdWJjbGFzcyB0cmFja2luZyBwYXR0ZXJuIGlzIHVzZWQgaW4gdGhlIHN1cGVyY2xhc3MuXG4gICAgICAgIEBjb25kaXRpb25hbCh7IGRlY29yYXRvcjogZXh0ZW5kZWRTdWJjbGFzc1BhdHRlcm4uU3ViY2xhc3MoKSwgY29uZGl0aW9uOiAobWV0aG9kSW5zdGFuY2VOYW1lICYmIFN1cGVyY2xhc3MgJiYgU3VwZXJjbGFzcy5hZGRTdWJjbGFzcyAhPSB1bmRlZmluZWQgKSB9KVxuICAgICAgICBAY29uZGl0aW9uYWwoeyBjb25kaXRpb246IG1peGluLCBkZWNvcmF0b3I6IGFwcGx5TWl4aW4oeyBtaXhpbiB9KSB9KVxuICAgICAgICAvLyBjcmVhdGluZyBvYmplY3RzIGZvciBgQ29udHJvbGxlcmAgY2xhc3MsIHJhdGhlciB0aGFuIHVzaW5nIHN0YXRpYyBjbGFzc2VzIGFsbG93cyBmb3IgY2FjaGluZyBpbnN0YW5jZXMgZHVyaW5nIGdyYXBoIHRyYXZlcnNhbCBpbiBhIGdhcmJhZ2UgY29sbGVjdGVkIC8gbG9vc2VseSBjb3VwbGVkIHJlZmVyZW5jZXMgdGhhdCBsaXZlcyBvbmx5IGR1cmluZyBzZXJ2ZXItY2xpZW50IHJlcXVlc3QuXG4gICAgICAgIEBzdXBlcmNsYXNzSW5zdGFuY2VDb250ZXh0UGF0dGVybigpIC8vIGFwcGxpZWQgb24gdGhlIG1peGluIGkuZS4gc3BlY2lmaWMgY29udHJvbGxlci5cbiAgICAgICAgY2xhc3MgR3JhcGhDb250cm9sbGVyIGV4dGVuZHMgU3VwZXJjbGFzcyB7XG4gICAgICAgICAgICBcbiAgICAgICAgICAgIC8vIENvbmZpZ3VyZSBtdWx0aXBsZSBjaGFpbiBpbiBhIHByb3h5IHRoYXQgd2lsbCB3cmFwIEdyYXBoQ29udHJvbGxlclxuICAgICAgICAgICAgb3duQ29uc3RydWN0b3Ioe1xuICAgICAgICAgICAgICAgIGFkZGl0aW9uYWxEZWxlZ2F0ZWRDaGFpbiA9IHt9IC8vIGFycmF5IG9mIGFkZGl0aW9uYWwgcHJvdG90eXBlIGNoYWluIChwcm90b3R5cGVzL29iamVjdHMvaW5zdGFuY2VzKSB0byBiZSBhZGRlZCB0byB0aGUgZGVsZWdhdGVkIHByb3RvdHlwZSBjaGFpbiBvZiB0aGUgaW5zdGFuY2VzIHByb2R1Y2VkIGJ5IHRoZSBtZXRob2RzIG9mIHRoZSBHcmFwaCBjb250cm9sbGVyLlxuICAgICAgICAgICAgfSkge1xuICAgICAgICAgICAgICAgIGFkZGl0aW9uYWxEZWxlZ2F0ZWRDaGFpbi5wbHVnaW5cbiAgICAgICAgICAgICAgICBhZGRpdGlvbmFsRGVsZWdhdGVkQ2hhaW4uY29udGV4dFxuICAgICAgICAgICAgICAgIGFkZGl0aW9uYWxEZWxlZ2F0ZWRDaGFpbi5jYWNoZVxuXG4gICAgICAgICAgICAgICAgcmV0dXJuIHByb3hpZWRJbnRlcmZhY2UgLy8gb2YgR3JhcGhDb250cm9sbGVyXG4gICAgICAgICAgICB9XG5cbiAgICAgICAgICAgIGNvbnN0cnVjdG9yKHt9KSB7XG4gICAgICAgICAgICAgICAgc3VwZXIoKVxuICAgICAgICAgICAgICAgIHJldHVybiB0aGlzXG4gICAgICAgICAgICB9XG5cbiAgICAgICAgICAgIC8vIGludGVyY2VwdCBhIG1ldGhvZCBjYWxsIHRvIGNob29zZSB0aGUgY29ycmVzcG9uZGluZyBwbHVnaW4gdG8gZXhlY3V0ZSAoc2V0dGluZy9hc3NpZ25pbmcgdGhlIHZhcmlhYmxlcyB2YWx1ZXMgYWNjb3JkaW5nIHRvIHBhc3NlZCBwYXJhbWV0ZXJzIGhpZXJhcmNoeSlcbiAgICAgICAgICAgIGludGVyY2VwdE1ldGhvZCh7IHRoaXNBcmcsIGltcGxlbWVudGF0aW9uVHlwZSwgbm9kZUluc3RhbmNlLCBhcmd1bWVudHNMaXN0LCBtZXRob2ROYW1lIH0pIHtcbiAgICAgICAgICAgICAgICBsZXQgaW1wbGVtZW50YXRpb25GdW5jdGlvbiA9IHRoaXMuZ2V0UGx1Z2luKHsgcGx1Z2luOiAnZ3JhcGhUcmF2ZXJzYWxJbXBsZW1lbnRhdGlvbicsIGltcGxlbWVudGF0aW9uOiBpbXBsZW1lbnRhdGlvblR5cGUgfSlcbiAgICAgICAgICAgICAgICAvLyBUT0RPOiBhZGQgcGx1Z2luIHNldHRpbmdzIHRoYXQgd2lsbCBhbGxvdyB0byBpbnN0YW50aWF0ZSBwbHVnaW4gZGVwZW5kaW5nIG9uIGl0cyBzZXR0aW5ncyAtIGkuZS4gaWYgZnVuY3Rpb24gaW5zdGFudGlhdGUgaW4gYSBzcGVjaWZpYyB3YXlcbiAgICAgICAgICAgICAgICBsZXQgaW1wbGVtZW50YXRpb25PYmplY3QgPSBpbXBsZW1lbnRhdGlvbkZ1bmN0aW9uKHsgdGhpc0FyZzogbm9kZUluc3RhbmNlIH0pXG4gICAgICAgICAgICAgICAgcmV0dXJuIGltcGxlbWVudGF0aW9uT2JqZWN0W21ldGhvZE5hbWVdLmFwcGx5KHRoaXNBcmcsIGFyZ3VtZW50c0xpc3QpXG4gICAgICAgICAgICB9XG5cbiAgICAgICAgICAgIC8qKlxuICAgICAgICAgICAgICogQ3JlYXRlIG5vZGVJbnN0YWNlIGZyb20gYG5vZGVLZXlgLCB0aGVuIGZvcndhcmQgY2FsbCB0byBgdHJhdmVyc2VHcmFwaGAgc3ViY2xhc3MgbWV0aG9kXG4gICAgICAgICAgICAqL1xuICAgICAgICAgICAgYXN5bmMgdHJhdmVyc2VHcmFwaCh7IG5vZGVLZXkgfSkge1xuICAgICAgICAgICAgfVxuICAgICAgICAgICAgc3RhdGljIGFzeW5jIHRyYXZlcnNlR3JhcGgoeyBub2RlS2V5LCAgfSkge1xuICAgICAgICAgICAgICAgIC8vIFRPRE86IFVzYWdlIG9mIGFzeW5jIGdlbmVyYXRvcnMgd2lsbCBwcmV2ZW50IGhhbmRpbmcgdGhlIGNvbnRyb2wgdG8gY2FsbGVkIGZ1bmN0aW9uIChhZ2FpbnN0IGBSdW4tdG8tY29tcGxldGVgIHByaW5jaXBsZSksIGFuZCB3aWxsIGFsbG93IGludGVyY2VwdGluIHRoZSBleGVjdXRpb24gbWlkIHdheS5cbiAgICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAvLyBbMV0gZ2V0IG5vZGVcbiAgICAgICAgICAgICAgICBhc3NlcnQobm9kZUtleSwgYOKAoiAke25vZGVLZXl9IEtleSBzaG91bGQgYmUgcHJlc2VudC4gVGhlIHBhc3NlZCB2YWx1ZSBpcyBlaXRoZXIgdW5kZWZpbmVkLCBudWxsLCBvciBlbXB0eSBzdHJpbmcuYClcbiAgICAgICAgICAgICAgICBsZXQgbm9kZUluc3RhbmNlID0gYXdhaXQgdGhpcy5jcmVhdGVOb2RlSW5zdGFuY2UoeyBub2RlS2V5IH0pIC8vIHJldHVybnMgYSBub2RlIG9iamVjdCAoaW5zdGFuY2UpIFxuICAgICAgICAgICAgICAgIC8vIFsyXSBGb3J3YXJkIGNhbGwgdG8gaW5zdGFuY2UncyB0cmF2ZXJzZSBncmFwaFxuICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgIC8vZXhlY3V0ZSB0byBjb21wbGV0ZVxuICAgICAgICAgICAgICAgIC8vIGludGVyY2VwdGluZyBleGVjdXRpb24gJiBrZWVwaW5nIGNvbnRyb2xcbiAgICAgICAgICAgICAgICAvL3tuZXh0Tm9kZSwgfSA9IHRyYXZlcnNlKihOb2RlKVxuXG4gICAgICAgICAgICAgICAgLy8gbGV0IGl0ZXJhdG9yT2JqZWN0ID0gVHJhdmVyc2UqKE5vZGUpXG4gICAgICAgICAgICAgICAgLy8gbGV0IHJlc3VsdCA9IGl0ZXJhdG9yT2JqZWN0Lm5leHQoKVxuICAgICAgICAgICAgICAgIC8vIGxldCByZXN1bHQgPSBpdGVyYXRvck9iamVjdC5uZXh0KClcbiAgICAgICAgICAgICAgICAvLyBsZXQgcmVzdWx0ID0gaXRlcmF0b3JPYmplY3QubmV4dCgpXG4gICAgICAgICAgICAgICAgLy8gcmVzdWx0LnZhbHVlLm5vZGVLZXlcbiAgICAgICAgICAgICAgICAvLyBpZihyZXN1bHQuZG9uZSkgbGV0IGZpbmFsTm9kZVJlc3VsdC5uZXh0KHJlc3VsdDEsIHJlc3VsdDIsIHJlc3VsdDMsIHJlc3VsdDQpXG4gICAgICAgICAgICAgICAgLy8gcmV0dXJuIGZpbmFsTm9kZXJlc3VsdDtcblxuICAgICAgICAgICAgICAgIHJldHVybiBhd2FpdCBub2RlSW5zdGFuY2UudHJhdmVyc2VHcmFwaChhcmd1bWVudHMpXG4gICAgICAgICAgICB9XG5cbiAgICAgICAgICAgIGFzeW5jIGluaXRpYWxpemVEYXRhSXRlbSh7IGRhdGFJdGVtS2V5IH0pIHtcbiAgICAgICAgICAgICAgICBhc3NlcnQoZGF0YUl0ZW1LZXksIGDigKIgTWlzc2luZyBcImRhdGFJdGVtIGtleVwiIC0gZm9yIGRhdGFJdGVtVHlwZSBcInJlZmVyZW5jZVwiIGEga2V5IG11c3QgZXhpc3QgaW4gXCJub2RlLmRhdGFJdGVtXCIuYClcbiAgICAgICAgICAgICAgICAvLyBnZXQgZGF0YSBpdGVtXG4gICAgICAgICAgICAgICAgbGV0IGRhdGFJdGVtSW5zdGFuY2UgPSBhd2FpdCB0aGlzLmNyZWF0ZURhdGFJdGVtSW5zdGFuY2UoeyBkYXRhSXRlbUtleSB9KVxuICAgICAgICAgICAgICAgIC8vIGZvcndhcmQgY2FsbCB0byBpbnN0YW5jZSdzIGltcGxlbWVudGF0aW9uXG4gICAgICAgICAgICAgICAgYXdhaXQgZGF0YUl0ZW1JbnN0YW5jZS5pbml0aWFsaXplRGF0YUl0ZW0oYXJndW1lbnRzKVxuICAgICAgICAgICAgICAgIHJldHVybiBkYXRhSXRlbUluc3RhbmNlXG4gICAgICAgICAgICB9XG5cbiAgICAgICAgICAgIC8vIEFkZCBcImNyZWF0ZU9iamVjdFdpdGhQcm90b3R5cGVDaGFpblwiXG5cbiAgICAgICAgICAgIC8qIEBjYWNoZUluc3RhbmNlKHtcbiAgICAgICAgICAgIC8vICAgICBjYWNoZUFycmF5TmFtZTogJ25vZGUnLFxuICAgICAgICAgICAgLy8gICAgIGtleUFyZ3VtZW50TmFtZTogJ25vZGVLZXknXG4gICAgICAgICAgICAvLyB9KVxuICAgICAgICAgICAgLy8gVE9ETzogY2hhbmdlIG5hbWUgZnJvbSAncGF0aFBvaW50ZXJLZXknIHRvICdub2RlQ29ubmVjdGlvbktleSdcbiAgICAgICAgICAgIC8vIFRPRE86IGNoYW5nZSBmdW5jdGlvbiBuYW1lIGZyb20gJ2dldE5vZGUnLydnZXROZXN0ZWRVbml0JyB0byAnY3JlYXRlTm9kZUluc3RhbmNlJ1xuICAgICAgICAgICAgICovXG4gICAgICAgICAgICBhc3luYyBjcmVhdGVOb2RlSW5zdGFuY2UoeyBub2RlS2V5LCBhZGRpdGlvbmFsQ2hpbGROZXN0ZWRVbml0ID0gW10sIG5vZGVDb25uZWN0aW9uS2V5ID0gbnVsbCB9KSB7XG4gICAgICAgICAgICAgICAgICAgIGxldCBub2RlU3ViY2xhc3MgPSB0aGlzLmdldFN1YmNsYXNzKHsgc3ViY2xhc3NOYW1lOiAnSW1wbGVtZW50YXRpb25Ob2RlJyB9KSB8fCB0aGlzLmdldFN1YmNsYXNzKHsgc3ViY2xhc3NOYW1lOiAnTm9kZScgfSkgLy8gZ2V0IHNwZWNpZmljIHN1YmNsYXNzIG9yIHJldXNhYmxlIHN1YmNsYXNzXG4gICAgICAgICAgICAgICAgICAgIHJldHVybiBhd2FpdCBzZWxmLmNyZWF0ZU5vZGVJbnN0YW5jZSh7IG5vZGVLZXksIGFkZGl0aW9uYWxDaGlsZE5lc3RlZFVuaXQsIG5vZGVDb25uZWN0aW9uS2V5LCBub2RlU3ViY2xhc3MgfSlcbiAgICAgICAgICAgIH1cbiAgICAgICAgICAgIHN0YXRpYyBhc3luYyBjcmVhdGVOb2RlSW5zdGFuY2UoeyBub2RlS2V5LCBhZGRpdGlvbmFsQ2hpbGROZXN0ZWRVbml0ID0gW10sIG5vZGVDb25uZWN0aW9uS2V5ID0gbnVsbCwgbm9kZVN1YmNsYXNzIH0pIHtcbiAgICAgICAgICAgICAgICBjb25zb2xlLmxvZyhuZXcgbm9kZVN1YmNsYXNzKCkpIC8vIFRPRE86IEZJeCBwcm94eSB0aGF0IHdyYXBzIE5vZGUgLSB0aGUgcmV0dXJuZWQgaW5zdGFuY2UgaXMgbm90IGFuIG9iamVjdCBlcnJvci5cbiAgICAgICAgICAgICAgICAvLyBjcmVhdGUgaW5zdGFuY2Ugb3IgZ2V0IGNhY2hlZCBpbnN0YW5jZVxuICAgICAgICAgICAgICAgIGxldCBpbnN0YW5jZSA9IGF3YWl0IFJlZmxlY3QuY29uc3RydWN0KG5vZGVTdWJjbGFzcywgWyBub2RlS2V5IF0pIC8vIGNhbGwgJ25ldycgb24gc3ViY2xhc3NcblxuICAgICAgICAgICAgICAgIC8vIC8vIGdldCBqc29uIGRhdGEgZnJvbSBkYXRhYmFzZS9zdG9yYWdlLiBnZXRzIGRvY3VtZW50IGZyb20gZGF0YWJhc2UgdXNpbmcgZG9jdW1lbnRLZXkgYW5kIHBvcHVsYXRlcyB0aGUgZGF0YSB0byB0aGUgaW5zdGFuY2UuIGR1cmluZyB3aGljaCAnanNvbkRhdGEnIHByb3BlcnR5IGlzIHNldC4gaWYgaXQgaXMgc2V0LCBpdCBtZWFucyB0aGF0IHRoZSBpbnN0YW5jZSBpcyBhbHJlYWR5IHBvcHVsYXRlZCB3aXRoIGRhdGEuXG4gICAgICAgICAgICAgICAgLy8gaWYoISgnanNvbkRhdGEnIGluIGluc3RhbmNlKSkgeyAvLyBpZiBub3QgYWxyZWFkeSBwb3B1bGF0ZWQgd2l0aCBkYXRhLlxuICAgICAgICAgICAgICAgIC8vICAgICBsZXQgZ2V0RG9jdW1lbnRRdWVyeSA9IGluc3RhbmNlLmNvbnN0cnVjdG9yLmdldERvY3VtZW50UXVlcnlcbiAgICAgICAgICAgICAgICAvLyAgICAgLy8gVE9ETzogZ2V0IHBsdWdpbiBkYXRhdGJhc2UgYWRhcHRlclxuICAgICAgICAgICAgICAgIC8vICAgICBkYXRhYmFzZU1vZGVsQWRhcHRlci5nZXROb2RlRG9jdW1lbnRRdWVyeVxuICAgICAgICAgICAgICAgIC8vICAgICBkYXRhYmFzZU1vZGVsQWRhcHRlci5nZXREYXRhSXRlbURvY3VtZW50UXVlcnlcbiAgICAgICAgICAgICAgICAvLyAgICAgbGV0IGpzb25EYXRhID0gYXdhaXQgZ2V0RG9jdW1lbnRRdWVyeSh7IGtleTogbm9kZUtleSB9KVxuICAgICAgICAgICAgICAgIC8vICAgICBhc3NlcnQoanNvbkRhdGEsIGDigKIgXCIke25vZGVLZXl9XCIgbmVzdGVkVW5pdCBkb2N1bWVudCBtdXN0IGJlIHByZXNlbnQgaW4gdGhlIGRhdGFiYXNlLCB0aGUgcmVxdWVzdGVkIGtleSBkb2VzIG5vdCBleGlzdCBpbiBkYXRhYmFzZS4gVGhlIHBhc3NlZCB2YWx1ZSBpcyBlaXRoZXIgdW5kZWZpbmVkLCBudWxsLCBvciBlbXB0eSBzdHJpbmcuYClcbiAgICAgICAgICAgICAgICAvLyAgICAgYXdhaXQgaW5zdGFuY2UucG9wdWxhdGVJbnN0YW5jZVByb3BlcnR5RnJvbUpzb25fdGhpcyh7IGpzb25EYXRhIH0pXG4gICAgICAgICAgICAgICAgLy8gfVxuXG4gICAgICAgICAgICAgICAgcmV0dXJuIGluc3RhbmNlXG4gICAgICAgICAgICB9XG5cbiAgICAgICAgICAgIEBjYWNoZUluc3RhbmNlKHtcbiAgICAgICAgICAgICAgICBjYWNoZUFycmF5TmFtZTogJ2RhdGFJdGVtJyxcbiAgICAgICAgICAgICAgICBrZXlBcmd1bWVudE5hbWU6ICdkYXRhSXRlbUtleSdcbiAgICAgICAgICAgIH0pXG4gICAgICAgICAgICBhc3luYyBjcmVhdGVEYXRhSXRlbUluc3RhbmNlKHsgZGF0YUl0ZW1LZXkgfSkge1xuICAgICAgICAgICAgICAgIGxldCBkYXRhSXRlbVN1YmNsYXNzID0gdGhpcy5nZXRTdWJjbGFzcyh7IHN1YmNsYXNzTmFtZTogJ0ltcGxlbWVudGF0aW9uRGF0YUl0ZW0nIH0pIHx8IHRoaXMuZ2V0U3ViY2xhc3MoeyBzdWJjbGFzc05hbWU6ICdEYXRhSXRlbScgfSkgLy8gZ2V0IHNwZWNpZmljIHN1YmNsYXNzIG9yIHJldXNhYmxlIHN1YmNsYXNzXG4gICAgICAgICAgICAgICAgcmV0dXJuIGF3YWl0IHNlbGYuY3JlYXRlRGF0YUl0ZW1JbnN0YW5jZSh7IGRhdGFJdGVtS2V5LCBkYXRhSXRlbVN1YmNsYXNzIH0pXG4gICAgICAgICAgICB9XG4gICAgICAgICAgICBzdGF0aWMgYXN5bmMgY3JlYXRlRGF0YUl0ZW1JbnN0YW5jZSh7IGRhdGFJdGVtS2V5LCBkYXRhSXRlbVN1YmNsYXNzIH0pIHtcbiAgICAgICAgICAgICAgICAvLyBjcmVhdGUgaW5zdGFuY2Ugb3IgZ2V0IGNhY2hlZCBpbnN0YW5jZVxuICAgICAgICAgICAgICAgIGxldCBpbnN0YW5jZSA9IGF3YWl0IFJlZmxlY3QuY29uc3RydWN0KGRhdGFJdGVtU3ViY2xhc3MsIFsgZGF0YUl0ZW1LZXkgXSkgLy8gY2FsbCAnbmV3JyBvbiBzdWJjbGFzc1xuICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgIC8vIGdldCBqc29uIGRhdGEgZnJvbSBkYXRhYmFzZS9zdG9yYWdlLiBnZXRzIGRvY3VtZW50IGZyb20gZGF0YWJhc2UgdXNpbmcgZG9jdW1lbnRLZXkgYW5kIHBvcHVsYXRlcyB0aGUgZGF0YSB0byB0aGUgaW5zdGFuY2UuIGR1cmluZyB3aGljaCAnanNvbkRhdGEnIHByb3BlcnR5IGlzIHNldC4gaWYgaXQgaXMgc2V0LCBpdCBtZWFucyB0aGF0IHRoZSBpbnN0YW5jZSBpcyBhbHJlYWR5IHBvcHVsYXRlZCB3aXRoIGRhdGEuXG4gICAgICAgICAgICAgICAgaWYoISgnanNvbkRhdGEnIGluIGluc3RhbmNlKSkgeyAvLyBpZiBub3QgYWxyZWFkeSBwb3B1bGF0ZWQgd2l0aCBkYXRhLlxuICAgICAgICAgICAgICAgICAgICBsZXQgZ2V0RG9jdW1lbnRRdWVyeSA9IGluc3RhbmNlLmNvbnN0cnVjdG9yLmdldERvY3VtZW50UXVlcnlcbiAgICAgICAgICAgICAgICAgICAgbGV0IGpzb25EYXRhID0gYXdhaXQgZ2V0RG9jdW1lbnRRdWVyeSh7IGtleTogZGF0YUl0ZW1LZXkgfSlcbiAgICAgICAgICAgICAgICAgICAgYXNzZXJ0KGpzb25EYXRhLCBg4oCiIFwiJHtkYXRhSXRlbUtleX1cIiBuZXN0ZWRVbml0IGRvY3VtZW50IG11c3QgYmUgcHJlc2VudCBpbiB0aGUgZGF0YWJhc2UsIHRoZSByZXF1ZXN0ZWQga2V5IGRvZXMgbm90IGV4aXN0IGluIGRhdGFiYXNlLiBUaGUgcGFzc2VkIHZhbHVlIGlzIGVpdGhlciB1bmRlZmluZWQsIG51bGwsIG9yIGVtcHR5IHN0cmluZy5gKVxuICAgICAgICAgICAgICAgICAgICBhd2FpdCBpbnN0YW5jZS5wb3B1bGF0ZUluc3RhbmNlUHJvcGVydHlGcm9tSnNvbl90aGlzKHsganNvbkRhdGEgfSlcbiAgICAgICAgICAgICAgICB9XG5cbiAgICAgICAgICAgICAgICByZXR1cm4gaW5zdGFuY2VcbiAgICAgICAgICAgIH1cblxuICAgICAgICB9XG5cblxuICAgIHJldHVybiBzZWxmXG59XG4iXX0=

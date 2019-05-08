@@ -1,17 +1,14 @@
-import assert from 'assert'
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.InstanceContext = void 0;var _temp;
 
-/**
- * 
-*/
-const self = class InstanceContext {
 
-    // instance properties
-    sharedContext = {}
 
-    constructor(object) { 
-        this.sharedContext = Object.assign(this.sharedContext, object)
-    }
-    
-}
 
-export { self as InstanceContext }
+const self = (_temp = class InstanceContext {
+
+
+
+
+  constructor(object) {this.sharedContext = {};
+    this.sharedContext = Object.assign(this.sharedContext, object);
+  }}, _temp);exports.InstanceContext = self;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL0luc3RhbmNlQ29udGV4dC5jbGFzcy5qcyJdLCJuYW1lcyI6WyJzZWxmIiwiSW5zdGFuY2VDb250ZXh0IiwiY29uc3RydWN0b3IiLCJvYmplY3QiLCJzaGFyZWRDb250ZXh0IiwiT2JqZWN0IiwiYXNzaWduIl0sIm1hcHBpbmdzIjoiOzs7OztBQUtBLE1BQU1BLElBQUksWUFBRyxNQUFNQyxlQUFOLENBQXNCOzs7OztBQUsvQkMsRUFBQUEsV0FBVyxDQUFDQyxNQUFELEVBQVMsTUFGcEJDLGFBRW9CLEdBRkosRUFFSTtBQUNoQixTQUFLQSxhQUFMLEdBQXFCQyxNQUFNLENBQUNDLE1BQVAsQ0FBYyxLQUFLRixhQUFuQixFQUFrQ0QsTUFBbEMsQ0FBckI7QUFDSCxHQVA4QixDQUF6QixRQUFWLEMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgYXNzZXJ0IGZyb20gJ2Fzc2VydCdcblxuLyoqXG4gKiBcbiovXG5jb25zdCBzZWxmID0gY2xhc3MgSW5zdGFuY2VDb250ZXh0IHtcblxuICAgIC8vIGluc3RhbmNlIHByb3BlcnRpZXNcbiAgICBzaGFyZWRDb250ZXh0ID0ge31cblxuICAgIGNvbnN0cnVjdG9yKG9iamVjdCkgeyBcbiAgICAgICAgdGhpcy5zaGFyZWRDb250ZXh0ID0gT2JqZWN0LmFzc2lnbih0aGlzLnNoYXJlZENvbnRleHQsIG9iamVjdClcbiAgICB9XG4gICAgXG59XG5cbmV4cG9ydCB7IHNlbGYgYXMgSW5zdGFuY2VDb250ZXh0IH1cbiJdfQ==

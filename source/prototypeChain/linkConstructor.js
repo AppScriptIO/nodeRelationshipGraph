@@ -1,62 +1,63 @@
-import assert from 'assert'
-import ModuleContext from '@dependency/moduleContext'
-import { GraphControllerFunction } from '../constructable/GraphController.class.js'
-import { NodeFunction } from '../constructable/Node.class.js' // Tree
-import { DataItemFunction } from '../constructable/DataItem.class.js' // Unit
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.linkConstructor = linkConstructor;
 
-/**
- * PrototypeHierarchyGenerator - for performance this function should be executed on load-time (program startup time where afterwards its ready to take requests)
- * Create connections between static classes (constructors) in a required/wanted way.
- * @return {Object} Related/Connected Classes
- * 
- * e.g.      
-  let Controller1 = createStaticInstanceClasses({
-      Superclass: null,
-      implementationType: 'Middleware',
-      cacheName: 'x',
-  })
-  OR 
-  let constructorPrototypeChain = linkConstructor({
-        specificClassImplementation: {
-          GraphControllerMixin: null,
-          NodeFunction: null,
-          DataItemFunction: null,
-        },
-      }),
- */
-// TODO: implement `curryNamedInvokeManually` using `curryNamed` module (check module's todo list)
-// execute curried version, where parameters could be passed in steps
-// return createStaticInstanceClasses({ databaseModelAdapter: this.databaseModelAdapter })(args)
-export function linkConstructor({
-  Superclass /* Usually the higher Application class */,
-  /* When defined the exported classes include the specific implementation for node initialization (class tree of ReusableNestedUnit will include a specific implementation class), i.e. all subsequent nodes are executed using the speicifc algorithm of the implementaiton. */
+var _GraphControllerClass = require("../constructable/GraphController.class.js");
+var _NodeClass = require("../constructable/Node.class.js");
+var _DataItemClass = require("../constructable/DataItem.class.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function linkConstructor({
+  Superclass,
+
   specificClassImplementation = {
-    // specific implementation classes for Node / DataItem instance initialization or controlelr mixin.
+
     GraphControllerMixin: null,
     NodeFunction: null,
-    DataItemFunction: null,
-  },
-  cacheName = null /* {String} */,
-} = {}) {
-  let specificNode, specificDataItem
-  // Call class producer functions to return a new class with the specific connections.
-  let GraphController = GraphControllerFunction({
+    DataItemFunction: null },
+
+  cacheName = null } =
+{}) {
+  let specificNode, specificDataItem;
+
+  let GraphController = (0, _GraphControllerClass.GraphControllerFunction)({
     methodInstanceName: cacheName,
     Superclass,
-    mixin: specificClassImplementation.GraphControllerMixin ? specificClassImplementation.GraphControllerMixin : null, // conditionally extend `Controller` with specific mixin.
-  })
-  let Node = NodeFunction({ Superclass: GraphController })
-  if (specificClassImplementation.NodeFunction) specificNode = specificClassImplementation.NodeFunction({ Superclass: Node })
-  let DataItem = DataItemFunction({ Superclass: GraphController })
-  if (specificClassImplementation.DataItemFunction) specificDataItem = specificClassImplementation.DataItemFunction({ Superclass: DataItem })
+    mixin: specificClassImplementation.GraphControllerMixin ? specificClassImplementation.GraphControllerMixin : null });
 
-  // add subclass - either specific or reusable depending on the last chained subclass
-  GraphController.eventEmitter.emit('addSubclass') // register subclasses that are listening for the event to register themselves in extendedSubclass.static array.
+  let Node = (0, _NodeClass.NodeFunction)({ Superclass: GraphController });
+  if (specificClassImplementation.NodeFunction) specificNode = specificClassImplementation.NodeFunction({ Superclass: Node });
+  let DataItem = (0, _DataItemClass.DataItemFunction)({ Superclass: GraphController });
+  if (specificClassImplementation.DataItemFunction) specificDataItem = specificClassImplementation.DataItemFunction({ Superclass: DataItem });
 
-  // return the linked tree of constructors.
+
+  GraphController.eventEmitter.emit('addSubclass');
+
+
   return {
     GraphController,
     DataItem: specificDataItem || DataItem,
-    Node: specificNode || Node,
-  }
+    Node: specificNode || Node };
+
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9wcm90b3R5cGVDaGFpbi9saW5rQ29uc3RydWN0b3IuanMiXSwibmFtZXMiOlsibGlua0NvbnN0cnVjdG9yIiwiU3VwZXJjbGFzcyIsInNwZWNpZmljQ2xhc3NJbXBsZW1lbnRhdGlvbiIsIkdyYXBoQ29udHJvbGxlck1peGluIiwiTm9kZUZ1bmN0aW9uIiwiRGF0YUl0ZW1GdW5jdGlvbiIsImNhY2hlTmFtZSIsInNwZWNpZmljTm9kZSIsInNwZWNpZmljRGF0YUl0ZW0iLCJHcmFwaENvbnRyb2xsZXIiLCJtZXRob2RJbnN0YW5jZU5hbWUiLCJtaXhpbiIsIk5vZGUiLCJEYXRhSXRlbSIsImV2ZW50RW1pdHRlciIsImVtaXQiXSwibWFwcGluZ3MiOiI7O0FBRUE7QUFDQTtBQUNBOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBeUJPLFNBQVNBLGVBQVQsQ0FBeUI7QUFDOUJDLEVBQUFBLFVBRDhCOztBQUc5QkMsRUFBQUEsMkJBQTJCLEdBQUc7O0FBRTVCQyxJQUFBQSxvQkFBb0IsRUFBRSxJQUZNO0FBRzVCQyxJQUFBQSxZQUFZLEVBQUUsSUFIYztBQUk1QkMsSUFBQUEsZ0JBQWdCLEVBQUUsSUFKVSxFQUhBOztBQVM5QkMsRUFBQUEsU0FBUyxHQUFHLElBVGtCO0FBVTVCLEVBVkcsRUFVQztBQUNOLE1BQUlDLFlBQUosRUFBa0JDLGdCQUFsQjs7QUFFQSxNQUFJQyxlQUFlLEdBQUcsbURBQXdCO0FBQzVDQyxJQUFBQSxrQkFBa0IsRUFBRUosU0FEd0I7QUFFNUNMLElBQUFBLFVBRjRDO0FBRzVDVSxJQUFBQSxLQUFLLEVBQUVULDJCQUEyQixDQUFDQyxvQkFBNUIsR0FBbURELDJCQUEyQixDQUFDQyxvQkFBL0UsR0FBc0csSUFIakUsRUFBeEIsQ0FBdEI7O0FBS0EsTUFBSVMsSUFBSSxHQUFHLDZCQUFhLEVBQUVYLFVBQVUsRUFBRVEsZUFBZCxFQUFiLENBQVg7QUFDQSxNQUFJUCwyQkFBMkIsQ0FBQ0UsWUFBaEMsRUFBOENHLFlBQVksR0FBR0wsMkJBQTJCLENBQUNFLFlBQTVCLENBQXlDLEVBQUVILFVBQVUsRUFBRVcsSUFBZCxFQUF6QyxDQUFmO0FBQzlDLE1BQUlDLFFBQVEsR0FBRyxxQ0FBaUIsRUFBRVosVUFBVSxFQUFFUSxlQUFkLEVBQWpCLENBQWY7QUFDQSxNQUFJUCwyQkFBMkIsQ0FBQ0csZ0JBQWhDLEVBQWtERyxnQkFBZ0IsR0FBR04sMkJBQTJCLENBQUNHLGdCQUE1QixDQUE2QyxFQUFFSixVQUFVLEVBQUVZLFFBQWQsRUFBN0MsQ0FBbkI7OztBQUdsREosRUFBQUEsZUFBZSxDQUFDSyxZQUFoQixDQUE2QkMsSUFBN0IsQ0FBa0MsYUFBbEM7OztBQUdBLFNBQU87QUFDTE4sSUFBQUEsZUFESztBQUVMSSxJQUFBQSxRQUFRLEVBQUVMLGdCQUFnQixJQUFJSyxRQUZ6QjtBQUdMRCxJQUFBQSxJQUFJLEVBQUVMLFlBQVksSUFBSUssSUFIakIsRUFBUDs7QUFLRCIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBhc3NlcnQgZnJvbSAnYXNzZXJ0J1xyXG5pbXBvcnQgTW9kdWxlQ29udGV4dCBmcm9tICdAZGVwZW5kZW5jeS9tb2R1bGVDb250ZXh0J1xyXG5pbXBvcnQgeyBHcmFwaENvbnRyb2xsZXJGdW5jdGlvbiB9IGZyb20gJy4uL2NvbnN0cnVjdGFibGUvR3JhcGhDb250cm9sbGVyLmNsYXNzLmpzJ1xyXG5pbXBvcnQgeyBOb2RlRnVuY3Rpb24gfSBmcm9tICcuLi9jb25zdHJ1Y3RhYmxlL05vZGUuY2xhc3MuanMnIC8vIFRyZWVcclxuaW1wb3J0IHsgRGF0YUl0ZW1GdW5jdGlvbiB9IGZyb20gJy4uL2NvbnN0cnVjdGFibGUvRGF0YUl0ZW0uY2xhc3MuanMnIC8vIFVuaXRcclxuXHJcbi8qKlxyXG4gKiBQcm90b3R5cGVIaWVyYXJjaHlHZW5lcmF0b3IgLSBmb3IgcGVyZm9ybWFuY2UgdGhpcyBmdW5jdGlvbiBzaG91bGQgYmUgZXhlY3V0ZWQgb24gbG9hZC10aW1lIChwcm9ncmFtIHN0YXJ0dXAgdGltZSB3aGVyZSBhZnRlcndhcmRzIGl0cyByZWFkeSB0byB0YWtlIHJlcXVlc3RzKVxyXG4gKiBDcmVhdGUgY29ubmVjdGlvbnMgYmV0d2VlbiBzdGF0aWMgY2xhc3NlcyAoY29uc3RydWN0b3JzKSBpbiBhIHJlcXVpcmVkL3dhbnRlZCB3YXkuXHJcbiAqIEByZXR1cm4ge09iamVjdH0gUmVsYXRlZC9Db25uZWN0ZWQgQ2xhc3Nlc1xyXG4gKiBcclxuICogZS5nLiAgICAgIFxyXG4gIGxldCBDb250cm9sbGVyMSA9IGNyZWF0ZVN0YXRpY0luc3RhbmNlQ2xhc3Nlcyh7XHJcbiAgICAgIFN1cGVyY2xhc3M6IG51bGwsXHJcbiAgICAgIGltcGxlbWVudGF0aW9uVHlwZTogJ01pZGRsZXdhcmUnLFxyXG4gICAgICBjYWNoZU5hbWU6ICd4JyxcclxuICB9KVxyXG4gIE9SIFxyXG4gIGxldCBjb25zdHJ1Y3RvclByb3RvdHlwZUNoYWluID0gbGlua0NvbnN0cnVjdG9yKHtcclxuICAgICAgICBzcGVjaWZpY0NsYXNzSW1wbGVtZW50YXRpb246IHtcclxuICAgICAgICAgIEdyYXBoQ29udHJvbGxlck1peGluOiBudWxsLFxyXG4gICAgICAgICAgTm9kZUZ1bmN0aW9uOiBudWxsLFxyXG4gICAgICAgICAgRGF0YUl0ZW1GdW5jdGlvbjogbnVsbCxcclxuICAgICAgICB9LFxyXG4gICAgICB9KSxcclxuICovXHJcbi8vIFRPRE86IGltcGxlbWVudCBgY3VycnlOYW1lZEludm9rZU1hbnVhbGx5YCB1c2luZyBgY3VycnlOYW1lZGAgbW9kdWxlIChjaGVjayBtb2R1bGUncyB0b2RvIGxpc3QpXHJcbi8vIGV4ZWN1dGUgY3VycmllZCB2ZXJzaW9uLCB3aGVyZSBwYXJhbWV0ZXJzIGNvdWxkIGJlIHBhc3NlZCBpbiBzdGVwc1xyXG4vLyByZXR1cm4gY3JlYXRlU3RhdGljSW5zdGFuY2VDbGFzc2VzKHsgZGF0YWJhc2VNb2RlbEFkYXB0ZXI6IHRoaXMuZGF0YWJhc2VNb2RlbEFkYXB0ZXIgfSkoYXJncylcclxuZXhwb3J0IGZ1bmN0aW9uIGxpbmtDb25zdHJ1Y3Rvcih7XHJcbiAgU3VwZXJjbGFzcyAvKiBVc3VhbGx5IHRoZSBoaWdoZXIgQXBwbGljYXRpb24gY2xhc3MgKi8sXHJcbiAgLyogV2hlbiBkZWZpbmVkIHRoZSBleHBvcnRlZCBjbGFzc2VzIGluY2x1ZGUgdGhlIHNwZWNpZmljIGltcGxlbWVudGF0aW9uIGZvciBub2RlIGluaXRpYWxpemF0aW9uIChjbGFzcyB0cmVlIG9mIFJldXNhYmxlTmVzdGVkVW5pdCB3aWxsIGluY2x1ZGUgYSBzcGVjaWZpYyBpbXBsZW1lbnRhdGlvbiBjbGFzcyksIGkuZS4gYWxsIHN1YnNlcXVlbnQgbm9kZXMgYXJlIGV4ZWN1dGVkIHVzaW5nIHRoZSBzcGVpY2lmYyBhbGdvcml0aG0gb2YgdGhlIGltcGxlbWVudGFpdG9uLiAqL1xyXG4gIHNwZWNpZmljQ2xhc3NJbXBsZW1lbnRhdGlvbiA9IHtcclxuICAgIC8vIHNwZWNpZmljIGltcGxlbWVudGF0aW9uIGNsYXNzZXMgZm9yIE5vZGUgLyBEYXRhSXRlbSBpbnN0YW5jZSBpbml0aWFsaXphdGlvbiBvciBjb250cm9sZWxyIG1peGluLlxyXG4gICAgR3JhcGhDb250cm9sbGVyTWl4aW46IG51bGwsXHJcbiAgICBOb2RlRnVuY3Rpb246IG51bGwsXHJcbiAgICBEYXRhSXRlbUZ1bmN0aW9uOiBudWxsLFxyXG4gIH0sXHJcbiAgY2FjaGVOYW1lID0gbnVsbCAvKiB7U3RyaW5nfSAqLyxcclxufSA9IHt9KSB7XHJcbiAgbGV0IHNwZWNpZmljTm9kZSwgc3BlY2lmaWNEYXRhSXRlbVxyXG4gIC8vIENhbGwgY2xhc3MgcHJvZHVjZXIgZnVuY3Rpb25zIHRvIHJldHVybiBhIG5ldyBjbGFzcyB3aXRoIHRoZSBzcGVjaWZpYyBjb25uZWN0aW9ucy5cclxuICBsZXQgR3JhcGhDb250cm9sbGVyID0gR3JhcGhDb250cm9sbGVyRnVuY3Rpb24oe1xyXG4gICAgbWV0aG9kSW5zdGFuY2VOYW1lOiBjYWNoZU5hbWUsXHJcbiAgICBTdXBlcmNsYXNzLFxyXG4gICAgbWl4aW46IHNwZWNpZmljQ2xhc3NJbXBsZW1lbnRhdGlvbi5HcmFwaENvbnRyb2xsZXJNaXhpbiA/IHNwZWNpZmljQ2xhc3NJbXBsZW1lbnRhdGlvbi5HcmFwaENvbnRyb2xsZXJNaXhpbiA6IG51bGwsIC8vIGNvbmRpdGlvbmFsbHkgZXh0ZW5kIGBDb250cm9sbGVyYCB3aXRoIHNwZWNpZmljIG1peGluLlxyXG4gIH0pXHJcbiAgbGV0IE5vZGUgPSBOb2RlRnVuY3Rpb24oeyBTdXBlcmNsYXNzOiBHcmFwaENvbnRyb2xsZXIgfSlcclxuICBpZiAoc3BlY2lmaWNDbGFzc0ltcGxlbWVudGF0aW9uLk5vZGVGdW5jdGlvbikgc3BlY2lmaWNOb2RlID0gc3BlY2lmaWNDbGFzc0ltcGxlbWVudGF0aW9uLk5vZGVGdW5jdGlvbih7IFN1cGVyY2xhc3M6IE5vZGUgfSlcclxuICBsZXQgRGF0YUl0ZW0gPSBEYXRhSXRlbUZ1bmN0aW9uKHsgU3VwZXJjbGFzczogR3JhcGhDb250cm9sbGVyIH0pXHJcbiAgaWYgKHNwZWNpZmljQ2xhc3NJbXBsZW1lbnRhdGlvbi5EYXRhSXRlbUZ1bmN0aW9uKSBzcGVjaWZpY0RhdGFJdGVtID0gc3BlY2lmaWNDbGFzc0ltcGxlbWVudGF0aW9uLkRhdGFJdGVtRnVuY3Rpb24oeyBTdXBlcmNsYXNzOiBEYXRhSXRlbSB9KVxyXG5cclxuICAvLyBhZGQgc3ViY2xhc3MgLSBlaXRoZXIgc3BlY2lmaWMgb3IgcmV1c2FibGUgZGVwZW5kaW5nIG9uIHRoZSBsYXN0IGNoYWluZWQgc3ViY2xhc3NcclxuICBHcmFwaENvbnRyb2xsZXIuZXZlbnRFbWl0dGVyLmVtaXQoJ2FkZFN1YmNsYXNzJykgLy8gcmVnaXN0ZXIgc3ViY2xhc3NlcyB0aGF0IGFyZSBsaXN0ZW5pbmcgZm9yIHRoZSBldmVudCB0byByZWdpc3RlciB0aGVtc2VsdmVzIGluIGV4dGVuZGVkU3ViY2xhc3Muc3RhdGljIGFycmF5LlxyXG5cclxuICAvLyByZXR1cm4gdGhlIGxpbmtlZCB0cmVlIG9mIGNvbnN0cnVjdG9ycy5cclxuICByZXR1cm4ge1xyXG4gICAgR3JhcGhDb250cm9sbGVyLFxyXG4gICAgRGF0YUl0ZW06IHNwZWNpZmljRGF0YUl0ZW0gfHwgRGF0YUl0ZW0sXHJcbiAgICBOb2RlOiBzcGVjaWZpY05vZGUgfHwgTm9kZSxcclxuICB9XHJcbn1cclxuIl19

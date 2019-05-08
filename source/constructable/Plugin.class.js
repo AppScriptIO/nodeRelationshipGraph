@@ -1,112 +1,113 @@
-import assert from 'assert'
-import { Entity } from '@dependency/entity'
+"use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.Plugin = void 0;var _assert = _interopRequireDefault(require("assert"));
+var _entity = require("@dependency/entity");var _ref, _ref2, _Plugin$Constructable, _Plugin$Entity$refere;
 
-/**
- ** Plugin system for supporting different graph implementation and database adapters.
- */
-export const Plugin = new Entity.clientInterface({ description: 'Plugin', instanceType: 'object' })
 
-Plugin.reference
-  |> (_ =>
-    Object.assign(_, {
-      plugin: {
-        list: Symbol('Plugin:plugin.list'),
-        getter: Symbol('Plugin:plugin.getter'),
-        setter: Symbol('Plugin:plugin.setter'),
-        fallback: {
-          list: Symbol('Plugin:plugin.fallback.list'),
-          getter: Symbol('Plugin:plugin.fallback.getter'), // plugin.fallback.getter
-          setter: Symbol('Plugin:plugin.fallback.setter'),
-        },
-      },
-    }))
 
-Plugin.prototype
-  |> (_ =>
-    Object.assign(_, {
-      [Plugin.reference.plugin.setter](
-        /**
-         * register plugins where each plugin has multiple implementations
-         *  {
-         *      [groupKey]: {
-         *          [implementationKey]: <function>
-         *      }
-         *  }
-         */
-        pluginList, // plugin groupKeys matching the above class instance properties
-        self = this,
-      ) {
-        self[Plugin.reference.plugin.list] ||= {
-          databaseModelAdapter: {},
-          graphTraversalImplementation: {},
-        }
-        // add plugins to existing ones
-        Object.entries(pluginList).forEach(([groupKey, implementationList]) => {
-          assert(self[Plugin.reference.plugin.list][groupKey] !== undefined, '• plugin groupKey isn`t supported. Trying to add a plugin that the Plugin class does`t support.')
-          self[Plugin.reference.plugin.list][groupKey] = Object.assign(self[Plugin.reference.plugin.list][groupKey], implementationList)
-        })
-      },
-      /**
-       * Retrieve plugin implementation according to parameter hierarchy (priority order) selection.
-       * 1. Passed 'implementation' parameter.
-       * 2. Default 'implementation' set in the '[Plugin:plugin.fallback.list]'.
-       * 3. Fallback to first item in plugin object.
-       */
-      [Plugin.reference.plugin.getter]({
-        pluginGroupKey, // the plugin group (object of implementations)
-        implementation = null, // specific plugin implementation
-        self = this,
-      }) {
-        assert(pluginGroupKey, '• "plugin" parameter must be set.')
 
-        // return specific plugin
-        if (implementation) return self[Plugin.reference.plugin.list][pluginGroupKey][implementation]
+const Plugin = new _entity.Entity.clientInterface({ description: 'Plugin', instanceType: 'object' });exports.Plugin = Plugin;
 
-        // return default plugin if set.
-        let defaultImplementation = self[Plugin.reference.plugin.fallback.getter]({ pluginGroupKey })
-        if (defaultImplementation) return self[Plugin.reference.plugin.list][pluginGroupKey][defaultImplementation]
+_ref = Plugin.reference,
 
-        // return first plugin implementation in the iterator
-        let firstItemKey = Object.groupKeys(self[Plugin.reference.plugin.list][pluginGroupKey])[0]
-        return self[Plugin.reference.plugin.list][pluginGroupKey][firstItemKey]
-      },
-      [Plugin.reference.plugin.fallback.setter](defaultPluginList: Object, self = this) {
-        self[Plugin.reference.plugin.fallback.list] ||= {}
-        Object.assign(self[Plugin.reference.plugin.fallback.list], defaultPluginList)
-      },
-      [Plugin.reference.plugin.fallback.getter]({ pluginGroupKey }) {
-        return self[Plugin.reference.plugin.fallback.list][pluginGroupKey]
-      },
-    }))
+Object.assign(_ref, {
+  plugin: {
+    list: Symbol('Plugin:plugin.list'),
+    getter: Symbol('Plugin:plugin.getter'),
+    setter: Symbol('Plugin:plugin.setter'),
+    fallback: {
+      list: Symbol('Plugin:plugin.fallback.list'),
+      getter: Symbol('Plugin:plugin.fallback.getter'),
+      setter: Symbol('Plugin:plugin.fallback.setter') } } });
+
+
+
+
+_ref2 = Plugin.prototype,
+
+Object.assign(_ref2, {
+  [Plugin.reference.plugin.setter](
+
+
+
+
+
+
+
+
+  pluginList,
+  self = this)
+  {var _Plugin$reference$plu;
+    self[_Plugin$reference$plu = Plugin.reference.plugin.list] || (self[_Plugin$reference$plu] = {
+      databaseModelAdapter: {},
+      graphTraversalImplementation: {} });
+
+
+    Object.entries(pluginList).forEach(([groupKey, implementationList]) => {
+      (0, _assert.default)(self[Plugin.reference.plugin.list][groupKey] !== undefined, '• plugin groupKey isn`t supported. Trying to add a plugin that the Plugin class does`t support.');
+      self[Plugin.reference.plugin.list][groupKey] = Object.assign(self[Plugin.reference.plugin.list][groupKey], implementationList);
+    });
+  },
+
+
+
+
+
+
+  [Plugin.reference.plugin.getter]({
+    pluginGroupKey,
+    implementation = null,
+    self = this })
+  {
+    (0, _assert.default)(pluginGroupKey, '• "plugin" parameter must be set.');
+
+
+    if (implementation) return self[Plugin.reference.plugin.list][pluginGroupKey][implementation];
+
+
+    let defaultImplementation = self[Plugin.reference.plugin.fallback.getter]({ pluginGroupKey });
+    if (defaultImplementation) return self[Plugin.reference.plugin.list][pluginGroupKey][defaultImplementation];
+
+
+    let firstItemKey = Object.groupKeys(self[Plugin.reference.plugin.list][pluginGroupKey])[0];
+    return self[Plugin.reference.plugin.list][pluginGroupKey][firstItemKey];
+  },
+  [Plugin.reference.plugin.fallback.setter](defaultPluginList, self = this) {var _Plugin$reference$plu2;
+    self[_Plugin$reference$plu2 = Plugin.reference.plugin.fallback.list] || (self[_Plugin$reference$plu2] = {});
+    Object.assign(self[Plugin.reference.plugin.fallback.list], defaultPluginList);
+  },
+  [Plugin.reference.plugin.fallback.getter]({ pluginGroupKey }) {
+    return self[Plugin.reference.plugin.fallback.list][pluginGroupKey];
+  } });
+
 
 Plugin[Constructable.reference.initialize.setter.list]({
   data({ data = {}, instanceObject }) {
-    let { defaultPlugin, pluginList } = data
-    instanceObject[Plugin.reference.plugin.fallback.list] = {} // default plugins implementations
-    // supported plugin groupKeys - Each plugin is an object with multiple registered implementations
-    instanceObject.databaseModelAdapter = {} // database model functions for retriving node, dataItem, and other documents. should be async functions
-    instanceObject.graphTraversalImplementation = {}
+    let { defaultPlugin, pluginList } = data;
+    instanceObject[Plugin.reference.plugin.fallback.list] = {};
 
-    instanceObject[Plugin.reference.plugin.setter](pluginList)
-    if (defaultPlugin) instanceObject[Plugin.reference.plugin.fallback.setter](defaultPlugin) // set default plugins in case passed
-    //   Object.assign(this, data) // apply data to instance
-    return instanceObject
-  },
-})
+    instanceObject.databaseModelAdapter = {};
+    instanceObject.graphTraversalImplementation = {};
 
-// Client itnerface
-let configuredConstructable =
-  Plugin[Constructable.reference.constructor.switch]({ implementationKey: Constructable.reference.constructor.key.configuredConstructable })
-  |> (g => {
-    g.next('intermittent')
-    return g.next({
-      description: 'EntityConstructableForClientInterfaceData',
-      initializeFallback: 'data',
-    }).value
-  })
-Plugin.clientInterface =
-  Plugin[Entity.reference.clientInterface.switch]({ implementationKey: Entity.reference.clientInterface.key.prototypeConstruct })
-  |> (g => {
-    g.next('intermittent')
-    return g.next({ configuredConstructable }).value
-  })
+    instanceObject[Plugin.reference.plugin.setter](pluginList);
+    if (defaultPlugin) instanceObject[Plugin.reference.plugin.fallback.setter](defaultPlugin);
+
+    return instanceObject;
+  } });
+
+
+
+let configuredConstructable = (_Plugin$Constructable =
+Plugin[Constructable.reference.constructor.switch]({ implementationKey: Constructable.reference.constructor.key.configuredConstructable }), (
+g => {
+  g.next('intermittent');
+  return g.next({
+    description: 'EntityConstructableForClientInterfaceData',
+    initializeFallback: 'data' }).
+  value;
+})(_Plugin$Constructable));
+Plugin.clientInterface = (_Plugin$Entity$refere =
+Plugin[_entity.Entity.reference.clientInterface.switch]({ implementationKey: _entity.Entity.reference.clientInterface.key.prototypeConstruct }), (
+g => {
+  g.next('intermittent');
+  return g.next({ configuredConstructable }).value;
+})(_Plugin$Entity$refere));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL1BsdWdpbi5jbGFzcy5qcyJdLCJuYW1lcyI6WyJQbHVnaW4iLCJFbnRpdHkiLCJjbGllbnRJbnRlcmZhY2UiLCJkZXNjcmlwdGlvbiIsImluc3RhbmNlVHlwZSIsInJlZmVyZW5jZSIsIk9iamVjdCIsImFzc2lnbiIsIl8iLCJwbHVnaW4iLCJsaXN0IiwiU3ltYm9sIiwiZ2V0dGVyIiwic2V0dGVyIiwiZmFsbGJhY2siLCJwcm90b3R5cGUiLCJwbHVnaW5MaXN0Iiwic2VsZiIsImRhdGFiYXNlTW9kZWxBZGFwdGVyIiwiZ3JhcGhUcmF2ZXJzYWxJbXBsZW1lbnRhdGlvbiIsImVudHJpZXMiLCJmb3JFYWNoIiwiZ3JvdXBLZXkiLCJpbXBsZW1lbnRhdGlvbkxpc3QiLCJ1bmRlZmluZWQiLCJwbHVnaW5Hcm91cEtleSIsImltcGxlbWVudGF0aW9uIiwiZGVmYXVsdEltcGxlbWVudGF0aW9uIiwiZmlyc3RJdGVtS2V5IiwiZ3JvdXBLZXlzIiwiZGVmYXVsdFBsdWdpbkxpc3QiLCJDb25zdHJ1Y3RhYmxlIiwiaW5pdGlhbGl6ZSIsImRhdGEiLCJpbnN0YW5jZU9iamVjdCIsImRlZmF1bHRQbHVnaW4iLCJjb25maWd1cmVkQ29uc3RydWN0YWJsZSIsImNvbnN0cnVjdG9yIiwic3dpdGNoIiwiaW1wbGVtZW50YXRpb25LZXkiLCJrZXkiLCJnIiwibmV4dCIsImluaXRpYWxpemVGYWxsYmFjayIsInZhbHVlIiwicHJvdG90eXBlQ29uc3RydWN0Il0sIm1hcHBpbmdzIjoid0xBQUE7QUFDQSw0Qzs7Ozs7QUFLTyxNQUFNQSxNQUFNLEdBQUcsSUFBSUMsZUFBT0MsZUFBWCxDQUEyQixFQUFFQyxXQUFXLEVBQUUsUUFBZixFQUF5QkMsWUFBWSxFQUFFLFFBQXZDLEVBQTNCLENBQWYsQzs7QUFFUCxPQUFBSixNQUFNLENBQUNLLFNBQVA7O0FBRUlDLE1BQU0sQ0FBQ0MsTUFBUCxDQUFjQyxJQUFkLEVBQWlCO0FBQ2ZD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ZUFBT0ksU0FBUCxDQUFpQkgsZUFBakIsQ0FBaUNzQyxHQUFqQyxDQUFxQ0ssa0JBQTFELEVBQWhELENBREY7QUFFTUosQ0FBQyxJQUFJO0FBQ1BBLEVBQUFBLENBQUMsQ0FBQ0MsSUFBRixDQUFPLGNBQVA7QUFDQSxTQUFPRCxDQUFDLENBQUNDLElBQUYsQ0FBTyxFQUFFTix1QkFBRixFQUFQLEVBQW9DUSxLQUEzQztBQUNELENBTEgiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgYXNzZXJ0IGZyb20gJ2Fzc2VydCdcclxuaW1wb3J0IHsgRW50aXR5IH0gZnJvbSAnQGRlcGVuZGVuY3kvZW50aXR5J1xyXG5cclxuLyoqXHJcbiAqKiBQbHVnaW4gc3lzdGVtIGZvciBzdXBwb3J0aW5nIGRpZmZlcmVudCBncmFwaCBpbXBsZW1lbnRhdGlvbiBhbmQgZGF0YWJhc2UgYWRhcHRlcnMuXHJcbiAqL1xyXG5leHBvcnQgY29uc3QgUGx1Z2luID0gbmV3IEVudGl0eS5jbGllbnRJbnRlcmZhY2UoeyBkZXNjcmlwdGlvbjogJ1BsdWdpbicsIGluc3RhbmNlVHlwZTogJ29iamVjdCcgfSlcclxuXHJcblBsdWdpbi5yZWZlcmVuY2VcclxuICB8PiAoXyA9PlxyXG4gICAgT2JqZWN0LmFzc2lnbihfLCB7XHJcbiAgICAgIHBsdWdpbjoge1xyXG4gICAgICAgIGxpc3Q6IFN5bWJvbCgnUGx1Z2luOnBsdWdpbi5saXN0JyksXHJcbiAgICAgICAgZ2V0dGVyOiBTeW1ib2woJ1BsdWdpbjpwbHVnaW4uZ2V0dGVyJyksXHJcbiAgICAgICAgc2V0dGVyOiBTeW1ib2woJ1BsdWdpbjpwbHVnaW4uc2V0dGVyJyksXHJcbiAgICAgICAgZmFsbGJhY2s6IHtcclxuICAgICAgICAgIGxpc3Q6IFN5bWJvbCgnUGx1Z2luOnBsdWdpbi5mYWxsYmFjay5saXN0JyksXHJcbiAgICAgICAgICBnZXR0ZXI6IFN5bWJvbCgnUGx1Z2luOnBsdWdpbi5mYWxsYmFjay5nZXR0ZXInKSwgLy8gcGx1Z2luLmZhbGxiYWNrLmdldHRlclxyXG4gICAgICAgICAgc2V0dGVyOiBTeW1ib2woJ1BsdWdpbjpwbHVnaW4uZmFsbGJhY2suc2V0dGVyJyksXHJcbiAgICAgICAgfSxcclxuICAgICAgfSxcclxuICAgIH0pKVxyXG5cclxuUGx1Z2luLnByb3RvdHlwZVxyXG4gIHw+IChfID0+XHJcbiAgICBPYmplY3QuYXNzaWduKF8sIHtcclxuICAgICAgW1BsdWdpbi5yZWZlcmVuY2UucGx1Z2luLnNldHRlcl0oXHJcbiAgICAgICAgLyoqXHJcbiAgICAgICAgICogcmVnaXN0ZXIgcGx1Z2lucyB3aGVyZSBlYWNoIHBsdWdpbiBoYXMgbXVsdGlwbGUgaW1wbGVtZW50YXRpb25zXHJcbiAgICAgICAgICogIHtcclxuICAgICAgICAgKiAgICAgIFtncm91cEtleV06IHtcclxuICAgICAgICAgKiAgICAgICAgICBbaW1wbGVtZW50YXRpb25LZXldOiA8ZnVuY3Rpb24+XHJcbiAgICAgICAgICogICAgICB9XHJcbiAgICAgICAgICogIH1cclxuICAgICAgICAgKi9cclxuICAgICAgICBwbHVnaW5MaXN0LCAvLyBwbHVnaW4gZ3JvdXBLZXlzIG1hdGNoaW5nIHRoZSBhYm92ZSBjbGFzcyBpbnN0YW5jZSBwcm9wZXJ0aWVzXHJcbiAgICAgICAgc2VsZiA9IHRoaXMsXHJcbiAgICAgICkge1xyXG4gICAgICAgIHNlbGZbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4ubGlzdF0gfHw9IHtcclxuICAgICAgICAgIGRhdGFiYXNlTW9kZWxBZGFwdGVyOiB7fSxcclxuICAgICAgICAgIGdyYXBoVHJhdmVyc2FsSW1wbGVtZW50YXRpb246IHt9LFxyXG4gICAgICAgIH1cclxuICAgICAgICAvLyBhZGQgcGx1Z2lucyB0byBleGlzdGluZyBvbmVzXHJcbiAgICAgICAgT2JqZWN0LmVudHJpZXMocGx1Z2luTGlzdCkuZm9yRWFjaCgoW2dyb3VwS2V5LCBpbXBsZW1lbnRhdGlvbkxpc3RdKSA9PiB7XHJcbiAgICAgICAgICBhc3NlcnQoc2VsZltQbHVnaW4ucmVmZXJlbmNlLnBsdWdpbi5saXN0XVtncm91cEtleV0gIT09IHVuZGVmaW5lZCwgJ+KAoiBwbHVnaW4gZ3JvdXBLZXkgaXNuYHQgc3VwcG9ydGVkLiBUcnlpbmcgdG8gYWRkIGEgcGx1Z2luIHRoYXQgdGhlIFBsdWdpbiBjbGFzcyBkb2VzYHQgc3VwcG9ydC4nKVxyXG4gICAgICAgICAgc2VsZltQbHVnaW4ucmVmZXJlbmNlLnBsdWdpbi5saXN0XVtncm91cEtleV0gPSBPYmplY3QuYXNzaWduKHNlbGZbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4ubGlzdF1bZ3JvdXBLZXldLCBpbXBsZW1lbnRhdGlvbkxpc3QpXHJcbiAgICAgICAgfSlcclxuICAgICAgfSxcclxuICAgICAgLyoqXHJcbiAgICAgICAqIFJldHJpZXZlIHBsdWdpbiBpbXBsZW1lbnRhdGlvbiBhY2NvcmRpbmcgdG8gcGFyYW1ldGVyIGhpZXJhcmNoeSAocHJpb3JpdHkgb3JkZXIpIHNlbGVjdGlvbi5cclxuICAgICAgICogMS4gUGFzc2VkICdpbXBsZW1lbnRhdGlvbicgcGFyYW1ldGVyLlxyXG4gICAgICAgKiAyLiBEZWZhdWx0ICdpbXBsZW1lbnRhdGlvbicgc2V0IGluIHRoZSAnW1BsdWdpbjpwbHVnaW4uZmFsbGJhY2subGlzdF0nLlxyXG4gICAgICAgKiAzLiBGYWxsYmFjayB0byBmaXJzdCBpdGVtIGluIHBsdWdpbiBvYmplY3QuXHJcbiAgICAgICAqL1xyXG4gICAgICBbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4uZ2V0dGVyXSh7XHJcbiAgICAgICAgcGx1Z2luR3JvdXBLZXksIC8vIHRoZSBwbHVnaW4gZ3JvdXAgKG9iamVjdCBvZiBpbXBsZW1lbnRhdGlvbnMpXHJcbiAgICAgICAgaW1wbGVtZW50YXRpb24gPSBudWxsLCAvLyBzcGVjaWZpYyBwbHVnaW4gaW1wbGVtZW50YXRpb25cclxuICAgICAgICBzZWxmID0gdGhpcyxcclxuICAgICAgfSkge1xyXG4gICAgICAgIGFzc2VydChwbHVnaW5Hcm91cEtleSwgJ+KAoiBcInBsdWdpblwiIHBhcmFtZXRlciBtdXN0IGJlIHNldC4nKVxyXG5cclxuICAgICAgICAvLyByZXR1cm4gc3BlY2lmaWMgcGx1Z2luXHJcbiAgICAgICAgaWYgKGltcGxlbWVudGF0aW9uKSByZXR1cm4gc2VsZltQbHVnaW4ucmVmZXJlbmNlLnBsdWdpbi5saXN0XVtwbHVnaW5Hcm91cEtleV1baW1wbGVtZW50YXRpb25dXHJcblxyXG4gICAgICAgIC8vIHJldHVybiBkZWZhdWx0IHBsdWdpbiBpZiBzZXQuXHJcbiAgICAgICAgbGV0IGRlZmF1bHRJbXBsZW1lbnRhdGlvbiA9IHNlbGZbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4uZmFsbGJhY2suZ2V0dGVyXSh7IHBsdWdpbkdyb3VwS2V5IH0pXHJcbiAgICAgICAgaWYgKGRlZmF1bHRJbXBsZW1lbnRhdGlvbikgcmV0dXJuIHNlbGZbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4ubGlzdF1bcGx1Z2luR3JvdXBLZXldW2RlZmF1bHRJbXBsZW1lbnRhdGlvbl1cclxuXHJcbiAgICAgICAgLy8gcmV0dXJuIGZpcnN0IHBsdWdpbiBpbXBsZW1lbnRhdGlvbiBpbiB0aGUgaXRlcmF0b3JcclxuICAgICAgICBsZXQgZmlyc3RJdGVtS2V5ID0gT2JqZWN0Lmdyb3VwS2V5cyhzZWxmW1BsdWdpbi5yZWZlcmVuY2UucGx1Z2luLmxpc3RdW3BsdWdpbkdyb3VwS2V5XSlbMF1cclxuICAgICAgICByZXR1cm4gc2VsZltQbHVnaW4ucmVmZXJlbmNlLnBsdWdpbi5saXN0XVtwbHVnaW5Hcm91cEtleV1bZmlyc3RJdGVtS2V5XVxyXG4gICAgICB9LFxyXG4gICAgICBbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4uZmFsbGJhY2suc2V0dGVyXShkZWZhdWx0UGx1Z2luTGlzdDogT2JqZWN0LCBzZWxmID0gdGhpcykge1xyXG4gICAgICAgIHNlbGZbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4uZmFsbGJhY2subGlzdF0gfHw9IHt9XHJcbiAgICAgICAgT2JqZWN0LmFzc2lnbihzZWxmW1BsdWdpbi5yZWZlcmVuY2UucGx1Z2luLmZhbGxiYWNrLmxpc3RdLCBkZWZhdWx0UGx1Z2luTGlzdClcclxuICAgICAgfSxcclxuICAgICAgW1BsdWdpbi5yZWZlcmVuY2UucGx1Z2luLmZhbGxiYWNrLmdldHRlcl0oeyBwbHVnaW5Hcm91cEtleSB9KSB7XHJcbiAgICAgICAgcmV0dXJuIHNlbGZbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4uZmFsbGJhY2subGlzdF1bcGx1Z2luR3JvdXBLZXldXHJcbiAgICAgIH0sXHJcbiAgICB9KSlcclxuXHJcblBsdWdpbltDb25zdHJ1Y3RhYmxlLnJlZmVyZW5jZS5pbml0aWFsaXplLnNldHRlci5saXN0XSh7XHJcbiAgZGF0YSh7IGRhdGEgPSB7fSwgaW5zdGFuY2VPYmplY3QgfSkge1xyXG4gICAgbGV0IHsgZGVmYXVsdFBsdWdpbiwgcGx1Z2luTGlzdCB9ID0gZGF0YVxyXG4gICAgaW5zdGFuY2VPYmplY3RbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4uZmFsbGJhY2subGlzdF0gPSB7fSAvLyBkZWZhdWx0IHBsdWdpbnMgaW1wbGVtZW50YXRpb25zXHJcbiAgICAvLyBzdXBwb3J0ZWQgcGx1Z2luIGdyb3VwS2V5cyAtIEVhY2ggcGx1Z2luIGlzIGFuIG9iamVjdCB3aXRoIG11bHRpcGxlIHJlZ2lzdGVyZWQgaW1wbGVtZW50YXRpb25zXHJcbiAgICBpbnN0YW5jZU9iamVjdC5kYXRhYmFzZU1vZGVsQWRhcHRlciA9IHt9IC8vIGRhdGFiYXNlIG1vZGVsIGZ1bmN0aW9ucyBmb3IgcmV0cml2aW5nIG5vZGUsIGRhdGFJdGVtLCBhbmQgb3RoZXIgZG9jdW1lbnRzLiBzaG91bGQgYmUgYXN5bmMgZnVuY3Rpb25zXHJcbiAgICBpbnN0YW5jZU9iamVjdC5ncmFwaFRyYXZlcnNhbEltcGxlbWVudGF0aW9uID0ge31cclxuXHJcbiAgICBpbnN0YW5jZU9iamVjdFtQbHVnaW4ucmVmZXJlbmNlLnBsdWdpbi5zZXR0ZXJdKHBsdWdpbkxpc3QpXHJcbiAgICBpZiAoZGVmYXVsdFBsdWdpbikgaW5zdGFuY2VPYmplY3RbUGx1Z2luLnJlZmVyZW5jZS5wbHVnaW4uZmFsbGJhY2suc2V0dGVyXShkZWZhdWx0UGx1Z2luKSAvLyBzZXQgZGVmYXVsdCBwbHVnaW5zIGluIGNhc2UgcGFzc2VkXHJcbiAgICAvLyAgIE9iamVjdC5hc3NpZ24odGhpcywgZGF0YSkgLy8gYXBwbHkgZGF0YSB0byBpbnN0YW5jZVxyXG4gICAgcmV0dXJuIGluc3RhbmNlT2JqZWN0XHJcbiAgfSxcclxufSlcclxuXHJcbi8vIENsaWVudCBpdG5lcmZhY2VcclxubGV0IGNvbmZpZ3VyZWRDb25zdHJ1Y3RhYmxlID1cclxuICBQbHVnaW5bQ29uc3RydWN0YWJsZS5yZWZlcmVuY2UuY29uc3RydWN0b3Iuc3dpdGNoXSh7IGltcGxlbWVudGF0aW9uS2V5OiBDb25zdHJ1Y3RhYmxlLnJlZmVyZW5jZS5jb25zdHJ1Y3Rvci5rZXkuY29uZmlndXJlZENvbnN0cnVjdGFibGUgfSlcclxuICB8PiAoZyA9PiB7XHJcbiAgICBnLm5leHQoJ2ludGVybWl0dGVudCcpXHJcbiAgICByZXR1cm4gZy5uZXh0KHtcclxuICAgICAgZGVzY3JpcHRpb246ICdFbnRpdHlDb25zdHJ1Y3RhYmxlRm9yQ2xpZW50SW50ZXJmYWNlRGF0YScsXHJcbiAgICAgIGluaXRpYWxpemVGYWxsYmFjazogJ2RhdGEnLFxyXG4gICAgfSkudmFsdWVcclxuICB9KVxyXG5QbHVnaW4uY2xpZW50SW50ZXJmYWNlID1cclxuICBQbHVnaW5bRW50aXR5LnJlZmVyZW5jZS5jbGllbnRJbnRlcmZhY2Uuc3dpdGNoXSh7IGltcGxlbWVudGF0aW9uS2V5OiBFbnRpdHkucmVmZXJlbmNlLmNsaWVudEludGVyZmFjZS5rZXkucHJvdG90eXBlQ29uc3RydWN0IH0pXHJcbiAgfD4gKGcgPT4ge1xyXG4gICAgZy5uZXh0KCdpbnRlcm1pdHRlbnQnKVxyXG4gICAgcmV0dXJuIGcubmV4dCh7IGNvbmZpZ3VyZWRDb25zdHJ1Y3RhYmxlIH0pLnZhbHVlXHJcbiAgfSlcclxuIl19
