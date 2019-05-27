@@ -2,10 +2,9 @@ import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
 
 /**
- * ! `getDocumentQuery` should be passed for configured constructable, i.e. used in group of instances.
- * ! Instance inherited from `Superclass`
+ ** Cache system for supporting different graph implementation and database adapters.
  */
-export const DataItem = new Entity.clientInterfaceConstructable({ description: 'DataItem' })
+export const Cache = new Entity.clientInterfaceConstructable({ description: 'Cache' })
 
 /*
    ____       __                                 ___     ____            _        _                    
@@ -15,8 +14,8 @@ export const DataItem = new Entity.clientInterfaceConstructable({ description: '
   |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
                                                                                       |___/|_|         
 */
-const Reference = Object.assign(DataItem[Constructable['reference'].reference], {})
-const Prototype = Object.assign(DataItem[Constructable['reference'].prototype], {})
+const Reference = Object.assign(Cache[Constructable['reference'].reference], {})
+const Prototype = Object.assign(Cache[Constructable['reference'].prototype], {})
 
 /*
                    _        _                    ____       _                  _   _             
@@ -32,39 +31,21 @@ Reference.prototypeDelegation = {
 Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
   [Entity['reference'].prototypeDelegation.key.entity]: {
     prototype: {
-      [symbol.metadata]: { type: 'DataItem Prototype' },
-      async initializeDataItem() {
-        // let initializationImplementationType = dataItem.tag.initializationImplementationType
-        console.log('• DataItem class, initializeDataItem function')
+      [symbol.metadata]: { type: 'Cache Prototype' },
+      get(key, defaultValue) {
+        const value = this._doGet(key)
+        if (value === undefined || value === null) {
+          return defaultValue
+        }
+        return value
       },
-      // TODO: Add function for loading file using the file object settings, i.e. load filepath as es6 module or as regular module with default export.
+      set(key, value) {
+        if (key === undefined || key === null) {
+          throw new Error('Invalid argument')
+        }
+        this._doSet(key, value)
+      },
     },
-  },
-})
-
-/*
-   _       _ _   _       _ _         
-  (_)_ __ (_) |_(_) __ _| (_)_______ 
-  | | '_ \| | __| |/ _` | | |_  / _ \
-  | | | | | | |_| | (_| | | |/ /  __/
-  |_|_| |_|_|\__|_|\__,_|_|_/___\___|
-*/
-Prototype[Constructable['reference'].initialize.setter.list]({
-  [Reference.initialize.key.entity]({ targetInstance, databaseDocumentKey }, previousResult /* in case multiple constructor function found and executed. */) {
-    targetInstance.key = databaseDocumentKey
-    // must be executed once.
-    async function pupolateUnitWithFile({
-      fileKey,
-      getDocument, // function
-      extract = null, // object with two properties - extract: { sourceKey: 'key from source object', destinationKey: 'key to "this" destination' }
-    }) {
-      assert.strictEqual(Object.getPrototypeOf(self.rethinkdbConnection).constructor.name, 'TcpConnection')
-      let file = await getDocument({ key: fileKey, connection: self.rethinkdbConnection })
-      if (extract) this[extract.destinationKey] = extract.sourceKey ? file[extract.sourceKey] : file
-    }
-    pupolateUnitWithFile()
-
-    return targetInstance
   },
 })
 
@@ -75,7 +56,7 @@ Prototype[Constructable['reference'].initialize.setter.list]({
   | |___| | |  __/ | | | |_  | | |_| | | |  __/ |  |  _| (_| | (_|  __/
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
-DataItem.clientInterface =
+Cache.clientInterface =
   Prototype[Constructable['reference'].clientInterface.switch]({ implementationKey: Entity['reference'].clientInterface.key.entity })
   |> (g =>
     g.next('intermittent') &&

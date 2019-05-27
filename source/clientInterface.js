@@ -183,9 +183,8 @@ GraphControllerConfiguration[Entity.reference.clientInterface.setter.list]({
 
 export const Graph =
   GraphControllerConfiguration[Entity.reference.clientInterface.switch]({ implementationKey: 'clientinterface' })
-  |> (g => {
-    g.next('intermittent')
-    return g.next({
+  |> (g =>
+    g.next('intermittent') &&
+    g.next({
       /*configuredConstructable*/
-    }).value
-  })
+    }).value)

@@ -6,10 +6,13 @@ import util from 'util'
 import { Entity } from '@dependency/entity'
 import { GraphElement } from '../source/constructable/GraphElement.class.js'
 import { Plugin } from '../source/constructable/Plugin.class.js'
+import { Cache } from '../source/constructable/Cache.class.js'
+import { Context } from '../source/constructable/Context.class.js'
 import { linkConstructor } from '../source/prototypeChain/linkConstructor.js'
-import { InstanceContext } from '../source/constructable/InstanceContext.class.js'
 import { databaseModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memoryModelAdapter.js'
+
 import * as graphData from './asset/graphData' // load sample data
+const fixture = { traversalResult: ['dataItem-key-1'] }
 
 /**
  * Graph will contain the prototype chain to install on the instances (previously 'classes hierarchy connections`)
@@ -56,18 +59,16 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
         graphTraversalImplementation: 'aggregateIntoArray',
       },
     })
-
-    let configuredGraph = GraphElement.clientInterfaceData({
-      pluginInstance,
-      contextInstance: new InstanceContext({ data: 'This string is shared between instances of the same context.' }),
-      //? prototype chain for creating instance with unique prototype chain ???
-    })
+    let cacheInstance = new Cache.clientInterface()
+    let contextInstance = new Context.clientInterface()
+    let configuredGraph = GraphElement.clientInterface({ parameter: [{ delegationList: [{}, pluginInstance, contextInstance, cacheInstance] }] })
 
     test('Should traverse graph successfully', async () => {
-      const fixture = { traversalResult: ['dataItem-key-1'] }
       try {
+        let nodeInstance = await new configuredGraph({ key: 'node-key-1' })
+        console.log(nodeInstance)
         // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.
-        let resultArray = await (new configuredGraph({ key: 'node-key-1' }) |> (instance => instance.traverseGraph()))
+        let resultArray = nodeInstance |> (instance => instance.traverseGraph())
         chaiAssertion.deepEqual(resultArray, fixture.traversalResult)
       } catch (error) {
         throw new Error(error)

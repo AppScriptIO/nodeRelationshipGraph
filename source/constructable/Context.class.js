@@ -2,10 +2,9 @@ import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
 
 /**
- * ! `getDocumentQuery` should be passed for configured constructable, i.e. used in group of instances.
- * ! Instance inherited from `Superclass`
+ * Context is responsible for creating a grouping context - where information could be shared between instances of some class that belong/inherit the context.
  */
-export const DataItem = new Entity.clientInterfaceConstructable({ description: 'DataItem' })
+export const Context = new Entity.clientInterfaceConstructable({ description: 'Context' })
 
 /*
    ____       __                                 ___     ____            _        _                    
@@ -15,8 +14,8 @@ export const DataItem = new Entity.clientInterfaceConstructable({ description: '
   |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
                                                                                       |___/|_|         
 */
-const Reference = Object.assign(DataItem[Constructable['reference'].reference], {})
-const Prototype = Object.assign(DataItem[Constructable['reference'].prototype], {})
+const Reference = Object.assign(Context[Constructable['reference'].reference], {})
+const Prototype = Object.assign(Context[Constructable['reference'].prototype], {})
 
 /*
                    _        _                    ____       _                  _   _             
@@ -32,12 +31,7 @@ Reference.prototypeDelegation = {
 Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
   [Entity['reference'].prototypeDelegation.key.entity]: {
     prototype: {
-      [symbol.metadata]: { type: 'DataItem Prototype' },
-      async initializeDataItem() {
-        // let initializationImplementationType = dataItem.tag.initializationImplementationType
-        console.log('• DataItem class, initializeDataItem function')
-      },
-      // TODO: Add function for loading file using the file object settings, i.e. load filepath as es6 module or as regular module with default export.
+      [symbol.metadata]: { type: 'Context Prototype' },
     },
   },
 })
@@ -50,20 +44,9 @@ Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
 Prototype[Constructable['reference'].initialize.setter.list]({
-  [Reference.initialize.key.entity]({ targetInstance, databaseDocumentKey }, previousResult /* in case multiple constructor function found and executed. */) {
-    targetInstance.key = databaseDocumentKey
-    // must be executed once.
-    async function pupolateUnitWithFile({
-      fileKey,
-      getDocument, // function
-      extract = null, // object with two properties - extract: { sourceKey: 'key from source object', destinationKey: 'key to "this" destination' }
-    }) {
-      assert.strictEqual(Object.getPrototypeOf(self.rethinkdbConnection).constructor.name, 'TcpConnection')
-      let file = await getDocument({ key: fileKey, connection: self.rethinkdbConnection })
-      if (extract) this[extract.destinationKey] = extract.sourceKey ? file[extract.sourceKey] : file
-    }
-    pupolateUnitWithFile()
-
+  [Reference.initialize.key.entity]({ targetInstance }, previousResult) {
+    // instance properties
+    targetInstance.sharedContext = {}
     return targetInstance
   },
 })
@@ -75,7 +58,7 @@ Prototype[Constructable['reference'].initialize.setter.list]({
   | |___| | |  __/ | | | |_  | | |_| | | |  __/ |  |  _| (_| | (_|  __/
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
-DataItem.clientInterface =
+Context.clientInterface =
   Prototype[Constructable['reference'].clientInterface.switch]({ implementationKey: Entity['reference'].clientInterface.key.entity })
   |> (g =>
     g.next('intermittent') &&

@@ -52,6 +52,8 @@ ___
 ## Concept/Abstraction visual programming - programming using abstractions in a visual interface.
 Naming proposal - just like `abstract syntax tree`, call it `abstract node graph`, `abstract visual programming`
 
+others: 
+- load-time (program startup time where afterwards its ready to take requests)
 ___
 [Development TODO list](/documentation/TODO.md)
 

@@ -1,26 +1,38 @@
 import assert from 'assert'
-import { classDecorator as prototypeChainDebug } from '@dependency/prototypeChainDebug'
-import { add, execute, conditional } from '@dependency/commonPattern/source/decoratorUtility.js'
-import { extendedSubclassPattern } from '@dependency/commonPattern/source/extendedSubclassPattern.js'
+import { Entity, Constructable, symbol } from '@dependency/entity'
 
-export function NodeFunction({ Superclass, getDocumentQuery } = {}) {
-  let self =
-    @conditional({ decorator: prototypeChainDebug, condition: process.env.SZN_DEBUG })
-    @execute({ staticMethod: 'initializeStaticClass', args: [] })
-    @extendedSubclassPattern.Subclass() // in case specificNestedUnit subclass isn't registered, this class will be used as Controller subclass when called.
-    class Node extends Superclass {
-      static getDocumentQuery
+/**
+ * ! `getDocumentQuery` should be passed for configured constructable, i.e. used in group of instances.
+ * ! Instance inherited from `Superclass`
+ */
+export const Node = new Entity.clientInterfaceConstructable({ description: 'Node' })
 
-      static initializeStaticClass(self) {
-        self.getDocumentQuery = getDocumentQuery
-      }
+/*
+   ____       __                                 ___     ____            _        _                    
+  |  _ \ ___ / _| ___ _ __ ___ _ __   ___ ___   ( _ )   |  _ \ _ __ ___ | |_ ___ | |_ _   _ _ __   ___ 
+  | |_) / _ \ |_ / _ \ '__/ _ \ '_ \ / __/ _ \  / _ \/\ | |_) | '__/ _ \| __/ _ \| __| | | | '_ \ / _ \
+  |  _ <  __/  _|  __/ | |  __/ | | | (_|  __/ | (_>  < |  __/| | | (_) | || (_) | |_| |_| | |_) |  __/
+  |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
+                                                                                      |___/|_|         
+*/
+const Reference = Object.assign(Node[Constructable['reference'].reference], {})
+const Prototype = Object.assign(Node[Constructable['reference'].prototype], {})
 
-      constructor(databaseDocumentKey) {
-        super()
-        this.key = databaseDocumentKey
-        return this
-      }
-
+/*
+                   _        _                    ____       _                  _   _             
+   _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___|  _ \  ___| | ___  __ _  __ _| |_(_) ___  _ __  
+  | '_ \| '__/ _ \| __/ _ \| __| | | | '_ \ / _ \ | | |/ _ \ |/ _ \/ _` |/ _` | __| |/ _ \| '_ \ 
+  | |_) | | | (_) | || (_) | |_| |_| | |_) |  __/ |_| |  __/ |  __/ (_| | (_| | |_| | (_) | | | |
+  | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
+  |_|                           |___/|_|                           |___/                         
+*/
+Reference.prototypeDelegation = {
+  key: {},
+}
+Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
+  [Entity['reference'].prototypeDelegation.key.entity]: {
+    prototype: {
+      [symbol.metadata]: { type: 'Node Prototype' },
       /**
        * Directed Graph - Graph that can have opposite pointers between same 2 nodes.
        * Oriented graph is a directed graph that has only one directrion between each 2 nodes (i.e. one arrow pointing to one direction from node to node)
@@ -77,8 +89,40 @@ export function NodeFunction({ Superclass, getDocumentQuery } = {}) {
       async traverseGraph({ implementationType, nodeInstance, additionalChildNode, nodeConnectionKey } = {}) {
         // Entrypoint Instance
         console.log('default traverse Graph executed.')
-      }
-    }
+      },
+    },
+  },
+})
 
-  return self
-}
+/*
+   _       _ _   _       _ _         
+  (_)_ __ (_) |_(_) __ _| (_)_______ 
+  | | '_ \| | __| |/ _` | | |_  / _ \
+  | | | | | | |_| | (_| | | |/ /  __/
+  |_|_| |_|_|\__|_|\__,_|_|_/___\___|
+*/
+Prototype[Constructable['reference'].initialize.setter.list]({
+  [Reference.initialize.key.entity]({ targetInstance, databaseDocumentKey }, previousResult /* in case multiple constructor function found and executed. */) {
+    targetInstance.key = databaseDocumentKey
+    return targetInstance
+  },
+})
+
+/*
+    ____ _ _            _     _ _                    __                
+   / ___| (_) ___ _ __ | |_  (_) |_ _ __   ___ _ __ / _| __ _  ___ ___ 
+  | |   | | |/ _ \ '_ \| __| | | __| '_ \ / _ \ '__| |_ / _` |/ __/ _ \
+  | |___| | |  __/ | | | |_  | | |_| | | |  __/ |  |  _| (_| | (_|  __/
+   \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
+*/
+Node.clientInterface =
+  Prototype[Constructable['reference'].clientInterface.switch]({ implementationKey: Entity['reference'].clientInterface.key.entity })
+  |> (g =>
+    g.next('intermittent') &&
+    g.next({
+      constructorImplementation: Entity['reference'].constructor.key.data,
+      argumentListAdapter: argumentList => {
+        argumentList[0] = { data: argumentList[0] }
+        return argumentList
+      },
+    }).value)
