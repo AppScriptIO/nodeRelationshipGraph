@@ -6,7 +6,7 @@ interface GraphElementData {
   [key: string]: any; // optional other fields
 }
 
-export const GraphElement = new Entity.clientInterfaceConstructable({ description: 'GraphElement' })
+export const GraphElement = new Entity.clientInterface({ description: 'GraphElement' })
 
 /*
    ____       __                                 ___     ____            _        _                    
@@ -16,8 +16,8 @@ export const GraphElement = new Entity.clientInterfaceConstructable({ descriptio
   |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
                                                                                       |___/|_|         
 */
-const Reference = Object.assign(GraphElement[Constructable['reference'].reference], {})
-const Prototype = Object.assign(GraphElement[Constructable['reference'].prototype], {})
+const Reference = Object.assign(GraphElement[Constructable.reference.reference], {})
+const Prototype = Object.assign(GraphElement[Constructable.reference.prototype], {})
 
 /*
                    _        _                    ____       _                  _   _             
@@ -30,17 +30,14 @@ const Prototype = Object.assign(GraphElement[Constructable['reference'].prototyp
 Reference.prototypeDelegation = {
   key: {},
 }
-Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
-  [Entity['reference'].prototypeDelegation.key.entity]: {
-    prototype: {
-      [symbol.metadata]: { type: 'GraphElement Prototype' },
-      getKey: function(key) {
-        return this.key
-      },
-      traverseGraph() {
-        return null
-      },
-    },
+Prototype[Constructable.reference.prototypeDelegation.setter.list]({})
+Object.assign(GraphElement[Constructable.reference.prototypeDelegation.getter.list](Entity.reference.prototypeDelegation.key.entity).prototype, {
+  getKey: function(key) {
+    return this.key
+  },
+  traverseGraph() {
+    console.log('traversing graph')
+    return null
   },
 })
 
@@ -51,11 +48,11 @@ Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
   | | | | | | |_| | (_| | | |/ /  __/
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-Prototype[Constructable['reference'].initialize.setter.list]({
-  //* constructor that is made to work with the plugin functionality.
-  key([{ key }: { key: string | number }], { instanceObject, prototypeDelegation }) {
+Prototype[Constructable.reference.initialize.setter.list]({
+  // constructor that is made to work with the plugin functionality.
+  key({ key, instanceObject }: { key: string | number }) {
     instanceObject.key = key
-    let data = true || instanceObject.plugin.databaseModelAdapter({ key: instanceObject.key })
+    let data = instanceObject.plugin.databaseModelAdapter({ key: instanceObject.key })
     Object.assign(instanceObject, data)
     return instanceObject
   },
@@ -68,14 +65,7 @@ Prototype[Constructable['reference'].initialize.setter.list]({
   | (_| (_) | | | \__ \ |_| |  | |_| | (__| || (_) | |   
    \___\___/|_| |_|___/\__|_|   \__,_|\___|\__\___/|_|   
 */
-Prototype[Constructable['reference'].constructor.setter.list]({
-  plugin(args, { self = this }) {
-    instance = Object.create(GraphElement)
-    //! Apply multiple inheritance from argument list instances.
-    // instanceObject.prototypeDelegatedInstance = (...argumentList) => self::self.prototypeDelegatedInstance.construct(argumentList, { implementationKey: 'key' })
-    return instance
-  },
-})
+Prototype[Constructable.reference.constructor.setter.list]({})
 
 /*
         _ _            _   ___       _             __                
@@ -85,11 +75,11 @@ Prototype[Constructable['reference'].constructor.setter.list]({
    \___|_|_|\___|_| |_|\__|___|_| |_|\__\___|_|  |_|  \__,_|\___\___|
 */
 GraphElement.clientInterface =
-  Prototype[Constructable['reference'].clientInterface.switch]({ implementationKey: Entity['reference'].clientInterface.key.entity })
+  GraphElement::Prototype[Constructable.reference.clientInterface.switch]({ implementationKey: Entity.reference.clientInterface.key.instanceDelegatingToClassPrototype })
   |> (g =>
     g.next('intermittent') &&
     g.next({
-      constructorImplementation: Entity['reference'].constructor.key.data,
+      constructorImplementation: Entity.reference.constructor.key.data,
       argumentListAdapter: argumentList => {
         argumentList[0] = { data: argumentList[0] }
         return argumentList

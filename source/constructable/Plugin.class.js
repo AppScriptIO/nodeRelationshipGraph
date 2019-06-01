@@ -4,7 +4,7 @@ import { Entity, Constructable, symbol } from '@dependency/entity'
 /**
  ** Plugin system for supporting different graph implementation and database adapters.
  */
-export const Plugin = new Entity.clientInterfaceConstructable({ description: 'Plugin' })
+export const Plugin = new Entity.clientInterface({ description: 'Plugin' })
 
 /*
    ____       __                                 ___     ____            _        _                    
@@ -14,7 +14,7 @@ export const Plugin = new Entity.clientInterfaceConstructable({ description: 'Pl
   |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
                                                                                       |___/|_|         
 */
-const Reference = Object.assign(Plugin[Constructable['reference'].reference], {
+const Reference = Object.assign(Plugin[Constructable.reference.reference], {
   plugin: {
     list: Symbol('Plugin:plugin.list'),
     getter: Symbol('Plugin:plugin.getter'),
@@ -27,7 +27,7 @@ const Reference = Object.assign(Plugin[Constructable['reference'].reference], {
   },
 })
 
-const Prototype = Plugin[Constructable['reference'].prototype]
+const Prototype = Plugin[Constructable.reference.prototype]
 
 /*
                    _        _                    ____       _                  _   _             
@@ -40,65 +40,60 @@ const Prototype = Plugin[Constructable['reference'].prototype]
 Reference.prototypeDelegation = {
   key: {},
 }
-Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
-  [Entity['reference'].prototypeDelegation.key.entity]: {
-    reference: Reference,
-    prototype: {
-      [symbol.metadata]: { type: 'Plugin Prototype' },
-      [Plugin.reference.plugin.setter](
-        /**
-         * register plugins where each plugin has multiple implementations
-         *  {
-         *      [groupKey]: {
-         *          [implementationKey]: <function>
-         *      }
-         *  }
-         */
-        pluginList, // plugin groupKeys matching the above class instance properties
-        self = this,
-      ) {
-        self[Plugin.reference.plugin.list] ||= {
-          databaseModelAdapter: {},
-          graphTraversalImplementation: {},
-        }
-        // add plugins to existing ones
-        Object.entries(pluginList).forEach(([groupKey, implementationList]) => {
-          assert(self[Plugin.reference.plugin.list][groupKey] !== undefined, '• plugin groupKey isn`t supported. Trying to add a plugin that the Plugin class does`t support.')
-          self[Plugin.reference.plugin.list][groupKey] = Object.assign(self[Plugin.reference.plugin.list][groupKey], implementationList)
-        })
-      },
-      /**
-       * Retrieve plugin implementation according to parameter hierarchy (priority order) selection.
-       * 1. Passed 'implementation' parameter.
-       * 2. Default 'implementation' set in the '[Plugin:plugin.fallback.list]'.
-       * 3. Fallback to first item in plugin object.
-       */
-      [Plugin.reference.plugin.getter]({
-        pluginGroupKey, // the plugin group (object of implementations)
-        implementation = null, // specific plugin implementation
-        self = this,
-      }) {
-        assert(pluginGroupKey, '• "plugin" parameter must be set.')
+Prototype[Constructable.reference.prototypeDelegation.setter.list]({})
+Object.assign(Plugin[Constructable.reference.prototypeDelegation.getter.list](Entity.reference.prototypeDelegation.key.entity).prototype, {
+  [Plugin.reference.plugin.setter](
+    /**
+     * register plugins where each plugin has multiple implementations
+     *  {
+     *      [groupKey]: {
+     *          [implementationKey]: <function>
+     *      }
+     *  }
+     */
+    pluginList, // plugin groupKeys matching the above class instance properties
+    self = this,
+  ) {
+    self[Plugin.reference.plugin.list] ||= {
+      databaseModelAdapter: {},
+      graphTraversalImplementation: {},
+    }
+    // add plugins to existing ones
+    Object.entries(pluginList).forEach(([groupKey, implementationList]) => {
+      assert(self[Plugin.reference.plugin.list][groupKey] !== undefined, '• plugin groupKey isn`t supported. Trying to add a plugin that the Plugin class does`t support.')
+      self[Plugin.reference.plugin.list][groupKey] = Object.assign(self[Plugin.reference.plugin.list][groupKey], implementationList)
+    })
+  },
+  /**
+   * Retrieve plugin implementation according to parameter hierarchy (priority order) selection.
+   * 1. Passed 'implementation' parameter.
+   * 2. Default 'implementation' set in the '[Plugin:plugin.fallback.list]'.
+   * 3. Fallback to first item in plugin object.
+   */
+  [Plugin.reference.plugin.getter]({
+    pluginGroupKey, // the plugin group (object of implementations)
+    implementation = null, // specific plugin implementation
+    self = this,
+  }) {
+    assert(pluginGroupKey, '• "plugin" parameter must be set.')
 
-        // return specific plugin
-        if (implementation) return self[Plugin.reference.plugin.list][pluginGroupKey][implementation]
+    // return specific plugin
+    if (implementation) return self[Plugin.reference.plugin.list][pluginGroupKey][implementation]
 
-        // return default plugin if set.
-        let defaultImplementation = self[Plugin.reference.plugin.fallback.getter]({ pluginGroupKey })
-        if (defaultImplementation) return self[Plugin.reference.plugin.list][pluginGroupKey][defaultImplementation]
+    // return default plugin if set.
+    let defaultImplementation = self[Plugin.reference.plugin.fallback.getter]({ pluginGroupKey })
+    if (defaultImplementation) return self[Plugin.reference.plugin.list][pluginGroupKey][defaultImplementation]
 
-        // return first plugin implementation in the iterator
-        let firstItemKey = Object.groupKeys(self[Plugin.reference.plugin.list][pluginGroupKey])[0]
-        return self[Plugin.reference.plugin.list][pluginGroupKey][firstItemKey]
-      },
-      [Plugin.reference.plugin.fallback.setter](defaultPluginList: Object, self = this) {
-        self[Plugin.reference.plugin.fallback.list] ||= {}
-        Object.assign(self[Plugin.reference.plugin.fallback.list], defaultPluginList)
-      },
-      [Plugin.reference.plugin.fallback.getter]({ pluginGroupKey }) {
-        return self[Plugin.reference.plugin.fallback.list][pluginGroupKey]
-      },
-    },
+    // return first plugin implementation in the iterator
+    let firstItemKey = Object.groupKeys(self[Plugin.reference.plugin.list][pluginGroupKey])[0]
+    return self[Plugin.reference.plugin.list][pluginGroupKey][firstItemKey]
+  },
+  [Plugin.reference.plugin.fallback.setter](defaultPluginList: Object, self = this) {
+    self[Plugin.reference.plugin.fallback.list] ||= {}
+    Object.assign(self[Plugin.reference.plugin.fallback.list], defaultPluginList)
+  },
+  [Plugin.reference.plugin.fallback.getter]({ pluginGroupKey }) {
+    return self[Plugin.reference.plugin.fallback.list][pluginGroupKey]
   },
 })
 
@@ -109,7 +104,7 @@ Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
    | || | | | | |_| | (_| | | |/ /  __/
   |___|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-Plugin[Constructable['reference'].initialize.setter.list]({
+Plugin[Constructable.reference.initialize.setter.list]({
   data({ data = {}, instanceObject }) {
     let { defaultPlugin, pluginList } = data
     instanceObject[Plugin.reference.plugin.fallback.list] = {} // default plugins implementations
@@ -132,11 +127,11 @@ Plugin[Constructable['reference'].initialize.setter.list]({
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
 Plugin.clientInterface =
-  Prototype[Constructable['reference'].clientInterface.switch]({ implementationKey: Entity['reference'].clientInterface.key.entity })
+  Prototype[Constructable.reference.clientInterface.switch]({ implementationKey: Entity.reference.clientInterface.key.instanceDelegatingToClassPrototype })
   |> (g =>
     g.next('intermittent') &&
     g.next({
-      constructorImplementation: Entity['reference'].constructor.key.data,
+      constructorImplementation: Entity.reference.constructor.key.data,
       argumentListAdapter: argumentList => {
         argumentList[0] = { data: argumentList[0] }
         return argumentList

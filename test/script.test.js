@@ -61,18 +61,14 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
     let cacheInstance = new Cache.clientInterface()
     let contextInstance = new Context.clientInterface()
-    let configuredGraph = GraphElement.clientInterface({ parameter: [{ delegationList: [{}, pluginInstance, contextInstance, cacheInstance] }] })
+    let delegationList = [pluginInstance, contextInstance, cacheInstance]
+    let configuredGraph = GraphElement.clientInterface({ parameter: [{ delegationList }] })
 
     test('Should traverse graph successfully', async () => {
-      try {
-        let nodeInstance = await new configuredGraph({ key: 'node-key-1' })
-        console.log(nodeInstance)
-        // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.
-        let resultArray = nodeInstance |> (instance => instance.traverseGraph())
-        chaiAssertion.deepEqual(resultArray, fixture.traversalResult)
-      } catch (error) {
-        throw new Error(error)
-      }
+      let nodeInstance = await new configuredGraph({ key: 'node-key-1' })
+      // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.
+      let resultArray = nodeInstance.traverseGraph()
+      chaiAssertion.deepEqual(resultArray, fixture.traversalResult)
     })
   })
 })

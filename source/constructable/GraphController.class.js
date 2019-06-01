@@ -35,9 +35,9 @@ async function createInstanceStaticMethod(controllerInstanceArray, dataKey, getD
 }
 
 /**
- * !
+ *
  */
-export const GraphController = new Entity.clientInterfaceConstructable({ description: 'GraphController' })
+export const GraphController = new Entity.clientInterface({ description: 'GraphController' })
 
 Object.assign(GraphController, {
   createInstance,
@@ -114,8 +114,8 @@ Object.assign(GraphController, {
   |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
                                                                                       |___/|_|         
 */
-const Reference = Object.assign(GraphController[Constructable['reference'].reference], {})
-const Prototype = Object.assign(GraphController[Constructable['reference'].prototype], {})
+const Reference = Object.assign(GraphController[Constructable.reference.reference], {})
+const Prototype = Object.assign(GraphController[Constructable.reference.prototype], {})
 
 /*
                    _        _                    ____       _                  _   _             
@@ -128,53 +128,48 @@ const Prototype = Object.assign(GraphController[Constructable['reference'].proto
 Reference.prototypeDelegation = {
   key: {},
 }
-Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
-  [Entity['reference'].prototypeDelegation.key.entity]: {
-    prototype: {
-      [symbol.metadata]: { type: 'GraphController Prototype' },
+Prototype[Constructable.reference.prototypeDelegation.setter.list]({})
+Object.assign(GraphController[Constructable.reference.prototypeDelegation.getter.list](Entity.reference.prototypeDelegation.key.entity).prototype, {
+  // intercept a method call to choose the corresponding plugin to execute (setting/assigning the variables values according to passed parameters hierarchy)
+  interceptMethod({ thisArg, implementationType, nodeInstance, argumentsList, methodName }) {
+    let implementationFunction = this.getPlugin({ plugin: 'graphTraversalImplementation', implementation: implementationType })
+    // TODO: add plugin settings that will allow to instantiate plugin depending on its settings - i.e. if function instantiate in a specific way
+    let implementationObject = implementationFunction({ thisArg: nodeInstance })
+    return implementationObject[methodName].apply(thisArg, argumentsList)
+  },
 
-      // intercept a method call to choose the corresponding plugin to execute (setting/assigning the variables values according to passed parameters hierarchy)
-      interceptMethod({ thisArg, implementationType, nodeInstance, argumentsList, methodName }) {
-        let implementationFunction = this.getPlugin({ plugin: 'graphTraversalImplementation', implementation: implementationType })
-        // TODO: add plugin settings that will allow to instantiate plugin depending on its settings - i.e. if function instantiate in a specific way
-        let implementationObject = implementationFunction({ thisArg: nodeInstance })
-        return implementationObject[methodName].apply(thisArg, argumentsList)
-      },
+  /**
+   * Create nodeInstace from `nodeKey`, then forward call to `traverseGraph` subclass method
+   */
+  async traverseGraph({ nodeKey }) {},
+  async initializeDataItem({ dataItemKey }) {
+    assert(dataItemKey, `• Missing "dataItem key" - for dataItemType "reference" a key must exist in "node.dataItem".`)
+    // get data item
+    let dataItemInstance = await this.createDataItemInstance({ dataItemKey })
+    // forward call to instance's implementation
+    await dataItemInstance.initializeDataItem(arguments)
+    return dataItemInstance
+  },
 
-      /**
-       * Create nodeInstace from `nodeKey`, then forward call to `traverseGraph` subclass method
-       */
-      async traverseGraph({ nodeKey }) {},
-      async initializeDataItem({ dataItemKey }) {
-        assert(dataItemKey, `• Missing "dataItem key" - for dataItemType "reference" a key must exist in "node.dataItem".`)
-        // get data item
-        let dataItemInstance = await this.createDataItemInstance({ dataItemKey })
-        // forward call to instance's implementation
-        await dataItemInstance.initializeDataItem(arguments)
-        return dataItemInstance
-      },
-
-      /* @cacheInstance({ // import { cacheInstance } from '@dependency/commonPattern/source/superclassInstanceContextPattern.js'
-            //     cacheArrayName: 'node',
-            //     keyArgumentName: 'nodeKey'
-            // })
-            // TODO: change name from 'pathPointerKey' to 'nodeConnectionKey'
-            // TODO: change function name from 'getNode'/'getNestedUnit' to 'createNodeInstance'
-             */
-      async createNodeInstance({ nodeKey, additionalChildNestedUnit = [], nodeConnectionKey = null }) {
-        let nodeSubclass = this.getSubclass({ subclassName: 'ImplementationNode' }) || this.getSubclass({ subclassName: 'Node' }) // get specific subclass or reusable subclass
-        return await self.createNodeInstance({ nodeKey, additionalChildNestedUnit, nodeConnectionKey, nodeSubclass })
-      },
-
-      //   @cacheInstance({
-      //     cacheArrayName: 'dataItem',
-      //     keyArgumentName: 'dataItemKey'
+  /* @cacheInstance({ // import { cacheInstance } from '@dependency/commonPattern/source/superclassInstanceContextPattern.js'
+      //     cacheArrayName: 'node',
+      //     keyArgumentName: 'nodeKey'
       // })
-      async createDataItemInstance({ dataItemKey }) {
-        let dataItemSubclass = this.getSubclass({ subclassName: 'ImplementationDataItem' }) || this.getSubclass({ subclassName: 'DataItem' }) // get specific subclass or reusable subclass
-        return await self.createDataItemInstance({ dataItemKey, dataItemSubclass })
-      },
-    },
+      // TODO: change name from 'pathPointerKey' to 'nodeConnectionKey'
+      // TODO: change function name from 'getNode'/'getNestedUnit' to 'createNodeInstance'
+       */
+  async createNodeInstance({ nodeKey, additionalChildNestedUnit = [], nodeConnectionKey = null }) {
+    let nodeSubclass = this.getSubclass({ subclassName: 'ImplementationNode' }) || this.getSubclass({ subclassName: 'Node' }) // get specific subclass or reusable subclass
+    return await self.createNodeInstance({ nodeKey, additionalChildNestedUnit, nodeConnectionKey, nodeSubclass })
+  },
+
+  //   @cacheInstance({
+  //     cacheArrayName: 'dataItem',
+  //     keyArgumentName: 'dataItemKey'
+  // })
+  async createDataItemInstance({ dataItemKey }) {
+    let dataItemSubclass = this.getSubclass({ subclassName: 'ImplementationDataItem' }) || this.getSubclass({ subclassName: 'DataItem' }) // get specific subclass or reusable subclass
+    return await self.createDataItemInstance({ dataItemKey, dataItemSubclass })
   },
 })
 
@@ -185,7 +180,7 @@ Prototype[Constructable['reference'].prototypeDelegation.setter.list]({
   | | | | | | |_| | (_| | | |/ /  __/
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-Prototype[Constructable['reference'].initialize.setter.list]({
+Prototype[Constructable.reference.initialize.setter.list]({
   [Reference.initialize.key.entity]({ targetInstance, databaseDocumentKey }, previousResult /* in case multiple constructor function found and executed. */) {
     targetInstance.key = databaseDocumentKey
     // must be executed once.
@@ -212,11 +207,11 @@ Prototype[Constructable['reference'].initialize.setter.list]({
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
 GraphController.clientInterface =
-  Prototype[Constructable['reference'].clientInterface.switch]({ implementationKey: Entity['reference'].clientInterface.key.entity })
+  Prototype[Constructable.reference.clientInterface.switch]({ implementationKey: Entity.reference.clientInterface.key.instanceDelegatingToClassPrototype })
   |> (g =>
     g.next('intermittent') &&
     g.next({
-      constructorImplementation: Entity['reference'].constructor.key.data,
+      constructorImplementation: Entity.reference.constructor.key.data,
       argumentListAdapter: argumentList => {
         argumentList[0] = { data: argumentList[0] }
         return argumentList
