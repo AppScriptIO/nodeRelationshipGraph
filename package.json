@@ -14,7 +14,6 @@
         "@dependency/databaseUtility": "https://github.com/AppScriptIO/databaseUtility#semver:^1.x.x",
         "@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^1.x.x",
         "@dependency/moduleContext": "https://github.com/AppScriptIO/moduleContext#semver:^1.x.x",
-        "@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x",
         "@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x",
         "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug#semver:^1.x.x",
         "rethinkdb": "*"

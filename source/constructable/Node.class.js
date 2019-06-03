@@ -5,18 +5,7 @@ import { Entity, Constructable, symbol } from '@dependency/entity'
  * ! `getDocumentQuery` should be passed for configured constructable, i.e. used in group of instances.
  * ! Instance inherited from `Superclass`
  */
-export const Node = new Entity.clientInterface({ description: 'Node' })
-
-/*
-   ____       __                                 ___     ____            _        _                    
-  |  _ \ ___ / _| ___ _ __ ___ _ __   ___ ___   ( _ )   |  _ \ _ __ ___ | |_ ___ | |_ _   _ _ __   ___ 
-  | |_) / _ \ |_ / _ \ '__/ _ \ '_ \ / __/ _ \  / _ \/\ | |_) | '__/ _ \| __/ _ \| __| | | | '_ \ / _ \
-  |  _ <  __/  _|  __/ | |  __/ | | | (_|  __/ | (_>  < |  __/| | | (_) | || (_) | |_| |_| | |_) |  __/
-  |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
-                                                                                      |___/|_|         
-*/
-const Reference = Object.assign(Node[Constructable.reference.reference], {})
-const Prototype = Object.assign(Node[Constructable.reference.prototype], {})
+export const { class: Node, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new Entity.clientInterface({ description: 'Node' })
 
 /*
                    _        _                    ____       _                  _   _             
@@ -26,11 +15,7 @@ const Prototype = Object.assign(Node[Constructable.reference.prototype], {})
   | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
   |_|                           |___/|_|                           |___/                         
 */
-Reference.prototypeDelegation = {
-  key: {},
-}
-Prototype[Constructable.reference.prototypeDelegation.setter.list]({})
-Object.assign(Node[Constructable.reference.prototypeDelegation.getter.list](Entity.reference.prototypeDelegation.key.entity).prototype, {
+Object.assign(entityPrototype, {
   /**
    * Directed Graph - Graph that can have opposite pointers between same 2 nodes.
    * Oriented graph is a directed graph that has only one directrion between each 2 nodes (i.e. one arrow pointing to one direction from node to node)
@@ -96,8 +81,8 @@ Object.assign(Node[Constructable.reference.prototypeDelegation.getter.list](Enti
   | | | | | | |_| | (_| | | |/ /  __/
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-Prototype[Constructable.reference.initialize.setter.list]({
-  [Reference.initialize.key.entity]({ targetInstance, databaseDocumentKey }, previousResult /* in case multiple constructor function found and executed. */) {
+Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
+  [Entity.reference.key.entityInstance]({ targetInstance, databaseDocumentKey }, previousResult /* in case multiple constructor function found and executed. */) {
     targetInstance.key = databaseDocumentKey
     return targetInstance
   },
@@ -111,11 +96,11 @@ Prototype[Constructable.reference.initialize.setter.list]({
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
 Node.clientInterface =
-  Prototype[Constructable.reference.clientInterface.switch]({ implementationKey: Entity.reference.clientInterface.key.instanceDelegatingToClassPrototype })
+  Node::Prototype[Constructable.reference.clientInterface.functionality].switch({ implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype })
   |> (g =>
     g.next('intermittent') &&
     g.next({
-      constructorImplementation: Entity.reference.constructor.key.data,
+      constructorImplementation: Entity.reference.key.data,
       argumentListAdapter: argumentList => {
         argumentList[0] = { data: argumentList[0] }
         return argumentList

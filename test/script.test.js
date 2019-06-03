@@ -66,6 +66,12 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
 
     test('Should traverse graph successfully', async () => {
       let nodeInstance = await new configuredGraph({ key: 'node-key-1' })
+      console.log(pluginInstance)
+      console.log(cacheInstance)
+      console.log(contextInstance)
+      console.log(configuredGraph)
+      console.log(nodeInstance)
+      debugger
       // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.
       let resultArray = nodeInstance.traverseGraph()
       chaiAssertion.deepEqual(resultArray, fixture.traversalResult)

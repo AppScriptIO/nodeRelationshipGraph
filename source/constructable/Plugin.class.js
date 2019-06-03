@@ -4,7 +4,7 @@ import { Entity, Constructable, symbol } from '@dependency/entity'
 /**
  ** Plugin system for supporting different graph implementation and database adapters.
  */
-export const Plugin = new Entity.clientInterface({ description: 'Plugin' })
+export const { class: Plugin, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new Entity.clientInterface({ description: 'Plugin' })
 
 /*
    ____       __                                 ___     ____            _        _                    
@@ -14,8 +14,8 @@ export const Plugin = new Entity.clientInterface({ description: 'Plugin' })
   |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
                                                                                       |___/|_|         
 */
-const Reference = Object.assign(Plugin[Constructable.reference.reference], {
-  plugin: {
+Object.assign(Reference, {
+  key: {
     list: Symbol('Plugin:plugin.list'),
     getter: Symbol('Plugin:plugin.getter'),
     setter: Symbol('Plugin:plugin.setter'),
@@ -27,8 +27,6 @@ const Reference = Object.assign(Plugin[Constructable.reference.reference], {
   },
 })
 
-const Prototype = Plugin[Constructable.reference.prototype]
-
 /*
                    _        _                    ____       _                  _   _             
    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___|  _ \  ___| | ___  __ _  __ _| |_(_) ___  _ __  
@@ -37,12 +35,8 @@ const Prototype = Plugin[Constructable.reference.prototype]
   | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
   |_|                           |___/|_|                           |___/                         
 */
-Reference.prototypeDelegation = {
-  key: {},
-}
-Prototype[Constructable.reference.prototypeDelegation.setter.list]({})
-Object.assign(Plugin[Constructable.reference.prototypeDelegation.getter.list](Entity.reference.prototypeDelegation.key.entity).prototype, {
-  [Plugin.reference.plugin.setter](
+Object.assign(entityPrototype, {
+  [Plugin.reference.key.setter](
     /**
      * register plugins where each plugin has multiple implementations
      *  {
@@ -54,14 +48,14 @@ Object.assign(Plugin[Constructable.reference.prototypeDelegation.getter.list](En
     pluginList, // plugin groupKeys matching the above class instance properties
     self = this,
   ) {
-    self[Plugin.reference.plugin.list] ||= {
+    self[Plugin.reference.key.list] ||= {
       databaseModelAdapter: {},
       graphTraversalImplementation: {},
     }
     // add plugins to existing ones
     Object.entries(pluginList).forEach(([groupKey, implementationList]) => {
-      assert(self[Plugin.reference.plugin.list][groupKey] !== undefined, '• plugin groupKey isn`t supported. Trying to add a plugin that the Plugin class does`t support.')
-      self[Plugin.reference.plugin.list][groupKey] = Object.assign(self[Plugin.reference.plugin.list][groupKey], implementationList)
+      assert(self[Plugin.reference.key.list][groupKey] !== undefined, '• plugin groupKey isn`t supported. Trying to add a plugin that the Plugin class does`t support.')
+      self[Plugin.reference.key.list][groupKey] = Object.assign(self[Plugin.reference.key.list][groupKey], implementationList)
     })
   },
   /**
@@ -70,7 +64,7 @@ Object.assign(Plugin[Constructable.reference.prototypeDelegation.getter.list](En
    * 2. Default 'implementation' set in the '[Plugin:plugin.fallback.list]'.
    * 3. Fallback to first item in plugin object.
    */
-  [Plugin.reference.plugin.getter]({
+  [Plugin.reference.key.getter]({
     pluginGroupKey, // the plugin group (object of implementations)
     implementation = null, // specific plugin implementation
     self = this,
@@ -78,22 +72,22 @@ Object.assign(Plugin[Constructable.reference.prototypeDelegation.getter.list](En
     assert(pluginGroupKey, '• "plugin" parameter must be set.')
 
     // return specific plugin
-    if (implementation) return self[Plugin.reference.plugin.list][pluginGroupKey][implementation]
+    if (implementation) return self[Plugin.reference.key.list][pluginGroupKey][implementation]
 
     // return default plugin if set.
-    let defaultImplementation = self[Plugin.reference.plugin.fallback.getter]({ pluginGroupKey })
-    if (defaultImplementation) return self[Plugin.reference.plugin.list][pluginGroupKey][defaultImplementation]
+    let defaultImplementation = self[Plugin.reference.key.fallback.getter]({ pluginGroupKey })
+    if (defaultImplementation) return self[Plugin.reference.key.list][pluginGroupKey][defaultImplementation]
 
     // return first plugin implementation in the iterator
-    let firstItemKey = Object.groupKeys(self[Plugin.reference.plugin.list][pluginGroupKey])[0]
-    return self[Plugin.reference.plugin.list][pluginGroupKey][firstItemKey]
+    let firstItemKey = Object.groupKeys(self[Plugin.reference.key.list][pluginGroupKey])[0]
+    return self[Plugin.reference.key.list][pluginGroupKey][firstItemKey]
   },
-  [Plugin.reference.plugin.fallback.setter](defaultPluginList: Object, self = this) {
-    self[Plugin.reference.plugin.fallback.list] ||= {}
-    Object.assign(self[Plugin.reference.plugin.fallback.list], defaultPluginList)
+  [Plugin.reference.key.fallback.setter](defaultPluginList: Object, self = this) {
+    self[Plugin.reference.key.fallback.list] ||= {}
+    Object.assign(self[Plugin.reference.key.fallback.list], defaultPluginList)
   },
-  [Plugin.reference.plugin.fallback.getter]({ pluginGroupKey }) {
-    return self[Plugin.reference.plugin.fallback.list][pluginGroupKey]
+  [Plugin.reference.key.fallback.getter]({ pluginGroupKey }) {
+    return self[Plugin.reference.key.fallback.list][pluginGroupKey]
   },
 })
 
@@ -104,16 +98,16 @@ Object.assign(Plugin[Constructable.reference.prototypeDelegation.getter.list](En
    | || | | | | |_| | (_| | | |/ /  __/
   |___|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-Plugin[Constructable.reference.initialize.setter.list]({
+Plugin[Constructable.reference.initialize.functionality].setter({
   data({ data = {}, instanceObject }) {
     let { defaultPlugin, pluginList } = data
-    instanceObject[Plugin.reference.plugin.fallback.list] = {} // default plugins implementations
+    instanceObject[Plugin.reference.key.fallback.list] = {} // default plugins implementations
     // supported plugin groupKeys - Each plugin is an object with multiple registered implementations
     instanceObject.databaseModelAdapter = {} // database model functions for retriving node, dataItem, and other documents. should be async functions
     instanceObject.graphTraversalImplementation = {}
 
-    instanceObject[Plugin.reference.plugin.setter](pluginList)
-    if (defaultPlugin) instanceObject[Plugin.reference.plugin.fallback.setter](defaultPlugin) // set default plugins in case passed
+    instanceObject[Plugin.reference.key.setter](pluginList)
+    if (defaultPlugin) instanceObject[Plugin.reference.key.fallback.setter](defaultPlugin) // set default plugins in case passed
     //   Object.assign(this, data) // apply data to instance
     return instanceObject
   },
@@ -127,11 +121,11 @@ Plugin[Constructable.reference.initialize.setter.list]({
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
 Plugin.clientInterface =
-  Prototype[Constructable.reference.clientInterface.switch]({ implementationKey: Entity.reference.clientInterface.key.instanceDelegatingToClassPrototype })
+  Plugin::Prototype[Constructable.reference.clientInterface.functionality].switch({ implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype })
   |> (g =>
     g.next('intermittent') &&
     g.next({
-      constructorImplementation: Entity.reference.constructor.key.data,
+      constructorImplementation: Entity.reference.key.data,
       argumentListAdapter: argumentList => {
         argumentList[0] = { data: argumentList[0] }
         return argumentList

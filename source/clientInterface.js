@@ -146,7 +146,7 @@ GraphControllerConfiguration.prototype
 
 GraphControllerConfiguration.initializeStaticClass()
 
-GraphControllerConfiguration[Entity.reference.clientInterface.setter.list]({
+GraphControllerConfiguration[Entity.reference.clientInterface.functionality].setter({
   clientinterface({ configuredConstructable, self = this, interfaceTarget } = {}) {
     interfaceTarget ||= self
     const proxiedTarget = new Proxy(ClientInterfaceClass, {
@@ -182,7 +182,7 @@ GraphControllerConfiguration[Entity.reference.clientInterface.setter.list]({
 })
 
 export const Graph =
-  GraphControllerConfiguration[Entity.reference.clientInterface.switch]({ implementationKey: 'clientinterface' })
+  GraphControllerConfiguration[Entity.reference.clientInterface.functionality].switch({ implementationKey: 'clientinterface' })
   |> (g =>
     g.next('intermittent') &&
     g.next({

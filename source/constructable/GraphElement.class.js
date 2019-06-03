@@ -6,18 +6,7 @@ interface GraphElementData {
   [key: string]: any; // optional other fields
 }
 
-export const GraphElement = new Entity.clientInterface({ description: 'GraphElement' })
-
-/*
-   ____       __                                 ___     ____            _        _                    
-  |  _ \ ___ / _| ___ _ __ ___ _ __   ___ ___   ( _ )   |  _ \ _ __ ___ | |_ ___ | |_ _   _ _ __   ___ 
-  | |_) / _ \ |_ / _ \ '__/ _ \ '_ \ / __/ _ \  / _ \/\ | |_) | '__/ _ \| __/ _ \| __| | | | '_ \ / _ \
-  |  _ <  __/  _|  __/ | |  __/ | | | (_|  __/ | (_>  < |  __/| | | (_) | || (_) | |_| |_| | |_) |  __/
-  |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
-                                                                                      |___/|_|         
-*/
-const Reference = Object.assign(GraphElement[Constructable.reference.reference], {})
-const Prototype = Object.assign(GraphElement[Constructable.reference.prototype], {})
+export const { class: GraphElement, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new Entity.clientInterface({ description: 'GraphElement' })
 
 /*
                    _        _                    ____       _                  _   _             
@@ -27,11 +16,7 @@ const Prototype = Object.assign(GraphElement[Constructable.reference.prototype],
   | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
   |_|                           |___/|_|                           |___/                         
 */
-Reference.prototypeDelegation = {
-  key: {},
-}
-Prototype[Constructable.reference.prototypeDelegation.setter.list]({})
-Object.assign(GraphElement[Constructable.reference.prototypeDelegation.getter.list](Entity.reference.prototypeDelegation.key.entity).prototype, {
+Object.assign(entityPrototype, {
   getKey: function(key) {
     return this.key
   },
@@ -48,7 +33,7 @@ Object.assign(GraphElement[Constructable.reference.prototypeDelegation.getter.li
   | | | | | | |_| | (_| | | |/ /  __/
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-Prototype[Constructable.reference.initialize.setter.list]({
+Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
   // constructor that is made to work with the plugin functionality.
   key({ key, instanceObject }: { key: string | number }) {
     instanceObject.key = key
@@ -65,7 +50,7 @@ Prototype[Constructable.reference.initialize.setter.list]({
   | (_| (_) | | | \__ \ |_| |  | |_| | (__| || (_) | |   
    \___\___/|_| |_|___/\__|_|   \__,_|\___|\__\___/|_|   
 */
-Prototype[Constructable.reference.constructor.setter.list]({})
+Prototype::Prototype[Constructable.reference.constructor.functionality].setter({})
 
 /*
         _ _            _   ___       _             __                
@@ -75,11 +60,11 @@ Prototype[Constructable.reference.constructor.setter.list]({})
    \___|_|_|\___|_| |_|\__|___|_| |_|\__\___|_|  |_|  \__,_|\___\___|
 */
 GraphElement.clientInterface =
-  GraphElement::Prototype[Constructable.reference.clientInterface.switch]({ implementationKey: Entity.reference.clientInterface.key.instanceDelegatingToClassPrototype })
+  GraphElement::Prototype[Constructable.reference.clientInterface.functionality].switch({ implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype })
   |> (g =>
     g.next('intermittent') &&
     g.next({
-      constructorImplementation: Entity.reference.constructor.key.data,
+      constructorImplementation: Entity.reference.key.data,
       argumentListAdapter: argumentList => {
         argumentList[0] = { data: argumentList[0] }
         return argumentList
