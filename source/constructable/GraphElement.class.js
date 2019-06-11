@@ -17,6 +17,9 @@ export const { class: GraphElement, reference: Reference, constructablePrototype
   |_|                           |___/|_|                           |___/                         
 */
 Object.assign(entityPrototype, {
+  //! initializeUsingPrototypeMethods() {
+  //   this.k = getkey()
+  // },
   getKey: function(key) {
     return this.key
   },
@@ -59,14 +62,8 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
   | (__| | |  __/ | | | |_ | || | | | ||  __/ |  |  _| (_| | (_|  __/
    \___|_|_|\___|_| |_|\__|___|_| |_|\__\___|_|  |_|  \__,_|\___\___|
 */
-GraphElement.clientInterface =
-  GraphElement::Prototype[Constructable.reference.clientInterface.functionality].switch({ implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype })
-  |> (g =>
-    g.next('intermittent') &&
-    g.next({
-      constructorImplementation: Entity.reference.key.data,
-      argumentListAdapter: argumentList => {
-        argumentList[0] = { data: argumentList[0] }
-        return argumentList
-      },
-    }).value)
+GraphElement.clientInterface = GraphElement::Prototype[Constructable.reference.clientInterface.functionality].switch({
+  implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype,
+})({
+  constructorImplementation: Entity.reference.key.concereteBehavior,
+})

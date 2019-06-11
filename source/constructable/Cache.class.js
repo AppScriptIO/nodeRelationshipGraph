@@ -1,10 +1,19 @@
 import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
+import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
 
 /**
  ** Cache system for supporting different graph implementation and database adapters.
  */
 export const { class: Cache, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new Entity.clientInterface({ description: 'Cache' })
+
+Object.assign(Reference, {
+  key: {
+    list: Symbol('Cache list'),
+    getter: Symbol('Cache getter'),
+    setter: Symbol('Cache setter'),
+  },
+})
 
 /*
                    _        _                    ____       _                  _   _             
@@ -15,18 +24,40 @@ export const { class: Cache, reference: Reference, constructablePrototype: Proto
   |_|                           |___/|_|                           |___/                         
 */
 Object.assign(entityPrototype, {
-  get(key, defaultValue) {
-    const value = this._doGet(key)
-    if (value === undefined || value === null) {
-      return defaultValue
-    }
-    return value
+  [Entity.reference.key.concereteBehavior]({ constructorCallback, currentConcereteBehavior }) {
+    return new Proxy(constructorCallback, {
+      apply(target, thisArg, argumentList) {
+        const { data } = argumentList[0]
+        let key = data.key
+        if (key == 'node-key-2') return { text: 'this is an instance from the cache ' } // return cached instance if key exists in cache
+        let instance = Reflect.apply(...arguments)
+        currentConcereteBehavior[Reference.key.setter](key, instance)
+        MultipleDelegation.addDelegation({ targetObject: instance, delegationList: [currentConcereteBehavior] })
+        return instance
+      },
+    })
   },
-  set(key, value) {
-    if (key === undefined || key === null) {
-      throw new Error('Invalid argument')
-    }
-    this._doSet(key, value)
+  [Reference.key.getter](key) {
+    return this[Reference.key.list].get(key) || undefined
+  },
+  [Reference.key.setter](key, value) {
+    if (key === undefined || key === null) throw new Error('• Invalid key argument.')
+    this[Reference.key.list].set(key, value)
+  },
+})
+
+/*
+   ___       _ _   _       _ _         
+  |_ _|_ __ (_) |_(_) __ _| (_)_______ 
+   | || '_ \| | __| |/ _` | | |_  / _ \
+   | || | | | | |_| | (_| | | |/ /  __/
+  |___|_| |_|_|\__|_|\__,_|_|_/___\___|
+*/
+Cache::Cache[Constructable.reference.initialize.functionality].setter({
+  // initialization for instance of Cache - i.e. a concrete behavior of Cache (an implemeantation)
+  [Entity.reference.key.handleDataInstance]({ targetInstance, data }, previousResult /* in case multiple constructor function found and executed. */) {
+    targetInstance[Cache.reference.key.list] = new Map() // initialize an empty cache list
+    return targetInstance
   },
 })
 
@@ -37,14 +68,8 @@ Object.assign(entityPrototype, {
   | |___| | |  __/ | | | |_  | | |_| | | |  __/ |  |  _| (_| | (_|  __/
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
-Cache.clientInterface =
-  Cache::Prototype[Constructable.reference.clientInterface.functionality].switch({ implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype })
-  |> (g =>
-    g.next('intermittent') &&
-    g.next({
-      constructorImplementation: Entity.reference.key.data,
-      argumentListAdapter: argumentList => {
-        argumentList[0] = { data: argumentList[0] }
-        return argumentList
-      },
-    }).value)
+Cache.clientInterface = Cache::Prototype[Constructable.reference.clientInterface.functionality].switch({
+  implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype,
+})({
+  constructorImplementation: Entity.reference.key.handleDataInstance,
+})

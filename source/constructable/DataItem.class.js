@@ -56,14 +56,8 @@ Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
   | |___| | |  __/ | | | |_  | | |_| | | |  __/ |  |  _| (_| | (_|  __/
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
-DataItem.clientInterface =
-  DataItem::Prototype[Constructable.reference.clientInterface.functionality].switch({ implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype })
-  |> (g =>
-    g.next('intermittent') &&
-    g.next({
-      constructorImplementation: Entity.reference.key.data,
-      argumentListAdapter: argumentList => {
-        argumentList[0] = { data: argumentList[0] }
-        return argumentList
-      },
-    }).value)
+DataItem.clientInterface = DataItem::Prototype[Constructable.reference.clientInterface.functionality].switch({
+  implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype,
+})({
+  constructorImplementation: Entity.reference.key.mergeDataToInstance,
+})

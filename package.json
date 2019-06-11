@@ -9,6 +9,7 @@
         "generateTypes": "tsc --project ./configuration/typescript.config.json"
     },
     "dependencies": {
+        "@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x",
         "@dependency/classMixin": "https://github.com/AppScriptIO/classMixin#semver:^1.x.x",
         "@dependency/commonPattern": "https://github.com/AppScriptIO/commonPattern#semver:^1.x.x",
         "@dependency/databaseUtility": "https://github.com/AppScriptIO/databaseUtility#semver:^1.x.x",

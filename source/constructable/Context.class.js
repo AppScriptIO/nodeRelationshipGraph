@@ -7,6 +7,22 @@ import { Entity, Constructable, symbol } from '@dependency/entity'
 export const { class: Context, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new Entity.clientInterface({ description: 'Context' })
 
 /*
+   ____       __                                 ___     ____            _        _                    
+  |  _ \ ___ / _| ___ _ __ ___ _ __   ___ ___   ( _ )   |  _ \ _ __ ___ | |_ ___ | |_ _   _ _ __   ___ 
+  | |_) / _ \ |_ / _ \ '__/ _ \ '_ \ / __/ _ \  / _ \/\ | |_) | '__/ _ \| __/ _ \| __| | | | '_ \ / _ \
+  |  _ <  __/  _|  __/ | |  __/ | | | (_|  __/ | (_>  < |  __/| | | (_) | || (_) | |_| |_| | |_) |  __/
+  |_| \_\___|_|  \___|_|  \___|_| |_|\___\___|  \___/\/ |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|
+                                                                                      |___/|_|         
+*/
+Object.assign(Reference, {
+  key: {
+    sharedContext: Symbol('Context.sharedContext'),
+    getter: Symbol('Context.getter'),
+    setter: Symbol('Context.setter'),
+  },
+})
+
+/*
                    _        _                    ____       _                  _   _             
    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___|  _ \  ___| | ___  __ _  __ _| |_(_) ___  _ __  
   | '_ \| '__/ _ \| __/ _ \| __| | | | '_ \ / _ \ | | |/ _ \ |/ _ \/ _` |/ _` | __| |/ _ \| '_ \ 
@@ -14,7 +30,16 @@ export const { class: Context, reference: Reference, constructablePrototype: Pro
   | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
   |_|                           |___/|_|                           |___/                         
 */
-Prototype::Prototype[Constructable.reference.prototypeDelegation.functionality].setter({})
+Object.assign(entityPrototype, {
+  [Reference.key.setter](contextObject = {}) {
+    assert(typeof contextObject == 'object', '• contextObject must be an object.')
+    this[Reference.key.sharedContext] ||= {}
+    Object.assign(this[Reference.key.sharedContext], contextObject)
+  },
+  [Reference.key.getter]() {
+    return this[Reference.key.sharedContext]
+  },
+})
 
 /*
    _       _ _   _       _ _         
@@ -23,10 +48,9 @@ Prototype::Prototype[Constructable.reference.prototypeDelegation.functionality].
   | | | | | | |_| | (_| | | |/ /  __/
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
-  [Entity.reference.key.entityInstance]({ targetInstance }, previousResult) {
-    // instance properties
-    targetInstance.sharedContext = {}
+Context::Prototype[Constructable.reference.initialize.functionality].setter({
+  [Entity.reference.key.handleDataInstance]({ targetInstance, data }, previousResult) {
+    targetInstance[Reference.key.setter](data)
     return targetInstance
   },
 })
@@ -38,14 +62,6 @@ Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
   | |___| | |  __/ | | | |_  | | |_| | | |  __/ |  |  _| (_| | (_|  __/
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
-Context.clientInterface =
-  Context::Prototype[Constructable.reference.clientInterface.functionality].switch({ implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype })
-  |> (g =>
-    g.next('intermittent') &&
-    g.next({
-      constructorImplementation: Entity.reference.key.data,
-      argumentListAdapter: argumentList => {
-        argumentList[0] = { data: argumentList[0] }
-        return argumentList
-      },
-    }).value)
+Context.clientInterface = Context::Prototype[Constructable.reference.clientInterface.functionality].switch({ implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype })({
+  constructorImplementation: Entity.reference.key.handleDataInstance,
+})
