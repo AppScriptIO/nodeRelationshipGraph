@@ -1,5 +1,6 @@
 import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
+import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
 
 /**
  * Context is responsible for creating a grouping context - where information could be shared between instances of some class that belong/inherit the context.
@@ -16,6 +17,7 @@ export const { class: Context, reference: Reference, constructablePrototype: Pro
 */
 Object.assign(Reference, {
   key: {
+    // usage on instance `nodeInstance[Context.reference.key.sharedContext]`
     sharedContext: Symbol('Context.sharedContext'),
     getter: Symbol('Context.getter'),
     setter: Symbol('Context.setter'),
@@ -31,6 +33,19 @@ Object.assign(Reference, {
   |_|                           |___/|_|                           |___/                         
 */
 Object.assign(entityPrototype, {
+  //  concerete behavior initialization on the target instance.
+  [Entity.reference.key.concereteBehavior]({ constructorCallback, currentConcereteBehavior }) {
+    return new Proxy(constructorCallback, {
+      apply(target, thisArg, [{ data }]) {
+        let key = data.key
+        let instance = Reflect.apply(...arguments)
+        // add to prototype delegation
+        MultipleDelegation.addDelegation({ targetObject: instance, delegationList: [currentConcereteBehavior] })
+        return instance
+      },
+    })
+  },
+
   [Reference.key.setter](contextObject = {}) {
     assert(typeof contextObject == 'object', '• contextObject must be an object.')
     this[Reference.key.sharedContext] ||= {}
