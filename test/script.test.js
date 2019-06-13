@@ -2,13 +2,13 @@ process.env['SZN_DEBUG'] = true
 import assert from 'assert'
 import { assert as chaiAssertion } from 'chai'
 import util from 'util'
+
 import { Entity } from '@dependency/entity'
 import { GraphElement } from '../source/constructable/GraphElement.class.js'
 import { GraphTraversal } from '../source/constructable/GraphTraversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
 import { Cache } from '../source/constructable/Cache.class.js'
 import { Context } from '../source/constructable/Context.class.js'
-import { linkConstructor } from '../source/prototypeChain/linkConstructor.js'
 import { databaseModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memoryModelAdapter.js'
 
 import * as graphData from './asset/graphData' // load sample data
@@ -50,7 +50,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     //     graphTraversalImplementation: 'aggregateIntoArray',
     //   },
     // })
-    // let contextInstance = new Context.clientInterface({ someString: 'hello' })
+    let contextInstance = new Context.clientInterface({ someString: 'hello' })
     let concereteCacheBehavior = new Cache.clientInterface()
     let concreteDatabaseBehavior = new Database.clientInterface({
       pluginList: {
@@ -79,19 +79,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     let configuredGraph = GraphElement.clientInterface({
       parameter: [
         {
-          concreteBehaviorList: [concereteCacheBehavior, concreteDatabaseBehavior],
-          // delegationList: [pluginInstance, contextInstance, cacheInstance],
-          // additionalInitializers: [{ class: Plugin, initialize: Plugin.reference.key.initInstanceFromDB, args: { pluginInstance: pluginInstance } }],
-          // interceptHandler: {
-          //   construct(target, argumentList, proxiedTarget) {
-          //     console.log('sdafj;sfljk')
-          //     let cache = false
-          //     if (cache) return { key: 'this is from cache' }
-          //     let instance = Reflect.construct(...arguments)
-          //     // extra initialization.
-          //     // initialize database
-          //   },
-          // },
+          concreteBehaviorList: [concereteCacheBehavior, concreteDatabaseBehavior, contextInstance],
         },
       ],
     })

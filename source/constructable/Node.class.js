@@ -1,10 +1,6 @@
 import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
 
-/**
- * ! `getDocumentQuery` should be passed for configured constructable, i.e. used in group of instances.
- * ! Instance inherited from `Superclass`
- */
 export const { class: Node, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new Entity.clientInterface({ description: 'Node' })
 
 /*
@@ -82,9 +78,8 @@ Object.assign(entityPrototype, {
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
 Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
-  [Entity.reference.key.entityInstance]({ targetInstance, databaseDocumentKey }, previousResult /* in case multiple constructor function found and executed. */) {
-    targetInstance.key = databaseDocumentKey
-    return targetInstance
+  [Entity.reference.key.entityInstance]({ targetInstance, key }, previousResult /* in case multiple constructor function found and executed. */) {
+    return (targetInstance.key = key)
   },
 })
 

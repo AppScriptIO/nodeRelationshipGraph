@@ -17,15 +17,8 @@ export const { class: GraphElement, reference: Reference, constructablePrototype
   |_|                           |___/|_|                           |___/                         
 */
 Object.assign(entityPrototype, {
-  //! initializeUsingPrototypeMethods() {
-  //   this.k = getkey()
-  // },
   getKey: function(key) {
     return this.key
-  },
-  traverseGraph() {
-    console.log('traversing graph')
-    return null
   },
 })
 
@@ -36,15 +29,7 @@ Object.assign(entityPrototype, {
   | | | | | | |_| | (_| | | |/ /  __/
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
-  // constructor that is made to work with the plugin functionality.
-  key({ key, instanceObject }: { key: string | number }) {
-    instanceObject.key = key
-    let data = instanceObject.plugin.databaseModelAdapter({ key: instanceObject.key })
-    Object.assign(instanceObject, data)
-    return instanceObject
-  },
-})
+Prototype::Prototype[Constructable.reference.initialize.functionality].setter({})
 
 /*
                        _                   _             

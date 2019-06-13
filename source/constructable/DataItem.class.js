@@ -1,10 +1,6 @@
 import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
 
-/**
- * ! `getDocumentQuery` should be passed for configured constructable, i.e. used in group of instances.
- * ! Instance inherited from `Superclass`
- */
 export const { class: DataItem, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new Entity.clientInterface({ description: 'DataItem' })
 
 /*
@@ -15,13 +11,7 @@ export const { class: DataItem, reference: Reference, constructablePrototype: Pr
   | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
   |_|                           |___/|_|                           |___/                         
 */
-Object.assign(entityPrototype, {
-  async initializeDataItem() {
-    // let initializationImplementationType = dataItem.tag.initializationImplementationType
-    console.log('• DataItem class, initializeDataItem function')
-  },
-  // TODO: Add function for loading file using the file object settings, i.e. load filepath as es6 module or as regular module with default export.
-})
+Object.assign(entityPrototype, {})
 
 /*
    _       _ _   _       _ _         
@@ -31,20 +21,10 @@ Object.assign(entityPrototype, {
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
 Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
-  [Entity.reference.key.entityInstance]({ targetInstance, databaseDocumentKey }, previousResult /* in case multiple constructor function found and executed. */) {
-    targetInstance.key = databaseDocumentKey
-    // must be executed once.
-    async function pupolateUnitWithFile({
-      fileKey,
-      getDocument, // function
-      extract = null, // object with two properties - extract: { sourceKey: 'key from source object', destinationKey: 'key to "this" destination' }
-    }) {
-      assert.strictEqual(Object.getPrototypeOf(self.rethinkdbConnection).constructor.name, 'TcpConnection')
-      let file = await getDocument({ key: fileKey, connection: self.rethinkdbConnection })
-      if (extract) this[extract.destinationKey] = extract.sourceKey ? file[extract.sourceKey] : file
-    }
-    pupolateUnitWithFile()
-
+  [Entity.reference.key.entityInstance]({ targetInstance, key }, previousResult /* in case multiple constructor function found and executed. */) {
+    targetInstance.key = key
+    // 1 get from database
+    // 2 populate the Graph Element with data using the `file` key of the Graph Element's data.
     return targetInstance
   },
 })

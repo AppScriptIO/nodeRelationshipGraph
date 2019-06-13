@@ -1,6 +1,9 @@
 export function databaseModelAdapterFunction({ nodeArray, dataItemArray } = {}) {
-  return {
-    getNodeDocumentQuery: async function({ ke }) {
+  let a = {
+    getByKey: key => {
+      return a.getNodeDocumentQuery(key)
+    },
+    getNodeDocumentQuery: async function({ key }) {
       let node = nodeArray.filter(value => value.key == key)[0]
       if (!node) throw new Error(`• node key "${key}" not found in array.`)
       return node
@@ -13,4 +16,5 @@ export function databaseModelAdapterFunction({ nodeArray, dataItemArray } = {}) 
       return dataItem
     },
   }
+  return a
 }

@@ -37,15 +37,20 @@ Object.assign(Reference, {
   |_|                           |___/|_|                           |___/                         
 */
 Object.assign(entityPrototype, {
+  traverseGraph() {
+    console.log('traversing graph')
+    return null
+  },
+
+  /**
+   * register plugins where each plugin has multiple implementations
+   *  {
+   *      [groupKey]: {
+   *          [implementationKey]: <function>
+   *      }
+   *  }
+   */
   [GraphTraversal.reference.key.setter](
-    /**
-     * register plugins where each plugin has multiple implementations
-     *  {
-     *      [groupKey]: {
-     *          [implementationKey]: <function>
-     *      }
-     *  }
-     */
     pluginList, // plugin groupKeys matching the above class instance properties
     self = this,
   ) {
@@ -100,13 +105,13 @@ Object.assign(entityPrototype, {
   |___|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
 GraphTraversal::GraphTraversal[Constructable.reference.initialize.functionality].setter({
-  // initialization for instance of GraphTraversal.
+  /*
+    initialization for instance of GraphTraversal.
+    Supported plugin groupKeys: Each plugin is an object with multiple registered implementations
+    • 'databaseModelAdaper' - database model functions for retriving node, dataItem, and other documents. should be async functions
+    • 'graphTraversalImplementation' - used to traverse node graphs.
+  */
   [Entity.reference.key.handleDataInstance]({ targetInstance, data }, previousResult /* in case multiple constructor function found and executed. */) {
-    /*
-      Supported plugin groupKeys: Each plugin is an object with multiple registered implementations
-      • 'databaseModelAdaper' - database model functions for retriving node, dataItem, and other documents. should be async functions
-      • 'graphTraversalImplementation' - used to traverse node graphs.
-    */
     let { defaultPlugin, pluginList } = data
     targetInstance[GraphTraversal.reference.key.setter](pluginList)
 

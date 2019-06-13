@@ -41,33 +41,45 @@ Object.assign(entityPrototype, {
   //  concerete behavior initialization on the target instance.
   [Entity.reference.key.concereteBehavior]({ constructorCallback, currentConcereteBehavior }) {
     return new Proxy(constructorCallback, {
-      apply(target, thisArg, argumentList) {
+      apply(target, thisArg, [{ data }]) {
+        let key = data.key
         let instance = Reflect.apply(...arguments)
-        console.log('initialize instance in DB concerete behavior')
         MultipleDelegation.addDelegation({ targetObject: instance, delegationList: [currentConcereteBehavior] })
+        // retrieve database entry and merge it with the instance.
+        let entry = instance[Reference.key.getter]({ pluginGroupKey: 'databaseModelAdapter' })['getByKey']({ key: key }) // get Database entry using key
+        entry.then(v => Object.assign(instance, v))
         return instance
       },
     })
   },
-  [Database.reference.key.setter](
-    /**
-     * register plugins where each database has multiple implementations
-     *  {
-     *      [groupKey]: {
-     *          [implementationKey]: <function>
-     *      }
-     *  }
-     */
+
+  // constructor that is made to work with the plugin functionality.
+  key({ key, instanceObject }: { key: string | number }) {
+    instanceObject.key = key
+    let data = instanceObject.plugin.databaseModelAdapter({ key: instanceObject.key })
+    Object.assign(instanceObject, data)
+    return instanceObject
+  },
+
+  /**
+   * register plugins where each database has multiple implementations
+   *  {
+   *      [groupKey]: {
+   *          [implementationKey]: <function>
+   *      }
+   *  }
+   */
+  [Reference.key.setter](
     pluginList, // database groupKeys matching the above class instance properties
     self = this,
   ) {
-    self[Database.reference.key.list] ||= {
+    self[Reference.key.list] ||= {
       databaseModelAdapter: {},
     }
     // add plugins to existing ones
     Object.entries(pluginList).forEach(([groupKey, implementationList]) => {
-      assert(self[Database.reference.key.list][groupKey] !== undefined, '• database groupKey isn`t supported. Trying to add a database that the Database class does`t support.')
-      self[Database.reference.key.list][groupKey] = Object.assign(self[Database.reference.key.list][groupKey], implementationList)
+      assert(self[Reference.key.list][groupKey] !== undefined, '• database groupKey isn`t supported. Trying to add a database that the Database class does`t support.')
+      self[Reference.key.list][groupKey] = Object.assign(self[Reference.key.list][groupKey], implementationList)
     })
   },
   /**
@@ -76,7 +88,7 @@ Object.assign(entityPrototype, {
    * 2. Default 'implementation' set in the '[Database:database.fallback.list]'.
    * 3. Fallback to first item in database object.
    */
-  [Database.reference.key.getter]({
+  [Reference.key.getter]({
     pluginGroupKey, // the database group (object of implementations)
     implementation = null, // specific database implementation
     self = this,
@@ -84,22 +96,22 @@ Object.assign(entityPrototype, {
     assert(pluginGroupKey, '• "database" parameter must be set.')
 
     // return specific database
-    if (implementation) return self[Database.reference.key.list][pluginGroupKey][implementation]
+    if (implementation) return self[Reference.key.list][pluginGroupKey][implementation]
 
     // return default database if set.
-    let defaultImplementation = self[Database.reference.key.fallback.getter]({ pluginGroupKey })
-    if (defaultImplementation) return self[Database.reference.key.list][pluginGroupKey][defaultImplementation]
+    let defaultImplementation = self[Reference.key.fallback.getter]({ pluginGroupKey })
+    if (defaultImplementation) return self[Reference.key.list][pluginGroupKey][defaultImplementation]
 
     // return first database implementation in the iterator
-    let firstItemKey = Object.groupKeys(self[Database.reference.key.list][pluginGroupKey])[0]
-    return self[Database.reference.key.list][pluginGroupKey][firstItemKey]
+    let firstItemKey = Object.groupKeys(self[Reference.key.list][pluginGroupKey])[0]
+    return self[Reference.key.list][pluginGroupKey][firstItemKey]
   },
-  [Database.reference.key.fallback.setter](defaultPluginList: Object, self = this) {
-    self[Database.reference.key.fallback.list] ||= {}
-    Object.assign(self[Database.reference.key.fallback.list], defaultPluginList)
+  [Reference.key.fallback.setter](defaultPluginList: Object, self = this) {
+    self[Reference.key.fallback.list] ||= {}
+    Object.assign(self[Reference.key.fallback.list], defaultPluginList)
   },
-  [Database.reference.key.fallback.getter]({ pluginGroupKey, self = this }) {
-    return self[Database.reference.key.fallback.list][pluginGroupKey]
+  [Reference.key.fallback.getter]({ pluginGroupKey, self = this }) {
+    return self[Reference.key.fallback.list][pluginGroupKey]
   },
 })
 
@@ -118,10 +130,10 @@ Database::Database[Constructable.reference.initialize.functionality].setter({
       • 'databaseModelAdaper' - database model functions for retriving node, dataItem, and other documents. should be async functions
     */
     let { defaultPlugin, pluginList } = data
-    targetInstance[Database.reference.key.setter](pluginList)
+    targetInstance[Reference.key.setter](pluginList)
 
-    targetInstance[Database.reference.key.fallback.list] = {} // default plugins implementations
-    if (defaultPlugin) targetInstance[Database.reference.key.fallback.setter](defaultPlugin) // set default plugins in case passed
+    targetInstance[Reference.key.fallback.list] = {} // default plugins implementations
+    if (defaultPlugin) targetInstance[Reference.key.fallback.setter](defaultPlugin) // set default plugins in case passed
 
     return targetInstance
   },
