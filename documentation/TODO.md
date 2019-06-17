@@ -31,12 +31,12 @@ ___
 - Independent implementation from Rethinkdb database. i.e. allow usage of different databases as pluggable adapter option.
 - GPU accelarated node graph propagation. i.e. use GPU to read the node graph in async & sync mode.
 - Use gRPC for traversing graphs in a subprocess, this will allow plugin implementations for traversing graphs to be executed in their own process (any error will be neatly handled by the host process).
-- Use multiple prototypal inheritance for creation of context for the for each nodeRelationshipGraph instance. 
+- Use multiple prototypal inheritance for creation of context for the for each graph instance. 
 i.e. 
 _Current behavior_
     ```
-    let nodeRelationshipGraph = new NodeRelationshipGraph()
-    let Controller = nodeRelationshipGraph.createStaticInstanceClasses()
+    let graph = new graph()
+    let Controller = graph.createStaticInstanceClasses()
     // `createContext` creates an object that inherites from Controller
     let controller = await Controller.createContext({})
     // `traverseGraph` is non static, so it can be called using using `node` instance objects. 
@@ -44,7 +44,7 @@ _Current behavior_
     // The instances created by `traverseGraph` will be cached in the `controller` object. 
     ```
     _Proposed_
-    instead of relying on the same controller for inheriting `node` objects, and `controller` context object, use multiple inheritance to group & cache related `node` objects. e.g. use `nodeRelationshipGraph` class as a `controller` object creation that stores cache and common shared values, and that will be inheriting `node` objects together with the `Controller` class (multiple parents).
+    instead of relying on the same controller for inheriting `node` objects, and `controller` context object, use multiple inheritance to group & cache related `node` objects. e.g. use `graph` class as a `controller` object creation that stores cache and common shared values, and that will be inheriting `node` objects together with the `Controller` class (multiple parents).
 - Pattern for implementation hooks for functions -  idea for function hooks that can execute implementations. e.g. `iterateConnection` function that has many different implemenations like 'chronological', 'allPromise', 'raceFirstPromise'
 ```
     @console(function() {

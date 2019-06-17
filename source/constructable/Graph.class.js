@@ -42,26 +42,31 @@ Object.assign(entityPrototype, {
   },
   // load node data on-demand from database
   async addNodeByKey({ key, graphInstance = this }) {
+    let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database),
+      concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
+
     let nodeInstance
     // retrieve from cache
-    nodeInstance = graphInstance[Cache.reference.key.getter](key)
+    nodeInstance = concereteCache[Cache.reference.key.getter](key)
     // create node if doesn' exist
     if (!nodeInstance) {
       nodeInstance = new graphInstance.configuredNode({ key })
-      let databaseEntry = await nodeInstance[Database.reference.key.getter]().getByKey({ key })
+      let databaseEntry = await concereteDatabase[Database.reference.key.getter]().getByKey({ key })
       Object.assign(nodeInstance, databaseEntry)
       graphInstance.addNode({ nodeInstance })
     }
     return nodeInstance
   },
   addNode({ nodeInstance, graphInstance = this }) {
+    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
     assert(nodeInstance.key, '• Node instance must have a key property.')
-    if (!graphInstance[Cache.reference.key.getter](nodeInstance.key)) graphInstance[Cache.reference.key.setter](nodeInstance.key, nodeInstance)
+    if (!concereteCache[Cache.reference.key.getter](nodeInstance.key)) concereteCache[Cache.reference.key.setter](nodeInstance.key, nodeInstance)
     return nodeInstance
   },
   addConnection() {},
   numberOfNode({ graphInstance = this } = {}) {
-    return graphInstance[Cache.reference.key.getLength]()
+    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
+    return concereteCache[Cache.reference.key.getLength]()
   },
 })
 
@@ -98,16 +103,14 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     assert(traversal, '• traversal concrete behavior must be passed.')
     cache ||= new Cache.clientInterface()
 
-    concreteBehaviorList.push(cache, database, traversal)
-    let instance = callerClass::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.concereteBehavior })({ concreteBehaviorList, data })
-
-    instance.cache = cache
-    instance.database = database
-    instance.traversal = traversal
+    let instance = callerClass::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.concereteBehavior })({
+      concreteBehaviorList: [...concreteBehaviorList, cache, database, traversal],
+      data,
+    })
 
     // configure Graph element classes
-    instance.configuredNode = Node.clientInterface({ parameter: [{ concreteBehaviorList: [instance.database] }] })
-    instance.configuredDataItem = DataItem.clientInterface({ parameter: [{ concreteBehaviorList: [instance.database] }] })
+    instance.configuredNode = Node.clientInterface({ parameter: [{ concreteBehaviorList: [database] }] })
+    instance.configuredDataItem = DataItem.clientInterface({ parameter: [{ concreteBehaviorList: [database] }] })
 
     return instance
   },

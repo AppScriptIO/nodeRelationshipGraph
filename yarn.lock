@@ -910,8 +910,8 @@
     "@dependency/nodejsLiveReload" "git+https://github.com/AppScriptIO/nodejsLiveReload.git#semver:^1.x.x"
 
 "@dependency/entity@https://github.com/AppScriptIO/entity#semver:^1.x.x":
-  version "1.0.6"
-  resolved "https://github.com/AppScriptIO/entity#98974e1a1c77b810b79f62035a0539e94287d475"
+  version "1.0.7"
+  resolved "https://github.com/AppScriptIO/entity#f0c645913c981735da05e2774df6c7be35c41acf"
   dependencies:
     "@dependency/multiplePrototypeDelegation" "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x"
     lodash "^4.17.11"
@@ -1010,8 +1010,8 @@
     del "^3.0.0"
 
 "@dependency/multiplePrototypeDelegation@https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x":
-  version "1.0.6"
-  resolved "https://github.com/AppScriptIO/multiplePrototypeDelegation#d36e2476d2bb480e07bf483caa9aa4078126cb41"
+  version "1.0.8"
+  resolved "https://github.com/AppScriptIO/multiplePrototypeDelegation#509d5043b8abee1db6e07d92ddcfa6d079f0a695"
 
 "@dependency/namedCurry@https://github.com/AppScriptIO/namedCurry#semver:^1.x.x":
   version "1.0.1"
@@ -1095,9 +1095,9 @@
     "@sinonjs/samsam" "^3.1.0"
 
 "@sinonjs/samsam@^3.1.0", "@sinonjs/samsam@^3.3.1":
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/@sinonjs/samsam/-/samsam-3.3.1.tgz#e88c53fbd9d91ad9f0f2b0140c16c7c107fe0d07"
-  integrity sha512-wRSfmyd81swH0hA1bxJZJ57xr22kC07a1N4zuIL47yTS04bDk6AoCkczcqHEjcRPmJ+FruGJ9WBQiJwMtIElFw==
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/@sinonjs/samsam/-/samsam-3.3.2.tgz#63942e3d5eb0b79f6de3bef9abfad15fb4b6401b"
+  integrity sha512-ILO/rR8LfAb60Y1Yfp9vxfYAASK43NFC2mLzpvLUbCQY/Qu8YwReboseu8aheCEkyElZF2L2T9mHcR2bgdvZyA==
   dependencies:
     "@sinonjs/commons" "^1.0.2"
     array-from "^2.1.1"

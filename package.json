@@ -1,5 +1,5 @@
 {
-    "name": "@dependency/nodeRelationshipGraph",
+    "name": "@dependency/graph",
     "version": "1.1.8",
     "main": "./entrypoint/programmaticAPI",
     "scripts": {
