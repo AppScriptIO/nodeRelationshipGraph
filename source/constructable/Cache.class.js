@@ -12,6 +12,7 @@ Object.assign(Reference, {
     list: Symbol('Cache list'),
     getter: Symbol('Cache getter'),
     setter: Symbol('Cache setter'),
+    getLength: Symbol('Cache getLength of cached items'),
   },
 })
 
@@ -28,10 +29,7 @@ Object.assign(entityPrototype, {
     return new Proxy(constructorCallback, {
       apply(target, thisArg, argumentList) {
         const { data } = argumentList[0]
-        let key = data.key
-        if (key == 'node-key-2') return { text: 'this is an instance from the cache ' } // return cached instance if key exists in cache
         let instance = Reflect.apply(...arguments)
-        currentConcereteBehavior[Reference.key.setter](key, instance)
         MultipleDelegation.addDelegation({ targetObject: instance, delegationList: [currentConcereteBehavior] })
         return instance
       },
@@ -43,6 +41,9 @@ Object.assign(entityPrototype, {
   [Reference.key.setter](key, value) {
     if (key === undefined || key === null) throw new Error('• Invalid key argument.')
     this[Reference.key.list].set(key, value)
+  },
+  [Reference.key.getLength]() {
+    return this[Reference.key.list].size
   },
 })
 

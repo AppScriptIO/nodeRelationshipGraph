@@ -1,7 +1,8 @@
 import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
+import { GraphElement } from './GraphElement.class.js'
 
-export const { class: DataItem, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new Entity.clientInterface({ description: 'DataItem' })
+export const { class: DataItem, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new GraphElement.clientInterface({ description: 'DataItem' })
 
 /*
                    _        _                    ____       _                  _   _             
@@ -11,7 +12,9 @@ export const { class: DataItem, reference: Reference, constructablePrototype: Pr
   | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
   |_|                           |___/|_|                           |___/                         
 */
-Object.assign(entityPrototype, {})
+Object.assign(entityPrototype, {
+  constructor: Symbol('DataItem:key.constructor'),
+})
 
 /*
    _       _ _   _       _ _         
@@ -20,12 +23,26 @@ Object.assign(entityPrototype, {})
   | | | | | | |_| | (_| | | |/ /  __/
   |_|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
-  [Entity.reference.key.entityInstance]({ targetInstance, key }, previousResult /* in case multiple constructor function found and executed. */) {
-    targetInstance.key = key
+Prototype::Prototype[Constructable.reference.initialize.functionality].setter({})
+
+/*
+                       _                   _             
+    ___ ___  _ __  ___| |_ _ __ _   _  ___| |_ ___  _ __ 
+   / __/ _ \| '_ \/ __| __| '__| | | |/ __| __/ _ \| '__|
+  | (_| (_) | | | \__ \ |_| |  | |_| | (__| || (_) | |   
+   \___\___/|_| |_|___/\__|_|   \__,_|\___|\__\___/|_|   
+*/
+Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
+  [Reference.key.constructor]({
+    data, // data to be merged into the instance
+    concreteBehaviorList,
+    callerClass = this,
+  }) {
+    let instance = callerClass::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.concereteBehavior })({ concreteBehaviorList, data })
+    instance.key = key
     // 1 get from database
     // 2 populate the Graph Element with data using the `file` key of the Graph Element's data.
-    return targetInstance
+    return instance
   },
 })
 
@@ -39,5 +56,5 @@ Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
 DataItem.clientInterface = DataItem::Prototype[Constructable.reference.clientInterface.functionality].switch({
   implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype,
 })({
-  constructorImplementation: Entity.reference.key.mergeDataToInstance,
+  constructorImplementation: Entity.reference.key.concereteBehavior,
 })

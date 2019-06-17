@@ -37,7 +37,6 @@ Object.assign(entityPrototype, {
   [Entity.reference.key.concereteBehavior]({ constructorCallback, currentConcereteBehavior }) {
     return new Proxy(constructorCallback, {
       apply(target, thisArg, [{ data }]) {
-        let key = data.key
         let instance = Reflect.apply(...arguments)
         // add to prototype delegation
         MultipleDelegation.addDelegation({ targetObject: instance, delegationList: [currentConcereteBehavior] })

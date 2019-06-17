@@ -4,7 +4,7 @@ import { assert as chaiAssertion } from 'chai'
 import util from 'util'
 
 import { Entity } from '@dependency/entity'
-import { GraphElement } from '../source/constructable/GraphElement.class.js'
+import { Graph } from '../source/constructable/Graph.class.js'
 import { GraphTraversal } from '../source/constructable/GraphTraversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
 import { Cache } from '../source/constructable/Cache.class.js'
@@ -23,79 +23,61 @@ const fixture = { traversalResult: ['dataItem-key-1'] }
  */
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
   suite('configured graph with loading plugins and database adapter', async () => {
-    // let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
-    //   pluginList: {
-    //     graphTraversalImplementation: {
-    //       aggregateIntoArray() {
-    //         return require('./implementation/graphTraversalImplementation/debugImplementation.js').aggregateIntoArray
-    //       },
-    //       condition() {
-    //         // return require('./implementation/graphTraversalImplementation/condition.js').condition
-    //       },
-    //       middleware() {
-    //         // return require('./implementation/graphTraversalImplementation/middleware.js').middleware
-    //       },
-    //       schema() {
-    //         // return require('./implementation/graphTraversalImplementation/schema.js').schema
-    //       },
-    //       shellscript() {
-    //         // return require('./implementation/graphTraversalImplementation/shellscript.js').shellscript
-    //       },
-    //       template() {
-    //         // return require('./implementation/graphTraversalImplementation/template.js').template
-    //       },
-    //     },
-    //   },
-    //   defaultPlugin: {
-    //     graphTraversalImplementation: 'aggregateIntoArray',
-    //   },
-    // })
-    let contextInstance = new Context.clientInterface({ someString: 'hello' })
-    let concereteCacheBehavior = new Cache.clientInterface()
-    let concreteDatabaseBehavior = new Database.clientInterface({
-      pluginList: {
-        databaseModelAdapter: {
-          // database simple memory adapter
-          memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
-          memoryModelAdapter2: databaseModelAdapterFunction({
-            nodeArray: graphData.nodeDataItemAsReference.nodeArray,
-            dataItemArray: graphData.nodeDataItemAsReference.dataItemArray,
-          }),
+    let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
+      implementationList: {
+        aggregateIntoArray() {
+          return require('./implementation/graphTraversalImplementation/debugImplementation.js').aggregateIntoArray
+        },
+        condition() {
+          // return require('./implementation/graphTraversalImplementation/condition.js').condition
+        },
+        middleware() {
+          // return require('./implementation/graphTraversalImplementation/middleware.js').middleware
+        },
+        schema() {
+          // return require('./implementation/graphTraversalImplementation/schema.js').schema
+        },
+        shellscript() {
+          // return require('./implementation/graphTraversalImplementation/shellscript.js').shellscript
+        },
+        template() {
+          // return require('./implementation/graphTraversalImplementation/template.js').template
         },
       },
-      defaultPlugin: {
-        databaseModelAdapter: 'memoryModelAdapter',
+      defaultImplementation: 'aggregateIntoArray',
+    })
+    let contextInstance = new Context.clientInterface({ someString: 'hello' })
+    let concreteDatabaseBehavior = new Database.clientInterface({
+      implementationList: {
+        // database simple memory adapter
+        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
+        memoryModelAdapter2: databaseModelAdapterFunction({
+          nodeArray: graphData.nodeDataItemAsReference.nodeArray,
+          dataItemArray: graphData.nodeDataItemAsReference.dataItemArray,
+        }),
       },
+      defaultImplementation: 'memoryModelAdapter',
     })
 
-    // let key = 'x',
-    //   instance
-    // instance = Cache::Constructable[Constructable.reference.initialize.functionality].switch({ implementationKey: Entity.reference.key.checkCache })({ instanceCache, key })
-    // if (!instance) {
-    //   instance = GraphElement::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.mergeDataToInstance })({ data: { key: key } })
-    //   Database::Constructable[Constructable.reference.initialize.functionality].switch({ implementationKey: Entity.reference.key.db })({ instanceDatabase, targetInstance: instance })
-    // }
-
-    let configuredGraph = GraphElement.clientInterface({
+    let configuredGraph = Graph.clientInterface({
       parameter: [
         {
-          concreteBehaviorList: [concereteCacheBehavior, concreteDatabaseBehavior, contextInstance],
+          database: concreteDatabaseBehavior,
+          traversal: concreteGraphTraversalBehavior,
+          concreteBehaviorList: [contextInstance],
+          data: {},
         },
       ],
     })
+    let graph = new configuredGraph({})
 
     test('Should traverse graph successfully', async () => {
-      let nodeInstance = await new configuredGraph({ key: 'node-key-1' })
-      // console.log(concreteDatabaseBehavior)
-      // console.log(concreteGraphTraversalBehavior)
-      // console.log(concereteCacheBehavior)
-      // console.log(contextInstance)
-      // console.log(configuredGraph)
-      debugger
-      console.log(nodeInstance)
+      await graph.addNodeByKey({ key: 'node-key-1' })
+      await graph.loadGraphIntoMemoryFromDatabase({ key: 'node-key-1' })
+      graph.numberOfNode() |> console.log
       // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.
-      let resultArray = nodeInstance.traverseGraph()
-      chaiAssertion.deepEqual(resultArray, fixture.traversalResult)
+      // let resultArray = graph.traverseGraph()
+      // chaiAssertion.deepEqual(resultArray, fixture.traversalResult)
     })
   })
 })
