@@ -91,7 +91,7 @@ export let nodeArray = [
     tag: {
       executionType: 'timeout',
       traversalImplementationType: 'logNode',
-      iterateConnectionImplementation: 'raceFirstPromise',
+      iterateConnectionImplementation: 'allPromise' || 'raceFirstPromise',
     },
   },
   {

@@ -1,3 +1,7 @@
+/**
+ * Graph basic form with connection :
+ * connection - provides all edges of a specific node
+ **/
 export let nodeArray = [
   {
     label: { name: 'node' },

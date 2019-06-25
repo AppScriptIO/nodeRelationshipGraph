@@ -2,6 +2,12 @@ import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
 import { GraphElement } from './GraphElement.class.js'
 
+interface Node {
+  tag: {
+    processingAlgorithm: String, // processing/execution of data item
+  };
+}
+
 export const { class: Node, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new GraphElement.clientInterface({ description: 'Node' })
 
 Object.assign(Reference, {

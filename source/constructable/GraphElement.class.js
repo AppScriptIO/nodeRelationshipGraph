@@ -20,8 +20,6 @@ Object.assign(entityPrototype, {
   getKey: function(key) {
     return this.key
   },
-  createNodeInstance: async function({ nodeKey }) {},
-  createDataItemInstance: async function({ dataItemKey }) {},
 })
 
 /*

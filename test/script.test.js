@@ -9,8 +9,9 @@ import { GraphTraversal } from '../source/constructable/GraphTraversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
 import { Cache } from '../source/constructable/Cache.class.js'
 import { Context } from '../source/constructable/Context.class.js'
-import { databaseModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memoryModelAdapter.js'
 
+import { databaseModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memoryModelAdapter.js'
+import { implementation as aggregateIntoArray } from '../source/implementationPlugin/graphTraversalImplementation/debugImplementation.js'
 import * as graphData from './asset/graphData' // load sample data
 const fixture = { traversalResult: ['dataItem-key-1'] }
 
@@ -25,9 +26,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
   suite('configured graph with loading plugins and database adapter', async () => {
     let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
       implementationList: {
-        aggregateIntoArray() {
-          return require('./implementation/graphTraversalImplementation/debugImplementation.js').aggregateIntoArray
-        },
+        aggregateIntoArray,
         condition() {
           // return require('./implementation/graphTraversalImplementation/condition.js').condition
         },
@@ -50,7 +49,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     let concreteDatabaseBehavior = new Database.clientInterface({
       implementationList: {
         // database simple memory adapter
-        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeDataItem.nodeArray }),
+        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeConnectionParallelTraversal.nodeArray }),
         memoryModelAdapter2: databaseModelAdapterFunction({
           nodeArray: graphData.nodeDataItemAsReference.nodeArray,
           dataItemArray: graphData.nodeDataItemAsReference.dataItemArray,
@@ -69,12 +68,13 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
         },
       ],
     })
-    let graph = new configuredGraph({})
 
     test('Should traverse graph successfully', async () => {
-      await graph.addNodeByKey({ key: 'node-key-1' })
-      await graph.loadGraphIntoMemoryFromDatabase({ key: 'node-key-1' })
-      graph.numberOfNode() |> console.log
+      let graph = new configuredGraph({})
+      await graph.loadGraphIntoMemoryFromDatabase()
+      let result = await graph.traverse({ nodeInstance: 'node-key-0' })
+      console.log(result)
+      // graph.count().node |> console.log
       // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.
       // let resultArray = graph.traverseGraph()
       // chaiAssertion.deepEqual(resultArray, fixture.traversalResult)

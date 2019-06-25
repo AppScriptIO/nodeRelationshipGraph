@@ -1,5 +1,6 @@
 ### TODO:
-Make nested unit implemenations pluggable. i.e. added as needed to the main nested unit classes. Maybe create a separate module for each implementation.
+- Consider merging Database class & GraphTraversal class into a Plugin class that can distinguish between the plugin groups. Because these classes do that same job and don't currently have unique methods.
+- Make nested unit implemenations pluggable. i.e. added as needed to the main nested unit classes. Maybe create a separate module for each implementation.
 
 Things to consider:
 - Should look at integration between nested unit implementations, what to return when they are mixed together, etc.
