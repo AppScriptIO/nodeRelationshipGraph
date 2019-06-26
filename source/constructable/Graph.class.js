@@ -172,17 +172,26 @@ Object.assign(entityPrototype, {
         dataProcessCallback,
       })
 
+    // TODO: in case no implementation exists for intercepting traversal
+    proxifyWithImplementation = target => new Proxy(target, {})
+
     // Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
     let eventEmitter = new EventEmitter()
-    nodeIteratorFeed ||= concreteTraversal.traverseNode({
-      nodeInstance,
-      graphInstance,
-      // TODO: Replace callback with event emitter aggregator, that will emit an event for each completed result for merging nodes' processed data.
-      aggregatorCallbackMerge: nextResult => {
-        console.log(nextResult) /**|| (aggregator = aggregator.merge(nextResult))*/
-      },
-    })
-    return await (graphInstance::graphInstance.recursiveIteration |> proxifyWithImplementation)({ nodeIteratorFeed, nodeInstance, traversalDepth, eventEmitter })
+    nodeIteratorFeed ||= concreteTraversal.traverseNode({ nodeInstance, graphInstance })
+    let result = await (graphInstance::graphInstance.recursiveIteration |> proxifyWithImplementation)({ nodeIteratorFeed, nodeInstance, traversalDepth, eventEmitter })
+
+    // in case the proxy didn't iterate over the target generator or the implementation of proxy doesn't exist.
+    if (typeof result[Symbol.asyncIterator] === 'function') {
+      eventEmitter.on('nodeTraversalCompleted', console.log)
+      let iterator = result,
+        iteratorResult
+      do {
+        iteratorResult = await iterator.next()
+      } while (!iteratorResult.done)
+      return nodeInstance // only traversal (without returning accumolative data) is required with the default iteration (that doesn't include an implementing `traversalInterception` function)
+    }
+
+    return result
   },
 
   /**
