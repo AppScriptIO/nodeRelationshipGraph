@@ -11,7 +11,7 @@ import { Cache } from '../source/constructable/Cache.class.js'
 import { Context } from '../source/constructable/Context.class.js'
 
 import { databaseModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memoryModelAdapter.js'
-import { implementation as aggregateIntoArray } from '../source/implementationPlugin/graphTraversalImplementation/debugImplementation.js'
+import { implementation as debugImplementation } from '../source/implementationPlugin/graphTraversalImplementation/debugImplementation.js'
 import * as graphData from './asset/graphData' // load sample data
 const fixture = { traversalResult: ['dataItem-key-1'] }
 
@@ -26,7 +26,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
   suite('configured graph with loading plugins and database adapter', async () => {
     let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
       implementationList: {
-        aggregateIntoArray,
+        debugImplementation,
         condition() {
           // return require('./implementation/graphTraversalImplementation/condition.js').condition
         },
@@ -43,7 +43,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
           // return require('./implementation/graphTraversalImplementation/template.js').template
         },
       },
-      defaultImplementation: 'aggregateIntoArray',
+      defaultImplementation: 'debugImplementation',
     })
     let contextInstance = new Context.clientInterface({ someString: 'hello' })
     let concreteDatabaseBehavior = new Database.clientInterface({

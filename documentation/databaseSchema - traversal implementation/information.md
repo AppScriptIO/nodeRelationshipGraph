@@ -1,0 +1,2 @@
+// TODO: as there is an API Schema, a database schema can make content extremely dynamic.
+Database schema is different from API Schema.
