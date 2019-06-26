@@ -8,6 +8,7 @@ import { Cache } from './Cache.class.js'
 import { ImplementationManagement } from './ImplementationManagement.class.js'
 import { proxifyMethodDecorator } from '../utility/proxifyMethodDecorator.js'
 import { mergeDefaultParameter } from '../utility/mergeDefaultParameter.js'
+import EventEmitter from 'events'
 
 /** Conceptual Graph
  * Graph Class holds and manages graph elements and traversal algorithm implementations:
@@ -172,6 +173,7 @@ Object.assign(entityPrototype, {
       })
 
     // Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
+    let eventEmitter = new EventEmitter()
     nodeIteratorFeed ||= concreteTraversal.traverseNode({
       nodeInstance,
       graphInstance,
@@ -180,7 +182,7 @@ Object.assign(entityPrototype, {
         console.log(nextResult) /**|| (aggregator = aggregator.merge(nextResult))*/
       },
     })
-    return await (graphInstance::graphInstance.recursiveIteration |> proxifyWithImplementation)({ nodeIteratorFeed, nodeInstance, traversalDepth })
+    return await (graphInstance::graphInstance.recursiveIteration |> proxifyWithImplementation)({ nodeIteratorFeed, nodeInstance, traversalDepth, eventEmitter })
   },
 
   /**
@@ -188,21 +190,28 @@ Object.assign(entityPrototype, {
    *  1. Accepts new nodes from implementing function.
    *  2. returns back to the implementing function a promise, handing control of flow and arragement of running traversals.
    */
-  recursiveIteration: async function({
+  recursiveIteration: async function*({
     nodeIteratorFeed /**Feeding iterator that will accept node parameters for traversals*/,
     graphInstance = this,
     recursiveCallback = graphInstance::graphInstance.traverse,
     traversalDepth,
+    eventEmitter,
+  }: {
+    eventEmitter: Event,
   }) {
+    let eventEmitterCallback = (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args)
     traversalDepth += 1 // increase traversal depth
     let g = {}
-    g.result = await nodeIteratorFeed.next() // initial execution
+    g.result = await nodeIteratorFeed.next({ eventEmitterCallback: eventEmitterCallback }) // initial execution
     while (!g.result.done) {
       let nextNodeConfig = g.result.value
       // 🔁 recursion call
       let promise = recursiveCallback(Object.assign(nextNodeConfig, { traversalDepth }))
       g.result = await nodeIteratorFeed.next({ promise })
     }
+    // last node iterator feed should be an array of resolved node promises that will be forwarded through this function
+    let returnedResultArray = g.result.value || []
+    yield* returnedResultArray // forward resolved results
   },
   dataProcess: async function({ nodeInstance, nextProcessData, dataProcessImplementation }) {
     // get node dataItem - either dataItem instance object or regular object

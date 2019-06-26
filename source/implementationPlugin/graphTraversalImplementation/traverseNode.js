@@ -6,7 +6,8 @@ import { iterateConnection } from './iterateConnection.js'
 // TODO: specify the parameter hirerchy that will be used in graph traversal and the location of the parameters (instance, context instance, static superclass, global, whatever.)
 //? executeConnection = implementation.executeConnection,
 //? implementationType: nodeInstance.tag?.iterateConnectionImplementation
-export const traverseNode = async function*({ nodeInstance, graphInstance, aggregatorCallbackMerge }) {
+export const traverseNode = async function*({ nodeInstance, graphInstance }) {
+  let { eventEmitterCallback: emit } = function.sent
   let nodeConnectionArray = nodeInstance.connection && nodeInstance.connection?.length != 0 ? nodeInstance.connection : []
   let g = {}
   g.iterator = await iterateConnection({ nodeConnectionArray })
@@ -40,7 +41,10 @@ export const traverseNode = async function*({ nodeInstance, graphInstance, aggre
             if (process.env.SZN_DEBUG == 'true') console.error(`🔀⚠️ promiseProperRace rejected because: ${error}`)
             else console.log(`🔀⚠️ promiseProperRace rejected because: ${error}`)
           })
-        if (nodeResolvedResult) aggregatorCallbackMerge(nodeResolvedResult) // deal with failure of all promises.
+        if (nodeResolvedResult) {
+          emit(nodeResolvedResult) // emitting result is not immediate in this case, because the objective is to get a single resolved promise, and "promiseProperRace" maybe doesn't have the ability to stop uncompleted promises.
+          return [nodeResolvedResult] // returned results must be wrapped in array so it could be forwarded through yeild* generator.
+        }
       }
       break
     case 'allPromise':
@@ -49,23 +53,23 @@ export const traverseNode = async function*({ nodeInstance, graphInstance, aggre
          * Insures all nodeConnection promises resolves.
          **/
         let nodePromiseArray = [] // order of call initialization
-        let resolvedOrderedNodePromise = [] // order of completion
+        let resolvedOrderedNodeResolvedResult = [] // order of completion
         while (!g.result.done) {
           let nextNodeConfig = g.result.value
           yield { nodeInstance: nextNodeConfig.nodeKey }
           let { promise } = function.sent
           nodePromiseArray.push(promise) // promises are in the same arrangment of connection iteration.
-          promise.then(result => resolvedOrderedNodePromise.push(result)) // arrange promises according to resolution order.
+          promise.then(result => emit(result)) // emit result for immediate usage by lisnters
+          promise.then(result => resolvedOrderedNodeResolvedResult.push(result)) // arrange promises according to resolution order.
           g.result = await g.iterator.next()
         }
+        // resolve all promises
         let nodeResolvedResultArray = await Promise.all(nodePromiseArray).catch(error => {
           if (process.env.SZN_DEBUG == 'true') console.error(`🔀⚠️ \`Promise.all\` for nodeConnectionArray rejected because: ${error}`)
           else console.log(error)
         })
         // ordered results according to promise completion.
-        for (let nextResult of resolvedOrderedNodePromise) {
-          aggregatorCallbackMerge(nextResult)
-        }
+        return resolvedOrderedNodeResolvedResult // return for all resolved results
         // Preserves the order of nodes original in connection array, i.e. does not order the node results according to the execution completion, rather according to the first visited during traversal.
         // for (let nextResult of nodeResolvedResultArray) {
         //   aggregatorCallbackMerge(nextResult)
@@ -76,14 +80,17 @@ export const traverseNode = async function*({ nodeInstance, graphInstance, aggre
     case 'chronological':
       {
         /** Sequential node execution - await each node till it finishes execution. */
+        let nodeResultList = []
         while (!g.result.done) {
           let nextNodeConfig = g.result.value
           yield { nodeInstance: nextNodeConfig.nodeKey }
           let { promise } = function.sent
           let nextResult = await promise
-          aggregatorCallbackMerge(nextResult)
+          emit(nextResult) // emit for immediate consumption
+          nodeResultList.push(nextResult)
           g.result = await g.iterator.next()
         }
+        return nodeResultList
       }
       break
     default:
