@@ -1,12 +1,12 @@
 import assert from 'assert'
-import { AggregatorArray, ConditionCheck } from './Aggregator.class.js'
-import { processDataItem } from './processDataItem.js'
-import { traverseNode, iteratePort } from './traverseNode.js'
-import { processThenTraverse, conditionCheck } from './traversalInterception.js'
+import { AggregatorArray, ConditionCheck } from './concreteFunction/Aggregator.class.js'
+import { returnDataItemKey, returnKey, timeout } from './concreteFunction/processDataItem.js'
+import { allPromise, chronological, raceFirstPromise, iteratePort } from './concreteFunction/traverseNode.js'
+import { processThenTraverse, conditionCheck } from './concreteFunction/traversalInterception.js'
 
 export const implementation = {
-  traverseNode: traverseNode,
-  traversalInterception: processThenTraverse,
-  processData: processDataItem,
-  aggregator: AggregatorArray,
+  traverseNode: { allPromise, chronological, raceFirstPromise },
+  traversalInterception: { processThenTraverse, conditionCheck },
+  aggregator: { AggregatorArray, ConditionCheck },
+  processData: { returnDataItemKey, returnDataItemKey, returnKey, timeout },
 }

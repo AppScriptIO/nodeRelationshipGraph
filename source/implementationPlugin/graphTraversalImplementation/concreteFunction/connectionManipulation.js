@@ -1,27 +1,3 @@
-/**
- * Loops through node connection to traverse the connected nodes' graphs
- * @param {*} nodeConnectionArray - array of connection for the particular node
- */
-export async function* iterateConnection({
-  nodeConnectionArray, // = thisArg.connection || [],
-} = {}) {
-  const controlArg = function.sent
-
-  // filter connection array to match outgoing connections only
-  // nodeConnectionArray = nodeConnectionArray.filter(item => item.tag.direction == 'outgoing')
-
-  // sort connection array
-  const sortAccordingToOrder = (former, latter) => former.source.position.order - latter.source.position.order // using `order` property
-  nodeConnectionArray.sort(sortAccordingToOrder)
-
-  for (let nodeConnection of nodeConnectionArray) {
-    // iteration implementaiton
-    for (let destinationNode of nodeConnection.destination.node) {
-      yield { nodeKey: destinationNode.key }
-    }
-  }
-}
-
 // Connection Arrangment
 let x = {
   /**

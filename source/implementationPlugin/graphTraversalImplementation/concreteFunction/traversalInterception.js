@@ -18,25 +18,25 @@ export const processThenTraverse = ({ dataProcessCallback, targetFunction, aggre
   })
 }
 
-export const conditionCheck = ({ dataProcessCallback, targetFunction, getNextProcessData }) => {
+export const conditionCheck = ({ dataProcessCallback, targetFunction, aggregator }) => {
+  // Check condition
+  async function checkCondition(nodeInstance) {
+    // should be executed once for each instance
+    // [2] require & check condition
+    if (!this.conditionResult) {
+      let expectedReturn = this.expectedReturn
+      let filePath = this.file.filePath
+      let returnedValue = await require(filePath).default(this.portAppInstance)
+      if (process.env.SZN_DEBUG == 'true' && this.portAppInstance.context.headers.debug == 'true')
+        console.log(`🔀 Comparing conditionKey: ${this.key} ${filePath}. \n • expected: ${expectedReturn} == ${returnedValue}. \n • compare result: ${returnedValue == expectedReturn} \n \n`)
+      this.conditionResult = returnedValue == expectedReturn ? true : false
+    }
+    return this.conditionResult
+  }
   return new Proxy(targetFunction, {
     async apply(target, thisArg, argArray) {
-      let { nodeInstance } = argArray[0]
+      let { nodeInstance, traversalDepth, eventEmitter } = argArray[0]
 
-      // Check condition
-      async function checkCondition(nodeInstance) {
-        // should be executed once for each instance
-        // [2] require & check condition
-        if (!this.conditionResult) {
-          let expectedReturn = this.expectedReturn
-          let filePath = this.file.filePath
-          let returnedValue = await require(filePath).default(this.portAppInstance)
-          if (process.env.SZN_DEBUG == 'true' && this.portAppInstance.context.headers.debug == 'true')
-            console.log(`🔀 Comparing conditionKey: ${this.key} ${filePath}. \n • expected: ${expectedReturn} == ${returnedValue}. \n • compare result: ${returnedValue == expectedReturn} \n \n`)
-          this.conditionResult = returnedValue == expectedReturn ? true : false
-        }
-        return this.conditionResult
-      }
       let conditionMet // = true // if no unitKey set, then the neseted unit is considered a holder for other nested units and should pass to the nested children.
       conditionMet = true // || (await checkCondition(nodeInstance))
 
@@ -50,7 +50,7 @@ export const conditionCheck = ({ dataProcessCallback, targetFunction, getNextPro
         // // [4] Callback
         // return callback ? callback : false
 
-        await dataProcessCallback(getNextProcessData())
+        await dataProcessCallback(aggregator.value)
 
         // port traversal implementation.
         // traversePort: async function returnedFirstValue() {
