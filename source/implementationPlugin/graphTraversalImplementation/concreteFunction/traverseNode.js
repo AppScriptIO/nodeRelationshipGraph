@@ -51,11 +51,13 @@ export async function* allPromise({ nodeIteratorFeed, emit }) {
     if (process.env.SZN_DEBUG == 'true') console.error(`🔀⚠️ \`Promise.all\` for nodeConnectionArray rejected because: ${error}`)
     else console.log(error)
   })
+
   // ordered results according to promise completion.
   return resolvedOrderedNodeResolvedResult // return for all resolved results
+
   // Preserves the order of nodes original in connection array, i.e. does not order the node results according to the execution completion, rather according to the first visited during traversal.
   // for (let nextResult of nodeResolvedResultArray) {
-  //   aggregatorCallbackMerge(nextResult)
+  //   emit(nextResult)
   // }
 }
 

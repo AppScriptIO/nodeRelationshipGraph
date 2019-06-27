@@ -4,7 +4,7 @@ export const processThenTraverse = ({ dataProcessCallback, targetFunction, aggre
       let { nodeInstance, traversalDepth, eventEmitter } = argArray[0]
       let result = await dataProcessCallback(aggregator.value)
       aggregator.add(result)
-      eventEmitter.on('nodeTraversalCompleted', data => console.log(data.value, ' resolved.'))
+      // eventEmitter.on('nodeTraversalCompleted', data => console.log(data.value, ' resolved.'))
       let g = {}
       g.iterator = await Reflect.apply(...arguments)
       g.result = await g.iterator.next()

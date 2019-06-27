@@ -270,9 +270,7 @@ Object.assign(entityPrototype, {
    * Loops through node connection to traverse the connected nodes' graphs
    * @param {*} nodeConnectionArray - array of connection for the particular node
    */
-  iterateConnection: async function*({
-    nodeConnectionArray, // = thisArg.connection || [],
-  } = {}) {
+  iterateConnection: async function*({ nodeConnectionArray } = {}) {
     const controlArg = function.sent
 
     // filter connection array to match outgoing connections only
