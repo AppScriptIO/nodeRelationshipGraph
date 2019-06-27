@@ -122,14 +122,21 @@ Object.assign(entityPrototype, {
     })
     return Reflect.apply(target, thisArg, argumentsList)
   })
+  // TODO: implementation type: Condition, Middleware, Template
   @proxifyMethodDecorator((target, thisArg, argumentsList, targetClass, methodName) => {
-    // TODO: specify the parameter hirerchy that will be used in graph traversal and the location of the parameters (instance, context instance, static superclass, global, whatever.)
-    let { nodeInstance, graphInstance } = argumentsList[0]
+    /** Choose concrete implementation
+     * Parameter hirerchy for graph traversal implementations:
+     *? -. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
+     * 1. call parameters that are passed directly // TODO: make traversal implementation overwritable ignoring each nodes configuration, i.e. overwritable over nodeInstance own property implementation keys
+     * 2. node instance configuration/properties
+     * 3. default values specified in the function scope.
+     */
+    let { nodeInstance } = argumentsList[0]
     let { parentTraversalArg } = argumentsList[1]
     let implementationKey = {
       processData: nodeInstance.tag?.executionType,
       traverseNode: nodeInstance.tag?.iterateConnectionImplementation,
-      Aggregator: 'AggregatorArray',
+      aggregator: 'AggregatorArray',
       traversalInterception: 'processThenTraverse',
     }
     // merge with parent arguments
@@ -139,32 +146,27 @@ Object.assign(entityPrototype, {
     if (!argumentsList[0].implementationKey) argumentsList[0].implementationKey = implementationKey
     else Object.assign(argumentsList[0].implementationKey, implementationKey)
 
-    // implementationType: thisArg.sharedContext.concreteTraversalType,
-    // if (!implementationType) throw new Error(`• no implementation found for "${implementationType}", node connection iteration stopped.`)
-
-    let concreteTraversalInstance = graphInstance[Entity.reference.getInstanceOf](GraphTraversal),
+    // get implementation functions
+    let { graphInstance } = argumentsList[0],
+      concreteTraversalInstance = graphInstance[Entity.reference.getInstanceOf](GraphTraversal),
       concreteTraversal = concreteTraversalInstance[ImplementationManagement.reference.key.getter]()
+    implementationKey = argumentsList[0].implementationKey
+    let implementation = {
+      dataProcess: concreteTraversal.processData[implementationKey.processData],
+      traverseNode: concreteTraversal.traverseNode[implementationKey.traverseNode],
+      traversalInterception: concreteTraversal.traversalInterception[implementationKey.traversalInterception],
+      aggregator: concreteTraversal.aggregator[implementationKey.aggregator],
+    }
+
+    // merge to arguments
     argumentsList = mergeDefaultParameter({
       passedArg: argumentsList,
       defaultArg: [
         {
-          concreteTraversal,
+          implementation,
         },
       ],
     })
-    //? Aggregator implementation which is reponsible for the returned value from traversal.
-    // 2. make traversal implementation overwritable ignoring each nodes configuration.
-    // runImplementation - Read traversal implementation configuration from Node instance and run implementation run implementaion
-    // let { implementationType, nodeInstance } = argumentsList[0]
-    // if (!implementationType && nodeInstance.tag) implementationType = nodeInstance.tag.concreteTraversalType
-
-    // if (implementationType) {
-    //   let controller = thisArg.contextInstance
-    //   return controller.interceptMethod({ thisArg, implementationType, nodeInstance, argumentsList, methodName })
-    // } else {
-    //   console.error('• no implementation selected for ' + nodeInstance.key)
-    //   return Reflect.apply(target, thisArg, argumentsList)
-    // }
 
     return Reflect.apply(target, thisArg, argumentsList)
   })
@@ -175,28 +177,26 @@ Object.assign(entityPrototype, {
       concreteTraversal, // implementation registered functions
       nodeIteratorFeed, // iterator providing node parameters for recursive traversal calls.
       traversalDepth, // level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
-      implementationKey,
+      implementationKey, // used by decorator to retreive implementation functions
+      implementation, // implementation functions
       additionalChildNode,
       nodeConnectionKey,
-      eventEmitter = new EventEmitter(),
+      eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
+      aggregator = new (nodeInstance::implementation.aggregator)(), // used to aggregate results of nested nodes.
     }: {
       graphInstance: Graph,
       nodeInstance: String | Node,
       concreteTraversal: GraphTraversal /** TODO: Currently it is an object derived from a GraphTraversal instance */,
       traversalDepth: Number,
+      implementaion: Object,
     } = {},
     { parentTraversalArg } = {},
   ) {
-    let dataProcessImplementation = nodeInstance::concreteTraversal.processData[implementationKey.processData],
-      traverseNodeImplementation = nodeInstance::concreteTraversal.traverseNode[implementationKey.traverseNode],
-      aggregator = new concreteTraversal.aggregator[implementationKey.Aggregator]()
+    let dataProcessCallback = nextProcessData => graphInstance::graphInstance.dataProcess({ nodeInstance, nextProcessData, dataProcessImplementation: nodeInstance::implementation.dataProcess })
 
-    let dataProcessCallback = nextProcessData => graphInstance::graphInstance.dataProcess({ nodeInstance, nextProcessData, dataProcessImplementation })
-
-    let traversalInterceptionImplementation = concreteTraversal.traversalInterception[implementationKey.traversalInterception]
-    let proxifyWithImplementation = traversalInterceptionImplementation
+    let proxyify = implementation.traversalInterception
       ? target =>
-          traversalInterceptionImplementation({
+          graphInstance::implementation.traversalInterception({
             aggregator,
             targetFunction: target,
             dataProcessCallback,
@@ -205,17 +205,16 @@ Object.assign(entityPrototype, {
         target => new Proxy(target, {})
 
     // Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
-    nodeIteratorFeed ||= graphInstance::graphInstance.traverseNode({ nodeInstance, graphInstance, traverseNodeImplementation })
-    let result = await (graphInstance::graphInstance.recursiveIteration |> proxifyWithImplementation)({ nodeIteratorFeed, nodeInstance, traversalDepth, eventEmitter, parentTraversalArg: arguments })
+    nodeIteratorFeed ||= graphInstance::graphInstance.traverseNode({ nodeInstance, graphInstance, traverseNodeImplementation: nodeInstance::implementation.traverseNode })
+    let result = await (graphInstance::graphInstance.recursiveIteration |> proxyify)({ nodeIteratorFeed, nodeInstance, traversalDepth, eventEmitter, parentTraversalArg: arguments })
 
     // in case the proxy didn't iterate over the target generator or the implementation of proxy doesn't exist.
     if (typeof result[Symbol.asyncIterator] === 'function') {
       eventEmitter.on('nodeTraversalCompleted', console.log)
       let iterator = result,
         iteratorResult
-      do {
-        iteratorResult = await iterator.next()
-      } while (!iteratorResult.done)
+      do iteratorResult = await iterator.next()
+      while (!iteratorResult.done)
       return nodeInstance // only traversal (without returning accumolative data) is required with the default iteration (that doesn't include an implementing `traversalInterception` function)
     }
 
@@ -237,7 +236,6 @@ Object.assign(entityPrototype, {
   }: {
     eventEmitter: Event,
   }) {
-    debugger
     let eventEmitterCallback = (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args)
     traversalDepth += 1 // increase traversal depth
     let g = {}
@@ -255,15 +253,16 @@ Object.assign(entityPrototype, {
   traverseNode: async function*({ nodeInstance, graphInstance, traverseNodeImplementation /** Controls the iteration over nodes and execution arrangement. */ }) {
     let { eventEmitterCallback: emit } = function.sent
     let nodeConnectionArray = nodeInstance.connection && nodeInstance.connection?.length != 0 ? nodeInstance.connection : []
+    // Iterate over connection
     let nodeIteratorFeed = await graphInstance.iterateConnection({ nodeConnectionArray })
 
-    // Iterate over connection
+    // iterate over ports
     // if (nodeInstance.port) subsequentArray = await iteratePort({ nodePortArray: nodeInstance.port })
     // else
     // subsequentArray = []
 
-    // pass iterator to implementation and propagate back the results of the node promises
-    yield* traverseNodeImplementation({ nodeIteratorFeed, emit })
+    // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
+    return yield* traverseNodeImplementation({ nodeIteratorFeed, emit })
   },
   /**
    * Loops through node connection to traverse the connected nodes' graphs
