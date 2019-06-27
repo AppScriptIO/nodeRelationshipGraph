@@ -252,8 +252,10 @@ Object.assign(entityPrototype, {
   },
   traverseNode: async function*({ nodeInstance, graphInstance, traverseNodeImplementation /** Controls the iteration over nodes and execution arrangement. */ }) {
     let { eventEmitterCallback: emit } = function.sent
-    let nodeConnectionArray = nodeInstance.connection && nodeInstance.connection?.length != 0 ? nodeInstance.connection : []
+    if (nodeInstance.connection?.length == 0 || !nodeInstance.connection) return
+
     // Iterate over connection
+    let nodeConnectionArray = nodeInstance.connection
     let nodeIteratorFeed = await graphInstance.iterateConnection({ nodeConnectionArray })
 
     // iterate over ports
