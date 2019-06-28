@@ -8,5 +8,5 @@ export const implementation = {
   traverseNode: { allPromise, chronological, raceFirstPromise },
   traversalInterception: { processThenTraverse, conditionCheck },
   aggregator: { AggregatorArray, ConditionCheck },
-  processData: { returnDataItemKey, returnDataItemKey, returnKey, timeout },
+  processData: { returnDataItemKey, returnKey, timeout },
 }

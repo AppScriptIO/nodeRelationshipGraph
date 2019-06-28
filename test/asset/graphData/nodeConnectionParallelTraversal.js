@@ -89,9 +89,9 @@ export let nodeArray = [
       },
     ],
     tag: {
-      executionType: 'timeout',
+      processDataImplementation: 'timeout',
       traversalImplementationType: 'logNode',
-      iterateConnectionImplementation: 'allPromise' || 'raceFirstPromise',
+      traverseNodeImplementation: 'allPromise' || 'raceFirstPromise',
     },
   },
   {
@@ -102,7 +102,7 @@ export let nodeArray = [
       timerDelay: 90,
     },
     tag: {
-      executionType: 'timeout',
+      processDataImplementation: 'timeout',
     },
   },
   {
@@ -113,7 +113,7 @@ export let nodeArray = [
       timerDelay: 50,
     },
     tag: {
-      executionType: 'timeout',
+      processDataImplementation: 'timeout',
     },
   },
   {
@@ -124,7 +124,7 @@ export let nodeArray = [
       timerDelay: 20,
     },
     tag: {
-      executionType: 'timeout',
+      processDataImplementation: 'timeout',
     },
   },
   {
@@ -135,7 +135,7 @@ export let nodeArray = [
       timerDelay: 70,
     },
     tag: {
-      executionType: 'timeout',
+      processDataImplementation: 'timeout',
     },
   },
 ]

@@ -9,7 +9,7 @@ export let nodeArray = [
     tag: {
       traversalImplementationType: 'logNode', // traversal implementation
       dataItemType: 'reference',
-      executionType: 'returnDataItemKey',
+      processDataImplementation: 'returnDataItemKey',
     },
   },
   {
@@ -20,7 +20,7 @@ export let nodeArray = [
     },
     tag: {
       dataItemType: 'reference',
-      executionType: 'returnDataItemKey',
+      processDataImplementation: 'returnDataItemKey',
     },
   },
 ]

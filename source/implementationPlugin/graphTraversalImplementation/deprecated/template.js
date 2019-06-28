@@ -14,7 +14,7 @@ export const shellscript = {
     assert(this.portAppInstance.config.clientSidePath, "• clientSidePath cannot be undefined. i.e. previous middlewares should've set it")
     let templatePath = path.join(this.portAppInstance.config.clientSidePath, unitInstance.file.filePath)
     let renderedContent
-    switch (unitInstance.executionType) {
+    switch (unitInstance.processDataImplementation) {
       default:
       case 'underscoreRendering':
         renderedContent = await this.underscoreRendering({ templatePath, view })

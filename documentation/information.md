@@ -34,7 +34,7 @@ Different applications may use this module:
     e.g. Data: { Type: ‘reference’ || ‘value’, key: ‘XYZ’ }
 - DataItem/Unit/Record: Resource implementation
     
-    e.g. { Type: ‘reference’, importModuleName: ‘’, executionType: ‘’ }
+    e.g. { Type: ‘reference’, importModuleName: ‘’, processData: ‘’ }
 - Resource/File: Resource record
     
     e.g. { type: 'file', path: '' }

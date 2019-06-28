@@ -105,9 +105,9 @@ export const iteratePort = async function({ nodePortArray = thisArg.port, execut
 /**
  * Execute node port with relevant implementation - Call correct execution type method according to `node port` settings
  */
-export async function executePort({ nodePort, nodeInstance = thisArg, iterateConnection = iterateConnection, executionTypeArray }) {
+export async function executePort({ nodePort, nodeInstance = thisArg, iterateConnection = iterateConnection, processDataArray }) {
   // filter connection to match the current port
   let currentPortConnectionArray = nodeInstance.connection.filter(item => item.source.portKey == nodePort.key)
 
-  return await iterateConnection({ nodeConnectionArray: currentPortConnectionArray, implementationType: nodePort.tag?.iterateConnectionImplementation })
+  return await iterateConnection({ nodeConnectionArray: currentPortConnectionArray, implementationType: nodePort.tag?.traverseNodeImplementation })
 }

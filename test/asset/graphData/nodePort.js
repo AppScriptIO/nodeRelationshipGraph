@@ -113,7 +113,7 @@ export let nodeArray = [
         order: 1,
         tag: {
           direction: 'output', // 'output'/'input'
-          iterateConnectionImplementation: 'chronological',
+          traverseNodeImplementation: 'chronological',
         },
       },
       {
@@ -121,7 +121,7 @@ export let nodeArray = [
         order: 2,
         tag: {
           direction: 'output', // 'output'/'input'
-          iterateConnectionImplementation: 'chronological',
+          traverseNodeImplementation: 'chronological',
         },
       },
     ],

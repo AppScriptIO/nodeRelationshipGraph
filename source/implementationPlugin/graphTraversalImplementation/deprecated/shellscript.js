@@ -10,7 +10,7 @@
 import { exec, execSync, spawn, spawnSync } from 'child_process'
 
 export const shellscript = {
-  async executeDataItem({ dataItem, nodeInstance = thisArg, executionType }) {
+  async executeDataItem({ dataItem, nodeInstance = thisArg, processData }) {
     // execute command
     await dataItemInstance.executeScript()
   },

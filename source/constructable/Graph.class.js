@@ -5,11 +5,15 @@ import { DataItem } from './DataItem.class.js'
 import { GraphTraversal } from './GraphTraversal.class.js'
 import { Database } from './Database.class.js'
 import { Cache } from './Cache.class.js'
+import { Context } from './Context.class.js'
 import { ImplementationManagement } from './ImplementationManagement.class.js'
 import { proxifyMethodDecorator } from '../utility/proxifyMethodDecorator.js'
 import { mergeDefaultParameter } from '../utility/mergeDefaultParameter.js'
 import EventEmitter from 'events'
-const removeUndefinedFromObject = object => Object.keys(object).forEach(key => object[key] === undefined && delete object[key])
+const removeUndefinedFromObject = object => {
+  Object.keys(object).forEach(key => object[key] === undefined && delete object[key])
+  return object
+}
 
 /** Conceptual Graph
  * Graph Class holds and manages graph elements and traversal algorithm implementations:
@@ -122,43 +126,47 @@ Object.assign(entityPrototype, {
     })
     return Reflect.apply(target, thisArg, argumentsList)
   })
-  // TODO: implementation type: Condition, Middleware, Template
+  // TODO: Add ability to pick a defined set of implementation keys to be used to gether - e.g. implementation type: Condition, Middleware, Template
   @proxifyMethodDecorator((target, thisArg, argumentsList, targetClass, methodName) => {
     /** Choose concrete implementation
-     * Parameter hirerchy for graph traversal implementations:
-     *? -. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
-     * 1. call parameters that are passed directly // TODO: make traversal implementation overwritable ignoring each nodes configuration, i.e. overwritable over nodeInstance own property implementation keys
-     * 2. node instance configuration/properties
-     * 3. default values specified in the function scope.
+     * Parameter hirerchy for graph traversal implementations: (1 as first priority)
+     * 1. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
+     * 2. call parameters that are passed directly
+     * 3. node instance configuration/properties
+     * 4. default values specified in the function scope.
      */
-    let { nodeInstance } = argumentsList[0]
-    let { parentTraversalArg } = argumentsList[1]
-    let implementationKey = {
-      processData: nodeInstance.tag?.executionType,
-      traverseNode: nodeInstance.tag?.iterateConnectionImplementation,
-      aggregator: 'AggregatorArray',
-      traversalInterception: 'processThenTraverse',
-    }
-    // merge with parent arguments
-    removeUndefinedFromObject(implementationKey) // remove undefined values because native Object.assign doesn't override keys with `undefined` values
-    if (parentTraversalArg) implementationKey = Object.assign({}, parentTraversalArg[0].implementationKey, implementationKey)
-    // deep merge of nested parameter (TODO: use utility function from different module that does this function.)
-    if (!argumentsList[0].implementationKey) argumentsList[0].implementationKey = implementationKey
-    else Object.assign(argumentsList[0].implementationKey, implementationKey)
-
-    // get implementation functions
-    let { graphInstance } = argumentsList[0],
+    let { nodeInstance, implementationKey: parameterImplementationKey = {}, graphInstance } = argumentsList[0],
+      { parentTraversalArg } = argumentsList[1],
       concreteTraversalInstance = graphInstance[Entity.reference.getInstanceOf](GraphTraversal),
       concreteTraversal = concreteTraversalInstance[ImplementationManagement.reference.key.getter]()
-    implementationKey = argumentsList[0].implementationKey
+
+    // TODO: refactor parameter hirerchy merging to be more readable.
+    // implementation keys of node instance own config parameters and of default values set in function scope
+    let implementationKey =
+      {
+        processData: nodeInstance.tag?.processDataImplementation,
+        traverseNode: nodeInstance.tag?.traverseNodeImplementation,
+        aggregator: 'AggregatorArray',
+        traversalInterception: 'processThenTraverse',
+      } |> removeUndefinedFromObject // remove undefined values because native Object.assign doesn't override keys with `undefined` values
+    // Context instance parameter
+    let contextImplementationKey = graphInstance[Context.reference.key.getter] ? graphInstance[Context.reference.key.getter]()?.implementationKey : {}
+    // parent arguments
+    let parentImplementationKey = parentTraversalArg ? parentTraversalArg[0].implementationKey || {} : {}
+    // overwrite (for all subtraversals) implementation through directly passed parameters - overwritable traversal implementation ignoring each nodes configuration, i.e. overwritable over nodeInstance own property implementation keys
+    implementationKey
+      |> (targetObject =>
+        Object.assign(targetObject, parentImplementationKey, implementationKey, parameterImplementationKey |> removeUndefinedFromObject, contextImplementationKey |> removeUndefinedFromObject))
+    argumentsList[0].implementationKey = implementationKey
+
+    // get implementation functions
     let implementation = {
       dataProcess: concreteTraversal.processData[implementationKey.processData],
       traverseNode: concreteTraversal.traverseNode[implementationKey.traverseNode],
       traversalInterception: concreteTraversal.traversalInterception[implementationKey.traversalInterception],
       aggregator: concreteTraversal.aggregator[implementationKey.aggregator],
     }
-
-    // merge to arguments
+    // deep merge of nested parameter (TODO: use utility function from different module that does this function.)
     argumentsList = mergeDefaultParameter({
       passedArg: argumentsList,
       defaultArg: [
@@ -174,9 +182,9 @@ Object.assign(entityPrototype, {
     {
       graphInstance,
       nodeInstance,
-      concreteTraversal, // implementation registered functions
       nodeIteratorFeed, // iterator providing node parameters for recursive traversal calls.
       traversalDepth, // level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
+      concreteTraversal, // implementation registered functions
       implementationKey, // used by decorator to retreive implementation functions
       implementation, // implementation functions
       additionalChildNode,
@@ -189,6 +197,13 @@ Object.assign(entityPrototype, {
       concreteTraversal: GraphTraversal /** TODO: Currently it is an object derived from a GraphTraversal instance */,
       traversalDepth: Number,
       implementaion: Object,
+      implementationKey: {
+        // these are the the default registered implementations or internal module implementations.
+        processData: 'returnDataItemKey' | 'returnKey' | 'timeout',
+        traverseNode: 'allPromise' | 'chronological' | 'raceFirstPromise',
+        aggregator: 'AggregatorArray' | 'ConditionCheck',
+        traversalInterception: 'processThenTraverse' | 'conditionCheck',
+      },
     } = {},
     { parentTraversalArg } = {},
   ) {
@@ -296,7 +311,7 @@ Object.assign(entityPrototype, {
     // } else
     dataItem = nodeInstance.dataItem // default dataItem by property
     // Execute node dataItem
-    return dataItem ? await nodeInstance::dataProcessImplementation({ dataItem, executionType: nodeInstance.tag?.executionType }) : null
+    return dataItem ? await nodeInstance::dataProcessImplementation({ dataItem, processData: nodeInstance.tag?.processDataImplementation }) : null
   },
 })
 

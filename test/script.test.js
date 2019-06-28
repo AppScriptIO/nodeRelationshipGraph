@@ -45,7 +45,11 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
       },
       defaultImplementation: 'debugImplementation',
     })
-    let contextInstance = new Context.clientInterface({ someString: 'hello' })
+    let contextInstance = new Context.clientInterface({
+      implementationKey: {
+        traverseNode: 'chronological',
+      },
+    })
     let concreteDatabaseBehavior = new Database.clientInterface({
       implementationList: {
         // database simple memory adapter
@@ -72,7 +76,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     test('Should traverse graph successfully', async () => {
       let graph = new configuredGraph({})
       await graph.loadGraphIntoMemoryFromDatabase()
-      let result = await graph.traverse({ nodeInstance: 'node-key-0' })
+      let result = await graph.traverse({ nodeInstance: 'node-key-0', implementationKey: { traverseNode: 'allPromise' } })
       console.log(result)
       // graph.count().node |> console.log
       // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.

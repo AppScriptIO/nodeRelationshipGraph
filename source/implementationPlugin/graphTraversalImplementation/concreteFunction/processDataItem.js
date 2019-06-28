@@ -18,18 +18,18 @@ export async function returnKey({ dataItem, nodeInstance = this }) {
   return dataItem.key
 }
 
-async function initializeDataItem({ dataItem, executionType = 'getDataItem' }) {
+async function initializeDataItem({ dataItem, processData = 'getDataItem' }) {
   let implementationObject = {
     async getResourceFile() {},
   }
 
   // specific execution implementation
-  if (executionType) {
+  if (processData) {
     let callback
 
     // pick implementation
     for (let index in implementationObject) {
-      if (index == executionType) {
+      if (index == processData) {
         callback = implementationObject[index]
         break
       }
