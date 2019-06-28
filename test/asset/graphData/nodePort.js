@@ -125,6 +125,10 @@ export let nodeArray = [
         },
       },
     ],
+    tag: {
+      traverseNodeImplementation: 'chronological',
+      processDataImplementation: 'returnDataItemKey',
+    },
   },
 
   {

@@ -6,8 +6,6 @@
     - Node processing algorithm is specified.
     - Traversal algorithm specified, affected beighboring nodes / subnodes in directed graph.
  **/
-//! CHANGE `processDataImplementation` to `processingAlgorithm`
-//! CHANGE `traversalImplementationType` TO `traversalAlgorithm`
 export let nodeArray = [
   {
     label: { name: 'node' },
@@ -15,7 +13,6 @@ export let nodeArray = [
     dataItem: { key: 'dataItem-key-1' },
     connection: [],
     tag: {
-      traversalImplementationType: 'logNode',
       processDataImplementation: 'returnDataItemKey',
     },
   },

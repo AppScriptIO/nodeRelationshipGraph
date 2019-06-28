@@ -24,6 +24,17 @@ const fixture = { traversalResult: ['dataItem-key-1'] }
  */
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
   suite('configured graph with loading plugins and database adapter', async () => {
+    let concreteDatabaseBehavior = new Database.clientInterface({
+      implementationList: {
+        // database simple memory adapter
+        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodePort.nodeArray }),
+        memoryModelAdapter2: databaseModelAdapterFunction({
+          nodeArray: graphData.nodeDataItemAsReference.nodeArray,
+          dataItemArray: graphData.nodeDataItemAsReference.dataItemArray,
+        }),
+      },
+      defaultImplementation: 'memoryModelAdapter',
+    })
     let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
       implementationList: {
         debugImplementation,
@@ -47,19 +58,8 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
     let contextInstance = new Context.clientInterface({
       implementationKey: {
-        traverseNode: 'chronological',
+        // traverseNode: 'chronological',
       },
-    })
-    let concreteDatabaseBehavior = new Database.clientInterface({
-      implementationList: {
-        // database simple memory adapter
-        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeConnectionParallelTraversal.nodeArray }),
-        memoryModelAdapter2: databaseModelAdapterFunction({
-          nodeArray: graphData.nodeDataItemAsReference.nodeArray,
-          dataItemArray: graphData.nodeDataItemAsReference.dataItemArray,
-        }),
-      },
-      defaultImplementation: 'memoryModelAdapter',
     })
 
     let configuredGraph = Graph.clientInterface({
@@ -76,7 +76,12 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     test('Should traverse graph successfully', async () => {
       let graph = new configuredGraph({})
       await graph.loadGraphIntoMemoryFromDatabase()
-      let result = await graph.traverse({ nodeInstance: 'node-key-0', implementationKey: { traverseNode: 'allPromise' } })
+      let result = await graph.traverse({
+        nodeInstance: 'node-key-0',
+        implementationKey: {
+          // traverseNode: 'allPromise'
+        },
+      })
       console.log(result)
       // graph.count().node |> console.log
       // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.

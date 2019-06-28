@@ -79,35 +79,3 @@ export async function* chronological({ nodeIteratorFeed, emit }) {
   }
   return nodeResultList
 }
-
-/**
- * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
- */
-export const iteratePort = async function({ nodePortArray = thisArg.port, executePort = implementation.executePort }) {
-  // filter port array to match outgoing ports only
-  nodePortArray = nodePortArray.filter(item => item.tag.direction == 'output')
-
-  // sort array
-  function sortAccordingToOrder(former, latter) {
-    return former.order - latter.order
-  } // using `order` property
-  nodePortArray.sort(sortAccordingToOrder)
-
-  let aggregationArray = []
-  for (let nodePort of nodePortArray) {
-    let subsequentArray = await executePort({ nodePort: nodePort })
-    Array.prototype.push.apply(aggregationArray, subsequentArray)
-  }
-
-  return aggregationArray
-}
-
-/**
- * Execute node port with relevant implementation - Call correct execution type method according to `node port` settings
- */
-export async function executePort({ nodePort, nodeInstance = thisArg, iterateConnection = iterateConnection, processDataArray }) {
-  // filter connection to match the current port
-  let currentPortConnectionArray = nodeInstance.connection.filter(item => item.source.portKey == nodePort.key)
-
-  return await iterateConnection({ nodeConnectionArray: currentPortConnectionArray, implementationType: nodePort.tag?.traverseNodeImplementation })
-}

@@ -90,7 +90,6 @@ export let nodeArray = [
     ],
     tag: {
       processDataImplementation: 'timeout',
-      traversalImplementationType: 'logNode',
       traverseNodeImplementation: 'allPromise' || 'raceFirstPromise',
     },
   },

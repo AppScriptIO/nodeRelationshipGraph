@@ -269,14 +269,11 @@ Object.assign(entityPrototype, {
     let { eventEmitterCallback: emit } = function.sent
     if (nodeInstance.connection?.length == 0 || !nodeInstance.connection) return
 
-    // Iterate over connection
-    let nodeConnectionArray = nodeInstance.connection
-    let nodeIteratorFeed = await graphInstance.iterateConnection({ nodeConnectionArray })
-
-    // iterate over ports
-    // if (nodeInstance.port) subsequentArray = await iteratePort({ nodePortArray: nodeInstance.port })
-    // else
-    // subsequentArray = []
+    let nodeIteratorFeed = nodeInstance.port
+      ? // iterate over ports
+        await graphInstance.iteratePort({ nodePortArray: nodeInstance.port, nodeConnectionArray: nodeInstance.connection, iterateConnectionCallback: graphInstance.iterateConnection })
+      : // Iterate over connection
+        await graphInstance.iterateConnection({ nodeConnectionArray: nodeInstance.connection })
 
     // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
     return yield* traverseNodeImplementation({ nodeIteratorFeed, emit })
@@ -288,18 +285,35 @@ Object.assign(entityPrototype, {
   iterateConnection: async function*({ nodeConnectionArray } = {}) {
     const controlArg = function.sent
 
-    // filter connection array to match outgoing connections only
-    // nodeConnectionArray = nodeConnectionArray.filter(item => item.tag.direction == 'outgoing')
-
     // sort connection array
     const sortAccordingToOrder = (former, latter) => former.source.position.order - latter.source.position.order // using `order` property
     nodeConnectionArray.sort(sortAccordingToOrder)
+    // filter connection array to match outgoing connections only
+    // nodeConnectionArray = nodeConnectionArray.filter(item => item.tag.direction == 'outgoing')
 
     for (let nodeConnection of nodeConnectionArray) {
       // iteration implementaiton
       for (let destinationNode of nodeConnection.destination.node) {
         yield { nodeKey: destinationNode.key }
       }
+    }
+  },
+  /**
+   * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
+   * TODO: add ability to pass traversal configuration to a group of connections. Each port holds traversal cofigs that should affect all connection connected to this port.
+   */
+  iteratePort: async function*({ nodePortArray, nodeConnectionArray, iterateConnectionCallback }) {
+    // filter port array to match outgoing ports only
+    nodePortArray = nodePortArray.filter(item => item.tag.direction == 'output')
+
+    // sort array
+    const sortAccordingToOrder = (former, latter) => former.order - latter.order // using `order` property
+    nodePortArray.sort(sortAccordingToOrder)
+
+    for (let nodePort of nodePortArray) {
+      // filter connection to match the current port
+      let currentPortConnectionArray = nodeConnectionArray.filter(item => item.source.portKey == nodePort.key)
+      yield* await iterateConnectionCallback({ nodeConnectionArray: currentPortConnectionArray, implementationType: nodePort.tag?.traverseNodeImplementation })
     }
   },
   dataProcess: async function({ nodeInstance, nextProcessData, dataProcessImplementation }) {

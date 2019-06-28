@@ -31,9 +31,7 @@ export let nodeArray = [
         },
       },
     ],
-    tag: {
-      traversalImplementationType: 'logNode',
-    },
+    tag: {},
   },
   {
     label: { name: 'node' },
@@ -41,8 +39,6 @@ export let nodeArray = [
     dataItem: {
       key: 'dataItem-key-2',
     },
-    tag: {
-      // traversalImplementationType: 'logNode',
-    },
+    tag: {},
   },
 ]

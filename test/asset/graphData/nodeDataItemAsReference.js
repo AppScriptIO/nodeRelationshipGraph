@@ -7,7 +7,6 @@ export let nodeArray = [
     },
     connection: [],
     tag: {
-      traversalImplementationType: 'logNode', // traversal implementation
       dataItemType: 'reference',
       processDataImplementation: 'returnDataItemKey',
     },
