@@ -1,179 +1,66 @@
-export let nodeArray = [
-  {
-    label: { name: 'node' },
-    key: 'node-key-0',
-    dataItem: {
-      key: 'dataItem-key-0',
-    },
-    connection: [
-      {
-        key: 'connection-key-p', // pathPointerKey
-        source: {
-          portKey: 'port-key-2',
-          position: {
-            order: '2',
-          },
-        },
-        destination: {
-          node: [
-            {
-              key: 'node-key-1',
-              port: null, // null uses default.
-            },
-          ],
-        },
-        tag: {
-          direction: 'outgoing', // 'ingoing'/'outgoing'
-        },
-      },
-      {
-        key: 'connection-key-z', // pathPointerKey
-        source: {
-          portKey: 'port-key-1',
-          position: {
-            order: '1',
-          },
-        },
-        destination: {
-          node: [
-            {
-              key: 'node-key-2',
-              port: null, // null uses default.
-            },
-          ],
-        },
-        tag: {
-          direction: 'outgoing', // 'ingoing'/'outgoing'
-        },
-      },
-      {
-        key: 'connection-key-y', // pathPointerKey
-        source: {
-          portKey: 'port-key-2',
-          position: {
-            order: '3',
-          },
-        },
-        destination: {
-          node: [
-            {
-              key: 'node-key-3',
-              port: null, // null uses default.
-            },
-          ],
-        },
-        tag: {
-          direction: 'outgoing', // 'ingoing'/'outgoing'
-        },
-      },
-      {
-        key: 'connection-key-t', // pathPointerKey
-        source: {
-          portKey: 'port-key-1',
-          position: {
-            order: '2',
-          },
-        },
-        destination: {
-          node: [
-            {
-              key: 'node-key-4',
-              port: null, // null uses default.
-            },
-          ],
-        },
-        tag: {
-          direction: 'outgoing', // 'ingoing'/'outgoing'
-        },
-      },
-      {
-        key: 'connection-key-c', // pathPointerKey
-        source: {
-          portKey: 'port-key-2',
-          position: {
-            order: '1',
-          },
-        },
-        destination: {
-          node: [
-            {
-              key: 'node-key-5',
-              port: null, // null uses default.
-            },
-          ],
-        },
-        tag: {
-          direction: 'outgoing', // 'ingoing'/'outgoing'
-        },
-      },
-    ],
-    port: [
-      {
-        key: 'port-key-1',
-        order: 1,
-        tag: {
-          direction: 'output', // 'output'/'input'
-          traverseNodeImplementation: 'chronological',
-        },
-      },
-      {
-        key: 'port-key-2',
-        order: 2,
-        tag: {
-          direction: 'output', // 'output'/'input'
-          traverseNodeImplementation: 'chronological',
-        },
-      },
-    ],
-    tag: {
-      traverseNodeImplementation: 'chronological',
-      processDataImplementation: 'returnDataItemKey',
-    },
-  },
+// port could be an input or output port.
 
+export let node = [
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
+    key: 'node-key-0',
+    name: 'dataItem-key-0',
+    traverseNodeImplementation: 'chronological',
+    processDataImplementation: 'returnDataItemKey',
+  },
+  {
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-1',
-    dataItem: {
-      key: 'dataItem-key-1',
-    },
-    connection: [],
-    port: [],
+    name: 'dataItem-key-1',
   },
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-2',
-    dataItem: {
-      key: 'dataItem-key-2',
-    },
-    connection: [],
-    port: [],
+    name: 'dataItem-key-2',
   },
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-3',
-    dataItem: {
-      key: 'dataItem-key-3',
-    },
-    connection: [],
-    port: [],
+    name: 'dataItem-key-3',
   },
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-4',
-    dataItem: {
-      key: 'dataItem-key-4',
-    },
-    connection: [],
-    port: [],
+    name: 'dataItem-key-4',
   },
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-5',
-    dataItem: {
-      key: 'dataItem-key-5',
-    },
-    connection: [],
-    port: [],
+    name: 'dataItem-key-5',
   },
+  /*
+                    _   
+   _ __   ___  _ __| |_ 
+  | '_ \ / _ \| '__| __|
+  | |_) | (_) | |  | |_ 
+  | .__/ \___/|_|   \__|
+  |_|                   
+  */
+  {
+    type: ['port'],
+    key: 'port-key-1',
+    order: 1,
+    direction: 'output',
+    traverseNodeImplementation: 'chronological',
+  },
+  {
+    type: ['port'],
+    key: 'port-key-2',
+    order: 2,
+    direction: 'output',
+    traverseNodeImplementation: 'chronological',
+  },
+]
+
+export let connection = [
+  { key: 'connection-key-p', order: '2', source: ['node-key-0', 'port-key-2'], destination: ['node-key-1', null] },
+  { key: 'connection-key-z', order: '1', source: ['node-key-0', 'port-key-1'], destination: ['node-key-2', null] },
+  { key: 'connection-key-y', order: '3', source: ['node-key-0', 'port-key-2'], destination: ['node-key-3', null] },
+  { key: 'connection-key-t', order: '2', source: ['node-key-0', 'port-key-1'], destination: ['node-key-4', null] },
+  { key: 'connection-key-c', order: '1', source: ['node-key-0', 'port-key-2'], destination: ['node-key-5', null] },
 ]

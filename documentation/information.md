@@ -27,7 +27,11 @@ Different applications may use this module:
         - Loop allowed - i.e. self edges.
         - ports: group of connections that relate to each other or have specific configuration. (Similar concept - https://cs.stackexchange.com/questions/41320/terminology-for-a-graph-with-ports-on-its-nodes?newreg=33ff713616b04cdcbdd3df94b1ed841c) - https://hal.inria.fr/inria-00139363/en/ - https://pdf.sciencedirectassets.com/272990/1-s2.0-S1571066108X00398/1-s2.0-S1571066108004295/main.pdf?x-amz-security-token=AgoJb3JpZ2luX2VjEMf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQCvZdWgrZO0wOBdg%2FjTVgf718GErc%2BXGpopAw45WVs%2FWgIgO3MA4xd%2BbFaJUV6g2LtDI7I%2FXnwo5T%2FHcL%2FxI9DMDqkq4wMI7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARACGgwwNTkwMDM1NDY4NjUiDNM9FztsdW4tKsUwfSq3A8JVy7BnDSqkk4y7AF%2BNctHdBjymKOXej9nJt6iFJpcxrYoe7L2FE8Fusps8kkmOrVJO1GmENX9HCI%2FYOGn%2B1ruF8q3Xk43KuUlcnQ9E7oDm59OHzmq7K9PXuPo3VmPi%2Byy4OdWH%2Bcke7rnp9EU7MpYtRkPCpHmyvhFFQAkZKWU2o6v035BRYj%2Fad3sa%2F84u449%2FNPy%2Fp4IWjQ5AThG1GE3jdVPUbsScJepaHV2DAYoB7d%2BfuMgqdPUkfxAtsxInnop%2BCu4FUb33c4pyTW6%2FoWwryI%2BBHdgD64By6S3OK7b1zfFULIIxyr1E0%2BR8zcANV7nVgRwiPeywwyZFV3Cyl0j1depw2KPAmklyylq%2F%2FIOhbHkYLuMsoHn1VrxZ%2BWlSjvjMvdQt3wvAYDOKp2h%2F9jfDgHF5J%2BUzHzouDpVjjywJXNn8iyGPQJm7GQZux9agf50aCPjibTfv0XdZTQ2qb%2F%2B1HUhoszNiq2oCLis9h9CyoCPcyq%2FQJZEUUuOhzd6q9nI%2FKgUa02PZRQpOlXjlyhCV1%2FYImgLhciA3lXq2NDpG2RZEnzTV9Wn%2BgxnLBEnpHInCMTccAAAwzdqO6AU6tAHNRp3pBbeKfqX4wh1rSDMbgbirJoZ2ttS2Y1J1kougcviArz89sPoHyMrSCDwyyagp4iliwBzDXrTWHgIBBxWcvwM2SJbBbezdgbT%2Fj1CSKHTAvIy9gxyNvlruWHbuc%2FXMHiwHtutewMILYDdXGGX3WjCdtHaaz71gE9sG8nPY5BCxSV%2BRoC2DG6Xo656G5BzV4%2BU9%2FfCccO%2B7dFz6u4PVcpqG3l5zlyomrdYjplhjx0OPGlA%3D&AWSAccessKeyId=ASIAQ3PHCVTYXCAYIHPH&Expires=1560525929&Signature=gFYOp96H%2FODqGqldAqyADGIoaDQ%3D&hash=e7b16696987f9b907cdb54a17769fa584762761e1128f0b68cd2113e6c7d2f54&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S1571066108004295&tid=spdf-fa81d04c-5e61-4c2b-8f9c-4d49a2bed7d7&sid=984b0854560f46497568f64-1e1b680a8b09gxrqb&type=client
         - the concept of additional children/edges, where a graph can be used through a proxy without manipulating it. Related to insertion points concept - adding nodes in insertion points in the graph.
+        Edges could be directed with 'ingoing'/'outgoing' direction. Additionally each edge has a position/arrangement property that defines the order and placement (in case it is an additional connection to be traversed).
+        - A `path` is a chain of edges that specifies a path from & to a pair of nodes.
+
 - Relationship Graph: conveying of relational information. Directed graph. _Terminolog: ReusableNestedUnit_ 
+- edge/relationship/connection
 - Trees: herarchies - nested treemaps = is a connected unweighted acyclic graph
 - Node - _similar terminology: nestedUnit_
    
@@ -41,7 +45,7 @@ Different applications may use this module:
 https://medium.freecodecamp.org/all-you-need-to-know-about-tree-data-structures-bceacb85490c
 - port: _similar terminology = junction, synapse, group, insetionPoint, inlet/outlet, channel, junctionPoint, portal, relationship, relation_
 - source/destination nodes - are nodes that make up the edges of a connection. _Or start/end nodes_
-- path: a sequence of edges/connections that connect a sequence of nodes.
+- path: a sequence of edges/connections that connect a sequence of nodes. pathPointerKey could be an additional conenction that is added to the existing conenctions for traversal purposes.
 - connectionKey - _similar terminology: pathPointerKey_
 - node inheritance - node that extends another node, in a way that any changes of the parent node is retained by the child node. _terminology: subnode, supernode, node extension/inheritance_ 
 This is a better implementaiton for tree templates (extending an existing node tree without changing it) that used pathPointer or connectionPathSequence to reach the desired position for adding nodes inthe nested subtree/subnodes.

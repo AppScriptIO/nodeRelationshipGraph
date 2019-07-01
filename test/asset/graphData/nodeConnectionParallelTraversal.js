@@ -1,140 +1,55 @@
-export let nodeArray = [
+export let node = [
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-0',
-    dataItem: {
-      key: 'dataItem-key-0',
-      timerDelay: 0,
-    },
-    connection: [
-      {
-        key: 'connection-key-x', // pathPointerKey
-        source: {
-          position: {
-            order: '1',
-            // or
-            // placement: { type: 'after/before', connectionKey: 'KeyXXXX', }
-          },
-        },
-        destination: {
-          node: [
-            {
-              key: 'node-key-1',
-            },
-          ],
-        },
-        tag: {
-          direction: 'outgoing', // 'ingoing'/'outgoing'
-        },
-      },
-      {
-        key: 'connection-key-c', // pathPointerKey
-        source: {
-          position: {
-            order: '1',
-            // or
-            // placement: { type: 'after/before', connectionKey: 'KeyXXXX', }
-          },
-        },
-        destination: {
-          node: [
-            {
-              key: 'node-key-2',
-            },
-          ],
-        },
-        tag: {
-          direction: 'outgoing', // 'ingoing'/'outgoing'
-        },
-      },
-      {
-        key: 'connection-key-v', // pathPointerKey
-        source: {
-          position: {
-            order: '1',
-            // or
-            // placement: { type: 'after/before', connectionKey: 'KeyXXXX', }
-          },
-        },
-        destination: {
-          node: [
-            {
-              key: 'node-key-3',
-            },
-          ],
-        },
-        tag: {
-          direction: 'outgoing', // 'ingoing'/'outgoing'
-        },
-      },
-      {
-        key: 'connection-key-b', // pathPointerKey
-        source: {
-          position: {
-            order: '1',
-            // or
-            // placement: { type: 'after/before', connectionKey: 'KeyXXXX', }
-          },
-        },
-        destination: {
-          node: [
-            {
-              key: 'node-key-4',
-            },
-          ],
-        },
-        tag: {
-          direction: 'outgoing', // 'ingoing'/'outgoing'
-        },
-      },
-    ],
-    tag: {
-      processDataImplementation: 'timeout',
-      traverseNodeImplementation: 'allPromise' || 'raceFirstPromise',
-    },
+    // data item
+    name: 'dataItem-key-0',
+    timerDelay: 0,
+    // traversal config
+    processDataImplementation: 'timeout',
+    traverseNodeImplementation: 'allPromise' || 'raceFirstPromise',
   },
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-1',
-    dataItem: {
-      key: 'dataItem-key-1',
-      timerDelay: 90,
-    },
-    tag: {
-      processDataImplementation: 'timeout',
-    },
+    // data item
+    name: 'dataItem-key-1',
+    timerDelay: 90,
+    // traversal config
+    processDataImplementation: 'timeout',
   },
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-2',
-    dataItem: {
-      key: 'dataItem-key-2',
-      timerDelay: 50,
-    },
-    tag: {
-      processDataImplementation: 'timeout',
-    },
+    // data item
+    name: 'dataItem-key-2',
+    timerDelay: 50,
+    // traversal config
+    processDataImplementation: 'timeout',
   },
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-3',
-    dataItem: {
-      key: 'dataItem-key-3',
-      timerDelay: 20,
-    },
-    tag: {
-      processDataImplementation: 'timeout',
-    },
+    // data item
+    name: 'dataItem-key-3',
+    timerDelay: 20,
+    // traversal config
+    processDataImplementation: 'timeout',
   },
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-4',
-    dataItem: {
-      key: 'dataItem-key-4',
-      timerDelay: 70,
-    },
-    tag: {
-      processDataImplementation: 'timeout',
-    },
+    // data item
+    name: 'dataItem-key-4',
+    timerDelay: 70,
+    // traversal config
+    processDataImplementation: 'timeout',
   },
+]
+
+export let connection = [
+  { key: 'connection-key-x', source: 'node-key-0', destination: 'node-key-1' },
+  { key: 'connection-key-c', source: 'node-key-0', destination: 'node-key-2' },
+  { key: 'connection-key-v', source: 'node-key-0', destination: 'node-key-3' },
+  { key: 'connection-key-b', source: 'node-key-0', destination: 'node-key-4' },
 ]

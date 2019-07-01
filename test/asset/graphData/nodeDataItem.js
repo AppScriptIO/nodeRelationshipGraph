@@ -6,22 +6,21 @@
     - Node processing algorithm is specified.
     - Traversal algorithm specified, affected beighboring nodes / subnodes in directed graph.
  **/
-export let nodeArray = [
+export let node = [
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-1',
-    dataItem: { key: 'dataItem-key-1' },
-    connection: [],
-    tag: {
-      processDataImplementation: 'returnDataItemKey',
-    },
+    // data item
+    name: 'dataItem-key-1',
+    // traversal config
+    processDataImplementation: 'returnDataItemKey',
   },
   {
-    label: { name: 'node' },
+    type: ['traversalStep', 'executionProcess'],
     key: 'node-key-2',
-    dataItem: { key: 'dataItem-key-2' },
-    tag: {
-      processDataImplementation: 'returnDataItemKey',
-    },
+    // data item
+    name: 'dataItem-key-2',
+    // traversal config
+    processDataImplementation: 'returnDataItemKey',
   },
 ]

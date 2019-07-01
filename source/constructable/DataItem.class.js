@@ -2,6 +2,7 @@ import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
 import { GraphElement } from './GraphElement.class.js'
 
+//? TODO: Rename to "execution data" / "execution process" or keep it dataitem
 export const { class: DataItem, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new GraphElement.clientInterface({ description: 'DataItem' })
 
 /*
