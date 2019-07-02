@@ -1,5 +1,5 @@
 export async function returnDataItemKey({ dataItem, nodeInstance = this }) {
-  let processedData = `${dataItem.key} processed`
+  let processedData = `${dataItem.name} processed`
   return processedData
 }
 
@@ -9,7 +9,7 @@ export async function timeout({ dataItem, nodeInstance = this }) {
   return await new Promise((resolve, reject) =>
     setTimeout(() => {
       // console.log(`${delay}ms passed for key ${dataItem.key}.`) // debug
-      resolve(dataItem.key)
+      resolve(dataItem.name)
     }, delay),
   )
 }

@@ -52,7 +52,6 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     assert(key, `• ${key} Key should be present. The passed value is either undefined, null, or empty string.`)
     let instance = callerClass::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.concereteBehavior })({ concreteBehaviorList, data })
     instance.key = key
-    //? get dataItem in case referenced.
     return instance
   },
 })

@@ -27,33 +27,12 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     let concreteDatabaseBehavior = new Database.clientInterface({
       implementationList: {
         // database simple memory adapter
-        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodePort.nodeArray }),
-        memoryModelAdapter2: databaseModelAdapterFunction({
-          nodeArray: graphData.nodeDataItemAsReference.nodeArray,
-          dataItemArray: graphData.nodeDataItemAsReference.dataItemArray,
-        }),
+        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodePort.node, connectionArray: graphData.nodePort.connection || [] }),
       },
       defaultImplementation: 'memoryModelAdapter',
     })
     let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
-      implementationList: {
-        debugImplementation,
-        condition() {
-          // return require('./implementation/graphTraversalImplementation/condition.js').condition
-        },
-        middleware() {
-          // return require('./implementation/graphTraversalImplementation/middleware.js').middleware
-        },
-        schema() {
-          // return require('./implementation/graphTraversalImplementation/schema.js').schema
-        },
-        shellscript() {
-          // return require('./implementation/graphTraversalImplementation/shellscript.js').shellscript
-        },
-        template() {
-          // return require('./implementation/graphTraversalImplementation/template.js').template
-        },
-      },
+      implementationList: { debugImplementation, condition: {}, middleware: {}, schema: {}, shellscript: {}, template: {} },
       defaultImplementation: 'debugImplementation',
     })
     let contextInstance = new Context.clientInterface({
@@ -63,14 +42,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
 
     let configuredGraph = Graph.clientInterface({
-      parameter: [
-        {
-          database: concreteDatabaseBehavior,
-          traversal: concreteGraphTraversalBehavior,
-          concreteBehaviorList: [contextInstance],
-          data: {},
-        },
-      ],
+      parameter: [{ database: concreteDatabaseBehavior, traversal: concreteGraphTraversalBehavior, concreteBehaviorList: [contextInstance], data: {} }],
     })
 
     test('Should traverse graph successfully', async () => {

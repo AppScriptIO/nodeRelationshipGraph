@@ -2,8 +2,7 @@ import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
 import { GraphElement } from './GraphElement.class.js'
 
-//? TODO: Rename to "execution data" / "execution process" or keep it dataitem
-export const { class: DataItem, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new GraphElement.clientInterface({ description: 'DataItem' })
+export const { class: Connection, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new GraphElement.clientInterface({ description: 'Connection' })
 
 /*
                    _        _                    ____       _                  _   _             
@@ -14,7 +13,7 @@ export const { class: DataItem, reference: Reference, constructablePrototype: Pr
   |_|                           |___/|_|                           |___/                         
 */
 Object.assign(entityPrototype, {
-  constructor: Symbol('DataItem:key.constructor'),
+  constructor: Symbol('Connection:key.constructor'),
 })
 
 /*
@@ -39,10 +38,10 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     concreteBehaviorList,
     callerClass = this,
   }) {
+    let { key } = data
+    assert(key, `• ${key} Key should be present. The passed value is either undefined, null, or empty string.`)
     let instance = callerClass::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.concereteBehavior })({ concreteBehaviorList, data })
     instance.key = key
-    // 1 get from database
-    // 2 populate the Graph Element with data using the `file` key of the Graph Element's data.
     return instance
   },
 })
@@ -54,7 +53,7 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
   | |___| | |  __/ | | | |_  | | |_| | | |  __/ |  |  _| (_| | (_|  __/
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
-DataItem.clientInterface = DataItem::Prototype[Constructable.reference.clientInterface.functionality].switch({
+Connection.clientInterface = Connection::Prototype[Constructable.reference.clientInterface.functionality].switch({
   implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype,
 })({
   constructorImplementation: Entity.reference.key.concereteBehavior,

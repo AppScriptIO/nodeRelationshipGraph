@@ -9,10 +9,12 @@ export const { class: Cache, reference: Reference, constructablePrototype: Proto
 
 Object.assign(Reference, {
   key: {
+    defaultGroupKey: Symbol('Cache defaultGroupKey'),
     list: Symbol('Cache list'),
     getter: Symbol('Cache getter'),
     setter: Symbol('Cache setter'),
     getLength: Symbol('Cache getLength of cached items'),
+    initializeGroup: Symbol('Cache initializeGroup'), // cache group
   },
 })
 
@@ -24,6 +26,7 @@ Object.assign(Reference, {
   | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
   |_|                           |___/|_|                           |___/                         
 */
+const defaultGroupKey = Reference.key.defaultGroupKey
 Object.assign(entityPrototype, {
   [Entity.reference.key.concereteBehavior]({ constructorCallback, currentConcereteBehavior }) {
     return new Proxy(constructorCallback, {
@@ -35,15 +38,19 @@ Object.assign(entityPrototype, {
       },
     })
   },
-  [Reference.key.getter](key) {
-    return this[Reference.key.list].get(key) || undefined
+  [Reference.key.getter](key, groupKey = defaultGroupKey) {
+    if (!key) return this[Reference.key.list][groupKey] |> (map => [...map.values()]) // retrieve entire list group
+    return this[Reference.key.list][groupKey].get(key) || undefined
   },
-  [Reference.key.setter](key, value) {
+  [Reference.key.setter](key, value, groupKey = defaultGroupKey) {
     if (key === undefined || key === null) throw new Error('• Invalid key argument.')
-    this[Reference.key.list].set(key, value)
+    this[Reference.key.list][groupKey].set(key, value)
   },
-  [Reference.key.getLength]() {
-    return this[Reference.key.list].size
+  [Reference.key.getLength](groupKey = defaultGroupKey) {
+    return this[Reference.key.list][groupKey].size
+  },
+  [Reference.key.initializeGroup](groupKey) {
+    if (!this[Reference.key.list][groupKey]) this[Reference.key.list][groupKey] = new Map() // initialize an empty cache list
   },
 })
 
@@ -57,7 +64,12 @@ Object.assign(entityPrototype, {
 Cache::Cache[Constructable.reference.initialize.functionality].setter({
   // initialization for instance of Cache - i.e. a concrete behavior of Cache (an implemeantation)
   [Entity.reference.key.handleDataInstance]({ targetInstance, data }, previousResult /* in case multiple constructor function found and executed. */) {
-    targetInstance[Cache.reference.key.list] = new Map() // initialize an empty cache list
+    let groupKeyArray = data.groupKeyArray || []
+    targetInstance[Reference.key.list] = {} // initialize list
+    for (let groupKey of groupKeyArray) {
+      targetInstance::targetInstance[Reference.key.initializeGroup](groupKey)
+    }
+    targetInstance::targetInstance[Reference.key.initializeGroup](defaultGroupKey) // initialize default cache group
     return targetInstance
   },
 })

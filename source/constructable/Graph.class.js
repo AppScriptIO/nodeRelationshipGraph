@@ -1,7 +1,7 @@
 import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
 import { Node } from './Node.class.js'
-import { DataItem } from './DataItem.class.js'
+import { Connection } from './Connection.class.js'
 import { GraphTraversal } from './GraphTraversal.class.js'
 import { Database } from './Database.class.js'
 import { Cache } from './Cache.class.js'
@@ -42,11 +42,18 @@ Object.assign(Reference, {
 Object.assign(entityPrototype, {
   async loadGraphIntoMemoryFromDatabase({ graphInstance = this } = {}) {
     let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database)
-    let entryData = concereteDatabase[ImplementationManagement.reference.key.getter]().getAll() || []
-    for (let entry of entryData) {
+
+    let nodeEntryData = concereteDatabase[ImplementationManagement.reference.key.getter]().getAllNode() || []
+    for (let entry of nodeEntryData) {
       graphInstance.addNode({ nodeInstance: entry })
     }
-    return entryData
+
+    let connectionEntryData = concereteDatabase[ImplementationManagement.reference.key.getter]().getAllConnection() || []
+    for (let entry of connectionEntryData) {
+      graphInstance.addConnection({ connectionInstance: entry })
+    }
+
+    return { nodeEntryData, connectionEntryData }
   },
 
   /** Load node data on-demand from database
@@ -59,7 +66,7 @@ Object.assign(entityPrototype, {
     let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
     let nodeInstance
     // retrieve from cache
-    nodeInstance = concereteCache[Cache.reference.key.getter](key)
+    nodeInstance = concereteCache[Cache.reference.key.getter](key, 'node')
     // create node if doesn' exist
     if (!nodeInstance) {
       nodeInstance = await Reflect.apply(target, thisArg, argumentsList)
@@ -77,24 +84,70 @@ Object.assign(entityPrototype, {
   addNode({ nodeInstance, graphInstance = this }: { nodeInstance: Object | Node /* object with key or instance of Node */ }) {
     let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
     assert(nodeInstance.key, '• Node instance must have a key property.')
-    let cachedNode = concereteCache[Cache.reference.key.getter](nodeInstance.key)
-    if (!cachedNode) {
+    let cache = concereteCache[Cache.reference.key.getter](nodeInstance.key, 'node')
+    if (!cache) {
       // Note: `nodeInstance instanceof Node` will not work as Entity module creates Objects rather than callable Function instances. Could consider changing this behavior to allow native constructor checking to work.
       if (!(nodeInstance.constructor == Node)) nodeInstance = new graphInstance.configuredNode(nodeInstance)
-      concereteCache[Cache.reference.key.setter](nodeInstance.key, nodeInstance)
+      concereteCache[Cache.reference.key.setter](nodeInstance.key, nodeInstance, 'node')
     } else {
-      // retrieve the cached entry
-      nodeInstance = cachedNode
+      nodeInstance = cache // retrieve the cached entry
     }
     return nodeInstance
   },
-  addConnection() {},
+  getNode({ nodeKey, graphInstance = this }) {
+    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
+    return concereteCache[Cache.reference.key.getter](nodeKey, 'node')
+  },
+  addConnection({ connectionInstance, graphInstance = this }) {
+    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
+    assert(connectionInstance.source && connectionInstance.destination, `• Connection must have a source and destination nodes.`)
+    assert(connectionInstance.key, '• Connection object must have a key property.')
+    let cache = concereteCache[Cache.reference.key.getter](connectionInstance.key, 'connection')
+    if (!cache) {
+      // replace keys with instances
+      let replaceKeyWithNodeInstanceCallback = key => graphInstance.getNode({ nodeKey: key })
+      connectionInstance.source =
+        connectionInstance.source |> Array.isArray ? connectionInstance.source.map(replaceKeyWithNodeInstanceCallback) : replaceKeyWithNodeInstanceCallback(connectionInstance.source)
+      connectionInstance.destination =
+        connectionInstance.destination |> Array.isArray ? connectionInstance.destination.map(replaceKeyWithNodeInstanceCallback) : replaceKeyWithNodeInstanceCallback(connectionInstance.destination)
+      // Note: `connectionInstance instanceof Connection` will not work as Entity module creates Objects rather than callable Function instances. Could consider changing this behavior to allow native constructor checking to work.
+      if (!(connectionInstance.constructor == Connection)) connectionInstance = new graphInstance.configuredConnection(connectionInstance)
+      concereteCache[Cache.reference.key.setter](connectionInstance.key, connectionInstance, 'connection')
+    } else {
+      connectionInstance = cache // retrieve the cached entry
+    }
+    return connectionInstance
+  },
   // count number of cached elements
   count({ graphInstance = this } = {}) {
     let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
     return {
-      node: concereteCache[Cache.reference.key.getLength](),
+      node: concereteCache[Cache.reference.key.getLength]('node'),
+      connection: concereteCache[Cache.reference.key.getLength]('connection'),
     }
+  },
+  /**
+   * convention of data structure - `connection: { source: [<nodeKey>, <portKey>], destination: [<nodeKey>, <portKey>] }`
+   */
+  getConnection({
+    nodeInstance,
+    direction = 'outgoing' /* filter connection array to match outgoing connections only*/,
+    destinationNodeType,
+    graphInstance = this,
+  }: {
+    direction: 'outgoing' | 'incoming',
+  }) {
+    // filter connection of traversal node type
+    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
+    let connectionArray = concereteCache[Cache.reference.key.getter](false, 'connection')
+    const isNodeType = nodeInstance => Boolean(nodeInstance.type.includes(destinationNodeType))
+    let isSourceNode = sourceConnection => Boolean(sourceConnection == nodeInstance)
+    connectionArray = connectionArray.filter(connection => {
+      let sourceNode = connection.source |> Array.isArray ? connection.source[0] : connection.source
+      let destinationNode = connection.destination |> Array.isArray ? connection.destination[0] : connection.destination
+      return isSourceNode(sourceNode) && (destinationNodeType ? isNodeType(destinationNode) : true)
+    })
+    return connectionArray
   },
 
   /** Graph traversal - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
@@ -103,7 +156,6 @@ Object.assign(entityPrototype, {
   @proxifyMethodDecorator(async (target, thisArg, argumentsList, targetClass, methodName) => {
     // create node instance, in case string key is passed as parameter.
     let { nodeInstance, graphInstance = thisArg } = argumentsList[0]
-    let concreteTraversal = graphInstance[Entity.reference.getInstanceOf](GraphTraversal)
     if (typeof nodeInstance === 'string') {
       nodeInstance = await graphInstance.addNodeByKey({ key: nodeInstance }) // retrieve node data on-demand in case not cached.
       argumentsList[0].nodeInstance = nodeInstance
@@ -120,6 +172,7 @@ Object.assign(entityPrototype, {
           graphInstance: thisArg,
           additionalChildNode: [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
           nodeConnectionKey: null, // pathPointerKey
+          nodeType: 'traversalStep',
         },
         { parentTraversalArg: null },
       ],
@@ -144,8 +197,8 @@ Object.assign(entityPrototype, {
     // implementation keys of node instance own config parameters and of default values set in function scope
     let implementationKey =
       {
-        processData: nodeInstance.tag?.processDataImplementation,
-        traverseNode: nodeInstance.tag?.traverseNodeImplementation,
+        processData: nodeInstance.processDataImplementation || 'returnDataItemKey',
+        traverseNode: nodeInstance.traverseNodeImplementation || 'chronological',
         aggregator: 'AggregatorArray',
         traversalInterception: 'processThenTraverse',
       } |> removeUndefinedFromObject // remove undefined values because native Object.assign doesn't override keys with `undefined` values
@@ -166,6 +219,7 @@ Object.assign(entityPrototype, {
       traversalInterception: concreteTraversal.traversalInterception[implementationKey.traversalInterception],
       aggregator: concreteTraversal.aggregator[implementationKey.aggregator],
     }
+    assert(Object.entries(implementation).every(([key, value]) => Boolean(value)), '• All `implementation` concerete functions must be set.')
     // deep merge of nested parameter (TODO: use utility function from different module that does this function.)
     argumentsList = mergeDefaultParameter({
       passedArg: argumentsList,
@@ -191,6 +245,7 @@ Object.assign(entityPrototype, {
       nodeConnectionKey,
       eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
       aggregator = new (nodeInstance::implementation.aggregator)(), // used to aggregate results of nested nodes.
+      nodeType, // the type of node to traverse
     }: {
       graphInstance: Graph,
       nodeInstance: String | Node,
@@ -204,23 +259,19 @@ Object.assign(entityPrototype, {
         aggregator: 'AggregatorArray' | 'ConditionCheck',
         traversalInterception: 'processThenTraverse' | 'conditionCheck',
       },
+      nodeType: 'traversalStep',
     } = {},
     { parentTraversalArg } = {},
   ) {
     let dataProcessCallback = nextProcessData => graphInstance::graphInstance.dataProcess({ nodeInstance, nextProcessData, dataProcessImplementation: nodeInstance::implementation.dataProcess })
 
     let proxyify = implementation.traversalInterception
-      ? target =>
-          graphInstance::implementation.traversalInterception({
-            aggregator,
-            targetFunction: target,
-            dataProcessCallback,
-          })
+      ? target => graphInstance::implementation.traversalInterception({ targetFunction: target, aggregator, dataProcessCallback })
       : // in case no implementation exists for intercepting traversal, use an empty proxy.
         target => new Proxy(target, {})
 
     // Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
-    nodeIteratorFeed ||= graphInstance::graphInstance.traverseNode({ nodeInstance, graphInstance, traverseNodeImplementation: nodeInstance::implementation.traverseNode })
+    nodeIteratorFeed ||= graphInstance::graphInstance.traverseNode({ nodeInstance, graphInstance, nodeType, traverseNodeImplementation: nodeInstance::implementation.traverseNode })
     let result = await (graphInstance::graphInstance.recursiveIteration |> proxyify)({ nodeIteratorFeed, nodeInstance, traversalDepth, eventEmitter, parentTraversalArg: arguments })
 
     // in case the proxy didn't iterate over the target generator or the implementation of proxy doesn't exist.
@@ -265,15 +316,18 @@ Object.assign(entityPrototype, {
     let returnedResultArray = g.result.value || []
     yield* returnedResultArray // forward resolved results
   },
-  traverseNode: async function*({ nodeInstance, graphInstance, traverseNodeImplementation /** Controls the iteration over nodes and execution arrangement. */ }) {
+  traverseNode: async function*({ nodeInstance, graphInstance, nodeType, traverseNodeImplementation /** Controls the iteration over nodes and execution arrangement. */ }) {
     let { eventEmitterCallback: emit } = function.sent
-    if (nodeInstance.connection?.length == 0 || !nodeInstance.connection) return
 
-    let nodeIteratorFeed = nodeInstance.port
+    let connection = graphInstance.getConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: nodeType }),
+      port = graphInstance.getConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: 'port' }).map(connection => connection.destination)
+    if (connection.length == 0) return
+
+    let nodeIteratorFeed = port
       ? // iterate over ports
-        await graphInstance.iteratePort({ nodePortArray: nodeInstance.port, nodeConnectionArray: nodeInstance.connection, iterateConnectionCallback: graphInstance.iterateConnection })
+        await graphInstance.iteratePort({ nodePortArray: port, nodeConnectionArray: connection, iterateConnectionCallback: graphInstance.iterateConnection })
       : // Iterate over connection
-        await graphInstance.iterateConnection({ nodeConnectionArray: nodeInstance.connection })
+        await graphInstance.iterateConnection({ nodeConnectionArray: connection })
 
     // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
     return yield* traverseNodeImplementation({ nodeIteratorFeed, emit })
@@ -286,16 +340,11 @@ Object.assign(entityPrototype, {
     const controlArg = function.sent
 
     // sort connection array
-    const sortAccordingToOrder = (former, latter) => former.source.position.order - latter.source.position.order // using `order` property
-    nodeConnectionArray.sort(sortAccordingToOrder)
-    // filter connection array to match outgoing connections only
-    // nodeConnectionArray = nodeConnectionArray.filter(item => item.tag.direction == 'outgoing')
+    nodeConnectionArray.sort((former, latter) => former.order - latter.order) // using `order` property
 
     for (let nodeConnection of nodeConnectionArray) {
-      // iteration implementaiton
-      for (let destinationNode of nodeConnection.destination.node) {
-        yield { nodeKey: destinationNode.key }
-      }
+      let destinationNode = nodeConnection.destination |> Array.isArray ? nodeConnection.destination[0] : nodeConnection.destination
+      yield { nodeKey: destinationNode } // iteration implementaiton
     }
   },
   /**
@@ -304,16 +353,15 @@ Object.assign(entityPrototype, {
    */
   iteratePort: async function*({ nodePortArray, nodeConnectionArray, iterateConnectionCallback }) {
     // filter port array to match outgoing ports only
-    nodePortArray = nodePortArray.filter(item => item.tag.direction == 'output')
+    nodePortArray = nodePortArray.filter(item => item.direction == 'output')
 
     // sort array
     const sortAccordingToOrder = (former, latter) => former.order - latter.order // using `order` property
     nodePortArray.sort(sortAccordingToOrder)
-
     for (let nodePort of nodePortArray) {
       // filter connection to match the current port
-      let currentPortConnectionArray = nodeConnectionArray.filter(item => item.source.portKey == nodePort.key)
-      yield* await iterateConnectionCallback({ nodeConnectionArray: currentPortConnectionArray, implementationType: nodePort.tag?.traverseNodeImplementation })
+      let currentPortConnectionArray = nodeConnectionArray.filter(connection => connection.source[1]?.key == nodePort.key)
+      yield* await iterateConnectionCallback({ nodeConnectionArray: currentPortConnectionArray, implementationType: nodePort.traverseNodeImplementation })
     }
   },
   dataProcess: async function({ nodeInstance, nextProcessData, dataProcessImplementation }) {
@@ -323,9 +371,9 @@ Object.assign(entityPrototype, {
     //   // creating data item instance, load dataItem by reference i.e. using `key`
     //   dataItem = await concreteTraversal.initializeDataItem({ dataItem: nodeInstance.dataItem })
     // } else
-    dataItem = nodeInstance.dataItem // default dataItem by property
+    dataItem = nodeInstance // default dataItem by property
     // Execute node dataItem
-    return dataItem ? await nodeInstance::dataProcessImplementation({ dataItem, processData: nodeInstance.tag?.processDataImplementation }) : null
+    return dataItem ? await nodeInstance::dataProcessImplementation({ dataItem }) : null
   },
 })
 
@@ -357,6 +405,7 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     concreteBehaviorList = [],
     data, // data to be merged into the instance
     callerClass = this,
+    mode = 'applicationInMemory' || 'databaseInMemory',
   }: {
     cache: Cache,
     database: Database,
@@ -365,7 +414,7 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
   }) {
     assert(database, '• Database concrete behavior must be passed.')
     assert(traversal, '• traversal concrete behavior must be passed.')
-    cache ||= new Cache.clientInterface()
+    cache ||= new Cache.clientInterface({ groupKeyArray: ['node', 'connection'] })
 
     let instance = callerClass::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.concereteBehavior })({
       concreteBehaviorList: [...concreteBehaviorList, cache, database, traversal],
@@ -374,7 +423,7 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
 
     // configure Graph element classes
     instance.configuredNode = Node.clientInterface({ parameter: [{ concreteBehaviorList: [] }] })
-    instance.configuredDataItem = DataItem.clientInterface({ parameter: [{ concreteBehaviorList: [] }] })
+    instance.configuredConnection = Connection.clientInterface({ parameter: [{ concereteBehavior: [] }] })
 
     return instance
   },

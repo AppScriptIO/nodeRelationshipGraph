@@ -6,12 +6,12 @@ export let node = [
   {
     type: ['traversalStep', 'executionProcess'],
     key: 'node-key-1',
-    dataItem: 'dataItem-key-1',
+    name: 'dataItem-key-1',
   },
   {
     type: ['traversalStep', 'executionProcess'],
     key: 'node-key-2',
-    dataItem: 'dataItem-key-2',
+    name: 'dataItem-key-2',
   },
 ]
 
