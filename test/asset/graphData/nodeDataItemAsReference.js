@@ -1,13 +1,13 @@
 export let node = [
   {
-    type: ['traversalStep'],
+    type: ['Stage'],
     key: 'node-key-1',
     // traversal configuration
     dataItemType: 'reference',
     processDataImplementation: 'returnDataItemKey',
   },
   {
-    type: ['traversalStep'],
+    type: ['Stage'],
     key: 'node-key-2',
     // traversal configuration
     dataItemType: 'reference',
@@ -23,13 +23,13 @@ export let node = [
                                               
   */
   {
-    type: ['executionProcess'],
+    type: ['ExecutionProcess'],
     key: 'dataItem-key-1',
     resourceFileKey: '',
     initializationImplementationType: 'resourceFile',
   },
   {
-    type: ['executionProcess'],
+    type: ['ExecutionProcess'],
     key: 'dataItem-key-2',
     resourceFileKey: '',
     initializationImplementationType: 'resourceFile',

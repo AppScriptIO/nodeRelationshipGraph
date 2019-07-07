@@ -2,34 +2,34 @@
 
 export let node = [
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-0',
     name: 'dataItem-key-0',
     traverseNodeImplementation: 'chronological',
     processDataImplementation: 'returnDataItemKey',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-1',
     name: 'dataItem-key-1',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-2',
     name: 'dataItem-key-2',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-3',
     name: 'dataItem-key-3',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-4',
     name: 'dataItem-key-4',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-5',
     name: 'dataItem-key-5',
   },

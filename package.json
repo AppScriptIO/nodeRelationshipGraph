@@ -5,7 +5,7 @@
     "scripts": {
         "setup": "yarn install --production=false",
         "sleep": "yarn run scriptManager sleep '.setInterval()' ",
-        "test": "export NODE_OPTIONS='--inspect-brk' && yarn run scriptManager test \"({ testPath: './test' })\"",
+        "test": "export NODE_OPTIONS='--inspect-brk' && yarn run scriptManager test \"({ testPath: './test', shouldDebugger: false, shouldCompileTest: true })\"",
         "generateTypes": "tsc --project ./configuration/typescript.config.json"
     },
     "dependencies": {
@@ -17,6 +17,8 @@
         "@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x",
         "@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x",
         "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug#semver:^1.x.x",
+        "neo4j-driver": "^1.7.5",
+        "redisgraph.js": "^1.1.4",
         "rethinkdb": "*"
     },
     "devDependencies": {

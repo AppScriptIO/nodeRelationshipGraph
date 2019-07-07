@@ -8,7 +8,7 @@
  **/
 export let node = [
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-1',
     // data item
     name: 'dataItem-key-1',
@@ -16,7 +16,7 @@ export let node = [
     processDataImplementation: 'returnDataItemKey',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-2',
     // data item
     name: 'dataItem-key-2',

@@ -27,7 +27,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     let concreteDatabaseBehavior = new Database.clientInterface({
       implementationList: {
         // database simple memory adapter
-        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodePort.node, connectionArray: graphData.nodePort.connection || [] }),
+        memoryModelAdapter: databaseModelAdapterFunction({ nodeArray: graphData.nodeConnection.node, connectionArray: graphData.nodeConnection.connection || [] }),
       },
       defaultImplementation: 'memoryModelAdapter',
     })
@@ -49,7 +49,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
       let graph = new configuredGraph({})
       await graph.loadGraphIntoMemoryFromDatabase()
       let result = await graph.traverse({
-        nodeInstance: 'node-key-0',
+        nodeInstance: 'node-key-1',
         implementationKey: {
           // traverseNode: 'allPromise'
         },

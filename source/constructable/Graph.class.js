@@ -10,6 +10,9 @@ import { ImplementationManagement } from './ImplementationManagement.class.js'
 import { proxifyMethodDecorator } from '../utility/proxifyMethodDecorator.js'
 import { mergeDefaultParameter } from '../utility/mergeDefaultParameter.js'
 import EventEmitter from 'events'
+const RedisGraphInMemoryDatabase = require('redisgraph.js').RedisGraph
+const neo4jGraphDatabase = require('neo4j-driver').v1
+
 const removeUndefinedFromObject = object => {
   Object.keys(object).forEach(key => object[key] === undefined && delete object[key])
   return object
@@ -41,19 +44,29 @@ Object.assign(Reference, {
 */
 Object.assign(entityPrototype, {
   async loadGraphIntoMemoryFromDatabase({ graphInstance = this } = {}) {
-    let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database)
+    let query = `CALL apoc.import.graphml('<?xml version="1.0" encoding="UTF-8"?> <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"> <key id="name" for="node" attr.name="name"/> <key id="label" for="node" attr.name="label"/> <key id="key" for="node" attr.name="key"/> <key id="oder" for="edge" attr.name="oder"/> <key id="label" for="edge" attr.name="label"/> <key id="key" for="edge" attr.name="key"/> <graph id="G" edgedefault="directed"> <node id="n0" labels=":ExecutionProcess:Stage"><data key="labels">:ExecutionProcess:Stage</data><data key="name">dataItem-key-1</data><data key="key">node-key-1</data></node> <node id="n20" labels=":ExecutionProcess:Stage"><data key="labels">:ExecutionProcess:Stage</data><data key="name">dataItem-key-2</data><data key="key">node-key-2</data></node> <edge id="e55" source="n0" target="n20" label="NEXT"><data key="label">NEXT</data><data key="key">connection-key-1</data><data key="oder">1</data></edge> </graph> </graphml>',{batchSize: 10000, readLabels: true, storeNodeIds: false, defaultRelationshipType:"RELATED"})`
+    let session = await graphInstance.neo4jGraphDBDriver.session()
+    await session.run(query).then(function(result) {
+      session.close()
+      result.records.forEach(function(record) {
+        record.toObject().n |> console.log
+      })
+      session.close()
+    })
 
-    let nodeEntryData = concereteDatabase[ImplementationManagement.reference.key.getter]().getAllNode() || []
-    for (let entry of nodeEntryData) {
-      graphInstance.addNode({ nodeInstance: entry })
-    }
+    // let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database)
 
-    let connectionEntryData = concereteDatabase[ImplementationManagement.reference.key.getter]().getAllConnection() || []
-    for (let entry of connectionEntryData) {
-      graphInstance.addConnection({ connectionInstance: entry })
-    }
+    // let nodeEntryData = (await concereteDatabase[ImplementationManagement.reference.key.getter]().getAllNode()) || []
+    // for (let entry of nodeEntryData) {
+    //   await graphInstance.addNode({ nodeInstance: entry })
+    // }
 
-    return { nodeEntryData, connectionEntryData }
+    // let connectionEntryData = (await concereteDatabase[ImplementationManagement.reference.key.getter]().getAllConnection()) || []
+    // for (let entry of connectionEntryData) {
+    //   await graphInstance.addConnection({ connectionInstance: entry })
+    // }
+
+    // return { nodeEntryData, connectionEntryData }
   },
 
   /** Load node data on-demand from database
@@ -81,11 +94,23 @@ Object.assign(entityPrototype, {
     Object.assign(nodeInstance, databaseEntry)
     return nodeInstance
   },
-  addNode({ nodeInstance, graphInstance = this }: { nodeInstance: Object | Node /* object with key or instance of Node */ }) {
+  async addNode({ nodeInstance, graphInstance = this }: { nodeInstance: Object | Node /* object with key or instance of Node */ }) {
     let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
     assert(nodeInstance.key, '• Node instance must have a key property.')
     let cache = concereteCache[Cache.reference.key.getter](nodeInstance.key, 'node')
     if (!cache) {
+      {
+        let typeQuery = nodeInstance.type.join(':')
+        let query = `CREATE (n:${typeQuery} { key: '${nodeInstance.key}', name: '${nodeInstance.name}'}) RETURN n`
+        let session = await graphInstance.neo4jGraphDBDriver.session()
+        await session.run(query).then(function(result) {
+          session.close()
+          result.records.forEach(function(record) {
+            record.toObject().n |> console.log
+          })
+          session.close()
+        })
+      }
       // Note: `nodeInstance instanceof Node` will not work as Entity module creates Objects rather than callable Function instances. Could consider changing this behavior to allow native constructor checking to work.
       if (!(nodeInstance.constructor == Node)) nodeInstance = new graphInstance.configuredNode(nodeInstance)
       concereteCache[Cache.reference.key.setter](nodeInstance.key, nodeInstance, 'node')
@@ -98,7 +123,7 @@ Object.assign(entityPrototype, {
     let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
     return concereteCache[Cache.reference.key.getter](nodeKey, 'node')
   },
-  addConnection({ connectionInstance, graphInstance = this }) {
+  async addConnection({ connectionInstance, graphInstance = this }) {
     let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
     assert(connectionInstance.source && connectionInstance.destination, `• Connection must have a source and destination nodes.`)
     assert(connectionInstance.key, '• Connection object must have a key property.')
@@ -106,10 +131,24 @@ Object.assign(entityPrototype, {
     if (!cache) {
       // replace keys with instances
       let replaceKeyWithNodeInstanceCallback = key => graphInstance.getNode({ nodeKey: key })
-      connectionInstance.source =
-        connectionInstance.source |> Array.isArray ? connectionInstance.source.map(replaceKeyWithNodeInstanceCallback) : replaceKeyWithNodeInstanceCallback(connectionInstance.source)
-      connectionInstance.destination =
-        connectionInstance.destination |> Array.isArray ? connectionInstance.destination.map(replaceKeyWithNodeInstanceCallback) : replaceKeyWithNodeInstanceCallback(connectionInstance.destination)
+      // connectionInstance.source =
+      //   connectionInstance.source |> Array.isArray ? connectionInstance.source.map(replaceKeyWithNodeInstanceCallback) : replaceKeyWithNodeInstanceCallback(connectionInstance.source)
+      // connectionInstance.destination =
+      //   connectionInstance.destination |> Array.isArray ? connectionInstance.destination.map(replaceKeyWithNodeInstanceCallback) : replaceKeyWithNodeInstanceCallback(connectionInstance.destination)
+      {
+        let query = `MATCH (s) WHERE s.key = '${connectionInstance.source}' 
+          MATCH (d) WHERE d.key = '${connectionInstance.destination}'
+          CREATE (s)-[l:NEXT {oder:1, key: '${connectionInstance.key}'}]->(d)
+          RETURN l`
+        let session = await graphInstance.neo4jGraphDBDriver.session()
+        await session.run(query).then(function(result) {
+          session.close()
+          result.records.forEach(function(record) {
+            record.toObject() |> console.log
+          })
+        })
+      }
+
       // Note: `connectionInstance instanceof Connection` will not work as Entity module creates Objects rather than callable Function instances. Could consider changing this behavior to allow native constructor checking to work.
       if (!(connectionInstance.constructor == Connection)) connectionInstance = new graphInstance.configuredConnection(connectionInstance)
       concereteCache[Cache.reference.key.setter](connectionInstance.key, connectionInstance, 'connection')
@@ -172,7 +211,7 @@ Object.assign(entityPrototype, {
           graphInstance: thisArg,
           additionalChildNode: [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
           nodeConnectionKey: null, // pathPointerKey
-          nodeType: 'traversalStep',
+          nodeType: 'Stage', // Traversal step or stage - defines when and how to run processes.
         },
         { parentTraversalArg: null },
       ],
@@ -259,7 +298,7 @@ Object.assign(entityPrototype, {
         aggregator: 'AggregatorArray' | 'ConditionCheck',
         traversalInterception: 'processThenTraverse' | 'conditionCheck',
       },
-      nodeType: 'traversalStep',
+      nodeType: 'Stage',
     } = {},
     { parentTraversalArg } = {},
   ) {
@@ -320,14 +359,15 @@ Object.assign(entityPrototype, {
     let { eventEmitterCallback: emit } = function.sent
 
     let connection = graphInstance.getConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: nodeType }),
-      port = graphInstance.getConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: 'port' }).map(connection => connection.destination)
+      port = graphInstance.getConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: 'port' }).map(connection => connection.destination) // extract port instance from relationships relating to ports.
     if (connection.length == 0) return
 
-    let nodeIteratorFeed = port
-      ? // iterate over ports
-        await graphInstance.iteratePort({ nodePortArray: port, nodeConnectionArray: connection, iterateConnectionCallback: graphInstance.iterateConnection })
-      : // Iterate over connection
-        await graphInstance.iterateConnection({ nodeConnectionArray: connection })
+    let nodeIteratorFeed =
+      port.length > 0
+        ? // iterate over ports
+          await graphInstance.iteratePort({ nodePortArray: port, nodeConnectionArray: connection, iterateConnectionCallback: graphInstance.iterateConnection })
+        : // Iterate over connection
+          await graphInstance.iterateConnection({ nodeConnectionArray: connection })
 
     // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
     return yield* traverseNodeImplementation({ nodeIteratorFeed, emit })
@@ -424,6 +464,8 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     // configure Graph element classes
     instance.configuredNode = Node.clientInterface({ parameter: [{ concreteBehaviorList: [] }] })
     instance.configuredConnection = Connection.clientInterface({ parameter: [{ concereteBehavior: [] }] })
+    // instance.inMemoryGraphDB = new RedisGraphInMemoryDatabase('x')
+    instance.neo4jGraphDBDriver = neo4jGraphDatabase.driver('bolt://localhost', neo4jGraphDatabase.auth.basic('neo4j', 'test'))
 
     return instance
   },

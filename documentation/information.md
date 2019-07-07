@@ -1,3 +1,59 @@
+Is a module for graph traversal and node processing (in addition to traversal there are specific executions on each node). The graph traversal module is callback & Proxy based, which hands overcontrol to concrete functions, it returns an iterator of results that the proxy implementation can decide what to do with. The traversal behavior is configurable.
+Execute nodes tasks taking into account precedence constraints.
+
+Topological sort of graph based on the interconnected edges, not any numeric value (non-numeric sort).
+a set of tasks to be completed in precedence constraints (precedence schedualing) - DepthFirstOrder using DFS algorithm - https://fr.coursera.org/lecture/algorithms-part2/topological-sort-RAMNS
+
+General steps in module usage: 
+- Supply with grpah.
+- start traversal from entrypoint node.
+- Traverser will execute the nodes.
+
+### How the in-memory graph is handled in the graph traverser module ?
+- load graph into memory: 
+    - application's logic variables. 
+    - In memory graph database.
+- set traversal / rules
+    - parameters flags & switch keys/options.
+    - parameter implementations passed
+- Traverse graph from starting point: 
+    - nodes can change traversal rules to next traversals.
+    - nodes can halt traversal or continue. (nodes = e.g. processing stages).
+=> Build a pluggable in memory handling of graph entities. Handling in memory api: 
+ - get connections
+ - get ports 
+ - get connections of a port. 
+
+=> Allow processing nodes to control traversal propagation. 
+
+### How to deal with extending an existing graph / templating a subgraph, where additional connections can be added to the graph in specific places. 
+
+### How to integrate betweem subgraphs concepts (according to usage) ? 
+- Middleware: execute
+- Condition: evaluate and control propagation. Conditionally skip the task execution
+    a graph that checks conditions while traversing and returns an answer to complex conditional relations with prerequisite conditions. e.g. could be used for routing to a desired value/callback/action.
+- Template: aggregation
+- Data query schema: execute
+
+# Applications: 
+- Build systems with package dependencies - make a topological sort to know which library should be built first.
+- Task schedualing - which task should procede which one. 
+
+#### Verbal explanation: 
+verbal explanation of execution order concept - https://stackoverflow.com/questions/6477269/how-to-use-graph-theory-for-scheduling-execution-order
+https://en.wikipedia.org/wiki/Topological_sorting
+https://stackoverflow.com/questions/6749255/directed-graph-processing-in-java
+https://github.com/idooley/DAGExecutor
+https://jgrapht.org/ - check out summary of the graph framework.
+https://youtu.be/Q9PIxaNGnig?t=151
+https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/graph/topological-sorting
+https://davidurbina.blog/on-partial-order-total-order-and-the-topological-sort/
+Graph API - https://www.coursera.org/lecture/algorithms-part2/digraph-api-Jeyta
+https://davidurbina.blog/on-partial-order-total-order-and-the-topological-sort/
+
+
+Graph API: 
+- iterator of node's connections 
 # Graph Concepts: 
 - Graph can represent any collection of objects having some kind of pairwise relationship. Many realworld systems and problems can be modeled using a graph.
 - "Big O" (order of complexity) / complexity analysis of memory space and of operation time.
@@ -29,6 +85,9 @@ Different applications may use this module:
         - the concept of additional children/edges, where a graph can be used through a proxy without manipulating it. Related to insertion points concept - adding nodes in insertion points in the graph.
         Edges could be directed with 'ingoing'/'outgoing' direction. Additionally each edge has a position/arrangement property that defines the order and placement (in case it is an additional connection to be traversed).
         - A `path` is a chain of edges that specifies a path from & to a pair of nodes.
+        - Lazy executed during traversal
+        - e.g. used for creating pipelines to manipulate data. e.g.  CI/CD pipelines https://docs.gitlab.com/ee/ci/pipelines.html, or execution pipelines for code building, server request handling with on the fly middleware chain compisition.
+        - Some implementations can filter specific nodes through conditions and others have a side effect during execution.
 
 - Relationship Graph: conveying of relational information. Directed graph. _Terminolog: ReusableNestedUnit_ 
 - edge/relationship/connection
@@ -64,6 +123,7 @@ This is a better implementaiton for tree templates (extending an existing node t
     - Data colelctions algorithm during multiple nodes execution e.g. insert templates into each other or aggregate middleware functions to create a chain/pipeline.
     - Graph propagation - conditional traversal, parallel, changing data processing config/implementation. 
     - General traversal control parameters. e.g. depth, stop on met condition, on-demand node registration in the Graph controller / memory storage, etc.
+- Neo4j example traversal APi - https://neo4j.com/docs/java-reference/current/tutorial-traversal/
 ____
 • JS AST can be saved in a flat structure implemented in relationship graph, allowing reusability of nodes/units.
 ___

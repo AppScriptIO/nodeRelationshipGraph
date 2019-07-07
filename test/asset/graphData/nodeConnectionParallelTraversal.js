@@ -1,6 +1,6 @@
 export let node = [
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-0',
     // data item
     name: 'dataItem-key-0',
@@ -10,7 +10,7 @@ export let node = [
     traverseNodeImplementation: 'allPromise' || 'raceFirstPromise',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-1',
     // data item
     name: 'dataItem-key-1',
@@ -19,7 +19,7 @@ export let node = [
     processDataImplementation: 'timeout',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-2',
     // data item
     name: 'dataItem-key-2',
@@ -28,7 +28,7 @@ export let node = [
     processDataImplementation: 'timeout',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-3',
     // data item
     name: 'dataItem-key-3',
@@ -37,7 +37,7 @@ export let node = [
     processDataImplementation: 'timeout',
   },
   {
-    type: ['traversalStep', 'executionProcess'],
+    type: ['Stage', 'ExecutionProcess'],
     key: 'node-key-4',
     // data item
     name: 'dataItem-key-4',
