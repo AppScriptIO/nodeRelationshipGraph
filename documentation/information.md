@@ -30,17 +30,21 @@ Different applications may use this module:
 # Graph Concepts: 
 - **Graph** _(Node Relationship Graph / Nested Unit Tree)_ - can represent any collection of objects having some kind of pairwise relationship (conveying of relational information). Many realworld systems and problems can be modeled using a graph.
 
-- **Graph type & features** - Usually the Graph that is used is Directed, Acyclic or cyclic, Weighed, Sparsed _(few edges in comparison to complexity analysis)_.  e.g. Trees/Herarchies/Nested Treemaps.
+- **Graph type & features** - Usually the Graph that is used is Directed, Acyclic or cyclic, Weighed, Sparsed _(few edges in comparison to complexity analysis)_, & immediately-processed graph (created to be processed during traversal).  e.g. Trees/Herarchies/Nested Treemaps.
     - **Multiedge/Parallel edges** - Multiple connections between 2 verticies/nodes.
     - **Self edges** - Loop allowed graph.
     - **ports**: group of connections that relate to each other or have specific configuration. (Related resources - [Stackoverflow - Terminology for a graph with ports on its nodes](https://cs.stackexchange.com/questions/41320/terminology-for-a-graph-with-ports-on-its-nodes?newreg=33ff713616b04cdcbdd3df94b1ed841c), [Multigraphs with Ports publication 1](https://hal.inria.fr/inria-00139363/en/), [Multigraphs with Ports publication 1](https://www.sciencedirect.com/science/article/pii/S1571066108004295).
     - **Path** - is a chain of edges that specifies a path from & to a pair of nodes. A sequence of edges/connections that connect a sequence of nodes.
-    - **Additional children/edges** conecpt - where a graph can be used (traversed) through a proxy without manipulating it directly. Related to insertion points concept - adding nodes in insertion points in the graph. Each edge has a position/arrangement property that defines the order and a placement (in case it is an additional connection to be traversed). e.g. `pathPointerKey`/`connectionKey` could be an additional conenction that is added to the existing conenctions for traversal purposes.
     - **Lazy execution during traversal** - on each node reached the traversal could be halted or continued and a processing implementation could be executed before continuing traversing or have a side effect during execution.
     - **Node & edge filter** - some implementations can filter specific nodes through conditions.
     - **node inheritance** _(subnode-supernode / node extension/inheritance)_ - node that extends another node, in a way that any changes of the parent node is retained by the child node. 
     This is a better implementaiton for tree templates (extending an existing node tree without changing it) that used pathPointer or connectionPathSequence to reach the desired position for adding nodes inthe nested subtree/subnodes.
         - override connection - node that extends/inherit from another node and overrides a specific connection of the supernode, if the supernode connectionKey is removed then the overriding connection of the subclass will be ignored.
+    - **Reusable Subgraph Template** (will be refered shortly as “subgraph”) – A part of a directed graph with a root node, representing the entrypoint to the subgraph. The subgraph could be referenced by nodes in the graph, and could be extended by other “subgraph templates”. Extending a subgraph allows to insert additional nodes to the subgraph in desired positions or paths (traversal chain or sequence of edges). Much in the sense of externally mapping the same target graph into other different graphs, without changing the original target graph. 
+    (a function which takes a graph* (your 'subgraph') *as an input and maps to another graph dependent on that input.)
+        - _subgraph template_ node - marks an entrypoint to a graph, and allows for adding external nodes to it. It may also create a new interface to the target graph, where it specifies possible connection positions or ports to map it to the external graph. `extends` - will allow to create instances of another subgraph with different manipulation parameters.
+        - **Additional children/edges** conecpt - where a graph can be used (traversed) through a proxy without manipulating it directly. Related to insertion points concept - adding nodes in insertion points in the graph. Each edge has a position/arrangement property that defines the order and a placement (in case it is an additional connection to be traversed). e.g. `pathPointerKey`/`connectionKey` could be an additional conenction that is added to the existing conenctions for traversal purposes.
+
 
 - **Graph Elements**:
     - **Edge** _(Relationship / Connection)_ - Edges could be directed with 'ingoing'/'outgoing' direction.
@@ -92,6 +96,7 @@ ___
 ___
 # Resources 
 _resources about graphs and different implementations:_
+- Related to extending graphs - https://en.wikipedia.org/wiki/Graph_minor#Example
 - Neo4j example traversal APi - https://neo4j.com/docs/java-reference/current/tutorial-traversal/
 - Topological sort of graph based on the interconnected edges, not any numeric value (non-numeric sort). a set of tasks to be completed in precedence constraints (precedence schedualing) - DepthFirstOrder using DFS algorithm - https://fr.coursera.org/lecture/algorithms-part2/topological-sort-RAMNS
 - https://www.youtube.com/watch?v=gXgEDyodOJU&list=PL2_aWCzGMAwI3W_JlcBbtYTwiQSsOTa6P&index=38
@@ -107,7 +112,8 @@ _resources about graphs and different implementations:_
 - Graph API - https://www.coursera.org/lecture/algorithms-part2/digraph-api-Jeyta
 - https://davidurbina.blog/on-partial-order-total-order-and-the-topological-sort/
 - [Tree structures article](https://medium.freecodecamp.org/all-you-need-to-know-about-tree-data-structures-bceacb85490c)
-
+# Notes: 
+- Generally speaking, there isn't really a concept of mutable state in abstract algebra (of which Graph Theory is a part). Only existence/non-existence. Graphs have a static state, and cannot be mutable in common Graph Theory concepts. Any 'change' indicated would be another distinct graph.
 ___
 [Development TODO list](/documentation/TODO.md)
 
