@@ -1,4 +1,7 @@
-export function databaseModelAdapterFunction({ nodeArray, connectionArray } = {}) {
+export function simpleMemoryModelAdapterFunction() {
+  // Scope internal private data structure
+  const nodeArray = [],
+    connectionArray = []
   return {
     getAllNode: () => nodeArray,
     getAllConnection: () => connectionArray,

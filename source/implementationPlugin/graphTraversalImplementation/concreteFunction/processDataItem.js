@@ -134,7 +134,6 @@ export const taskScript = {
  */
 let executeMiddleware
 
-
 /*
  
    _____                    _       _       
@@ -146,7 +145,7 @@ let executeMiddleware
  
 */
 
-{
+let template = () => {
   let _ = require('underscore')
   /**
    *
@@ -216,9 +215,8 @@ let executeMiddleware
       }
     }
     return view
-  },
+  }
 }
-
 
 /*
  
@@ -294,7 +292,7 @@ let executeMiddleware
 • 
 */
 
-{
+let schema = () => {
   /**
    * Implementation type aggregateIntoContentArray
    */

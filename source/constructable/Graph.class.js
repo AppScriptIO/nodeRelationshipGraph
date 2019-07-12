@@ -10,8 +10,6 @@ import { ImplementationManagement } from './ImplementationManagement.class.js'
 import { proxifyMethodDecorator } from '../utility/proxifyMethodDecorator.js'
 import { mergeDefaultParameter } from '../utility/mergeDefaultParameter.js'
 import EventEmitter from 'events'
-const RedisGraphInMemoryDatabase = require('redisgraph.js').RedisGraph
-const neo4jGraphDatabase = require('neo4j-driver').v1
 
 const removeUndefinedFromObject = object => {
   Object.keys(object).forEach(key => object[key] === undefined && delete object[key])
@@ -43,150 +41,28 @@ Object.assign(Reference, {
   |_|                           |___/|_|                           |___/                         
 */
 Object.assign(entityPrototype, {
-  async loadGraphIntoMemoryFromDatabase({ graphInstance = this } = {}) {
-    let query = `CALL apoc.import.graphml('<?xml version="1.0" encoding="UTF-8"?> <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"> <key id="name" for="node" attr.name="name"/> <key id="label" for="node" attr.name="label"/> <key id="key" for="node" attr.name="key"/> <key id="oder" for="edge" attr.name="oder"/> <key id="label" for="edge" attr.name="label"/> <key id="key" for="edge" attr.name="key"/> <graph id="G" edgedefault="directed"> <node id="n0" labels=":ExecutionProcess:Stage"><data key="labels">:ExecutionProcess:Stage</data><data key="name">dataItem-key-1</data><data key="key">node-key-1</data></node> <node id="n20" labels=":ExecutionProcess:Stage"><data key="labels">:ExecutionProcess:Stage</data><data key="name">dataItem-key-2</data><data key="key">node-key-2</data></node> <edge id="e55" source="n0" target="n20" label="NEXT"><data key="label">NEXT</data><data key="key">connection-key-1</data><data key="oder">1</data></edge> </graph> </graphml>',{batchSize: 10000, readLabels: true, storeNodeIds: false, defaultRelationshipType:"RELATED"})`
-    let session = await graphInstance.neo4jGraphDBDriver.session()
-    await session.run(query).then(function(result) {
-      session.close()
-      result.records.forEach(function(record) {
-        record.toObject().n |> console.log
-      })
-      session.close()
-    })
-
-    // let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database)
-
-    // let nodeEntryData = (await concereteDatabase[ImplementationManagement.reference.key.getter]().getAllNode()) || []
-    // for (let entry of nodeEntryData) {
-    //   await graphInstance.addNode({ nodeInstance: entry })
-    // }
-
-    // let connectionEntryData = (await concereteDatabase[ImplementationManagement.reference.key.getter]().getAllConnection()) || []
-    // for (let entry of connectionEntryData) {
-    //   await graphInstance.addConnection({ connectionInstance: entry })
-    // }
-
-    // return { nodeEntryData, connectionEntryData }
-  },
-
-  /** Load node data on-demand from database
-   * 1. return cached - check if node is cached using key parameter.
-   * 2. return new - create node instance and load data from database on-demand.
-   */
-  @proxifyMethodDecorator(async (target, thisArg, argumentsList, targetClass, methodName) => {
-    // meta programming - add caching functinality.
-    let { key, graphInstance = thisArg } = argumentsList[0]
-    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
-    let nodeInstance
-    // retrieve from cache
-    nodeInstance = concereteCache[Cache.reference.key.getter](key, 'node')
-    // create node if doesn' exist
-    if (!nodeInstance) {
-      nodeInstance = await Reflect.apply(target, thisArg, argumentsList)
-      graphInstance.addNode({ nodeInstance })
-    }
-    return nodeInstance
-  })
-  async addNodeByKey({ key, graphInstance = this }: { key: String }) {
+  async loadGraphIntoMemory({ nodeEntryData = [], connectionEntryData = [], graphInstance = this } = {}) {
     let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database)
-    let nodeInstance = new graphInstance.configuredNode({ key })
-    let databaseEntry = await concereteDatabase[Database.reference.key.getter]().getByKey({ key })
-    Object.assign(nodeInstance, databaseEntry)
-    return nodeInstance
-  },
-  async addNode({ nodeInstance, graphInstance = this }: { nodeInstance: Object | Node /* object with key or instance of Node */ }) {
-    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
-    assert(nodeInstance.key, '• Node instance must have a key property.')
-    let cache = concereteCache[Cache.reference.key.getter](nodeInstance.key, 'node')
-    if (!cache) {
-      {
-        let typeQuery = nodeInstance.type.join(':')
-        let query = `CREATE (n:${typeQuery} { key: '${nodeInstance.key}', name: '${nodeInstance.name}'}) RETURN n`
-        let session = await graphInstance.neo4jGraphDBDriver.session()
-        await session.run(query).then(function(result) {
-          session.close()
-          result.records.forEach(function(record) {
-            record.toObject().n |> console.log
-          })
-          session.close()
-        })
-      }
-      // Note: `nodeInstance instanceof Node` will not work as Entity module creates Objects rather than callable Function instances. Could consider changing this behavior to allow native constructor checking to work.
-      if (!(nodeInstance.constructor == Node)) nodeInstance = new graphInstance.configuredNode(nodeInstance)
-      concereteCache[Cache.reference.key.setter](nodeInstance.key, nodeInstance, 'node')
-    } else {
-      nodeInstance = cache // retrieve the cached entry
-    }
-    return nodeInstance
-  },
-  getNode({ nodeKey, graphInstance = this }) {
-    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
-    return concereteCache[Cache.reference.key.getter](nodeKey, 'node')
-  },
-  async addConnection({ connectionInstance, graphInstance = this }) {
-    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
-    assert(connectionInstance.source && connectionInstance.destination, `• Connection must have a source and destination nodes.`)
-    assert(connectionInstance.key, '• Connection object must have a key property.')
-    let cache = concereteCache[Cache.reference.key.getter](connectionInstance.key, 'connection')
-    if (!cache) {
-      // replace keys with instances
-      let replaceKeyWithNodeInstanceCallback = key => graphInstance.getNode({ nodeKey: key })
-      // connectionInstance.source =
-      //   connectionInstance.source |> Array.isArray ? connectionInstance.source.map(replaceKeyWithNodeInstanceCallback) : replaceKeyWithNodeInstanceCallback(connectionInstance.source)
-      // connectionInstance.destination =
-      //   connectionInstance.destination |> Array.isArray ? connectionInstance.destination.map(replaceKeyWithNodeInstanceCallback) : replaceKeyWithNodeInstanceCallback(connectionInstance.destination)
-      {
-        let query = `MATCH (s) WHERE s.key = '${connectionInstance.source}' 
-          MATCH (d) WHERE d.key = '${connectionInstance.destination}'
-          CREATE (s)-[l:NEXT {oder:1, key: '${connectionInstance.key}'}]->(d)
-          RETURN l`
-        let session = await graphInstance.neo4jGraphDBDriver.session()
-        await session.run(query).then(function(result) {
-          session.close()
-          result.records.forEach(function(record) {
-            record.toObject() |> console.log
-          })
-        })
-      }
+    let addNode = await concereteDatabase[Database.reference.key.getter]().addNode
+    let addConnection = await concereteDatabase[Database.reference.key.getter]().addConnection
 
-      // Note: `connectionInstance instanceof Connection` will not work as Entity module creates Objects rather than callable Function instances. Could consider changing this behavior to allow native constructor checking to work.
-      if (!(connectionInstance.constructor == Connection)) connectionInstance = new graphInstance.configuredConnection(connectionInstance)
-      concereteCache[Cache.reference.key.setter](connectionInstance.key, connectionInstance, 'connection')
-    } else {
-      connectionInstance = cache // retrieve the cached entry
+    for (let entry of nodeEntryData) {
+      await addNode({ nodeData: entry })
     }
-    return connectionInstance
+
+    for (let entry of connectionEntryData) {
+      await addConnection({ connectionData: entry })
+    }
   },
   // count number of cached elements
-  count({ graphInstance = this } = {}) {
-    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
+  async count({ graphInstance = this } = {}) {
+    let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database)
+    let countNode = await concereteDatabase[Database.reference.key.getter]().countNode
+    let countEdge = await concereteDatabase[Database.reference.key.getter]().countEdge
     return {
-      node: concereteCache[Cache.reference.key.getLength]('node'),
-      connection: concereteCache[Cache.reference.key.getLength]('connection'),
+      node: countNode(),
+      connection: countEdge(),
     }
-  },
-  /**
-   * convention of data structure - `connection: { source: [<nodeKey>, <portKey>], destination: [<nodeKey>, <portKey>] }`
-   */
-  getConnection({
-    nodeInstance,
-    direction = 'outgoing' /* filter connection array to match outgoing connections only*/,
-    destinationNodeType,
-    graphInstance = this,
-  }: {
-    direction: 'outgoing' | 'incoming',
-  }) {
-    // filter connection of traversal node type
-    let concereteCache = graphInstance[Entity.reference.getInstanceOf](Cache)
-    let connectionArray = concereteCache[Cache.reference.key.getter](false, 'connection')
-    const isNodeType = nodeInstance => Boolean(nodeInstance.type.includes(destinationNodeType))
-    let isSourceNode = sourceConnection => Boolean(sourceConnection == nodeInstance)
-    connectionArray = connectionArray.filter(connection => {
-      let sourceNode = connection.source |> Array.isArray ? connection.source[0] : connection.source
-      let destinationNode = connection.destination |> Array.isArray ? connection.destination[0] : connection.destination
-      return isSourceNode(sourceNode) && (destinationNodeType ? isNodeType(destinationNode) : true)
-    })
-    return connectionArray
   },
 
   /** Graph traversal - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
@@ -196,8 +72,9 @@ Object.assign(entityPrototype, {
     // create node instance, in case string key is passed as parameter.
     let { nodeInstance, graphInstance = thisArg } = argumentsList[0]
     if (typeof nodeInstance === 'string') {
-      nodeInstance = await graphInstance.addNodeByKey({ key: nodeInstance }) // retrieve node data on-demand in case not cached.
-      argumentsList[0].nodeInstance = nodeInstance
+      let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database)
+      let getNodeByKey = await concereteDatabase[Database.reference.key.getter]().getNodeByKey
+      argumentsList[0].nodeInstance = await getNodeByKey({ key: nodeInstance }) // retrieve node data on-demand in case not cached.
     }
     return Reflect.apply(target, thisArg, argumentsList)
   })
@@ -357,17 +234,19 @@ Object.assign(entityPrototype, {
   },
   traverseNode: async function*({ nodeInstance, graphInstance, nodeType, traverseNodeImplementation /** Controls the iteration over nodes and execution arrangement. */ }) {
     let { eventEmitterCallback: emit } = function.sent
+    let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database)
+    let getNodeConnection = await concereteDatabase[Database.reference.key.getter]().getNodeConnection
 
-    let connection = graphInstance.getConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: nodeType }),
-      port = graphInstance.getConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: 'port' }).map(connection => connection.destination) // extract port instance from relationships relating to ports.
+    let connection = await getNodeConnection({ sourceKey: nodeInstance.properties.key, direction: 'outgoing', destinationNodeType: nodeType })
+    let port = (await getNodeConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: 'port' })).map(connection => connection.destination) // extract port instance from relationships relating to ports.
     if (connection.length == 0) return
 
     let nodeIteratorFeed =
       port.length > 0
         ? // iterate over ports
-          await graphInstance.iteratePort({ nodePortArray: port, nodeConnectionArray: connection, iterateConnectionCallback: graphInstance.iterateConnection })
+          await graphInstance.iteratePort({ nodePortArray: port, nodeConnectionArray: connection, iterateConnectionCallback: graphInstance.iterateConnection, graphInstance })
         : // Iterate over connection
-          await graphInstance.iterateConnection({ nodeConnectionArray: connection })
+          await graphInstance.iterateConnection({ nodeConnectionArray: connection, graphInstance })
 
     // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
     return yield* traverseNodeImplementation({ nodeIteratorFeed, emit })
@@ -376,14 +255,16 @@ Object.assign(entityPrototype, {
    * Loops through node connection to traverse the connected nodes' graphs
    * @param {*} nodeConnectionArray - array of connection for the particular node
    */
-  iterateConnection: async function*({ nodeConnectionArray } = {}) {
+  iterateConnection: async function*({ nodeConnectionArray, graphInstance } = {}) {
     const controlArg = function.sent
+    let concereteDatabase = graphInstance[Entity.reference.getInstanceOf](Database)
+    let getNodeByID = await concereteDatabase[Database.reference.key.getter]().getNodeByID
 
     // sort connection array
-    nodeConnectionArray.sort((former, latter) => former.order - latter.order) // using `order` property
+    nodeConnectionArray.sort((former, latter) => former.properties?.order - latter.properties?.order) // using `order` property
 
     for (let nodeConnection of nodeConnectionArray) {
-      let destinationNode = nodeConnection.destination |> Array.isArray ? nodeConnection.destination[0] : nodeConnection.destination
+      let destinationNode = await getNodeByID({ id: nodeConnection.end.low })
       yield { nodeKey: destinationNode } // iteration implementaiton
     }
   },
@@ -391,7 +272,7 @@ Object.assign(entityPrototype, {
    * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
    * TODO: add ability to pass traversal configuration to a group of connections. Each port holds traversal cofigs that should affect all connection connected to this port.
    */
-  iteratePort: async function*({ nodePortArray, nodeConnectionArray, iterateConnectionCallback }) {
+  iteratePort: async function*({ nodePortArray, nodeConnectionArray, iterateConnectionCallback, graphInstance }) {
     // filter port array to match outgoing ports only
     nodePortArray = nodePortArray.filter(item => item.direction == 'output')
 
@@ -438,7 +319,7 @@ Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
 Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
   [Reference.key.constructor]({
     // Concerete behaviors / implementaions
-    cache,
+    // cache,
     database,
     traversal,
     // additional behaviors
@@ -454,18 +335,16 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
   }) {
     assert(database, '• Database concrete behavior must be passed.')
     assert(traversal, '• traversal concrete behavior must be passed.')
-    cache ||= new Cache.clientInterface({ groupKeyArray: ['node', 'connection'] })
+    // cache ||= new Cache.clientInterface({ groupKeyArray: ['node', 'connection'] })
 
     let instance = callerClass::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.concereteBehavior })({
-      concreteBehaviorList: [...concreteBehaviorList, cache, database, traversal],
+      concreteBehaviorList: [...concreteBehaviorList, /*cache,*/ database, traversal],
       data,
     })
 
     // configure Graph element classes
-    instance.configuredNode = Node.clientInterface({ parameter: [{ concreteBehaviorList: [] }] })
-    instance.configuredConnection = Connection.clientInterface({ parameter: [{ concereteBehavior: [] }] })
-    // instance.inMemoryGraphDB = new RedisGraphInMemoryDatabase('x')
-    instance.neo4jGraphDBDriver = neo4jGraphDatabase.driver('bolt://localhost', neo4jGraphDatabase.auth.basic('neo4j', 'test'))
+    // instance.configuredNode = Node.clientInterface({ parameter: [{ concreteBehaviorList: [] }] })
+    // instance.configuredConnection = Connection.clientInterface({ parameter: [{ concereteBehavior: [] }] })
 
     return instance
   },

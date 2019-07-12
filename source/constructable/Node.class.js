@@ -8,6 +8,9 @@ interface Node {
   };
 }
 
+// Note: `nodeInstance instanceof Node` will not work as Entity module creates Objects rather than callable Function instances. Could consider changing this behavior to allow native constructor checking to work.
+// i.e. `if (!(nodeInstance.constructor == Node))` will work.
+
 export const { class: Node, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new GraphElement.clientInterface({ description: 'Node' })
 
 Object.assign(Reference, {
