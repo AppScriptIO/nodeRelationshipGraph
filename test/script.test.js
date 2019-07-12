@@ -66,9 +66,9 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
 
     test('Should traverse graph successfully', async () => {
       let graph = new configuredGraph({})
-      await graph.loadGraphIntoMemory({ nodeEntryData: graphData.nodeConnection.node, connectionEntryData: graphData.nodeConnection.connection })
+      await graph.loadGraphIntoMemory({ nodeEntryData: graphData.nodeConnectionParallelTraversal.node, connectionEntryData: graphData.nodeConnectionParallelTraversal.connection })
       let result = await graph.traverse({
-        nodeInstance: 'node-key-1',
+        nodeKey: 'node-key-1',
         implementationKey: {
           // traverseNode: 'allPromise'
         },

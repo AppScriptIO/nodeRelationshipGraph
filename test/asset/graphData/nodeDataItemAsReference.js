@@ -1,17 +1,21 @@
 export let node = [
   {
-    type: ['Stage'],
-    key: 'node-key-1',
-    // traversal configuration
-    dataItemType: 'reference',
-    processDataImplementation: 'returnDataItemKey',
+    labels: ['Stage'],
+    properties: {
+      key: 'node-key-1',
+      // traversal configuration
+      dataItemlabels: 'reference',
+      processDataImplementation: 'returnDataItemKey',
+    },
   },
   {
-    type: ['Stage'],
-    key: 'node-key-2',
-    // traversal configuration
-    dataItemType: 'reference',
-    processDataImplementation: 'returnDataItemKey',
+    labels: ['Stage'],
+    properties: {
+      key: 'node-key-2',
+      // traversal configuration
+      dataItemlabels: 'reference',
+      processDataImplementation: 'returnDataItemKey',
+    },
   },
 
   /*
@@ -23,17 +27,24 @@ export let node = [
                                               
   */
   {
-    type: ['ExecutionProcess'],
-    key: 'dataItem-key-1',
-    resourceFileKey: '',
-    initializationImplementationType: 'resourceFile',
+    labels: ['ExecutionProcess'],
+    properties: {
+      key: 'dataItem-key-1',
+      resourceFileKey: '',
+      initializationImplementationlabels: 'resourceFile',
+    },
   },
   {
-    type: ['ExecutionProcess'],
-    key: 'dataItem-key-2',
-    resourceFileKey: '',
-    initializationImplementationType: 'resourceFile',
+    labels: ['ExecutionProcess'],
+    properties: {
+      key: 'dataItem-key-2',
+      resourceFileKey: '',
+      initializationImplementationlabels: 'resourceFile',
+    },
   },
 ]
 
-export let conenction = [{ key: 'connection-key-x', source: 'node-key-1', destination: 'dataItem-key-1' }, { key: 'connection-key-z', source: 'node-key-2', destination: 'dataItem-key-2' }]
+export let conenction = [
+  { properties: { key: 'connection-key-x' }, source: 'node-key-1', destination: 'dataItem-key-1' },
+  { properties: { key: 'connection-key-z' }, source: 'node-key-2', destination: 'dataItem-key-2' },
+]

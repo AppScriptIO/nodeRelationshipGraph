@@ -4,14 +4,14 @@
  **/
 export let node = [
   {
-    type: ['Stage', 'ExecutionProcess'],
+    labels: ['Stage', 'ExecutionProcess'],
     properties: {
       key: 'node-key-1',
       name: 'dataItem-key-1',
     },
   },
   {
-    type: ['Stage', 'ExecutionProcess'],
+    labels: ['Stage', 'ExecutionProcess'],
     properties: {
       key: 'node-key-2',
       name: 'dataItem-key-2',

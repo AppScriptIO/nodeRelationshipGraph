@@ -19,11 +19,11 @@ export function memgraphModelAdapterFunction({ url = { protocol: 'bolt', hostnam
   const graphDBDriver = boltProtocolDriver.driver(`${url.protocol}://${url.hostname}:${url.port}`, boltProtocolDriver.auth.basic(authentication.username, authentication.password))
   return {
     addNode: async ({ nodeData }) => {
-      assert(nodeData.properties.key, '• Node data must have a key property.')
+      assert(nodeData.properties?.key, '• Node data must have a key property.')
 
       let session = await graphDBDriver.session()
       let query = `
-        create (n:${jsonToCepherAdapter.convertArrayToCepherLabel(nodeData.type)} {${jsonToCepherAdapter.convertObjectToCepherProperty(nodeData.properties)}})
+        create (n:${jsonToCepherAdapter.convertArrayToCepherLabel(nodeData.labels)} {${jsonToCepherAdapter.convertObjectToCepherProperty(nodeData.properties)}})
         return n
       `
       let result = await session.run(query)
@@ -33,7 +33,7 @@ export function memgraphModelAdapterFunction({ url = { protocol: 'bolt', hostnam
     },
     addConnection: async ({ connectionData }) => {
       assert(connectionData.source && connectionData.destination, `• Connection must have a source and destination nodes.`)
-      assert(connectionData.properties.key, '• Connection object must have a key property.')
+      assert(connectionData.properties?.key, '• Connection object must have a key property.')
       let session = await graphDBDriver.session()
       let query = `
         match (source { key: '${connectionData.source}' })

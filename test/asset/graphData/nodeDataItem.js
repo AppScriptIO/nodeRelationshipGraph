@@ -8,19 +8,23 @@
  **/
 export let node = [
   {
-    type: ['Stage', 'ExecutionProcess'],
-    key: 'node-key-1',
-    // data item
-    name: 'dataItem-key-1',
-    // traversal config
-    processDataImplementation: 'returnDataItemKey',
+    labels: ['Stage', 'ExecutionProcess'],
+    properties: {
+      key: 'node-key-1',
+      // data item
+      name: 'dataItem-key-1',
+      // traversal config
+      processDataImplementation: 'returnDataItemKey',
+    },
   },
   {
-    type: ['Stage', 'ExecutionProcess'],
-    key: 'node-key-2',
-    // data item
-    name: 'dataItem-key-2',
-    // traversal config
-    processDataImplementation: 'returnDataItemKey',
+    labels: ['Stage', 'ExecutionProcess'],
+    properties: {
+      key: 'node-key-2',
+      // data item
+      name: 'dataItem-key-2',
+      // traversal config
+      processDataImplementation: 'returnDataItemKey',
+    },
   },
 ]

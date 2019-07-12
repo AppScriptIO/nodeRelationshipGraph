@@ -1,5 +1,5 @@
 export async function returnDataItemKey({ dataItem, nodeInstance = this }) {
-  let processedData = `${dataItem.name} processed`
+  let processedData = `${dataItem.properties?.name} processed`
   return processedData
 }
 
@@ -9,13 +9,13 @@ export async function timeout({ dataItem, nodeInstance = this }) {
   return await new Promise((resolve, reject) =>
     setTimeout(() => {
       // console.log(`${delay}ms passed for key ${dataItem.key}.`) // debug
-      resolve(dataItem.name)
+      resolve(dataItem.properties?.name)
     }, delay),
   )
 }
 
 export async function returnKey({ dataItem, nodeInstance = this }) {
-  return dataItem.key
+  return dataItem.properties?.key
 }
 
 async function initializeDataItem({ dataItem, processData = 'getDataItem' }) {

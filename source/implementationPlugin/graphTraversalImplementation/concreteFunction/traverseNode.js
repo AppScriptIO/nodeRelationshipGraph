@@ -10,7 +10,7 @@ export async function* raceFirstPromise({ nodeIteratorFeed, emit }) {
   let nodePromiseArray = []
   while (!g.result.done) {
     let nextNodeConfig = g.result.value
-    yield { nodeInstance: nextNodeConfig.nodeKey }
+    yield { nodeID: nextNodeConfig.nodeID }
     let { promise } = function.sent
     nodePromiseArray.push(promise)
     g.result = await g.iterator.next()
@@ -39,7 +39,7 @@ export async function* allPromise({ nodeIteratorFeed, emit }) {
   let resolvedOrderedNodeResolvedResult = [] // order of completion
   while (!g.result.done) {
     let nextNodeConfig = g.result.value
-    yield { nodeInstance: nextNodeConfig.nodeKey }
+    yield { nodeID: nextNodeConfig.nodeID }
     let { promise } = function.sent
     nodePromiseArray.push(promise) // promises are in the same arrangment of connection iteration.
     promise.then(result => emit(result)) // emit result for immediate usage by lisnters
@@ -70,7 +70,7 @@ export async function* chronological({ nodeIteratorFeed, emit }) {
   let nodeResultList = []
   while (!g.result.done) {
     let nextNodeConfig = g.result.value
-    yield { nodeInstance: nextNodeConfig.nodeKey }
+    yield { nodeID: nextNodeConfig.nodeID }
     let { promise } = function.sent
     let nextResult = await promise
     emit(nextResult) // emit for immediate consumption
