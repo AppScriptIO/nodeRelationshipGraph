@@ -1,0 +1,20 @@
+{
+  "node": [{
+    "identity": 823,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "node-key-1",
+      "name": "dataItem-key-1",
+      "processDataImplementation": "returnDataItemKey"
+    }
+  }, {
+    "identity": 824,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "node-key-2",
+      "name": "dataItem-key-2",
+      "processDataImplementation": "returnDataItemKey"
+    }
+  }],
+  "edge": []
+}

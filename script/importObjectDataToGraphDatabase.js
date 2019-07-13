@@ -1,6 +1,6 @@
 #!/usr/bin/env node
+// This was used as a temporary file used to transfering object data to graph structure in the database.
 
-// temporary file used to transfer data to graph structure:
 const neo4jGraphDatabase = require('neo4j-driver').v1
 let neo4jGraphDBDriver = neo4jGraphDatabase.driver('bolt://localhost', neo4jGraphDatabase.auth.basic('neo4j', 'test'))
 const classification = ''

@@ -41,21 +41,31 @@ Object.assign(Reference, {
   |_|                           |___/|_|                           |___/                         
 */
 Object.assign(entityPrototype, {
-  async loadGraphIntoMemory({ nodeEntryData = [], connectionEntryData = [], graphInstance = this } = {}) {
-    for (let entry of nodeEntryData) {
-      await graphInstance.database.addNode({ nodeData: entry })
-    }
-
-    for (let entry of connectionEntryData) {
-      await graphInstance.database.addConnection({ connectionData: entry })
-    }
+  async loadGraphIntoMemory({ graphData, graphInstance = this } = {}) {
+    // load json graph data.
+    assert(graphData.node && graphData.edge, `• Graph data object must contain node & edge arrays.`)
+    return await graphInstance.database.loadGraphData({ nodeEntryData: graphData.node, connectionEntryData: graphData.edge })
   },
-
-  // count number of cached elements
+  async printGraph({ graphInstance = this } = {}) {
+    console.log(`______ Graph elements: ____________________`)
+    let count = await graphInstance.count()
+    let allNode = await graphInstance.database.getAllNode()
+    let allEdge = await graphInstance.database.getAllEdge()
+    console.log(`#Vertex = ${count.node}`)
+    for (let node of allNode) {
+      console.log(node.identity)
+    }
+    console.log(`\n#Edge = ${count.connection}`)
+    for (let edge of allEdge) {
+      console.log(`${edge.start} --> ${edge.end}`)
+    }
+    console.log(`___________________________________________`)
+  },
   async count({ graphInstance = this } = {}) {
+    // count number of cached elements
     return {
-      node: graphInstance.database.countNode(),
-      connection: graphInstance.database.countEdge(),
+      node: await graphInstance.database.countNode(),
+      connection: await graphInstance.database.countEdge(),
     }
   },
 
@@ -251,7 +261,7 @@ Object.assign(entityPrototype, {
     nodeConnectionArray.sort((former, latter) => former.properties?.order - latter.properties?.order) // using `order` property
 
     for (let nodeConnection of nodeConnectionArray) {
-      yield { nodeID: nodeConnection.end.low } // iteration implementaiton
+      yield { nodeID: nodeConnection.end } // iteration implementaiton
     }
   },
   /**

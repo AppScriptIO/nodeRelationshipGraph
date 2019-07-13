@@ -15,10 +15,27 @@ const jsonToCepherAdapter = {
   },
 }
 
-export function memgraphModelAdapterFunction({ url = { protocol: 'bolt', hostname: 'localhost', port: 7687 }, authentication = { username: 'neo4j', password: 'test' } } = {}) {
-  const graphDBDriver = boltProtocolDriver.driver(`${url.protocol}://${url.hostname}:${url.port}`, boltProtocolDriver.auth.basic(authentication.username, authentication.password))
-  return {
-    addNode: async ({ nodeData }) => {
+export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostname: 'localhost', port: 7687 }, authentication = { username: 'neo4j', password: 'test' } } = {}) {
+  const graphDBDriver = boltProtocolDriver.driver(`${url.protocol}://${url.hostname}:${url.port}`, boltProtocolDriver.auth.basic(authentication.username, authentication.password), {
+    disableLosslessIntegers: true, // neo4j represents IDs as integers, and through the JS driver transforms them to strings to represent high values approximately 2^53 +
+  })
+  const implementation = {
+    driverInstance: graphDBDriver, // expose driver instance
+    // load nodes and connections from json file data.
+    async loadGraphData({ nodeEntryData = [], connectionEntryData = [] } = {}) {
+      for (let entry of nodeEntryData) {
+        await implementation.addNode({ nodeData: entry })
+      }
+      // rely on `key` property to create connections
+      connectionEntryData.map(connection => {
+        connection.startKey = nodeEntryData.filter(node => node.identity == connection.start)[0].properties.key
+        connection.endKey = nodeEntryData.filter(node => node.identity == connection.end)[0].properties.key
+      })
+      for (let entry of connectionEntryData) {
+        await implementation.addConnection({ connectionData: entry })
+      }
+    },
+    addNode: async ({ nodeData /*conforms with the Cypher query results data convention*/ }) => {
       assert(nodeData.properties?.key, '• Node data must have a key property.')
 
       let session = await graphDBDriver.session()
@@ -28,25 +45,26 @@ export function memgraphModelAdapterFunction({ url = { protocol: 'bolt', hostnam
       `
       let result = await session.run(query)
       // result.records.forEach(record => record.toObject() |> console.log)
-      session.close()
+      await session.close()
       return result
     },
-    addConnection: async ({ connectionData }) => {
-      assert(connectionData.source && connectionData.destination, `• Connection must have a source and destination nodes.`)
+    addConnection: async ({ connectionData /*conforms with the Cypher query results data convention*/ }) => {
+      assert(connectionData.start && connectionData.end, `• Connection must have a start and end nodes.`)
       assert(connectionData.properties?.key, '• Connection object must have a key property.')
+      let nodeArray = await implementation.getAllNode()
       let session = await graphDBDriver.session()
       let query = `
-        match (source { key: '${connectionData.source}' })
-        match (destination { key: '${connectionData.destination}' })
+        match (source { key: '${connectionData.startKey}' })
+        match (destination { key: '${connectionData.endKey}' })
         create 
           (source)
-          -[l:NEXT {${jsonToCepherAdapter.convertObjectToCepherProperty(connectionData.properties)}}]->
+          -[l:${connectionData.type} {${jsonToCepherAdapter.convertObjectToCepherProperty(connectionData.properties)}}]->
           (destination) 
         return l
       `
       let result = await session.run(query)
       // result.records.forEach(record => record.toObject() |> console.log)
-      session.close()
+      await session.close()
       return result
     },
     getNodeConnection: async function({
@@ -67,7 +85,7 @@ export function memgraphModelAdapterFunction({ url = { protocol: 'bolt', hostnam
       `
       let result = await session.run(query)
       result = result.records.map(record => record.toObject().l)
-      session.close()
+      await session.close()
       return result
     },
     getNodeByKey: async function({ key }) {
@@ -77,7 +95,7 @@ export function memgraphModelAdapterFunction({ url = { protocol: 'bolt', hostnam
         return n
       `
       let result = await session.run(query)
-      session.close()
+      await session.close()
       return result.records[0].toObject().n
     },
     getNodeByID: async function({ id }) {
@@ -87,8 +105,40 @@ export function memgraphModelAdapterFunction({ url = { protocol: 'bolt', hostnam
         return n
       `
       let result = await session.run(query)
-      session.close()
+      await session.close()
       return result.records[0].toObject().n
+    },
+    getAllNode: async function() {
+      let session = await graphDBDriver.session()
+      let query = `
+        match (n) return n
+      `
+      let result = await session.run(query)
+      await session.close()
+      return result.records
+        .map(record => record.toObject().n)
+        .map(node => {
+          // node.identity = node.identity.toString()
+          return node
+        })
+    },
+    getAllEdge: async function() {
+      let session = await graphDBDriver.session()
+      let query = `
+        match ()-[l]->() return l
+      `
+      let result = await session.run(query)
+      await session.close()
+      return result.records
+        .map(record => record.toObject().l)
+        .map(edge => {
+          // Note: Bolt driver option handles integer transformation.
+          // change numbers to string representation
+          // edge.identity = edge.identity.toString()
+          // edge.start = edge.start.toString()
+          // edge.end = edge.end.toString()
+          return edge
+        })
     },
     countNode: async function() {
       let session = await graphDBDriver.session()
@@ -97,7 +147,7 @@ export function memgraphModelAdapterFunction({ url = { protocol: 'bolt', hostnam
         RETURN count(n) as count
       `
       let result = await session.run(query)
-      session.close()
+      await session.close()
       return result.records[0].toObject().count
     },
     countEdge: async function() {
@@ -107,8 +157,9 @@ export function memgraphModelAdapterFunction({ url = { protocol: 'bolt', hostnam
         RETURN count(r) as count
       `
       let result = await session.run(query)
-      session.close()
+      await session.close()
       return result.records[0].toObject().count
     },
   }
+  return implementation
 }

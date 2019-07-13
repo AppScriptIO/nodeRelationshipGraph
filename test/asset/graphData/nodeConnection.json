@@ -1,0 +1,27 @@
+{
+  "node": [{
+    "identity": 1027,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "node-key-1",
+      "name": "dataItem-key-1"
+    }
+  }, {
+    "identity": 1028,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "node-key-2",
+      "name": "dataItem-key-2"
+    }
+  }],
+  "edge": [{
+    "identity": 1110,
+    "start": 1027,
+    "end": 1028,
+    "type": "NEXT",
+    "properties": {
+      "key": "connection-key-1",
+      "order": 1
+    }
+  }]
+}

@@ -12,13 +12,14 @@ import { Cache } from '../source/constructable/Cache.class.js'
 import { Context } from '../source/constructable/Context.class.js'
 
 import { simpleMemoryModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/simpleMemoryModelAdapter.js'
-import { memgraphModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/memgraphModelAdapter.js'
+import { boltCypherModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
 import { implementation as debugImplementation } from '../source/implementationPlugin/graphTraversalImplementation/debugImplementation.js'
+import { exportGraphData } from '../source/utility/exportGraphData.js'
 import * as graphData from './asset/graphData' // load sample data
 const fixture = { traversalResult: ['dataItem-key-1'] }
 
-// Delete all nodes in the in-memory database
 setup(async () => {
+  // Delete all nodes in the in-memory database
   const url = { protocol: 'bolt', hostname: 'localhost', port: 7687 },
     authentication = { username: 'neo4j', password: 'test' }
   const graphDBDriver = boltProtocolDriver.driver(`${url.protocol}://${url.hostname}:${url.port}`, boltProtocolDriver.auth.basic(authentication.username, authentication.password))
@@ -39,9 +40,9 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     let concreteDatabaseBehavior = new Database.clientInterface({
       implementationList: {
         simpleMemoryModelAdapter: simpleMemoryModelAdapterFunction(),
-        memgraphModelAdapter: memgraphModelAdapterFunction(),
+        boltCypherModelAdapter: boltCypherModelAdapterFunction(),
       },
-      defaultImplementation: 'memgraphModelAdapter',
+      defaultImplementation: 'boltCypherModelAdapter',
     })
     let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
       implementationList: { debugImplementation, condition: {}, middleware: {}, schema: {}, shellscript: {}, template: {} },
@@ -66,7 +67,9 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
 
     test('Should traverse graph successfully', async () => {
       let graph = new configuredGraph({})
-      await graph.loadGraphIntoMemory({ nodeEntryData: graphData.nodeConnectionParallelTraversal.node, connectionEntryData: graphData.nodeConnectionParallelTraversal.connection })
+      await graph.loadGraphIntoMemory({ graphData: graphData.nodeConnectionParallelTraversal })
+      await graph.printGraph()
+
       let result = await graph.traverse({
         nodeKey: 'node-key-1',
         implementationKey: {

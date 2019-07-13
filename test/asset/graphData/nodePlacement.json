@@ -1,0 +1,57 @@
+{
+  "node": [{
+    "identity": 1059,
+    "labels": ["SubgraphTemplate"],
+    "properties": {
+      "key": "subgraph-key-0"
+    }
+  }, {
+    "identity": 1060,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "node-key-1",
+      "name": "dataItem-key-1"
+    }
+  }, {
+    "identity": 1061,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "node-key-2",
+      "name": "dataItem-key-2"
+    }
+  }, {
+    "identity": 1062,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "node-key-3",
+      "name": "dataItem-key-3"
+    }
+  }],
+  "edge": [{
+    "identity": 1133,
+    "start": 1062,
+    "end": 1059,
+    "type": "INSERT",
+    "properties": {
+      "key": "connection-key-z",
+      "order": "1",
+      "placement": "before,connection-key-x"
+    }
+  }, {
+    "identity": 1134,
+    "start": 1059,
+    "end": 1060,
+    "type": "ROOT",
+    "properties": {
+      "key": "connection-key-y"
+    }
+  }, {
+    "identity": 1135,
+    "start": 1060,
+    "end": 1061,
+    "type": "NEXT",
+    "properties": {
+      "key": "connection-key-X"
+    }
+  }]
+}
