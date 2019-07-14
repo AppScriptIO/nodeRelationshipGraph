@@ -313,6 +313,13 @@ Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
    \___\___/|_| |_|___/\__|_|   \__,_|\___|\__\___/|_|   
 */
 Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
+  /**
+   * Graph will contain the prototype chain to install on the instances (previously 'classes hierarchy connections`)
+   * 1. configuredConstructable1 = Graph(<plugins>)
+   * 2. configuredConstructable2 = configuredConstructable1(<context>)
+   * 3. new configuredConstructable2(<instance data>) // creates instance
+   * 4. traverse graph: e.g. instance.traverseGraph()
+   */
   [Reference.key.constructor]({
     // Concerete behaviors / implementaions
     // cache,

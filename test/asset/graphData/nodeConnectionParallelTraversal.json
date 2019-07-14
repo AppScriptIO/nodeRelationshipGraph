@@ -16,7 +16,7 @@
       "key": "node-key-1",
       "name": "dataItem-key-1",
       "processDataImplementation": "timeout",
-      "timerDelay": 90
+      "timerDelay": 300
     }
   }, {
     "identity": 1046,
@@ -25,7 +25,7 @@
       "key": "node-key-2",
       "name": "dataItem-key-2",
       "processDataImplementation": "timeout",
-      "timerDelay": 50
+      "timerDelay": 100
     }
   }, {
     "identity": 1047,
@@ -34,7 +34,7 @@
       "key": "node-key-3",
       "name": "dataItem-key-3",
       "processDataImplementation": "timeout",
-      "timerDelay": 20
+      "timerDelay": 10
     }
   }, {
     "identity": 1048,
@@ -43,7 +43,7 @@
       "key": "node-key-4",
       "name": "dataItem-key-4",
       "processDataImplementation": "timeout",
-      "timerDelay": 70
+      "timerDelay": 200
     }
   }],
   "edge": [{

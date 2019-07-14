@@ -1,11 +1,12 @@
 export async function returnDataItemKey({ dataItem, nodeInstance = this }) {
-  let processedData = `${dataItem.properties?.name} processed`
+  let processedData = `${dataItem.properties?.name}`
   return processedData
 }
 
 // implementation delays promises for testing `iterateConnection` of promises e.g. `allPromise`, `raceFirstPromise`, etc.
 export async function timeout({ dataItem, nodeInstance = this }) {
-  let delay = dataItem.timerDelay || 0
+  if (typeof dataItem.properties?.timerDelay != 'number') throw new Error('• DataItem must have a delay value.')
+  let delay = dataItem.properties?.timerDelay
   return await new Promise((resolve, reject) =>
     setTimeout(() => {
       // console.log(`${delay}ms passed for key ${dataItem.key}.`) // debug
