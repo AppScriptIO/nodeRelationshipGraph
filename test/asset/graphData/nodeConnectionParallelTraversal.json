@@ -7,7 +7,7 @@
       "name": "dataItem-key-0",
       "processDataImplementation": "timeout",
       "timerDelay": 0,
-      "traverseNodeImplementation": "allPromise"
+      "handlePropagationImplementation": "allPromise"
     }
   }, {
     "identity": 1045,

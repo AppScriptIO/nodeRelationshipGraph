@@ -41,12 +41,13 @@ Object.assign(Reference, {
   |_|                           |___/|_|                           |___/                         
 */
 Object.assign(entityPrototype, {
-  async loadGraphIntoMemory({ graphData, graphInstance = this } = {}) {
+  // load graph into memory
+  async load({ graphData, graphInstance = this } = {}) {
     // load json graph data.
     assert(graphData.node && graphData.edge, `• Graph data object must contain node & edge arrays.`)
     return await graphInstance.database.loadGraphData({ nodeEntryData: graphData.node, connectionEntryData: graphData.edge })
   },
-  async printGraph({ graphInstance = this } = {}) {
+  async print({ graphInstance = this } = {}) {
     console.log(`______ Graph elements: ____________________`)
     let count = await graphInstance.count()
     let allNode = await graphInstance.database.getAllNode()
@@ -117,10 +118,12 @@ Object.assign(entityPrototype, {
     let implementationKey =
       {
         processData: nodeInstance.properties?.processDataImplementation || 'returnDataItemKey',
-        traverseNode: nodeInstance.properties?.traverseNodeImplementation || 'chronological',
+        handlePropagation: nodeInstance.properties?.handlePropagationImplementation || 'chronological',
+        traverseNode: nodeInstance.properties?.traverseNodeImplementation || 'portConnection',
         aggregator: 'AggregatorArray',
         traversalInterception: 'processThenTraverse',
       } |> removeUndefinedFromObject // remove undefined values because native Object.assign doesn't override keys with `undefined` values
+
     // Context instance parameter
     let contextImplementationKey = graphInstance[Context.reference.key.getter] ? graphInstance[Context.reference.key.getter]()?.implementationKey : {}
     // parent arguments
@@ -134,6 +137,7 @@ Object.assign(entityPrototype, {
     // get implementation functions
     let implementation = {
       dataProcess: graphInstance.traversal.processData[implementationKey.processData],
+      handlePropagation: graphInstance.traversal.handlePropagation[implementationKey.handlePropagation],
       traverseNode: graphInstance.traversal.traverseNode[implementationKey.traverseNode],
       traversalInterception: graphInstance.traversal.traversalInterception[implementationKey.traversalInterception],
       aggregator: graphInstance.traversal.aggregator[implementationKey.aggregator],
@@ -190,8 +194,15 @@ Object.assign(entityPrototype, {
         target => new Proxy(target, {})
 
     // Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
-    nodeIteratorFeed ||= graphInstance::graphInstance.traverseNode({ nodeInstance, graphInstance, nodeType, traverseNodeImplementation: nodeInstance::implementation.traverseNode })
-    let result = await (graphInstance::graphInstance.recursiveIteration |> proxyify)({ nodeIteratorFeed, nodeInstance, traversalDepth, eventEmitter, parentTraversalArg: arguments })
+    nodeIteratorFeed ||= graphInstance::graphInstance.traverseNode({ nodeInstance, nodeType, traverseNodeImplementation: nodeInstance::implementation.traverseNode })
+    let traversalIteratorFeed = graphInstance::graphInstance.handlePropagation({ nodeIteratorFeed, handlePropagationImplementation: nodeInstance::implementation.handlePropagation })
+    let result = await (graphInstance::graphInstance.recursiveIteration |> proxyify)({
+      traversalIteratorFeed,
+      nodeInstance,
+      traversalDepth,
+      eventEmitter,
+      parentTraversalArg: arguments,
+    })
 
     // in case the proxy didn't iterate over the target generator or the implementation of proxy doesn't exist.
     if (typeof result[Symbol.asyncIterator] === 'function') {
@@ -212,7 +223,7 @@ Object.assign(entityPrototype, {
    *  2. returns back to the implementing function a promise, handing control of flow and arragement of running traversals.
    */
   recursiveIteration: async function*({
-    nodeIteratorFeed /**Feeding iterator that will accept node parameters for traversals*/,
+    traversalIteratorFeed /**Feeding iterator that will accept node parameters for traversals*/,
     graphInstance = this,
     recursiveCallback = graphInstance::graphInstance.traverse,
     traversalDepth,
@@ -224,63 +235,37 @@ Object.assign(entityPrototype, {
     let eventEmitterCallback = (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args)
     traversalDepth += 1 // increase traversal depth
     let g = {}
-    g.result = await nodeIteratorFeed.next({ eventEmitterCallback: eventEmitterCallback }) // initial execution
+    g.result = await traversalIteratorFeed.next({ eventEmitterCallback: eventEmitterCallback }) // initial execution
     while (!g.result.done) {
       let nextNodeConfig = g.result.value
       // 🔁 recursion call
       let promise = recursiveCallback(Object.assign(nextNodeConfig, { traversalDepth }), { parentTraversalArg })
-      g.result = await nodeIteratorFeed.next({ promise })
+      g.result = await traversalIteratorFeed.next({ promise })
     }
     // last node iterator feed should be an array of resolved node promises that will be forwarded through this function
     let returnedResultArray = g.result.value || []
     yield* returnedResultArray // forward resolved results
   },
-  traverseNode: async function*({ nodeInstance, graphInstance, nodeType, traverseNodeImplementation /** Controls the iteration over nodes and execution arrangement. */ }) {
+
+  /**
+   * The purpose of this function is to find & yield next nodes.
+   * @yield node feed
+   **/
+  traverseNode: async function*({ nodeInstance, nodeType, traverseNodeImplementation, graphInstance = this }) {
+    let nodeIteratorFeed = traverseNodeImplementation({ nodeInstance, nodeType, graphInstance })
+    yield* nodeIteratorFeed
+  },
+
+  /**
+   * Handles the graph traversal propagation order
+   * @return results array
+   **/
+  handlePropagation: async function*({ nodeIteratorFeed, handlePropagationImplementation /** Controls the iteration over nodes and execution arrangement. */, graphInstance = this }) {
     let { eventEmitterCallback: emit } = function.sent
-    let connection = await graphInstance.database.getNodeConnection({ sourceKey: nodeInstance.properties.key, direction: 'outgoing', destinationNodeType: nodeType })
-    let port = (await graphInstance.database.getNodeConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: 'port' })).map(connection => connection.destination) // extract port instance from relationships relating to ports.
-    if (connection.length == 0) return
-
-    let nodeIteratorFeed =
-      port.length > 0
-        ? // iterate over ports
-          await graphInstance.iteratePort({ nodePortArray: port, nodeConnectionArray: connection, iterateConnectionCallback: graphInstance.iterateConnection, graphInstance })
-        : // Iterate over connection
-          await graphInstance.iterateConnection({ nodeConnectionArray: connection, graphInstance })
-
     // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
-    return yield* traverseNodeImplementation({ nodeIteratorFeed, emit })
+    return yield* handlePropagationImplementation({ nodeIteratorFeed, emit })
   },
-  /**
-   * Loops through node connection to traverse the connected nodes' graphs
-   * @param {*} nodeConnectionArray - array of connection for the particular node
-   */
-  iterateConnection: async function*({ nodeConnectionArray, graphInstance } = {}) {
-    const controlArg = function.sent
-    // sort connection array
-    nodeConnectionArray.sort((former, latter) => former.properties?.order - latter.properties?.order) // using `order` property
 
-    for (let nodeConnection of nodeConnectionArray) {
-      yield { nodeID: nodeConnection.end } // iteration implementaiton
-    }
-  },
-  /**
-   * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
-   * TODO: add ability to pass traversal configuration to a group of connections. Each port holds traversal cofigs that should affect all connection connected to this port.
-   */
-  iteratePort: async function*({ nodePortArray, nodeConnectionArray, iterateConnectionCallback, graphInstance }) {
-    // filter port array to match outgoing ports only
-    nodePortArray = nodePortArray.filter(item => item.direction == 'output')
-
-    // sort array
-    const sortAccordingToOrder = (former, latter) => former.order - latter.order // using `order` property
-    nodePortArray.sort(sortAccordingToOrder)
-    for (let nodePort of nodePortArray) {
-      // filter connection to match the current port
-      let currentPortConnectionArray = nodeConnectionArray.filter(connection => connection.source[1]?.key == nodePort.key)
-      yield* await iterateConnectionCallback({ nodeConnectionArray: currentPortConnectionArray, implementationType: nodePort.traverseNodeImplementation })
-    }
-  },
   dataProcess: async function({ nodeInstance, nextProcessData, dataProcessImplementation }) {
     // get node dataItem - either dataItem instance object or regular object
     let dataItem

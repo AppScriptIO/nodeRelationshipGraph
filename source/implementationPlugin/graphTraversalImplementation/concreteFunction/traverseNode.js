@@ -1,81 +1,44 @@
-import promiseProperRace from '@dependency/promiseProperRace'
-// import { iterateConnection } from './iterateConnection.js'
+export async function* portConnection({ nodeInstance, nodeType, graphInstance }) {
+  let connection = await graphInstance.database.getNodeConnection({ sourceKey: nodeInstance.properties.key, direction: 'outgoing', destinationNodeType: nodeType })
+  let port = (await graphInstance.database.getNodeConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: 'port' })).map(connection => connection.destination) // extract port instance from relationships relating to ports.
+  if (connection.length == 0) return
+  let nodeIteratorFeed =
+    port.length > 0
+      ? // iterate over ports
+        await iteratePort({ nodePortArray: port, nodeConnectionArray: connection, iterateConnectionCallback: iterateConnection, graphInstance })
+      : // Iterate over connection
+        await iterateConnection({ nodeConnectionArray: connection, graphInstance })
+  yield* nodeIteratorFeed
+}
 
 /**
- * Race promise of nodes - first to resolve is the one to be returned
+ * Loops through node connection to traverse the connected nodes' graphs
+ * @param {*} nodeConnectionArray - array of connection for the particular node
  */
-export async function* raceFirstPromise({ nodeIteratorFeed, emit }) {
-  let g = { iterator: nodeIteratorFeed }
-  g.result = await g.iterator.next() // initialize generator function execution and pass execution configurations.
-  let nodePromiseArray = []
-  while (!g.result.done) {
-    let nextNodeConfig = g.result.value
-    yield { nodeID: nextNodeConfig.nodeID }
-    let { promise } = function.sent
-    nodePromiseArray.push(promise)
-    g.result = await g.iterator.next()
-  }
-  let nodeResolvedResult = await promiseProperRace(nodePromiseArray)
-    .then(resolvedPromiseArray => {
-      return resolvedPromiseArray[0] // as only one promise is return in the array - the first promise to be resolved.
-    })
-    .catch(error => {
-      if (process.env.SZN_DEBUG == 'true') console.error(`🔀⚠️ promiseProperRace rejected because: ${error}`)
-      else console.log(`🔀⚠️ promiseProperRace rejected because: ${error}`)
-    })
-  if (nodeResolvedResult) {
-    emit(nodeResolvedResult) // emitting result is not immediate in this case, because the objective is to get a single resolved promise, and "promiseProperRace" maybe doesn't have the ability to stop uncompleted promises.
-    return [nodeResolvedResult] // returned results must be wrapped in array so it could be forwarded through yeild* generator.
+async function* iterateConnection({ nodeConnectionArray, graphInstance } = {}) {
+  const controlArg = function.sent
+  // sort connection array
+  nodeConnectionArray.sort((former, latter) => former.properties?.order - latter.properties?.order) // using `order` property
+
+  for (let nodeConnection of nodeConnectionArray) {
+    yield { nodeID: nodeConnection.end } // iteration implementaiton
   }
 }
 
 /**
- * Insures all nodeConnection promises resolves.
- **/
-export async function* allPromise({ nodeIteratorFeed, emit }) {
-  let g = { iterator: nodeIteratorFeed }
-  g.result = await g.iterator.next() // initialize generator function execution and pass execution configurations.
-  let nodePromiseArray = [] // order of call initialization
-  let resolvedOrderedNodeResolvedResult = [] // order of completion
-  while (!g.result.done) {
-    let nextNodeConfig = g.result.value
-    yield { nodeID: nextNodeConfig.nodeID }
-    let { promise } = function.sent
-    nodePromiseArray.push(promise) // promises are in the same arrangment of connection iteration.
-    promise.then(result => emit(result)) // emit result for immediate usage by lisnters
-    promise.then(result => resolvedOrderedNodeResolvedResult.push(result)) // arrange promises according to resolution order.
-    g.result = await g.iterator.next()
+ * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
+ * TODO: add ability to pass traversal configuration to a group of connections. Each port holds traversal cofigs that should affect all connection connected to this port.
+ */
+async function* iteratePort({ nodePortArray, nodeConnectionArray, iterateConnectionCallback, graphInstance }) {
+  // filter port array to match outgoing ports only
+  nodePortArray = nodePortArray.filter(item => item.direction == 'output')
+
+  // sort array
+  const sortAccordingToOrder = (former, latter) => former.order - latter.order // using `order` property
+  nodePortArray.sort(sortAccordingToOrder)
+  for (let nodePort of nodePortArray) {
+    // filter connection to match the current port
+    let currentPortConnectionArray = nodeConnectionArray.filter(connection => connection.source[1]?.key == nodePort.key)
+    yield* await iterateConnectionCallback({ nodeConnectionArray: currentPortConnectionArray, implementationType: nodePort.traverseNodeImplementation })
   }
-  // resolve all promises
-  let nodeResolvedResultArray = await Promise.all(nodePromiseArray).catch(error => {
-    if (process.env.SZN_DEBUG == 'true') console.error(`🔀⚠️ \`Promise.all\` for nodeConnectionArray rejected because: ${error}`)
-    else console.log(error)
-  })
-
-  // ordered results according to promise completion.
-  return resolvedOrderedNodeResolvedResult // return for all resolved results
-
-  // Preserves the order of nodes original in connection array, i.e. does not order the node results according to the execution completion, rather according to the first visited during traversal.
-  // for (let nextResult of nodeResolvedResultArray) {
-  //   emit(nextResult)
-  // }
-}
-
-/**
- * Sequential node execution - await each node till it finishes execution.
- **/
-export async function* chronological({ nodeIteratorFeed, emit }) {
-  let g = { iterator: nodeIteratorFeed }
-  g.result = await g.iterator.next() // initialize generator function execution and pass execution configurations.
-  let nodeResultList = []
-  while (!g.result.done) {
-    let nextNodeConfig = g.result.value
-    yield { nodeID: nextNodeConfig.nodeID }
-    let { promise } = function.sent
-    let nextResult = await promise
-    emit(nextResult) // emit for immediate consumption
-    nodeResultList.push(nextResult)
-    g.result = await g.iterator.next()
-  }
-  return nodeResultList
 }

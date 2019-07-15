@@ -6,7 +6,7 @@
       "key": "node-key-0",
       "name": "dataItem-key-0",
       "processDataImplementation": "returnDataItemKey",
-      "traverseNodeImplementation": "chronological"
+      "handlePropagationImplementation": "chronological"
     }
   }, {
     "identity": 1072,
@@ -49,7 +49,7 @@
     "properties": {
       "direction": "output",
       "key": "port-key-1",
-      "traverseNodeImplementation": "chronological"
+      "handlePropagationImplementation": "chronological"
     }
   }, {
     "identity": 1078,
@@ -57,7 +57,7 @@
     "properties": {
       "direction": "output",
       "key": "port-key-2",
-      "traverseNodeImplementation": "chronological"
+      "handlePropagationImplementation": "chronological"
     }
   }],
   "edge": [{

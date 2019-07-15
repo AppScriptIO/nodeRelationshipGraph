@@ -10,7 +10,7 @@ import { Database } from '../source/constructable/Database.class.js'
 import { Cache } from '../source/constructable/Cache.class.js'
 import { Context } from '../source/constructable/Context.class.js'
 import { boltCypherModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
-import { implementation as debugImplementation } from '../source/implementationPlugin/graphTraversalImplementation/debugImplementation.js'
+import { implementation as defaultImplementation } from '../source/implementationPlugin/graphTraversalImplementation/defaultImplementation.js'
 
 setup(async () => {})
 
@@ -23,9 +23,9 @@ suite('Configure Graph class', () => {
   })
   let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
     implementationList: {
-      debugImplementation,
+      defaultImplementation,
     },
-    defaultImplementation: 'debugImplementation',
+    defaultImplementation: 'defaultImplementation',
   })
   let contextInstance = new Context.clientInterface({
     implementationKey: {
