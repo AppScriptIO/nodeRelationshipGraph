@@ -2,13 +2,14 @@ export const processThenTraverse = ({ dataProcessCallback, targetFunction, aggre
   return new Proxy(targetFunction, {
     async apply(target, thisArg, argArray) {
       let { nodeInstance, traversalDepth, eventEmitter } = argArray[0]
+      eventEmitter.on('nodeTraversalCompleted', data => {
+        // console.log(data.value, ' resolved.')
+      })
+
       let result = await dataProcessCallback(aggregator.value)
-      aggregator.add(result)
-      // eventEmitter.on('nodeTraversalCompleted', data => console.log(data.value, ' resolved.'))
       let resultArray = await Reflect.apply(...arguments)
-      for (let nodeResult of resultArray) {
-        aggregator.merge(nodeResult)
-      }
+      aggregator.merge(resultArray)
+
       return traversalDepth == 0 ? aggregator.value : aggregator // check if top level call and not an initiated nested recursive call.
     },
   })
@@ -18,13 +19,14 @@ export const traverseThenProcess = ({ dataProcessCallback, targetFunction, aggre
   return new Proxy(targetFunction, {
     async apply(target, thisArg, argArray) {
       let { nodeInstance, traversalDepth, eventEmitter } = argArray[0]
-      // eventEmitter.on('nodeTraversalCompleted', data => console.log(data.value, ' resolved.'))
+      eventEmitter.on('nodeTraversalCompleted', data => {
+        // console.log(data.value, ' resolved.')
+      })
+
       let resultArray = await Reflect.apply(...arguments)
-      for (let nodeResult of resultArray) {
-        aggregator.merge(nodeResult)
-      }
+      aggregator.merge(resultArray)
       let result = await dataProcessCallback(aggregator.value)
-      aggregator.add(result)
+
       return traversalDepth == 0 ? aggregator.value : aggregator // check if top level call and not an initiated nested recursive call.
     },
   })

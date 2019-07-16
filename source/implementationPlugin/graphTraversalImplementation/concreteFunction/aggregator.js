@@ -11,8 +11,10 @@ export class AggregatorArray {
     // return aggregator.value.unshift(item) // insert at start
   }
   // merge aggregators
-  merge(additionalAggregator: Aggregator, targetAggregator: Aggregator = this) {
-    targetAggregator.value = [...targetAggregator.value, ...additionalAggregator.value]
+  merge(additionalAggregatorArray: [Aggregator], targetAggregator: Aggregator = this) {
+    for (let additionalAggregator of additionalAggregatorArray) {
+      targetAggregator.value = [...targetAggregator.value, ...additionalAggregator.value]
+    }
     return targetAggregator
   }
 }
