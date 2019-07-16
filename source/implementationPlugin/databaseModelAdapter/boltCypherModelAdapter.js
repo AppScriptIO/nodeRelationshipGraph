@@ -18,6 +18,12 @@ const jsonToCepherAdapter = {
 export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostname: 'localhost', port: 7687 }, authentication = { username: 'neo4j', password: 'test' } } = {}) {
   const graphDBDriver = boltProtocolDriver.driver(`${url.protocol}://${url.hostname}:${url.port}`, boltProtocolDriver.auth.basic(authentication.username, authentication.password), {
     disableLosslessIntegers: true, // neo4j represents IDs as integers, and through the JS driver transforms them to strings to represent high values approximately 2^53 +
+    // maxConnectionPoolSize: process.env.DRIVER_MAX_CONNECTION_POOL_SIZE || 50,                     // maximum number of connections to the connection pool
+    // maxConnectionLifetime: process.env.DRIVER_MAX_CONNECTION_LIFETIME || 4 * 60 * 60 * 1000,      // time in ms, 4 hours maximum connection lifetime
+    // maxTransactionRetryTime: process.env.DRIVER_MAX_TRANSACTION_RETRY_TIME || 3 * 1000,           // time in ms to retry a transaction
+    // connectionAcquisitionTimeout: process.env.DRIVER_CONNECTION_ACQUISITION_TIMEOUT || 2 * 1000,  // time in ms to wait for a connection to become available in the pool
+    // trust: process.env.DRIVER_TLS_TRUST || 'TRUST_ALL_CERTIFICATES',                              // tls trust configuration
+    // encrypted: process.env.DRIVER_TLS_ENABLED || 'ENCRYPTION_OFF'                                 // enable/disable TLS encryption to client
   })
   const implementation = {
     driverInstance: graphDBDriver, // expose driver instance
@@ -82,6 +88,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
           -[l:NEXT]->
           (destination${destinationNodeType ? `:${destinationNodeType}` : ''}) 
         return l
+        order by destination.key
       `
       let result = await session.run(query)
       result = result.records.map(record => record.toObject().l)
@@ -111,7 +118,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
     getAllNode: async function() {
       let session = await graphDBDriver.session()
       let query = `
-        match (n) return n
+        match (n) return n order by n.key
       `
       let result = await session.run(query)
       await session.close()
@@ -125,7 +132,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
     getAllEdge: async function() {
       let session = await graphDBDriver.session()
       let query = `
-        match ()-[l]->() return l
+        match ()-[l]->(n) return l order by n.key
       `
       let result = await session.run(query)
       await session.close()

@@ -112,6 +112,11 @@ _resources about graphs and different implementations:_
 - Graph API - https://www.coursera.org/lecture/algorithms-part2/digraph-api-Jeyta
 - https://davidurbina.blog/on-partial-order-total-order-and-the-topological-sort/
 - [Tree structures article](https://medium.freecodecamp.org/all-you-need-to-know-about-tree-data-structures-bceacb85490c)
+- Study Neo4j traversal API in depth 
+    - Examples - https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java 
+    - code - https://github.com/neo4j/neo4j/tree/ba4e188d51e027a7e7870d511044ea940cf0455e/community/graphdb-api/src/main/java/org/neo4j/graphdb/traversal
+- yWorks diagramming tools - products like the html graph editor, and Neo4j graph presentation. 
+    - Documentation contains lots of useful definitions, and so the evaluation version.
 # Notes: 
 - Generally speaking, there isn't really a concept of mutable state in abstract algebra (of which Graph Theory is a part). Only existence/non-existence. Graphs have a static state, and cannot be mutable in common Graph Theory concepts. Any 'change' indicated would be another distinct graph.
 ___

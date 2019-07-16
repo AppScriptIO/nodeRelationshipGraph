@@ -78,9 +78,9 @@ Object.assign(entityPrototype, {
     let { nodeInstance, nodeKey, nodeID, graphInstance = thisArg } = argumentsList[0]
     assert([nodeInstance, nodeKey, nodeID].filter(element => element).length == 1, '• node identifier or object must be passed in.') // only one of the parameters should be passed.
     if (nodeKey) {
-      argumentsList[0].nodeInstance = await graphInstance.database.getNodeByKey({ key: nodeKey }) // retrieve node data on-demand in case not cached.
+      argumentsList[0].nodeInstance = await graphInstance.database.getNodeByKey({ key: nodeKey }) // retrieve node data on-demand
     } else if (nodeID) {
-      argumentsList[0].nodeInstance = await graphInstance.database.getNodeByID({ id: nodeID }) // retrieve node data on-demand in case not cached.
+      argumentsList[0].nodeInstance = await graphInstance.database.getNodeByID({ id: nodeID }) // retrieve node data on-demand
     }
     return Reflect.apply(target, thisArg, argumentsList)
   })
@@ -121,7 +121,7 @@ Object.assign(entityPrototype, {
         handlePropagation: nodeInstance.properties?.handlePropagationImplementation || 'chronological',
         traverseNode: nodeInstance.properties?.traverseNodeImplementation || 'portConnection',
         aggregator: 'AggregatorArray',
-        traversalInterception: 'processThenTraverse',
+        traversalInterception: 'traverseThenProcess' || 'processThenTraverse',
       } |> removeUndefinedFromObject // remove undefined values because native Object.assign doesn't override keys with `undefined` values
 
     // Context instance parameter
@@ -218,11 +218,51 @@ Object.assign(entityPrototype, {
   },
 
   /**
+   * The purpose of this function is to find & yield next nodes.
+   * @yield node feed
+   **/
+  traverseNode: async function*({ nodeInstance, nodeType, traverseNodeImplementation, graphInstance = this }) {
+    let nodeIteratorFeed = traverseNodeImplementation({ nodeInstance, nodeType, graphInstance })
+    async function* trapAsyncIterator(iterator) {
+      for await (let nodeData of iterator) {
+        // evaluate whether to include or exclude a node from traversal.
+        if (graphInstance.evaluateNode({ node: nodeData })) yield nodeData
+      }
+    }
+    yield* trapAsyncIterator(nodeIteratorFeed)
+  },
+  // Node's include/exclude evaluation - evaluate whether or not a node whould be included in the node feed and subsequently in the traversal.
+  evaluateNode({ node }) {
+    return true
+  },
+
+  /**
+   * Handles the graph traversal propagation order
+   * @yields a traversal configuration feed/iterator
+   * @return results array
+   **/
+  handlePropagation: async function*({ nodeIteratorFeed, handlePropagationImplementation /** Controls the iteration over nodes and execution arrangement. */, graphInstance = this }) {
+    let { eventEmitterCallback: emit } = function.sent
+    let traversalIteratorFeed = handlePropagationImplementation({ nodeIteratorFeed, emit }) // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
+    async function* trapAsyncIterator(iterator) {
+      let iteratorResult = await iterator.next()
+      while (!iteratorResult.done) {
+        let traversalConfig = iteratorResult.value
+        yield traversalConfig
+        let { promise } = function.sent
+        iteratorResult = await iterator.next({ promise })
+      }
+      return iteratorResult.value
+    }
+    return yield* trapAsyncIterator(traversalIteratorFeed)
+  },
+
+  /**
    * Controls execution of node traversals & Hands over control to implementation:
    *  1. Accepts new nodes from implementing function.
    *  2. returns back to the implementing function a promise, handing control of flow and arragement of running traversals.
    */
-  recursiveIteration: async function*({
+  recursiveIteration: async function({
     traversalIteratorFeed /**Feeding iterator that will accept node parameters for traversals*/,
     graphInstance = this,
     recursiveCallback = graphInstance::graphInstance.traverse,
@@ -237,33 +277,14 @@ Object.assign(entityPrototype, {
     let g = {}
     g.result = await traversalIteratorFeed.next({ eventEmitterCallback: eventEmitterCallback }) // initial execution
     while (!g.result.done) {
-      let nextNodeConfig = g.result.value
+      let traversalConfig = g.result.value
       // 🔁 recursion call
-      let promise = recursiveCallback(Object.assign(nextNodeConfig, { traversalDepth }), { parentTraversalArg })
+      let promise = recursiveCallback(Object.assign({ nodeInstance: traversalConfig.node, traversalDepth }), { parentTraversalArg })
       g.result = await traversalIteratorFeed.next({ promise })
     }
     // last node iterator feed should be an array of resolved node promises that will be forwarded through this function
     let returnedResultArray = g.result.value || []
-    yield* returnedResultArray // forward resolved results
-  },
-
-  /**
-   * The purpose of this function is to find & yield next nodes.
-   * @yield node feed
-   **/
-  traverseNode: async function*({ nodeInstance, nodeType, traverseNodeImplementation, graphInstance = this }) {
-    let nodeIteratorFeed = traverseNodeImplementation({ nodeInstance, nodeType, graphInstance })
-    yield* nodeIteratorFeed
-  },
-
-  /**
-   * Handles the graph traversal propagation order
-   * @return results array
-   **/
-  handlePropagation: async function*({ nodeIteratorFeed, handlePropagationImplementation /** Controls the iteration over nodes and execution arrangement. */, graphInstance = this }) {
-    let { eventEmitterCallback: emit } = function.sent
-    // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
-    return yield* handlePropagationImplementation({ nodeIteratorFeed, emit })
+    return returnedResultArray // forward resolved results
   },
 
   dataProcess: async function({ nodeInstance, nextProcessData, dataProcessImplementation }) {

@@ -2,6 +2,7 @@ export async function* portConnection({ nodeInstance, nodeType, graphInstance })
   let connection = await graphInstance.database.getNodeConnection({ sourceKey: nodeInstance.properties.key, direction: 'outgoing', destinationNodeType: nodeType })
   let port = (await graphInstance.database.getNodeConnection({ nodeInstance, direction: 'outgoing', destinationNodeType: 'port' })).map(connection => connection.destination) // extract port instance from relationships relating to ports.
   if (connection.length == 0) return
+
   let nodeIteratorFeed =
     port.length > 0
       ? // iterate over ports
@@ -17,11 +18,12 @@ export async function* portConnection({ nodeInstance, nodeType, graphInstance })
  */
 async function* iterateConnection({ nodeConnectionArray, graphInstance } = {}) {
   const controlArg = function.sent
-  // sort connection array
+  // sort connection array - in addition to the database sorting of the query results.
   nodeConnectionArray.sort((former, latter) => former.properties?.order - latter.properties?.order) // using `order` property
 
   for (let nodeConnection of nodeConnectionArray) {
-    yield { nodeID: nodeConnection.end } // iteration implementaiton
+    let nodeData = await graphInstance.database.getNodeByID({ id: nodeConnection.end })
+    yield nodeData // iteration implementaiton
   }
 }
 

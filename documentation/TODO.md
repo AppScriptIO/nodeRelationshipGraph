@@ -56,6 +56,3 @@ _Current behavior_
     // [3] when executed an inner hook (inside the `iterateConnection` scope) will invoke the implementation required using added helper function through `arguments.callee` property.
      })
 ```
-- Study Neo4j traversal API in depth 
-    - Examples - https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java 
-    - code - https://github.com/neo4j/neo4j/tree/ba4e188d51e027a7e7870d511044ea940cf0455e/community/graphdb-api/src/main/java/org/neo4j/graphdb/traversal

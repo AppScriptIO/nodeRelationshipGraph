@@ -7,7 +7,8 @@ export class AggregatorArray {
   }
   // add item to aggregator
   add(item, aggregator = this) {
-    return aggregator.value.unshift(item) // insert at start
+    return aggregator.value.push(item) // insert at start
+    // return aggregator.value.unshift(item) // insert at start
   }
   // merge aggregators
   merge(additionalAggregator: Aggregator, targetAggregator: Aggregator = this) {

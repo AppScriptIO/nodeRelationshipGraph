@@ -1,4 +1,5 @@
 import promiseProperRace from '@dependency/promiseProperRace'
+import { resolve } from 'path'
 // import { iterateConnection } from './iterateConnection.js'
 
 /**
@@ -9,8 +10,8 @@ export async function* raceFirstPromise({ nodeIteratorFeed, emit }) {
   g.result = await g.iterator.next() // initialize generator function execution and pass execution configurations.
   let nodePromiseArray = []
   while (!g.result.done) {
-    let nextNodeConfig = g.result.value
-    yield { nodeID: nextNodeConfig.nodeID }
+    let nodeData = g.result.value
+    yield { node: nodeData }
     let { promise } = function.sent
     nodePromiseArray.push(promise)
     g.result = await g.iterator.next()
@@ -38,8 +39,8 @@ export async function* allPromise({ nodeIteratorFeed, emit }) {
   let nodePromiseArray = [] // order of call initialization
   let resolvedOrderedNodeResolvedResult = [] // order of completion
   while (!g.result.done) {
-    let nextNodeConfig = g.result.value
-    yield { nodeID: nextNodeConfig.nodeID }
+    let nodeData = g.result.value
+    yield { node: nodeData }
     let { promise } = function.sent
     nodePromiseArray.push(promise) // promises are in the same arrangment of connection iteration.
     promise.then(result => emit(result)) // emit result for immediate usage by lisnters
@@ -51,7 +52,6 @@ export async function* allPromise({ nodeIteratorFeed, emit }) {
     if (process.env.SZN_DEBUG == 'true') console.error(`🔀⚠️ \`Promise.all\` for nodeConnectionArray rejected because: ${error}`)
     else console.log(error)
   })
-
   // ordered results according to promise completion.
   return resolvedOrderedNodeResolvedResult // return for all resolved results
 
@@ -65,12 +65,25 @@ export async function* allPromise({ nodeIteratorFeed, emit }) {
  * Sequential node execution - await each node till it finishes execution.
  **/
 export async function* chronological({ nodeIteratorFeed, emit }) {
+  let nodeResultList = []
+  for await (let nodeData of nodeIteratorFeed) {
+    yield { node: nodeData }
+    let { promise } = function.sent
+    let nextResult = await promise
+    emit(nextResult) // emit for immediate consumption
+    nodeResultList.push(nextResult)
+  }
+  return nodeResultList
+}
+
+// implementation using while loop instead of `for await`, as it allows for passing initial config value for the generator function (that will use function.sent to catch it.)
+export async function* chronological_implementationUsingWhileLoop({ nodeIteratorFeed, emit }) {
+  let nodeResultList = []
   let g = { iterator: nodeIteratorFeed }
   g.result = await g.iterator.next() // initialize generator function execution and pass execution configurations.
-  let nodeResultList = []
   while (!g.result.done) {
-    let nextNodeConfig = g.result.value
-    yield { nodeID: nextNodeConfig.nodeID }
+    let nodeData = g.result.value
+    yield { node: nodeData }
     let { promise } = function.sent
     let nextResult = await promise
     emit(nextResult) // emit for immediate consumption
