@@ -11,7 +11,7 @@ import { proxifyMethodDecorator } from '../utility/proxifyMethodDecorator.js'
 import { mergeDefaultParameter } from '../utility/mergeDefaultParameter.js'
 import EventEmitter from 'events'
 import { EvaluatorFunction } from './Evaluator.class.js'
-const Evaluator = EvaluatorFunction({ traverse: 'continue', process: 'include' }) // initialize by setting default values.
+const Evaluator = EvaluatorFunction()
 import { removeUndefinedFromObject } from '../utility/removeUndefinedFromObject.js'
 
 /** Conceptual Graph
@@ -93,7 +93,6 @@ Object.assign(entityPrototype, {
           additionalChildNode: [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
           nodeConnectionKey: null, // pathPointerKey
           nodeType: 'Stage', // Traversal step or stage - defines when and how to run processes.
-          evaluator: new Evaluator({ traverse: 'continue', process: 'include' }),
         },
         { parentTraversalArg: null },
       ],
@@ -117,10 +116,11 @@ Object.assign(entityPrototype, {
     let implementationKey =
       {
         processData: nodeInstance.properties?.processDataImplementation || 'returnDataItemKey',
-        handlePropagation: nodeInstance.properties?.handlePropagationImplementation || 'chronological',
-        traverseNode: nodeInstance.properties?.traverseNodeImplementation || 'portConnection',
+        handlePropagation: nodeInstance.properties?.implementation || 'chronological',
+        traverseNode: nodeInstance.properties?.implementation || 'portConnection',
         aggregator: 'AggregatorArray',
         traversalInterception: 'traverseThenProcess' || 'processThenTraverse',
+        evaluatePosition: 'evaluateCondition',
       } |> removeUndefinedFromObject // remove undefined values because native Object.assign doesn't override keys with `undefined` values
 
     // Context instance parameter
@@ -138,8 +138,9 @@ Object.assign(entityPrototype, {
       dataProcess: graphInstance.traversal.processData[implementationKey.processData],
       handlePropagation: graphInstance.traversal.handlePropagation[implementationKey.handlePropagation],
       traverseNode: graphInstance.traversal.traverseNode[implementationKey.traverseNode],
-      traversalInterception: graphInstance.traversal.traversalInterception[implementationKey.traversalInterception],
+      traversalInterception: graphInstance.traversal.traversalInterception[implementationKey.traversalInterception] || (({ targetFunction }) => new Proxy(targetFunction, {})), // in case no implementation exists for intercepting traversal, use an empty proxy.
       aggregator: graphInstance.traversal.aggregator[implementationKey.aggregator],
+      evaluatePosition: graphInstance.traversal.evaluatePosition[implementationKey.evaluatePosition],
     }
     assert(Object.entries(implementation).every(([key, value]) => Boolean(value)), '• All `implementation` concerete functions must be set.')
     // deep merge of nested parameter (TODO: use utility function from different module that does this function.)
@@ -190,17 +191,17 @@ Object.assign(entityPrototype, {
     } = {},
     { parentTraversalArg } = {},
   ) {
-    let dataProcessCallback = nextProcessData =>
-      graphInstance::graphInstance.dataProcess({ nodeInstance, nextProcessData, evaluator, aggregator, dataProcessImplementation: nodeInstance::implementation.dataProcess })
-
-    let proxyify = implementation.traversalInterception
-      ? target => graphInstance::implementation.traversalInterception({ targetFunction: target, aggregator, dataProcessCallback })
-      : // in case no implementation exists for intercepting traversal, use an empty proxy.
-        target => new Proxy(target, {})
+    evaluator = await graphInstance.evaluatePosition({ evaluator, nodeInstance, implementation: nodeInstance::implementation.evaluatePosition })
 
     // Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
-    nodeIteratorFeed ||= graphInstance::graphInstance.traverseNode({ nodeInstance, nodeType, traverseNodeImplementation: nodeInstance::implementation.traverseNode })
-    let traversalIteratorFeed = graphInstance::graphInstance.handlePropagation({ nodeIteratorFeed, handlePropagationImplementation: nodeInstance::implementation.handlePropagation })
+    nodeIteratorFeed ||= graphInstance::graphInstance.traverseNode({ nodeInstance, nodeType, implementation: nodeInstance::implementation.traverseNode })
+
+    let traversalIteratorFeed = graphInstance::graphInstance.handlePropagation({ nodeIteratorFeed, implementation: nodeInstance::implementation.handlePropagation })
+
+    let dataProcessCallback = nextProcessData =>
+      graphInstance::graphInstance.dataProcess({ nodeInstance, nextProcessData, evaluator, aggregator, implementation: nodeInstance::implementation.dataProcess })
+
+    let proxyify = target => graphInstance::implementation.traversalInterception({ targetFunction: target, aggregator, dataProcessCallback })
     let result = await (graphInstance::graphInstance.recursiveIteration |> proxyify)({
       traversalIteratorFeed,
       nodeInstance,
@@ -210,36 +211,32 @@ Object.assign(entityPrototype, {
       parentTraversalArg: arguments,
     })
 
-    // in case the proxy didn't iterate over the target generator or the implementation of proxy doesn't exist.
-    if (typeof result[Symbol.asyncIterator] === 'function') {
-      eventEmitter.on('nodeTraversalCompleted', console.log)
-      let iterator = result,
-        iteratorResult
-      do iteratorResult = await iterator.next()
-      while (!iteratorResult.done)
-      return nodeInstance // only traversal (without returning accumolative data) is required with the default iteration (that doesn't include an implementing `traversalInterception` function)
-    }
-
     return result
+  },
+
+  //
+  /**
+   * Node's include/exclude evaluation - evaluate whether or not a node whould be included in the node feed and subsequently in the traversal.
+   * continue child nodes traversal or break traversal.
+   */
+  evaluatePosition: async function({ evaluator, nodeInstance, implementation, graphInstance = this }) {
+    evaluator = new Evaluator({ traverse: 'continue', process: 'include' }) // Note: Additional default values for Evaluator constructor are set above during initialization of Evaluator static class.
+    await implementation({ evaluator, nodeInstance, graphInstance })
+    return evaluator
   },
 
   /**
    * The purpose of this function is to find & yield next nodes.
    * @yield node feed
    **/
-  traverseNode: async function*({ nodeInstance, nodeType, traverseNodeImplementation, graphInstance = this }) {
-    let nodeIteratorFeed = traverseNodeImplementation({ nodeInstance, nodeType, graphInstance })
+  traverseNode: async function*({ nodeInstance, nodeType, implementation, graphInstance = this }) {
+    let nodeIteratorFeed = implementation({ nodeInstance, nodeType, graphInstance })
     async function* trapAsyncIterator(iterator) {
       for await (let nodeData of iterator) {
-        // evaluate whether to include or exclude a node from traversal.
-        if (graphInstance.evaluateNode({ node: nodeData })) yield nodeData
+        yield nodeData
       }
     }
     yield* trapAsyncIterator(nodeIteratorFeed)
-  },
-  // Node's include/exclude evaluation - evaluate whether or not a node whould be included in the node feed and subsequently in the traversal.
-  evaluateNode({ node }) {
-    return true
   },
 
   /**
@@ -247,14 +244,13 @@ Object.assign(entityPrototype, {
    * @yields a traversal configuration feed/iterator
    * @return results array
    **/
-  handlePropagation: async function*({ nodeIteratorFeed, handlePropagationImplementation /** Controls the iteration over nodes and execution arrangement. */, graphInstance = this }) {
+  handlePropagation: async function*({ nodeIteratorFeed, implementation /** Controls the iteration over nodes and execution arrangement. */, graphInstance = this }) {
     let { eventEmitterCallback: emit } = function.sent
-    let traversalIteratorFeed = handlePropagationImplementation({ nodeIteratorFeed, emit }) // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
+    let traversalIteratorFeed = implementation({ nodeIteratorFeed, emit }) // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
     async function* trapAsyncIterator(iterator) {
       let iteratorResult = await iterator.next()
       while (!iteratorResult.done) {
         let traversalConfig = iteratorResult.value
-        // traversalConfig.evaluator = new Evaluator({ process: 'exclude' })
         yield traversalConfig
         let { promise } = function.sent
         iteratorResult = await iterator.next({ promise })
@@ -280,8 +276,7 @@ Object.assign(entityPrototype, {
   }: {
     eventEmitter: Event,
   }) {
-    if (!evaluator.shouldContinue()) return []
-
+    if (!evaluator.shouldContinue()) return [] // skip traversal
     let eventEmitterCallback = (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args)
     traversalDepth += 1 // increase traversal depth
     let g = {}
@@ -298,12 +293,11 @@ Object.assign(entityPrototype, {
     return g.result.value // forward array of resolved results
   },
 
-  dataProcess: async function({ nodeInstance, nextProcessData, aggregator, evaluator, dataProcessImplementation }) {
+  dataProcess: async function({ nodeInstance, nextProcessData, aggregator, evaluator, implementation }) {
     if (!evaluator.shouldExecuteProcess()) return null
-
     let dataItem = nodeInstance
     // Execute node dataItem
-    let result = dataItem ? await nodeInstance::dataProcessImplementation({ dataItem }) : null
+    let result = dataItem ? await nodeInstance::implementation({ dataItem }) : null
     if (evaluator.shouldIncludeResult()) aggregator.add(result)
     return result
   },

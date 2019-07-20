@@ -11,8 +11,8 @@ mkdir -p $PWD/temporary/neo4j/import
 docker rm -f neo4j
 docker run \
     --name neo4j \
-    -p7474:7474 -p7687:7687 \
-    -d --rm \
+    -p7474:7474 -p7686:7687  \
+    -d \
     -v $PWD/temporary/neo4j/logs:/logs \
     -v $PWD/temporary/neo4j/plugins:/plugins \
     -v $PWD/temporary/neo4j/import:/var/lib/neo4j/import/ \

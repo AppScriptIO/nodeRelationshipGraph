@@ -1,5 +1,6 @@
 import assert from 'assert'
 const boltProtocolDriver = require('neo4j-driver').v1
+import generateUUID from 'uuid/v4'
 
 // convention of data structure - `connection: { source: [<nodeKey>, <portKey>], destination: [<nodeKey>, <portKey>] }`
 const jsonToCepherAdapter = {
@@ -25,13 +26,35 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
     // trust: process.env.DRIVER_TLS_TRUST || 'TRUST_ALL_CERTIFICATES',                              // tls trust configuration
     // encrypted: process.env.DRIVER_TLS_ENABLED || 'ENCRYPTION_OFF'                                 // enable/disable TLS encryption to client
   })
+
   const implementation = {
     driverInstance: graphDBDriver, // expose driver instance
     // load nodes and connections from json file data.
     async loadGraphData({ nodeEntryData = [], connectionEntryData = [] } = {}) {
+      // {
+      //   const map = {
+      //     nodeKey: new Map(),
+      //     connectionKey: new Map(),
+      //   }
+      //   // create unique keys for each node and connection
+      //   nodeEntryData.map(node => {
+      //     let oldKey = node.properties.key
+      //     map.nodeKey.set(oldKey, generateUUID())
+      //     node.properties.key = map.nodeKey.get(oldKey)
+      //     return node
+      //   })
+      //   connectionEntryData.map(c => {
+      //     let oldKey = c.properties.key
+      //     map.connectionKey.set(oldKey, generateUUID())
+      //     c.properties.key = map.connectionKey.get(oldKey)
+      //     return c
+      //   })
+      // }
+
       for (let entry of nodeEntryData) {
         await implementation.addNode({ nodeData: entry })
       }
+
       // rely on `key` property to create connections
       connectionEntryData.map(connection => {
         connection.startKey = nodeEntryData.filter(node => node.identity == connection.start)[0].properties.key
@@ -55,8 +78,8 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       return result
     },
     addConnection: async ({ connectionData /*conforms with the Cypher query results data convention*/ }) => {
-      assert(connectionData.start && connectionData.end, `• Connection must have a start and end nodes.`)
-      assert(connectionData.properties?.key, '• Connection object must have a key property.')
+      assert(typeof connectionData.start == 'number' && typeof connectionData.end == 'number', `• Connection must have a start and end nodes.`)
+      if (connectionData.type == 'NEXT') assert(connectionData.properties?.key, '• Connection object must have a key property.')
       let nodeArray = await implementation.getAllNode()
       let session = await graphDBDriver.session()
       let query = `

@@ -5,7 +5,7 @@ import { promises as filesystem } from 'fs'
 import { Entity } from '@dependency/entity'
 import { Database } from '../source/constructable/Database.class.js'
 import { boltCypherModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
-import * as graphData from '../test/asset/graphData' // load sample data
+import graphData from '../test/asset/graphData.exported.json' // load sample data
 
 let concreteDatabaseBehavior = new Database.clientInterface({
   implementationList: {
@@ -18,14 +18,13 @@ let concereteDatabase = concereteDatabaseInstance[Database.reference.key.getter]
 
 ;(async () => {
   await clearDatabase()
-  let dataName = 'nodeConnectionParallelTraversal'
-  await concereteDatabase.loadGraphData({ nodeEntryData: graphData[dataName].node, connectionEntryData: graphData[dataName].edge })
-  // await exportGraphData({ concereteDatabase, fileName: `${dataName}.json` })
+  await concereteDatabase.loadGraphData({ nodeEntryData: graphData.node, connectionEntryData: graphData.edge })
+  // await exportGraphData({ concereteDatabase })
   concereteDatabase.driverInstance.close()
 })()
 
 // Relies on the interface for concrete database plugins of graphTraversal module.
-async function exportGraphData({ concereteDatabase, targetPath = path.normalize(path.join(__dirname, '..', 'test/asset/graphData')), fileName = 'export.json' } = {}) {
+async function exportGraphData({ concereteDatabase, targetPath = path.normalize(path.join(__dirname, '..', 'test/asset/')), fileName = 'graphData.exported.json' } = {}) {
   let graphData = { node: await concereteDatabase.getAllNode(), edge: await concereteDatabase.getAllEdge() } |> JSON.stringify
   await filesystem.writeFile(path.join(targetPath, fileName), graphData, { encoding: 'utf8', flag: 'w' /*tructace file if exists and create a new one*/ })
   console.log(`• Created json file - ${path.join(targetPath, fileName)}`)

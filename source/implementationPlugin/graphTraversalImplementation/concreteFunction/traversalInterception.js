@@ -1,3 +1,4 @@
+// visiting each node before visiting it's child nodes.
 export const processThenTraverse = ({ dataProcessCallback, targetFunction, aggregator }) => {
   return new Proxy(targetFunction, {
     async apply(target, thisArg, argArray) {
@@ -15,6 +16,7 @@ export const processThenTraverse = ({ dataProcessCallback, targetFunction, aggre
   })
 }
 
+// vising the node after visiting the child nodes.
 export const traverseThenProcess = ({ dataProcessCallback, targetFunction, aggregator }) => {
   return new Proxy(targetFunction, {
     async apply(target, thisArg, argArray) {

@@ -19,7 +19,8 @@
         "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug#semver:^1.x.x",
         "neo4j-driver": "^1.7.5",
         "redisgraph.js": "^1.1.4",
-        "rethinkdb": "*"
+        "rethinkdb": "*",
+        "uuid": "^3.3.2"
     },
     "devDependencies": {
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^1.x.x",

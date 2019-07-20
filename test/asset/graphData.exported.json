@@ -1,0 +1,753 @@
+{
+  "node": [{
+    "identity": 237,
+    "labels": ["Stage"],
+    "properties": {
+      "key": "042cf539-2617-481f-9448-8894979fb2bc"
+    }
+  }, {
+    "identity": 286,
+    "labels": ["Port"],
+    "properties": {
+      "direction": "output",
+      "handlePropagationImplementation": "chronological",
+      "key": "0657c07a-5881-4784-bdae-c5d6ff8ad7e0"
+    }
+  }, {
+    "identity": 258,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "09414a68-4efb-4cff-8cba-df3b802ab984",
+      "name": "dataItem-key-2"
+    }
+  }, {
+    "identity": 282,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "1a6db5fe-7e91-4831-b8bf-90d61d04cd2c",
+      "name": "dataItem-key-2"
+    }
+  }, {
+    "identity": 280,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "handlePropagationImplementation": "chronological",
+      "key": "1c005d2a-c9b2-45e8-87dd-e504804d6ab7",
+      "name": "dataItem-key-0",
+      "processDataImplementation": "returnDataItemKey"
+    }
+  }, {
+    "identity": 241,
+    "labels": ["Process"],
+    "properties": {
+      "key": "23696770-025b-4e80-a387-f76b377ff2fc",
+      "name": "dataItem-key-3"
+    }
+  }, {
+    "identity": 238,
+    "labels": ["Port"],
+    "properties": {
+      "key": "23925295-1b06-4c2c-8bb5-5c1f932206fe"
+    }
+  }, {
+    "identity": 281,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "29f486c3-8745-4160-9cac-83e35f4f80c8",
+      "name": "dataItem-key-1"
+    }
+  }, {
+    "identity": 249,
+    "labels": ["Evaluation"],
+    "properties": {
+      "key": "2acdd4cf-0a13-464a-a40b-1a791ff4c2c5"
+    }
+  }, {
+    "identity": 287,
+    "labels": ["Port"],
+    "properties": {
+      "direction": "output",
+      "handlePropagationImplementation": "chronological",
+      "key": "323e356a-464c-49ba-aa64-6c1a04dc86f1"
+    }
+  }, {
+    "identity": 245,
+    "labels": ["Process"],
+    "properties": {
+      "key": "38765298-b59d-486a-9ba0-17039e305925",
+      "name": "dataItem-key-7"
+    }
+  }, {
+    "identity": 247,
+    "labels": ["Process"],
+    "properties": {
+      "key": "38ff6e51-36f5-46af-964c-0a63f52b9073",
+      "name": "dataItem-key-9"
+    }
+  }, {
+    "identity": 255,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "43d78a72-1a47-4b1c-afd6-305ac783a32f",
+      "name": "dataItem-key-4",
+      "timerDelay": 200
+    }
+  }, {
+    "identity": 263,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "44c137f8-c246-4b03-9ea0-772693dcac7d",
+      "name": "dataItem-key-3"
+    }
+  }, {
+    "identity": 233,
+    "labels": ["Stage"],
+    "properties": {
+      "key": "44cb2c48-b71d-4aff-9957-0ee3ed74f750"
+    }
+  }, {
+    "identity": 248,
+    "labels": ["Configuration"],
+    "properties": {
+      "aggregation": "skipProcess",
+      "key": "471184e4-c9eb-4c53-9edd-7c1a5722b295",
+      "propagation": "continue"
+    }
+  }, {
+    "identity": 246,
+    "labels": ["Process"],
+    "properties": {
+      "key": "48ab2eab-0342-4383-b6a8-48b2b2a878c6",
+      "name": "dataItem-key-8"
+    }
+  }, {
+    "identity": 285,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "49d8cfdc-8a0a-4ca1-b252-78ae126a595c",
+      "name": "dataItem-key-5"
+    }
+  }, {
+    "identity": 252,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "5205a10a-01d1-4d78-817d-217dc92aa6eb",
+      "name": "dataItem-key-1",
+      "timerDelay": 300
+    }
+  }, {
+    "identity": 230,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "523d8add-abac-4059-8798-a45a92d85fc6",
+      "name": "dataItem-key-2"
+    }
+  }, {
+    "identity": 235,
+    "labels": ["Stage"],
+    "properties": {
+      "key": "63ba4cfa-6682-46b3-be75-15d05606a03c"
+    }
+  }, {
+    "identity": 250,
+    "labels": ["SubgraphTemplate"],
+    "properties": {
+      "key": "6f3ce095-d42d-45bd-9d5f-738e921a1dc6",
+      "name": "nodeConnection"
+    }
+  }, {
+    "identity": 231,
+    "labels": ["Stage"],
+    "properties": {
+      "key": "706ba416-d318-4200-8d54-ccec010a8dbe"
+    }
+  }, {
+    "identity": 257,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "74a86f54-beda-472a-b4a8-e01d1eeb1424",
+      "name": "dataItem-key-1"
+    }
+  }, {
+    "identity": 239,
+    "labels": ["Port"],
+    "properties": {
+      "key": "81be8fb5-04bf-4155-9209-04ed07bb6b22"
+    }
+  }, {
+    "identity": 260,
+    "labels": ["SubgraphTemplate"],
+    "properties": {
+      "key": "833dd1c6-58f6-48e8-8180-c232a1041ea5",
+      "name": "nodePlacement"
+    }
+  }, {
+    "identity": 232,
+    "labels": ["Stage"],
+    "properties": {
+      "key": "8aab2cc5-2501-414b-a1e2-8a83708c0ac9"
+    }
+  }, {
+    "identity": 251,
+    "labels": ["Stage", "Process", "Port"],
+    "properties": {
+      "handlePropagationImplementation": "allPromise",
+      "key": "8f59c5b0-8c30-49b3-9716-a89851bd76aa",
+      "name": "dataItem-key-0",
+      "timerDelay": 0
+    }
+  }, {
+    "identity": 254,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "917ea72a-c018-40a1-acb5-cb85cb13cd19",
+      "name": "dataItem-key-3",
+      "timerDelay": 10
+    }
+  }, {
+    "identity": 284,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "acf924af-3fa4-4979-97ee-05140fe9c22a",
+      "name": "dataItem-key-4"
+    }
+  }, {
+    "identity": 242,
+    "labels": ["Process"],
+    "properties": {
+      "key": "af9b0091-08ee-4200-95d4-84b18e2ba76d",
+      "name": "dataItem-key-4"
+    }
+  }, {
+    "identity": 262,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "b929d641-5f31-4477-82bf-9c5a515e7f6b",
+      "name": "dataItem-key-2"
+    }
+  }, {
+    "identity": 244,
+    "labels": ["Process"],
+    "properties": {
+      "key": "bb5326da-0fe5-4cdb-b93c-d5eb0057641f",
+      "name": "dataItem-key-6"
+    }
+  }, {
+    "identity": 236,
+    "labels": ["Stage"],
+    "properties": {
+      "key": "ca63f158-858d-453a-bc14-ae79a51c1948"
+    }
+  }, {
+    "identity": 261,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "d51d34cf-f273-40e1-841d-8b5a2bd6480b",
+      "name": "dataItem-key-1"
+    }
+  }, {
+    "identity": 243,
+    "labels": ["Process"],
+    "properties": {
+      "key": "da588044-dcb1-4cc6-ad14-b4bbdcbb5db4",
+      "name": "dataItem-key-5"
+    }
+  }, {
+    "identity": 234,
+    "labels": ["Stage"],
+    "properties": {
+      "key": "db5353f2-2e54-4d89-be5d-4641d9f557b5"
+    }
+  }, {
+    "identity": 253,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "e376e155-8994-4201-9d26-1a97d5c22d76",
+      "name": "dataItem-key-2",
+      "timerDelay": 100
+    }
+  }, {
+    "identity": 240,
+    "labels": ["Port"],
+    "properties": {
+      "key": "e3984e39-34f6-4d10-8694-ccb627cb1cf8"
+    }
+  }, {
+    "identity": 283,
+    "labels": ["Stage", "Process"],
+    "properties": {
+      "key": "eb420c28-1d40-4d30-8d77-f4f156d751f4",
+      "name": "dataItem-key-3"
+    }
+  }, {
+    "identity": 229,
+    "labels": ["Stage", "Process", "Port"],
+    "properties": {
+      "key": "ebca9874-b2d9-48a4-82c4-0fe915b33367",
+      "name": "dataItem-key-1"
+    }
+  }, {
+    "identity": 256,
+    "labels": ["SubgraphTemplate"],
+    "properties": {
+      "name": "nodeConnectionParallelTraversal"
+    }
+  }, {
+    "identity": 259,
+    "labels": ["SubgraphTemplate"],
+    "properties": {
+      "name": "nodeInheritance"
+    }
+  }, {
+    "identity": 288,
+    "labels": ["SubgraphTemplate"],
+    "properties": {
+      "name": "nodePort"
+    }
+  }],
+  "edge": [{
+    "identity": 2354,
+    "start": 240,
+    "end": 237,
+    "type": "NEXT",
+    "properties": {
+      "key": "a18260a8-f093-4212-83a0-f0e46dec4f3b",
+      "order": "1"
+    }
+  }, {
+    "identity": 2404,
+    "start": 280,
+    "end": 286,
+    "type": "FORK",
+    "properties": {
+      "key": "2ee7d51b-76eb-4316-ab7d-b121ea12f485",
+      "order": "1"
+    }
+  }, {
+    "identity": 2380,
+    "start": 257,
+    "end": 258,
+    "type": "NEXT",
+    "properties": {
+      "key": "9dfe40f8-5ed3-4845-b751-f5db6c367f44",
+      "order": "1"
+    }
+  }, {
+    "identity": 2400,
+    "start": 286,
+    "end": 282,
+    "type": "NEXT",
+    "properties": {
+      "key": "ca2e7d4e-8569-4e13-9809-53b47f91a772",
+      "order": "1"
+    }
+  }, {
+    "identity": 2406,
+    "start": 288,
+    "end": 280,
+    "type": "ROOT",
+    "properties": {}
+  }, {
+    "identity": 2358,
+    "start": 231,
+    "end": 241,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "f37bbe10-1065-446a-84b8-b39e76f4def3"
+    }
+  }, {
+    "identity": 2355,
+    "start": 231,
+    "end": 238,
+    "type": "FORK",
+    "properties": {
+      "handlePropagationImplementation": "chronological",
+      "key": "8887117b-7720-46c3-9327-8a8cf5a4c13c",
+      "order": "1"
+    }
+  }, {
+    "identity": 2399,
+    "start": 287,
+    "end": 281,
+    "type": "NEXT",
+    "properties": {
+      "key": "327454b7-54d6-4164-bbc9-6faa5ec1a772",
+      "order": "2"
+    }
+  }, {
+    "identity": 2405,
+    "start": 280,
+    "end": 287,
+    "type": "FORK",
+    "properties": {
+      "key": "a954d701-16e8-4815-ba59-96a9af5f4381",
+      "order": "2"
+    }
+  }, {
+    "identity": 2362,
+    "start": 235,
+    "end": 245,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "ab76e362-b133-4b15-ae9c-511496329201"
+    }
+  }, {
+    "identity": 2364,
+    "start": 237,
+    "end": 247,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "40ea7a7c-4e88-421a-baf8-9641d77a186b"
+    }
+  }, {
+    "identity": 2376,
+    "start": 251,
+    "end": 255,
+    "type": "NEXT",
+    "properties": {
+      "key": "8402f550-1fda-4780-867d-d7e1d9db545e"
+    }
+  }, {
+    "identity": 2377,
+    "start": 255,
+    "end": 255,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "980e9d87-838e-432a-ad3c-8c6079637a3d",
+      "processDataImplementation": "timeout"
+    }
+  }, {
+    "identity": 2349,
+    "start": 238,
+    "end": 233,
+    "type": "NEXT",
+    "properties": {
+      "key": "9ac24b04-a0b2-4320-b1a1-178e57b85f52",
+      "order": "2"
+    }
+  }, {
+    "identity": 2366,
+    "start": 249,
+    "end": 248,
+    "type": "CASE",
+    "properties": {
+      "expected": true,
+      "key": "6d88b0ed-a6cc-4a8d-a8dc-e97eeab121d9"
+    }
+  }, {
+    "identity": 2365,
+    "start": 249,
+    "end": 248,
+    "type": "CASE",
+    "properties": {
+      "expected": false,
+      "key": "c1013dc6-9e3b-4d3a-be67-c911d6d1eed2"
+    }
+  }, {
+    "identity": 2367,
+    "start": 249,
+    "end": 248,
+    "type": "DEFAULT",
+    "properties": {
+      "key": "7829119c-9859-4e57-b5fc-8c6ed606e104"
+    }
+  }, {
+    "identity": 2363,
+    "start": 236,
+    "end": 246,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "545efeca-ccf9-476b-89cf-ac0bde7baff3"
+    }
+  }, {
+    "identity": 2403,
+    "start": 287,
+    "end": 285,
+    "type": "NEXT",
+    "properties": {
+      "key": "cca8088e-d861-432e-a2ea-92b4dad6fcd0",
+      "order": "1"
+    }
+  }, {
+    "identity": 2371,
+    "start": 252,
+    "end": 252,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "00f92284-f89b-4d82-9c72-01cfc9d96f1a",
+      "processDataImplementation": "timeout"
+    }
+  }, {
+    "identity": 2370,
+    "start": 251,
+    "end": 252,
+    "type": "NEXT",
+    "properties": {
+      "key": "015f69e3-3ea4-4166-a85a-e1b6998c5061"
+    }
+  }, {
+    "identity": 2344,
+    "start": 229,
+    "end": 230,
+    "type": "NEXT",
+    "properties": {
+      "key": "a4798b38-70cf-47ef-a279-e9034d0a8dea",
+      "order": 1
+    }
+  }, {
+    "identity": 2345,
+    "start": 230,
+    "end": 230,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "db1862b3-d139-4ba7-ac7f-32e685c9080b"
+    }
+  }, {
+    "identity": 2351,
+    "start": 239,
+    "end": 235,
+    "type": "NEXT",
+    "properties": {
+      "key": "75045e2d-3606-46c6-9351-cb41f374d79d",
+      "order": "1"
+    }
+  }, {
+    "identity": 2346,
+    "start": 229,
+    "end": 231,
+    "type": "NEXT",
+    "properties": {
+      "key": "c7dd1d97-9836-46f1-9653-dccd70f8924e",
+      "order": "3"
+    }
+  }, {
+    "identity": 2347,
+    "start": 248,
+    "end": 231,
+    "type": "CONFIGURE",
+    "properties": {
+      "depthAffected": 0,
+      "key": "a800a77a-8666-4ef6-88ea-ef97db63c286"
+    }
+  }, {
+    "identity": 2379,
+    "start": 258,
+    "end": 257,
+    "type": "INHERIT",
+    "properties": {
+      "key": "add0bc6d-b70d-4504-b44e-8c56afbca18e",
+      "order": "1"
+    }
+  }, {
+    "identity": 2381,
+    "start": 259,
+    "end": 257,
+    "type": "ROOT",
+    "properties": {}
+  }, {
+    "identity": 2356,
+    "start": 231,
+    "end": 239,
+    "type": "FORK",
+    "properties": {
+      "handlePropagationImplementation": "chronological",
+      "key": "2ce0eb2d-e876-4b42-8f69-2e15a27e68fa",
+      "order": "2"
+    }
+  }, {
+    "identity": 2382,
+    "start": 263,
+    "end": 260,
+    "type": "INSERT",
+    "properties": {
+      "key": "0b50d2b3-2870-4e76-92ba-9dfb2b6b9948",
+      "order": "1",
+      "placement": ["before", "47da8301-aa8b-4a5a-bf50-bf08c09e4428"]
+    }
+  }, {
+    "identity": 2348,
+    "start": 238,
+    "end": 232,
+    "type": "NEXT",
+    "properties": {
+      "key": "d05958f3-6d69-4072-838b-7af5efcbc01c",
+      "order": "1"
+    }
+  }, {
+    "identity": 2378,
+    "start": 256,
+    "end": 251,
+    "type": "ROOT",
+    "properties": {}
+  }, {
+    "identity": 2369,
+    "start": 251,
+    "end": 251,
+    "type": "FORK",
+    "properties": {
+      "key": "9197ccb5-201e-4e99-84a0-04442ca2697a"
+    }
+  }, {
+    "identity": 2368,
+    "start": 251,
+    "end": 251,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "a3986512-1272-45fe-9309-857203e93522",
+      "processDataImplementation": "timeout"
+    }
+  }, {
+    "identity": 2374,
+    "start": 251,
+    "end": 254,
+    "type": "NEXT",
+    "properties": {
+      "key": "125e439a-8ae9-4eb7-aab6-cbd2189e3933"
+    }
+  }, {
+    "identity": 2375,
+    "start": 254,
+    "end": 254,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "9c665ee9-dfe3-4fbb-b374-6f095ebaf33c",
+      "processDataImplementation": "timeout"
+    }
+  }, {
+    "identity": 2402,
+    "start": 286,
+    "end": 284,
+    "type": "NEXT",
+    "properties": {
+      "key": "337be372-35f1-47f8-978c-bdc379e3d43a",
+      "order": "2"
+    }
+  }, {
+    "identity": 2359,
+    "start": 232,
+    "end": 242,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "51911ace-63dc-48b6-be24-5ad376ca44d0"
+    }
+  }, {
+    "identity": 2384,
+    "start": 261,
+    "end": 262,
+    "type": "NEXT",
+    "properties": {
+      "key": "47da8301-aa8b-4a5a-bf50-bf08c09e4428"
+    }
+  }, {
+    "identity": 2361,
+    "start": 234,
+    "end": 244,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "0956e4dc-f074-4cde-b238-34f97261c7b1"
+    }
+  }, {
+    "identity": 2352,
+    "start": 239,
+    "end": 236,
+    "type": "NEXT",
+    "properties": {
+      "key": "5566f10b-de4a-4eff-b2e6-c5a756e02167",
+      "order": "2"
+    }
+  }, {
+    "identity": 2353,
+    "start": 249,
+    "end": 236,
+    "type": "CONFIGURE",
+    "properties": {
+      "depthAffected": 0,
+      "key": "45c820fa-b467-49df-a9d9-2980d0a3cf9e"
+    }
+  }, {
+    "identity": 2383,
+    "start": 260,
+    "end": 261,
+    "type": "ROOT",
+    "properties": {
+      "key": "109f8619-3627-47db-ae73-c7e8598c66f8"
+    }
+  }, {
+    "identity": 2360,
+    "start": 233,
+    "end": 243,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "7be89d38-c1e3-4f1a-abd2-1d788e5683b4"
+    }
+  }, {
+    "identity": 2350,
+    "start": 238,
+    "end": 234,
+    "type": "NEXT",
+    "properties": {
+      "key": "179fbee2-1b86-43f7-8cc8-e7268bcd23c0",
+      "order": "3"
+    }
+  }, {
+    "identity": 2373,
+    "start": 253,
+    "end": 253,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "c0e6d202-39bf-486f-aa43-239b457e15d2",
+      "processDataImplementation": "timeout"
+    }
+  }, {
+    "identity": 2372,
+    "start": 251,
+    "end": 253,
+    "type": "NEXT",
+    "properties": {
+      "key": "681b64f4-31c8-43cd-b152-a6d17ad6de8e"
+    }
+  }, {
+    "identity": 2357,
+    "start": 231,
+    "end": 240,
+    "type": "FORK",
+    "properties": {
+      "handlePropagationImplementation": "chronological",
+      "key": "57e76a3d-8d62-4839-8fea-4942bbaab461",
+      "order": "3"
+    }
+  }, {
+    "identity": 2401,
+    "start": 287,
+    "end": 283,
+    "type": "NEXT",
+    "properties": {
+      "key": "44b82840-8cd3-4ced-ae78-4c7a6b75106c",
+      "order": "3"
+    }
+  }, {
+    "identity": 2341,
+    "start": 229,
+    "end": 229,
+    "type": "EXECUTE",
+    "properties": {
+      "key": "52bd8d0e-ee37-42b5-a47f-91509539172a"
+    }
+  }, {
+    "identity": 2343,
+    "start": 229,
+    "end": 229,
+    "type": "FORK",
+    "properties": {
+      "key": "6aee9693-587e-495e-bbc7-3644c5aafc03"
+    }
+  }, {
+    "identity": 2342,
+    "start": 250,
+    "end": 229,
+    "type": "ROOT",
+    "properties": {
+      "key": "87e124d9-11e3-49c0-8f23-c059c32f90c4"
+    }
+  }]
+}

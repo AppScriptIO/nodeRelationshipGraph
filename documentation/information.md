@@ -44,6 +44,7 @@ Different applications may use this module:
     (a function which takes a graph* (your 'subgraph') *as an input and maps to another graph dependent on that input.)
         - _subgraph template_ node - marks an entrypoint to a graph, and allows for adding external nodes to it. It may also create a new interface to the target graph, where it specifies possible connection positions or ports to map it to the external graph. `extends` - will allow to create instances of another subgraph with different manipulation parameters.
         - **Additional children/edges** conecpt - where a graph can be used (traversed) through a proxy without manipulating it directly. Related to insertion points concept - adding nodes in insertion points in the graph. Each edge has a position/arrangement property that defines the order and a placement (in case it is an additional connection to be traversed). e.g. `pathPointerKey`/`connectionKey` could be an additional conenction that is added to the existing conenctions for traversal purposes.
+    - Dynamic traverser configuration - The traverser in each current position can change behavior according to the evaluation of the node. i.e. the traverser may change modes controlled by each stage node. Stage nodes could be also thought as `traverser controller` nodes that give the traverser in the current position, instrcutions to follow and changes it's behavior. 
 
 
 - **Graph Elements**:
@@ -65,10 +66,18 @@ ___
 - set traversal / rules
     - parameters flags & switch keys/options.
     - parameter implementations passed
+- Evaluate position: 
+    Decide which node results to include in the results and which to traverse their nested nodes.
+    - **Configuration node** - a set of key values that reference implementations and behavior options for the traverser to follow in a current position and possibly nested positions too. Possible options:
+        - _propagation:_ 'continue' | 'break' | 'hult' (hult in the sense of stopping the entire traversal from entrypoint node).
+        - _aggregation:_ 'process&include' | 'process&exclude' | 'skipProcess' (don't process)
+    - **Evaluator node**  - usually checks for a condition and picks a configuration deciding the behavior of the traverser and actions that should be taken in the current position. 
 - Start traversal from entrypoint (starting point) node.
     - nodes can change traversal rules to next traversals.
     - nodes (e.g. Stages) can halt traversal or continue (can control traversal propagation).
-- Traverser will execute the nodes according to parameters, and decide which results of which nodes to include.
+- Traverser will execute the nodes according to parameters.
+- run nesteed stages
+- aggregate results of executions.
 
 ### API: 
 - iterator of node's connections 
@@ -119,6 +128,10 @@ _resources about graphs and different implementations:_
     - Documentation contains lots of useful definitions, and so the evaluation version.
 # Notes: 
 - Generally speaking, there isn't really a concept of mutable state in abstract algebra (of which Graph Theory is a part). Only existence/non-existence. Graphs have a static state, and cannot be mutable in common Graph Theory concepts. Any 'change' indicated would be another distinct graph.
+
+### Some terms that can be used: 
+- Fork, Port, Channel
+
 ___
 [Development TODO list](/documentation/TODO.md)
 
