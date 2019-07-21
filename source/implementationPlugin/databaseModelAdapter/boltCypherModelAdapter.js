@@ -1,13 +1,28 @@
 import assert from 'assert'
 const boltProtocolDriver = require('neo4j-driver').v1
 import generateUUID from 'uuid/v4'
+import { nodeLabel } from '../../graphSchemeReference.js'
 
 // convention of data structure - `connection: { source: [<nodeKey>, <portKey>], destination: [<nodeKey>, <portKey>] }`
 const jsonToCepherAdapter = {
   convertObjectToCepherProperty(object) {
     let propertyArray = []
     for (let [key, value] of Object.entries(object)) {
-      ;`${key}: ${typeof value == 'boolean' || typeof value == 'number' ? value : `'${value}'`}` |> propertyArray.push
+      switch (typeof value) {
+        case 'boolean':
+        case 'number':
+          propertyArray.push(`${key}: ${value}`)
+          break
+        case 'string':
+          propertyArray.push(`${key}:"${value}"`)
+          break
+        case 'object': // an array (as the property cannot be an object in property graph databases)
+          propertyArray.push(`${key}: [${value.map(item => (typeof item == 'string' ? `"${item}"` : item)).join(', ')}]`)
+          break
+        default:
+          throw new Error(`• "${typeof value}" Property value type for graph data is not supported.`)
+          break
+      }
     }
     return propertyArray.join(', ')
   },
@@ -96,7 +111,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       await session.close()
       return result
     },
-    getNodeConnection: async function({
+    getNodeConnectionByKey: async function({
       direction = 'outgoing' /* filter connection array to match outgoing connections only*/,
       sourceKey,
       destinationNodeType,
@@ -115,6 +130,37 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       `
       let result = await session.run(query)
       result = result.records.map(record => record.toObject().l)
+      await session.close()
+      return result
+    },
+    /**
+     * @returns Array of objects [{
+     *  connection: Object,
+     *  source: Object,
+     *  destination: Object
+     * }]
+     */
+    getNodeConnection: async function({
+      direction /* filter connection array to match outgoing connections only*/,
+      nodeID,
+      destinationNodeType,
+      connectionType,
+    }: {
+      direction: 'outgoing' | 'incoming' | undefined /*both incoming and outgoing*/,
+    }) {
+      let session = await graphDBDriver.session()
+      let connection = direction == 'outgoing' ? `-[connection:${connectionType}]->` : direction == 'incoming' ? `<-[connection:${connectionType}]-` : `-[connection:${connectionType}]-`
+      let query = `
+        match 
+          (source)
+          ${connection}
+          (destination${destinationNodeType ? `:${destinationNodeType}` : ''}) 
+        where id(source)=${nodeID}
+        return connection, source, destination
+        order by destination.key
+      `
+      let result = await session.run(query)
+      result = result.records.map(record => record.toObject())
       await session.close()
       return result
     },
