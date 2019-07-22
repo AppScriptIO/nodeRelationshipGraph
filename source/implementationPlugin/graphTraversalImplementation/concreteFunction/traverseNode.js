@@ -5,7 +5,7 @@ import assert from 'assert'
  * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
  * TODO: add ability to pass traversal configuration to a group of connections. Each port holds traversal cofigs that should affect all connection connected to this port.
  */
-export async function* iterateFork({ node, nodeType, additionalChildNode, graphInstance }) {
+export async function* iterateFork({ node, additionalChildNode, graphInstance }) {
   let forkArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.fork })
   if (forkArray.length == 0) return
 

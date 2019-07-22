@@ -2,7 +2,7 @@ import assert from 'assert'
 import { Entity, Constructable, symbol } from '@dependency/entity'
 import { Node } from './Node.class.js'
 import { Connection } from './Connection.class.js'
-import { GraphTraversal } from './GraphTraversal.class.js'
+import { GraphTraversal, traversalOption } from './GraphTraversal.class.js'
 import { Database } from './Database.class.js'
 import { Cache } from './Cache.class.js'
 import { Context } from './Context.class.js'
@@ -74,10 +74,26 @@ Object.assign(entityPrototype, {
     assert(rootRelationshipArray.every(n => n.destination.labels.includes(nodeLabel.stage)), `• Unsupported node type for a ROOT connection.`) // verify node type
     let extendRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.extend })
     assert(extendRelationshipArray.every(n => n.destination.labels.includes(nodeLabel.subgraphTemplate)), `• Unsupported node type for a EXTEND connection.`) // verify node type
+    let configureRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'incoming', nodeID: node.identity, connectionType: connectionType.configure })
+    assert(configureRelationshipArray.every(n => n.destination.labels.includes(nodeLabel.configuration)), `• Unsupported node type for a EXTEND connection.`) // verify node type
 
     let rootNode,
+      traversalConfiguration = {},
       additionalChildNode = [] // additional nodes
 
+    // get traversal configuration node
+    if (configureRelationshipArray.length > 0) {
+      function extractTraversalConfigProperty(propertyObject) {
+        return Object.entries(propertyObject).reduce((accumulator, [key, value]) => {
+          if (traversalOption.includes(key)) accumulator[key] = value
+          return accumulator
+        }, {})
+      }
+      let configureNode = configureRelationshipArray[0].destination
+      traversalConfiguration = extractTraversalConfigProperty(configureNode.properties)
+    }
+
+    // get additional nodes
     let insertRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'incoming', nodeID: node.identity, connectionType: connectionType.insert })
     insertRelationshipArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
     for (let insertRelationship of insertRelationshipArray) {
@@ -93,16 +109,18 @@ Object.assign(entityPrototype, {
       })
     }
 
+    // get rootNode and handle extended node.
     if (rootRelationshipArray.length > 0) {
       rootNode = rootRelationshipArray[0].destination
     } else {
       let extendNode = extendRelationshipArray[0].destination
       let recursiveCallResult = await graphInstance::graphInstance.laodSubgraphTemplateParameter({ node: extendNode, graphInstance })
       additionalChildNode = [...recursiveCallResult.additionalChildNode, ...additionalChildNode]
+      traversalConfiguration = Object.assign(recursiveCallResult.traversalConfiguration, traversalConfiguration)
       rootNode = recursiveCallResult.rootNode
     }
 
-    return { rootNode, additionalChildNode } // rootNode will be used as entrypoint to traversal call
+    return { rootNode, additionalChildNode, traversalConfiguration } // rootNode will be used as entrypoint to traversal call
   },
 
   /** Graph traversal - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
@@ -127,7 +145,9 @@ Object.assign(entityPrototype, {
       let parameter = await graphInstance.laodSubgraphTemplateParameter({ node: nodeData })
       // set additional parameters
       ;['nodeInstance', 'nodeKey', 'nodeID'].forEach(property => delete argumentsList[0][property]) // remove subgraph template node related identifiers.
-      Object.assign(argumentsList[0], { nodeInstance: parameter.rootNode, additionalChildNode: parameter.additionalChildNode })
+      argumentsList[0].implementationKey = argumentsList[0].implementationKey ? Object.assign(parameter.traversalConfiguration, argumentsList[0].implementationKey) : parameter.traversalConfiguration
+      argumentsList[0].additionalChildNode = argumentsList[0].additionalChildNode ? [...argumentsList[0].additionalChildNode, ...parameter.additionalChildNode] : parameter.additionalChildNode
+      Object.assign(argumentsList[0], { nodeInstance: parameter.rootNode })
     } else {
       argumentsList[0].nodeInstance = nodeData // set node data
     }
@@ -140,9 +160,9 @@ Object.assign(entityPrototype, {
       defaultArg: [
         {
           traversalDepth: 0,
+          path: null, // TODO: implement path sequence preservation. allow for the node traverse function to rely on the current path data.
           graphInstance: thisArg,
           additionalChildNode: [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
-          nodeConnectionKey: null, // pathPointerKey
           nodeType: 'Stage', // Traversal step or stage - defines when and how to run processes.
         },
         { parentTraversalArg: null },
@@ -150,7 +170,10 @@ Object.assign(entityPrototype, {
     })
     return Reflect.apply(target, thisArg, argumentsList)
   })
-  // TODO: Add ability to pick a defined set of implementation keys to be used to gether - e.g. implementation type: Condition, Middleware, Template
+  /** 
+   * TODO:  REFACTOR adding Traversal description class - ability to pick a defined set of implementation keys to be used to gether - e.g. implementation type: Condition, Middleware, Template, Schema, Shellscript.
+    - https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/graphdb/traversal/TraversalDescription.html
+   */
   @proxifyMethodDecorator((target, thisArg, argumentsList, targetClass, methodName) => {
     /** Choose concrete implementation
      * Parameter hirerchy for graph traversal implementations: (1 as first priority)
@@ -193,7 +216,10 @@ Object.assign(entityPrototype, {
       aggregator: graphInstance.traversal.aggregator[implementationKey.aggregator],
       evaluatePosition: graphInstance.traversal.evaluatePosition[implementationKey.evaluatePosition],
     }
-    assert(Object.entries(implementation).every(([key, value]) => Boolean(value)), '• All `implementation` concerete functions must be set.')
+    assert(
+      Object.entries(implementation).every(([key, value]) => Boolean(value)),
+      '• All `implementation` concerete functions must be registered, the implementationKey provided doesn`t match any of the registered implementaions.',
+    )
     // deep merge of nested parameter (TODO: use utility function from different module that does this function.)
     argumentsList = mergeDefaultParameter({
       passedArg: argumentsList,
@@ -212,11 +238,11 @@ Object.assign(entityPrototype, {
       nodeInstance,
       traversalIteratorFeed, // iterator providing node parameters for recursive traversal calls.
       traversalDepth, // level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
+      path,
       concreteTraversal, // implementation registered functions
       implementationKey, // used by decorator to retreive implementation functions
       implementation, // implementation functions
       additionalChildNode,
-      nodeConnectionKey,
       eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
       aggregator = new (nodeInstance::implementation.aggregator)(), // used to aggregate results of nested nodes.
       nodeType, // the type of node to traverse
@@ -228,7 +254,7 @@ Object.assign(entityPrototype, {
       traversalDepth: Number,
       implementaion: Object,
       implementationKey: {
-        // these are the the default registered implementations or internal module implementations.
+        // the the default registered implementations or internal module implementations.
         processData: 'returnDataItemKey' | 'returnKey' | 'timeout',
         traverseNode: 'allPromise' | 'chronological' | 'raceFirstPromise',
         aggregator: 'AggregatorArray' | 'ConditionCheck',
@@ -242,22 +268,11 @@ Object.assign(entityPrototype, {
     } = {},
     { parentTraversalArg } = {},
   ) {
-    // TODO: traversal configuration evaluation.
-    // let traversalConfig = {
-    //   processData: 'returnDataItemKey',
-    //   handlePropagation: 'chronological',
-    //   traverseNode: 'portConnection',
-    //   aggregator: 'AggregatorArray',
-    //   traversalInterception: 'processThenTraverse',
-    //   evaluatePosition: 'evaluateCondition',
-    // }
-
     evaluation ||= await graphInstance.evaluatePosition({ evaluation, node: nodeInstance, implementation: nodeInstance::implementation.evaluatePosition })
 
     // Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
     traversalIteratorFeed ||= graphInstance::graphInstance.traverseNode({
       node: nodeInstance,
-      nodeType,
       implementation: implementation.traverseNode,
       handlePropagationImplementation: implementation.handlePropagation,
       additionalChildNode,
@@ -297,8 +312,8 @@ Object.assign(entityPrototype, {
    * The purpose of this function is to find & yield next nodes.
    * @yield node feed
    **/
-  traverseNode: async function*({ node, nodeType, additionalChildNode, implementation, handlePropagationImplementation, graphInstance = this }) {
-    let traversalIteratorFeed = await node::implementation({ node, nodeType, additionalChildNode, graphInstance })
+  traverseNode: async function*({ node, additionalChildNode, implementation, handlePropagationImplementation, graphInstance = this }) {
+    let traversalIteratorFeed = await node::implementation({ node, additionalChildNode, graphInstance })
     async function* trapAsyncIterator(iterator) {
       for await (let traversalIteration of iterator) {
         let _handlePropagationImplementation = graphInstance.traversal.handlePropagation[traversalIteration.traversalConfig.handlePropagationImplementation] || handlePropagationImplementation

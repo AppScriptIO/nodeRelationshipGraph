@@ -17,6 +17,7 @@ let concereteDatabaseInstance = concreteDatabaseBehavior[Entity.reference.getIns
 let concereteDatabase = concereteDatabaseInstance[Database.reference.key.getter]()
 
 ;(async () => {
+  // NOTE: lines are commented to prevent accidental override of json graph data.
   // await clearDatabase()
   // await concereteDatabase.loadGraphData({ nodeEntryData: graphData.node, connectionEntryData: graphData.edge })
   // await exportGraphData({ concereteDatabase })

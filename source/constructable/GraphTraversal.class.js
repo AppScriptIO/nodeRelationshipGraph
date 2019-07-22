@@ -9,6 +9,8 @@ interface TraversalImplementation {
   traverseGraph: Function;
 }
 
+export const traversalOption = ['processData', 'handlePropagation', 'traverseNode', 'aggregator', 'traversalInterception', 'evaluatePosition']
+
 /**
  ** GraphTraversal system for supporting different graph implementation (concrete behavior of plugin that will be used in the client target).
  */

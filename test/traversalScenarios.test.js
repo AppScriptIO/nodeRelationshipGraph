@@ -36,7 +36,7 @@ let concreteDatabaseBehavior = new Database.clientInterface({
 })
 let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
   // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.
-  implementationList: { defaultImplementation, condition: {}, middleware: {}, schema: {}, shellscript: {}, template: {} },
+  implementationList: { defaultImplementation },
   defaultImplementation: 'defaultImplementation',
 })
 let contextInstance = new Context.clientInterface({
