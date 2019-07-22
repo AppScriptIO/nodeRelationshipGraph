@@ -1,25 +1,25 @@
-export async function returnDataItemKey({ dataItem, nodeInstance = this }) {
-  let processedData = `${dataItem.properties?.name}`
+export async function returnDataItemKey({ node, nodeInstance = this }) {
+  let processedData = `${node.properties?.name}`
   return processedData
 }
 
 // implementation delays promises for testing `iterateConnection` of promises e.g. `allPromise`, `raceFirstPromise`, etc.
-export async function timeout({ dataItem, nodeInstance = this }) {
-  if (typeof dataItem.properties?.timerDelay != 'number') throw new Error('• DataItem must have a delay value.')
-  let delay = dataItem.properties?.timerDelay
+export async function timeout({ node, nodeInstance = this }) {
+  if (typeof node.properties?.timerDelay != 'number') throw new Error('• DataItem must have a delay value.')
+  let delay = node.properties?.timerDelay
   return await new Promise((resolve, reject) =>
     setTimeout(() => {
-      // console.log(`${delay}ms passed for key ${dataItem.key}.`) // debug
-      resolve(dataItem.properties?.name)
+      // console.log(`${delay}ms passed for key ${node.key}.`) // debug
+      resolve(node.properties?.name)
     }, delay),
   )
 }
 
-export async function returnKey({ dataItem, nodeInstance = this }) {
-  return dataItem.properties?.key
+export async function returnKey({ node, nodeInstance = this }) {
+  return node.properties?.key
 }
 
-async function initializeDataItem({ dataItem, processData = 'getDataItem' }) {
+async function initializeDataItem({ node, processData = 'getDataItem' }) {
   let implementationObject = {
     async getResourceFile() {},
   }
@@ -54,11 +54,11 @@ async function initializeDataItem({ dataItem, processData = 'getDataItem' }) {
 */
 import { exec, execSync, spawn, spawnSync } from 'child_process'
 export const taskScript = {
-  async executeDataItem({ dataItem, nodeInstance = thisArg, processData }) {
+  async executeDataItem({ node, nodeInstance = thisArg, processData }) {
     // execute command
-    await dataItemInstance.executeScript()
+    await nodeInstance.executeScript()
   },
-  // dataItem instance methods
+  // node instance methods
   async executeScript() {
     // this = data item instance
 

@@ -8,8 +8,11 @@ export const processThenTraverse = ({ dataProcessCallback, targetFunction, aggre
       })
 
       let result = await dataProcessCallback(aggregator.value)
-      let resultArray = await Reflect.apply(...arguments)
-      aggregator.merge(resultArray)
+
+      let traversalResultIterator = await Reflect.apply(...arguments)
+      for await (let traversalResult of traversalResultIterator) {
+        aggregator.merge(traversalResult.result)
+      }
 
       return traversalDepth == 0 ? aggregator.value : aggregator // check if top level call and not an initiated nested recursive call.
     },
@@ -25,8 +28,11 @@ export const traverseThenProcess = ({ dataProcessCallback, targetFunction, aggre
         // console.log(data.value, ' resolved.')
       })
 
-      let resultArray = await Reflect.apply(...arguments)
-      aggregator.merge(resultArray)
+      let traversalResultIterator = await Reflect.apply(...arguments)
+      for await (let traversalResult of traversalResultIterator) {
+        aggregator.merge(traversalResult.result)
+      }
+
       let result = await dataProcessCallback(aggregator.value)
 
       return traversalDepth == 0 ? aggregator.value : aggregator // check if top level call and not an initiated nested recursive call.

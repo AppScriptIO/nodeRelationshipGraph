@@ -10,9 +10,10 @@ import { ImplementationManagement } from './ImplementationManagement.class.js'
 import { proxifyMethodDecorator } from '../utility/proxifyMethodDecorator.js'
 import { mergeDefaultParameter } from '../utility/mergeDefaultParameter.js'
 import EventEmitter from 'events'
-import { EvaluatorFunction } from './Evaluator.class.js'
+import { EvaluatorFunction, evaluationOption } from './Evaluator.class.js'
 const Evaluator = EvaluatorFunction()
 import { removeUndefinedFromObject } from '../utility/removeUndefinedFromObject.js'
+import { nodeLabel, connectionType } from '../graphSchemeReference.js'
 
 /** Conceptual Graph
  * Graph Class holds and manages graph elements and traversal algorithm implementations:
@@ -67,6 +68,42 @@ Object.assign(entityPrototype, {
       connection: await graphInstance.database.countEdge(),
     }
   },
+  // load `subgraph template` node parameters for traversal call usage.
+  async laodSubgraphTemplateParameter({ node, graphInstance = this }) {
+    let rootRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.root })
+    assert(rootRelationshipArray.every(n => n.destination.labels.includes(nodeLabel.stage)), `• Unsupported node type for a ROOT connection.`) // verify node type
+    let extendRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.extend })
+    assert(extendRelationshipArray.every(n => n.destination.labels.includes(nodeLabel.subgraphTemplate)), `• Unsupported node type for a EXTEND connection.`) // verify node type
+
+    let rootNode,
+      additionalChildNode = [] // additional nodes
+
+    let insertRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'incoming', nodeID: node.identity, connectionType: connectionType.insert })
+    insertRelationshipArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
+    for (let insertRelationship of insertRelationshipArray) {
+      let insertNode = insertRelationship.destination
+      assert(insertNode.labels.includes(nodeLabel.stage), `• "${insertNode.labels}" Unsupported node type for a ROOT connection.`) // verify node type
+      additionalChildNode.push({
+        node: insertNode,
+        placement: {
+          // convention for data structure of placement array - 0: 'before' | 'after', 1: connectionKey
+          position: insertRelationship.connection.properties.placement[0],
+          connectionKey: insertRelationship.connection.properties.placement[1],
+        },
+      })
+    }
+
+    if (rootRelationshipArray.length > 0) {
+      rootNode = rootRelationshipArray[0].destination
+    } else {
+      let extendNode = extendRelationshipArray[0].destination
+      let recursiveCallResult = await graphInstance::graphInstance.laodSubgraphTemplateParameter({ node: extendNode, graphInstance })
+      additionalChildNode = [...recursiveCallResult.additionalChildNode, ...additionalChildNode]
+      rootNode = recursiveCallResult.rootNode
+    }
+
+    return { rootNode, additionalChildNode } // rootNode will be used as entrypoint to traversal call
+  },
 
   /** Graph traversal - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
    * Dynamic implementation - not restricted to specific initialization algorithm, rather choosen from setting of each node in the traversed graph.
@@ -74,11 +111,25 @@ Object.assign(entityPrototype, {
   @proxifyMethodDecorator(async (target, thisArg, argumentsList, targetClass, methodName) => {
     // create node instance, in case string key is passed as parameter.
     let { nodeInstance, nodeKey, nodeID, graphInstance = thisArg } = argumentsList[0]
-    assert([nodeInstance, nodeKey, nodeID].filter(element => element).length == 1, '• node identifier or object must be passed in.') // only one of the parameters should be passed.
-    if (nodeKey) {
-      argumentsList[0].nodeInstance = await graphInstance.database.getNodeByKey({ key: nodeKey }) // retrieve node data on-demand
+    let nodeData
+    if (nodeInstance) {
+      nodeData = nodeInstance
+    } else if (nodeKey) {
+      nodeData = await graphInstance.database.getNodeByKey({ key: nodeKey }) // retrieve node data on-demand
     } else if (nodeID) {
-      argumentsList[0].nodeInstance = await graphInstance.database.getNodeByID({ id: nodeID }) // retrieve node data on-demand
+      nodeData = await graphInstance.database.getNodeByID({ id: nodeID }) // retrieve node data on-demand
+    } else {
+      throw new Error('• node identifier or object must be passed in.')
+    }
+
+    // deal with SubgraphTemplate
+    if (nodeData.labels.includes(nodeLabel.subgraphTemplate)) {
+      let parameter = await graphInstance.laodSubgraphTemplateParameter({ node: nodeData })
+      // set additional parameters
+      ;['nodeInstance', 'nodeKey', 'nodeID'].forEach(property => delete argumentsList[0][property]) // remove subgraph template node related identifiers.
+      Object.assign(argumentsList[0], { nodeInstance: parameter.rootNode, additionalChildNode: parameter.additionalChildNode })
+    } else {
+      argumentsList[0].nodeInstance = nodeData // set node data
     }
     return Reflect.apply(target, thisArg, argumentsList)
   })
@@ -115,11 +166,11 @@ Object.assign(entityPrototype, {
     // implementation keys of node instance own config parameters and of default values set in function scope
     let implementationKey =
       {
-        processData: nodeInstance.properties?.processDataImplementation || 'returnDataItemKey',
-        handlePropagation: nodeInstance.properties?.implementation || 'chronological',
-        traverseNode: nodeInstance.properties?.implementation || 'portConnection',
+        processData: 'returnDataItemKey',
+        handlePropagation: 'chronological',
+        traverseNode: 'iterateFork',
         aggregator: 'AggregatorArray',
-        traversalInterception: 'traverseThenProcess' || 'processThenTraverse',
+        traversalInterception: 'processThenTraverse' || 'traverseThenProcess',
         evaluatePosition: 'evaluateCondition',
       } |> removeUndefinedFromObject // remove undefined values because native Object.assign doesn't override keys with `undefined` values
 
@@ -159,7 +210,7 @@ Object.assign(entityPrototype, {
     {
       graphInstance,
       nodeInstance,
-      nodeIteratorFeed, // iterator providing node parameters for recursive traversal calls.
+      traversalIteratorFeed, // iterator providing node parameters for recursive traversal calls.
       traversalDepth, // level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
       concreteTraversal, // implementation registered functions
       implementationKey, // used by decorator to retreive implementation functions
@@ -169,7 +220,7 @@ Object.assign(entityPrototype, {
       eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
       aggregator = new (nodeInstance::implementation.aggregator)(), // used to aggregate results of nested nodes.
       nodeType, // the type of node to traverse
-      evaluator, // evaluation object that contains configuration relating to traverser action on the current position
+      evaluation, // evaluation object that contains configuration relating to traverser action on the current position
     }: {
       graphInstance: Graph,
       nodeInstance: String | Node,
@@ -184,22 +235,36 @@ Object.assign(entityPrototype, {
         traversalInterception: 'processThenTraverse' | 'conditionCheck',
       },
       nodeType: 'Stage',
-      evaluator: {
+      evaluation: {
         process: 'include' | 'exclude', // execute & include or don't execute & exclude from aggregated results.
         traverse: 'continue' | 'break', // traverse neighbours or not.
       },
     } = {},
     { parentTraversalArg } = {},
   ) {
-    evaluator = await graphInstance.evaluatePosition({ evaluator, nodeInstance, implementation: nodeInstance::implementation.evaluatePosition })
+    // TODO: traversal configuration evaluation.
+    // let traversalConfig = {
+    //   processData: 'returnDataItemKey',
+    //   handlePropagation: 'chronological',
+    //   traverseNode: 'portConnection',
+    //   aggregator: 'AggregatorArray',
+    //   traversalInterception: 'processThenTraverse',
+    //   evaluatePosition: 'evaluateCondition',
+    // }
+
+    evaluation ||= await graphInstance.evaluatePosition({ evaluation, node: nodeInstance, implementation: nodeInstance::implementation.evaluatePosition })
 
     // Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
-    nodeIteratorFeed ||= graphInstance::graphInstance.traverseNode({ nodeInstance, nodeType, implementation: nodeInstance::implementation.traverseNode })
-
-    let traversalIteratorFeed = graphInstance::graphInstance.handlePropagation({ nodeIteratorFeed, implementation: nodeInstance::implementation.handlePropagation })
+    traversalIteratorFeed ||= graphInstance::graphInstance.traverseNode({
+      node: nodeInstance,
+      nodeType,
+      implementation: implementation.traverseNode,
+      handlePropagationImplementation: implementation.handlePropagation,
+      additionalChildNode,
+    })
 
     let dataProcessCallback = nextProcessData =>
-      graphInstance::graphInstance.dataProcess({ nodeInstance, nextProcessData, evaluator, aggregator, implementation: nodeInstance::implementation.dataProcess })
+      graphInstance::graphInstance.dataProcess({ node: nodeInstance, nextProcessData, evaluation, aggregator, implementation: implementation.dataProcess, graphInstance })
 
     let proxyify = target => graphInstance::implementation.traversalInterception({ targetFunction: target, aggregator, dataProcessCallback })
     let result = await (graphInstance::graphInstance.recursiveIteration |> proxyify)({
@@ -207,7 +272,8 @@ Object.assign(entityPrototype, {
       nodeInstance,
       traversalDepth,
       eventEmitter,
-      evaluator,
+      evaluation,
+      additionalChildNode,
       parentTraversalArg: arguments,
     })
 
@@ -219,24 +285,28 @@ Object.assign(entityPrototype, {
    * Node's include/exclude evaluation - evaluate whether or not a node whould be included in the node feed and subsequently in the traversal.
    * continue child nodes traversal or break traversal.
    */
-  evaluatePosition: async function({ evaluator, nodeInstance, implementation, graphInstance = this }) {
-    evaluator = new Evaluator({ traverse: 'continue', process: 'include' }) // Note: Additional default values for Evaluator constructor are set above during initialization of Evaluator static class.
-    await implementation({ evaluator, nodeInstance, graphInstance })
-    return evaluator
+  evaluatePosition: async function({ evaluation, node, implementation, graphInstance = this }) {
+    // default values
+    evaluation = new Evaluator({ propagation: evaluationOption.propagation.continue, aggregation: evaluationOption.aggregation.include }) // Note: Additional default values for Evaluator constructor are set above during initialization of Evaluator static class.
+    // manipulate evaluation config
+    await implementation({ evaluation, node, graphInstance })
+    return evaluation
   },
 
   /**
    * The purpose of this function is to find & yield next nodes.
    * @yield node feed
    **/
-  traverseNode: async function*({ nodeInstance, nodeType, implementation, graphInstance = this }) {
-    let nodeIteratorFeed = implementation({ nodeInstance, nodeType, graphInstance })
+  traverseNode: async function*({ node, nodeType, additionalChildNode, implementation, handlePropagationImplementation, graphInstance = this }) {
+    let traversalIteratorFeed = await node::implementation({ node, nodeType, additionalChildNode, graphInstance })
     async function* trapAsyncIterator(iterator) {
-      for await (let nodeData of iterator) {
-        yield nodeData
+      for await (let traversalIteration of iterator) {
+        let _handlePropagationImplementation = graphInstance.traversal.handlePropagation[traversalIteration.traversalConfig.handlePropagationImplementation] || handlePropagationImplementation
+        let nextIterator = graphInstance::graphInstance.handlePropagation({ nodeIteratorFeed: traversalIteration.nextIterator, implementation: node::_handlePropagationImplementation })
+        yield { nextIterator, forkNode: traversalIteration.forkNode }
       }
     }
-    yield* trapAsyncIterator(nodeIteratorFeed)
+    yield* trapAsyncIterator(traversalIteratorFeed)
   },
 
   /**
@@ -265,40 +335,47 @@ Object.assign(entityPrototype, {
    *  1. Accepts new nodes from implementing function.
    *  2. returns back to the implementing function a promise, handing control of flow and arragement of running traversals.
    */
-  recursiveIteration: async function({
+  recursiveIteration: async function*({
     traversalIteratorFeed /**Feeding iterator that will accept node parameters for traversals*/,
     graphInstance = this,
     recursiveCallback = graphInstance::graphInstance.traverse,
     traversalDepth,
     eventEmitter,
-    evaluator,
+    evaluation,
+    additionalChildNode,
     parentTraversalArg,
   }: {
     eventEmitter: Event,
   }) {
-    if (!evaluator.shouldContinue()) return [] // skip traversal
+    if (!evaluation.shouldContinue()) return // skip traversal
     let eventEmitterCallback = (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args)
     traversalDepth += 1 // increase traversal depth
-    let g = {}
-    g.result = await traversalIteratorFeed.next({ eventEmitterCallback: eventEmitterCallback }) // initial execution
-    while (!g.result.done) {
-      let traversalConfig = g.result.value
-      // 🔁 recursion call
-      let promise = recursiveCallback(Object.assign({ nodeInstance: traversalConfig.node, evaluator: traversalConfig.evaluator, traversalDepth }), {
-        parentTraversalArg,
-      })
-      g.result = await traversalIteratorFeed.next({ promise })
+    for await (let traversalIteration of traversalIteratorFeed) {
+      let n = { iterator: traversalIteration.nextIterator, result: await traversalIteration.nextIterator.next({ eventEmitterCallback: eventEmitterCallback }) }
+      while (!n.result.done) {
+        let nextNode = n.result.value.node
+        // 🔁 recursion call
+        let nextCallArgument = [Object.assign({ nodeInstance: nextNode, traversalDepth, additionalChildNode }), { parentTraversalArg }]
+        let promise = recursiveCallback(...nextCallArgument)
+        n.result = await n.iterator.next({ promise })
+      }
+      // last node iterator feed should be an array of resolved node promises that will be forwarded through this function
+      let portTraversalResult = { config: { name: traversalIteration.forkNode.properties.name }, result: n.result.value }
+      yield portTraversalResult // forward array of resolved results
     }
-    // last node iterator feed should be an array of resolved node promises that will be forwarded through this function
-    return g.result.value // forward array of resolved results
   },
 
-  dataProcess: async function({ nodeInstance, nextProcessData, aggregator, evaluator, implementation }) {
-    if (!evaluator.shouldExecuteProcess()) return null
-    let dataItem = nodeInstance
+  dataProcess: async function({ node, nextProcessData, aggregator, evaluation, implementation, graphInstance }) {
+    if (!evaluation.shouldExecuteProcess()) return null
+    let executeConnectionArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.execute })
+    if (executeConnectionArray.length == 0) return null // skip if no execute connection
+    let executeConnection = executeConnectionArray[0].connection
+    let dataProcessImplementation = graphInstance.traversal.processData[executeConnection.properties.processDataImplementation] || implementation
+    let executeNode = executeConnectionArray[0].destination
+    assert(executeNode.labels.includes(nodeLabel.process), `• "${executeNode.labels}" Unsupported node type for a NEXT connection.`) // verify node type
     // Execute node dataItem
-    let result = dataItem ? await nodeInstance::implementation({ dataItem }) : null
-    if (evaluator.shouldIncludeResult()) aggregator.add(result)
+    let result = await node::dataProcessImplementation({ node: executeNode })
+    if (evaluation.shouldIncludeResult()) aggregator.add(result)
     return result
   },
 })

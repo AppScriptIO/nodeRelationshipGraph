@@ -6,7 +6,8 @@
         "setup": "yarn install --production=false",
         "sleep": "yarn run scriptManager sleep '.setInterval()' ",
         "test": "export NODE_OPTIONS='--inspect-brk' && yarn run scriptManager test \"({ testPath: './test', shouldDebugger: false, shouldCompileTest: true })\"",
-        "generateTypes": "tsc --project ./configuration/typescript.config.json"
+        "generateTypes": "tsc --project ./configuration/typescript.config.json",
+        "export": "yarn run scriptManager shouldCompileScript=true exportGraphData.js"
     },
     "dependencies": {
         "@dependency/classMixin": "https://github.com/AppScriptIO/classMixin#semver:^1.x.x",

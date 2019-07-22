@@ -14,7 +14,7 @@ import { Context } from '../source/constructable/Context.class.js'
 import { simpleMemoryModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/simpleMemoryModelAdapter.js'
 import { boltCypherModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
 import { implementation as defaultImplementation } from '../source/implementationPlugin/graphTraversalImplementation/defaultImplementation.js'
-import * as graphData from './asset/graphData' // load sample data
+import graphData from './asset/graphData.exported.json' // load sample data
 const fixture = { traversalResult: ['dataItem-key-1'] }
 
 async function clearGraphData() {
@@ -59,38 +59,13 @@ let configuredGraph = Graph.clientInterface({
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
   setup(async () => await clearGraphData())
 
-  suite('nodeDataItem graph data:', () => {
-    const fixture = { 1: ['dataItem-key-1'], 2: ['dataItem-key-2'] }
+  suite('nodeConnection subgraph template:', () => {
+    const fixture = ['dataItem-key-1', 'dataItem-key-2', 'dataItem-key-4', 'dataItem-key-5', 'dataItem-key-6', 'dataItem-key-7', 'dataItem-key-9']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully ', async () => {
-      await graph.load({ graphData: graphData.nodeDataItem })
+      await graph.load({ graphData })
       let result = await graph.traverse({
-        nodeKey: 'node-key-1',
-        implementationKey: {
-          // traverseNode: 'allPromise'
-        },
-      })
-      chaiAssertion.deepEqual(result, fixture[1])
-    })
-    test('Should traverse graph successfully', async () => {
-      await graph.load({ graphData: graphData.nodeDataItem })
-      let result = await graph.traverse({
-        nodeKey: 'node-key-2',
-        implementationKey: {
-          // traverseNode: 'allPromise'
-        },
-      })
-      chaiAssertion.deepEqual(result, fixture[2])
-    })
-  })
-
-  suite('nodeConnection graph data:', () => {
-    const fixture = ['dataItem-key-1', 'dataItem-key-2']
-    let graph = new configuredGraph({})
-    test('Should traverse graph successfully', async () => {
-      await graph.load({ graphData: graphData.nodeConnection })
-      let result = await graph.traverse({
-        nodeKey: 'node-key-1',
+        nodeKey: '9160338f-6990-4957-9506-deebafdb6e29',
         implementationKey: {
           // traverseNode: 'allPromise'
         },
@@ -99,34 +74,66 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite.only('nodeConnectionParallelTraversal graph data:', () => {
+  suite('nodeConnectionParallelTraversal subgraph template:', () => {
     const fixture = ['dataItem-key-0', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4', 'dataItem-key-1']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
-      await graph.load({ graphData: graphData.nodeConnectionParallelTraversal })
+      await graph.load({ graphData })
       let result = await graph.traverse({
-        nodeKey: 'node-key-0',
+        nodeKey: 'd07188cb-d0d3-4d64-9308-3f38d817411b',
         implementationKey: {
-          // traverseNode: 'allPromise'
-        },
-      })
-      console.log(result)
-      // chaiAssertion.deepEqual(result, fixture)
-    })
-  })
-
-  suite('nodePort graph data:', () => {
-    const fixture = ['dataItem-key-0', false]
-    let graph = new configuredGraph({})
-    test('Should traverse graph successfully', async () => {
-      await graph.load({ graphData: graphData.nodePort })
-      let result = await graph.traverse({
-        nodeKey: 'node-key-0',
-        implementationKey: {
-          // traverseNode: 'allPromise'
+          // handlePropagation: 'allPromise'
         },
       })
       chaiAssertion.deepEqual(result, fixture)
     })
   })
+
+  suite('nodePort subgraph template', () => {
+    const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-4', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
+    let graph = new configuredGraph({})
+    test('Should traverse graph successfully', async () => {
+      await graph.load({ graphData })
+      let result = await graph.traverse({
+        nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6',
+        implementationKey: {
+          // handlePropagation: 'allPromise'
+        },
+      })
+      chaiAssertion.deepEqual(result, fixture)
+    })
+  })
+
+  suite('nodePlacement subgraph template:', () => {
+    const fixture = ['dataItem-key-1', 'dataItem-key-3', 'dataItem-key-2']
+    let graph = new configuredGraph({})
+    test('Should traverse graph successfully', async () => {
+      await graph.load({ graphData })
+      let result = await graph.traverse({
+        nodeKey: 'f463dc81-c871-4293-8a67-0a85e6d82473',
+        implementationKey: {
+          // handlePropagation: 'allPromise'
+        },
+      })
+      chaiAssertion.deepEqual(result, fixture)
+    })
+  })
+
+  suite('Extending nodePlacement subgraph template data:', () => {
+    const fixture = ['dataItem-key-1', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4']
+    let graph = new configuredGraph({})
+    test('Should traverse graph successfully', async () => {
+      await graph.load({ graphData })
+      let result = await graph.traverse({
+        nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4',
+        implementationKey: {
+          // handlePropagation: 'allPromise'
+        },
+      })
+      chaiAssertion.deepEqual(result, fixture)
+    })
+  })
+
+  // TODO: Define node inheritance concept and implement it.
+  // suite('nodeInheritance subgraph template data:', () => {})
 })

@@ -1,7 +1,7 @@
 import assert from 'assert'
 const boltProtocolDriver = require('neo4j-driver').v1
 import generateUUID from 'uuid/v4'
-import { nodeLabel } from '../../graphSchemeReference.js'
+import { nodeLabel, connectionType } from '../../graphSchemeReference.js'
 
 // convention of data structure - `connection: { source: [<nodeKey>, <portKey>], destination: [<nodeKey>, <portKey>] }`
 const jsonToCepherAdapter = {
@@ -94,7 +94,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
     },
     addConnection: async ({ connectionData /*conforms with the Cypher query results data convention*/ }) => {
       assert(typeof connectionData.start == 'number' && typeof connectionData.end == 'number', `• Connection must have a start and end nodes.`)
-      if (connectionData.type == 'NEXT') assert(connectionData.properties?.key, '• Connection object must have a key property.')
+      if (connectionData.type == connectionType.next) assert(connectionData.properties?.key, '• Connection object must have a key property.')
       let nodeArray = await implementation.getAllNode()
       let session = await graphDBDriver.session()
       let query = `
@@ -123,7 +123,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       let query = `
         match 
           (source { key: '${sourceKey}' })
-          -[l:NEXT]->
+          -[l:${connectionType.next}]->
           (destination${destinationNodeType ? `:${destinationNodeType}` : ''}) 
         return l
         order by destination.key
@@ -172,6 +172,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       `
       let result = await session.run(query)
       await session.close()
+      assert(result.records[0], `• Cannot find node where node.key="${key}"`)
       return result.records[0].toObject().n
     },
     getNodeByID: async function({ id }) {
