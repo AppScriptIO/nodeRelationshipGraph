@@ -5,6 +5,7 @@ export const nodeLabel = {
   process: 'Process',
   configuration: 'Configuration',
   evaluation: 'Evaluation',
+  file: 'File',
 }
 
 export const connectionType = {
@@ -19,4 +20,5 @@ export const connectionType = {
   configure: 'CONFIGURE',
   default: 'DEFAULT',
   case: 'CASE',
+  resource: 'RESOURCE',
 }

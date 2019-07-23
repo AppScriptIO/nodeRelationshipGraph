@@ -90,7 +90,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
   })
 
   suite('nodePort subgraph template', () => {
-    const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-4', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
+    const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })

@@ -1,10 +1,13 @@
-export async function returnDataItemKey({ node, nodeInstance = this }) {
+import { exec, execSync, spawn, spawnSync } from 'child_process'
+import path from 'path'
+
+export async function returnDataItemKey({ node }) {
   let processedData = `${node.properties?.name}`
   return processedData
 }
 
 // implementation delays promises for testing `iterateConnection` of promises e.g. `allPromise`, `raceFirstPromise`, etc.
-export async function timeout({ node, nodeInstance = this }) {
+export async function timeout({ node }) {
   if (typeof node.properties?.timerDelay != 'number') throw new Error('• DataItem must have a delay value.')
   let delay = node.properties?.timerDelay
   return await new Promise((resolve, reject) =>
@@ -15,125 +18,82 @@ export async function timeout({ node, nodeInstance = this }) {
   )
 }
 
-export async function returnKey({ node, nodeInstance = this }) {
-  return node.properties?.key
-}
-
-async function initializeDataItem({ node, processData = 'getDataItem' }) {
-  let implementationObject = {
-    async getResourceFile() {},
-  }
-
-  // specific execution implementation
-  if (processData) {
-    let callback
-
-    // pick implementation
-    for (let index in implementationObject) {
-      if (index == processData) {
-        callback = implementationObject[index]
-        break
-      }
-    }
-
-    // execute implementation
-    return await callback.apply(this, arguments)
-  }
-
-  // default execution
-  else return /// TODO:
-}
-
 /*
-                            _      _____         _     ____            _       _   
-    _____  _____  ___ _   _| |_ __|_   _|_ _ ___| | __/ ___|  ___ _ __(_)_ __ | |_ 
-   / _ \ \/ / _ \/ __| | | | __/ _ \| |/ _` / __| |/ /\___ \ / __| '__| | '_ \| __|
-  |  __/>  <  __/ (__| |_| | ||  __/| | (_| \__ \   <  ___) | (__| |  | | |_) | |_ 
-   \___/_/\_\___|\___|\__,_|\__\___||_|\__,_|___/_|\_\|____/ \___|_|  |_| .__/ \__|
-                                                                        |_|        
+                          _      _____         _     ____            _       _   
+  _____  _____  ___ _   _| |_ __|_   _|_ _ ___| | __/ ___|  ___ _ __(_)_ __ | |_ 
+ / _ \ \/ / _ \/ __| | | | __/ _ \| |/ _` / __| |/ /\___ \ / __| '__| | '_ \| __|
+|  __/>  <  __/ (__| |_| | ||  __/| | (_| \__ \   <  ___) | (__| |  | | |_) | |_ 
+\___/_/\_\___|\___|\__,_|\__\___||_|\__,_|___/_|\_\|____/ \___|_|  |_| .__/ \__|
+                                                                     |_|        
 */
-import { exec, execSync, spawn, spawnSync } from 'child_process'
-export const taskScript = {
-  async executeDataItem({ node, nodeInstance = thisArg, processData }) {
-    // execute command
-    await nodeInstance.executeScript()
-  },
-  // node instance methods
-  async executeScript() {
-    // this = data item instance
-
-    let message = ` _____                          _        
+let message = ` _____                          _        
 | ____|__  __ ___   ___  _   _ | |_  ___ 
 |  _|  \\ \\/ // _ \\ / __|| | | || __|/ _ \\
 | |___  >  <|  __/| (__ | |_| || |_|  __/    
 |_____|/_/\\_\\\\___| \\___| \\__,_| \\__|\\___|`
-    let childProcess
-    switch (this.implementation) {
-      case 'spawn':
-        try {
-          console.log(message)
-          console.log(`\x1b[45m%s\x1b[0m`, `${this.command} ${this.argument.join(' ')}`)
-          childProcess = spawnSync(this.command, this.argument, this.option)
-          if (childProcess.status > 0) throw childProcess.error
-        } catch (error) {
-          process.exit(childProcess.status)
-        }
-        break
-      case 'spawnIgnoreError':
-        try {
-          console.log(message)
-          console.log(`\x1b[45m%s\x1b[0m`, `${this.command} ${this.argument.join(' ')}`)
-          childProcess = spawnSync(this.command, this.argument, this.option)
-          if (childProcess.status > 0) throw childProcess.error
-        } catch (error) {
-          console.log(childProcess.status)
-        }
-        break
-      case 'spawnAsynchronous':
-        try {
-          console.log(message)
-          console.log(`\x1b[45m%s\x1b[0m`, `${this.command} ${this.argument.join(' ')}`)
-          childProcess = spawn(this.command, this.argument, this.option)
-          if (childProcess.status > 0) throw childProcess.error
-        } catch (error) {
-          process.exit(childProcess.status)
-        }
-        break
-      case 'file':
-        try {
-          console.log(message)
-          console.log(`\x1b[45m%s\x1b[0m`, `shellscript file: ${this.filename}, shellscriptPath: ${this.shellscriptPath}`)
-          this.option.cwd = this.shellscriptPath
-          execSync(`sh ${this.filename}`, this.option)
-        } catch (error) {
-          throw error
-          process.exit(1)
-        }
-        break
-      default:
-        console.log('X shellscriptUnit.implementation does not match any option.')
-        break
-    }
-    // important to prevent 'unable to re-open stdin' error between shells.
-    await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution.
-  },
+const rootPath = path.normalize(path.join(__dirname, '../../../../'))
+
+export async function executeScriptSpawn({ node, resourceNode }) {
+  let childProcess
+  try {
+    console.log(message)
+    console.log(`\x1b[45m%s\x1b[0m`, `${node.command} ${node.argument.join(' ')}`)
+    childProcess = spawnSync(node.command, node.argument, JSON.stringify(node.option))
+    if (childProcess.status > 0) throw childProcess.error
+  } catch (error) {
+    process.exit(childProcess.status)
+  }
+  // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
+}
+
+export async function executeScriptSpawnIgnoreError({ node, resourceNode }) {
+  let childProcess
+  try {
+    console.log(message)
+    console.log(`\x1b[45m%s\x1b[0m`, `${node.command} ${node.argument.join(' ')}`)
+    childProcess = spawnSync(node.command, node.argument, JSON.stringify(node.option))
+    if (childProcess.status > 0) throw childProcess.error
+  } catch (error) {
+    console.log(childProcess.status)
+  }
+  // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
+}
+
+export async function executeScriptSpawnAsynchronous({ node, resourceNode }) {
+  let childProcess
+  try {
+    console.log(message)
+    console.log(`\x1b[45m%s\x1b[0m`, `${node.command} ${node.argument.join(' ')}`)
+    childProcess = spawn(node.command, node.argument, JSON.stringify(node.option))
+    if (childProcess.status > 0) throw childProcess.error
+  } catch (error) {
+    process.exit(childProcess.status)
+  }
+  // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
+}
+
+export async function executeShellscriptFile({ node, resourceNode }) {
+  try {
+    console.log(message)
+    console.log(`\x1b[45m%s\x1b[0m`, `shellscript path: ${resourceNode.properties.path}`)
+    let absolutePath = path.join('/', rootPath, resourceNode.properties.path)
+    execSync(`sh ${absolutePath}`, { cwd: path.dirname(absolutePath), shell: true, stdio: ['inherit', 'inherit', 'inherit'] })
+  } catch (error) {
+    throw error
+    process.exit(1)
+  }
+  // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
+  return null
 }
 
 /*
- 
    __  __ _     _     _ _                             
   |  \/  (_) __| | __| | | _____      ____ _ _ __ ___ 
   | |\/| | |/ _` |/ _` | |/ _ \ \ /\ / / _` | '__/ _ \
   | |  | | | (_| | (_| | |  __/\ V  V / (_| | | |  __/
   |_|  |_|_|\__,_|\__,_|_|\___| \_/\_/ \__,_|_|  \___|
-                                                      
- 
+  Creates middleware array from graph-  The graph traversal @return {Array of Objects} where each object contains instruction settings to be used through an implementing module to add to a chain of middlewares.                                                   
 */
-/**
- * Creates middleware array from graph
- * The graph traversal @return {Array of Objects} where each object contains instruction settings to be used through an implementing module to add to a chain of middlewares.
- */
-let executeMiddleware
 
 /*
  

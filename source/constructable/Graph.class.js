@@ -173,6 +173,8 @@ Object.assign(entityPrototype, {
   /** 
    * TODO:  REFACTOR adding Traversal description class - ability to pick a defined set of implementation keys to be used to gether - e.g. implementation type: Condition, Middleware, Template, Schema, Shellscript.
     - https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/graphdb/traversal/TraversalDescription.html
+    - Split traversal configurations that are configured by the node graph data itself from those that are passed to the call as parameters. OR merge them, by using some as defaults in case both are set.
+    - Implement 'depthAffected' for the affected depth of the configure connections on a stage and its child nodes.
    */
   @proxifyMethodDecorator((target, thisArg, argumentsList, targetClass, methodName) => {
     /** Choose concrete implementation
@@ -316,7 +318,11 @@ Object.assign(entityPrototype, {
     let traversalIteratorFeed = await node::implementation({ node, additionalChildNode, graphInstance })
     async function* trapAsyncIterator(iterator) {
       for await (let traversalIteration of iterator) {
-        let _handlePropagationImplementation = graphInstance.traversal.handlePropagation[traversalIteration.traversalConfig.handlePropagationImplementation] || handlePropagationImplementation
+        let _handlePropagationImplementation
+        if (traversalIteration.traversalConfig.handlePropagationImplementation) {
+          _handlePropagationImplementation = graphInstance.traversal.handlePropagation[traversalIteration.traversalConfig.handlePropagationImplementation]
+          assert(_handlePropagationImplementation, `• "${traversalIteration.traversalConfig.handlePropagationImplementation}" implementation isn't registered in traversal concrete instance.`)
+        } else _handlePropagationImplementation = handlePropagationImplementation
         let nextIterator = graphInstance::graphInstance.handlePropagation({ nodeIteratorFeed: traversalIteration.nextIterator, implementation: node::_handlePropagationImplementation })
         yield { nextIterator, forkNode: traversalIteration.forkNode }
       }
@@ -383,13 +389,25 @@ Object.assign(entityPrototype, {
   dataProcess: async function({ node, nextProcessData, aggregator, evaluation, implementation, graphInstance }) {
     if (!evaluation.shouldExecuteProcess()) return null
     let executeConnectionArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.execute })
+    assert(executeConnectionArray.every(n => n.destination.labels.includes(nodeLabel.process)), `• Unsupported node type for a EXECUTE connection.`) // verify node type
+    let resourceConnectionArray = await graphInstance.database.getNodeConnection({ direction: 'incoming', nodeID: node.identity, connectionType: connectionType.resource })
+    assert(resourceConnectionArray.every(n => n.destination.labels.includes(nodeLabel.file)), `• Unsupported node type for a RESOURCE connection.`) // verify node type
     if (executeConnectionArray.length == 0) return null // skip if no execute connection
+
+    let resourceNode
+    if (resourceConnectionArray.length > 0) resourceNode = resourceConnectionArray[0].destination
+
     let executeConnection = executeConnectionArray[0].connection
-    let dataProcessImplementation = graphInstance.traversal.processData[executeConnection.properties.processDataImplementation] || implementation
+    let dataProcessImplementation
+    if (executeConnection.properties.processDataImplementation) {
+      dataProcessImplementation = graphInstance.traversal.processData[executeConnection.properties.processDataImplementation]
+      assert(dataProcessImplementation, `• "${executeConnection.properties.processDataImplementation}" implementation isn't registered in traversal concrete instance.`)
+    } else dataProcessImplementation = implementation
+
     let executeNode = executeConnectionArray[0].destination
-    assert(executeNode.labels.includes(nodeLabel.process), `• "${executeNode.labels}" Unsupported node type for a NEXT connection.`) // verify node type
     // Execute node dataItem
-    let result = await node::dataProcessImplementation({ node: executeNode })
+    let result = await node::dataProcessImplementation({ node: executeNode, resourceNode })
+
     if (evaluation.shouldIncludeResult()) aggregator.add(result)
     return result
   },
