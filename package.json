@@ -1,6 +1,6 @@
 {
     "name": "@dependency/graph",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "main": "./entrypoint/programmaticAPI",
     "scripts": {
         "setup": "yarn install --production=false",
