@@ -35,7 +35,6 @@ let concreteDatabaseBehavior = new Database.clientInterface({
   defaultImplementation: 'boltCypherModelAdapter',
 })
 let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
-  // traverse using implemenation `aggregateArray` which will return an array of data items of the nodes.
   implementationList: { defaultImplementation },
   defaultImplementation: 'defaultImplementation',
 })

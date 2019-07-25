@@ -14,6 +14,8 @@ import { EvaluatorFunction, evaluationOption } from './Evaluator.class.js'
 const Evaluator = EvaluatorFunction()
 import { removeUndefinedFromObject } from '../utility/removeUndefinedFromObject.js'
 import { nodeLabel, connectionType } from '../graphSchemeReference.js'
+import { boltCypherModelAdapterFunction } from '../implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
+import { implementation as defaultImplementation } from '../implementationPlugin/graphTraversalImplementation/defaultImplementation.js'
 
 /** Conceptual Graph
  * Graph Class holds and manages graph elements and traversal algorithm implementations:
@@ -442,8 +444,8 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
   [Reference.key.constructor]({
     // Concerete behaviors / implementaions
     // cache,
-    database,
-    traversal,
+    database, // database concrete behavior
+    traversal, // traversal concrete behavior
     // additional behaviors
     concreteBehaviorList = [],
     data, // data to be merged into the instance
@@ -455,8 +457,15 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     traversal: GraphTraversal,
     concereteBehavior: List,
   }) {
-    assert(database, '• Database concrete behavior must be passed.')
-    assert(traversal, '• traversal concrete behavior must be passed.')
+    database ||= new Database.clientInterface({
+      implementationList: { boltCypherModelAdapter: boltCypherModelAdapterFunction() },
+      defaultImplementation: 'boltCypherModelAdapter',
+    })
+    traversal ||= new GraphTraversal.clientInterface({
+      implementationList: { defaultImplementation },
+      defaultImplementation: 'defaultImplementation',
+    })
+
     // cache ||= new Cache.clientInterface({ groupKeyArray: ['node', 'connection'] })
 
     let instance = callerClass::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.concereteBehavior })({
