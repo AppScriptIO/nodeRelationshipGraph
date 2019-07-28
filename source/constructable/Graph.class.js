@@ -202,7 +202,7 @@ Object.assign(entityPrototype, {
       } |> removeUndefinedFromObject // remove undefined values because native Object.assign doesn't override keys with `undefined` values
 
     // Context instance parameter
-    let contextImplementationKey = graphInstance[Context.reference.key.getter] ? graphInstance[Context.reference.key.getter]()?.implementationKey : {}
+    let contextImplementationKey = (graphInstance[Context.reference.key.getter] ? graphInstance[Context.reference.key.getter]()?.implementationKey : {}) || {}
     // parent arguments
     let parentImplementationKey = parentTraversalArg ? parentTraversalArg[0].implementationKey || {} : {}
     // overwrite (for all subtraversals) implementation through directly passed parameters - overwritable traversal implementation ignoring each nodes configuration, i.e. overwritable over nodeInstance own property implementation keys
@@ -408,7 +408,7 @@ Object.assign(entityPrototype, {
 
     let executeNode = executeConnectionArray[0].destination
     // Execute node dataItem
-    let result = await node::dataProcessImplementation({ node: executeNode, resourceNode })
+    let result = await node::dataProcessImplementation({ node: executeNode, resourceNode, graphInstance })
 
     if (evaluation.shouldIncludeResult()) aggregator.add(result)
     return result
@@ -477,6 +477,8 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     instance.database = concereteDatabase[Database.reference.key.getter]()
     let concreteTraversal = instance[Entity.reference.getInstanceOf](GraphTraversal)
     instance.traversal = concreteTraversal[ImplementationManagement.reference.key.getter]()
+    let context = instance[Entity.reference.getInstanceOf](Context)
+    instance.context = context[Context.reference.key.getter]()
 
     // configure Graph element classes
     // instance.configuredNode = Node.clientInterface({ parameter: [{ concreteBehaviorList: [] }] })
