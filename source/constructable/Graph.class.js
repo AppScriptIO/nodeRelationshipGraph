@@ -13,7 +13,7 @@ import EventEmitter from 'events'
 import { EvaluatorFunction, evaluationOption } from './Evaluator.class.js'
 const Evaluator = EvaluatorFunction()
 import { removeUndefinedFromObject } from '../utility/removeUndefinedFromObject.js'
-import { nodeLabel, connectionType } from '../graphSchemeReference.js'
+import { nodeLabel, connectionType, connectionProperty } from '../graphSchemeReference.js'
 import { boltCypherModelAdapterFunction } from '../implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
 import { implementation as defaultImplementation } from '../implementationPlugin/graphTraversalImplementation/defaultImplementation.js'
 
@@ -393,11 +393,11 @@ Object.assign(entityPrototype, {
     let executeConnectionArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.execute })
     assert(executeConnectionArray.every(n => n.destination.labels.includes(nodeLabel.process)), `• Unsupported node type for a EXECUTE connection.`) // verify node type
     let resourceConnectionArray = await graphInstance.database.getNodeConnection({ direction: 'incoming', nodeID: node.identity, connectionType: connectionType.resource })
-    assert(resourceConnectionArray.every(n => n.destination.labels.includes(nodeLabel.file)), `• Unsupported node type for a RESOURCE connection.`) // verify node type
+    assert(resourceConnectionArray.every(n => connectionProperty.context.includes(n.connection.properties.context)), `• Unsupported property value for a RESOURCE connection.`) // verify node type
     if (executeConnectionArray.length == 0) return null // skip if no execute connection
 
-    let resourceNode
-    if (resourceConnectionArray.length > 0) resourceNode = resourceConnectionArray[0].destination
+    let resourceRelation
+    if (resourceConnectionArray.length > 0) resourceRelation = resourceConnectionArray[0]
 
     let executeConnection = executeConnectionArray[0].connection
     let dataProcessImplementation
@@ -408,7 +408,7 @@ Object.assign(entityPrototype, {
 
     let executeNode = executeConnectionArray[0].destination
     // Execute node dataItem
-    let result = await node::dataProcessImplementation({ node: executeNode, resourceNode, graphInstance })
+    let result = await node::dataProcessImplementation({ node: executeNode, resourceRelation, graphInstance })
 
     if (evaluation.shouldIncludeResult()) aggregator.add(result)
     return result

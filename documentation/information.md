@@ -7,6 +7,10 @@ A graph traversal & node processing module with customizable implementations. It
 ### Configerability of traverser:
 _Behaviors that should be configurable:_
 - Data processing algorithm of each node. e.g. create template.
+    - In order to allow execution of programs or tasks in the JS programs, the graph nodes should have references to a specific context with more dynamic data stored. As the graph database is limited to primitive types, a solution could be in the pattern of using the following: 
+        - *Reference*: A string property that references a target entity in a specific context. e.g. a function name in the context of the program, or a filename or path in the context of the filesystem. 
+        - *Context*: A context is an existing and accessible environment through the application logic. e.g. A passed shared object to the traverser with key-value references to a target elements, filesystem environment where the path of the file and name of the exported elements can be referenced, a module reference in the scope of the function where the traverser is executed. 
+        An implementation of application context could be using hash map where the keys are referenced in the database and the values are the scopped callback with application parameters used.
 - Data colelctions algorithm during multiple nodes execution e.g. insert templates into each other or aggregate middleware functions to create a chain/pipeline.
     - Changing data processing config/implementation mid-traversal. 
     - Nodes a selectively included or excluded from the results.
@@ -53,7 +57,8 @@ Different applications may use this module:
         - connectionKey / pathPointerKey
     - **Node** _(Vertex / ReusableNestedUnit / Unit)_ - e.g. a node references a single data item that should be used or consumed in specific way. Nodes have connections which determine the traversal propagation implementation. I.e. the concept of weighted graph.
         - DataItem/Record - a node as a resource of data to be executed by a processing implementation. e.g. { Type: ‘reference’, importModuleName: ‘’, processData: ‘’ }
-        - Resource/File: Resource record e.g. { type: 'file', path: '' }
+        - Resource: Resource record. The RESOURCE relationship holds the context type `filsystemReference` or `applicationReference`, and the resource node could be of different types following a convention used by the app.
+            e.g. A File node that has { type: 'file', path: '' } with a resource relation context of `filesystemContext`, as the File node holds references to a specific path & module in the filesystem context. Other RESOURCE nodes could be references to the variables in the application logic context.
     - **Port** _(insetionPoint)_ (_related terminology = junction, synapse, group, inlet/outlet, channel, junctionPoint, portal, relationship, relation_).
 
 ___
@@ -85,6 +90,8 @@ ___
     - get connections
     - get ports 
     - get connections of a port. 
+- 
+
 
 ### In-memory storage structure & requirements:
 - Example of algorithms / data structures for graph storage: 

@@ -22,3 +22,7 @@ export const connectionType = {
   case: 'CASE',
   resource: 'RESOURCE',
 }
+
+export const connectionProperty = {
+  context: ['applicationReference', 'filesystemReference'],
+}
