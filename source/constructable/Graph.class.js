@@ -114,12 +114,14 @@ Object.assign(entityPrototype, {
     // get rootNode and handle extended node.
     if (rootRelationshipArray.length > 0) {
       rootNode = rootRelationshipArray[0].destination
-    } else {
+    } else if (extendRelationshipArray.length > 0) {
       let extendNode = extendRelationshipArray[0].destination
       let recursiveCallResult = await graphInstance::graphInstance.laodSubgraphTemplateParameter({ node: extendNode, graphInstance })
       additionalChildNode = [...recursiveCallResult.additionalChildNode, ...additionalChildNode]
       traversalConfiguration = Object.assign(recursiveCallResult.traversalConfiguration, traversalConfiguration)
       rootNode = recursiveCallResult.rootNode
+    } else {
+      return // in case no `ROOT` relation or `EXTEND` are present
     }
 
     return { rootNode, additionalChildNode, traversalConfiguration } // rootNode will be used as entrypoint to traversal call
@@ -145,7 +147,9 @@ Object.assign(entityPrototype, {
     // deal with SubgraphTemplate
     if (nodeData.labels.includes(nodeLabel.subgraphTemplate)) {
       let parameter = await graphInstance.laodSubgraphTemplateParameter({ node: nodeData })
-      // set additional parameters
+      if (!parameter)
+        return // in case no destination node (ROOT/Extend) are present
+        // set additional parameters
       ;['nodeInstance', 'nodeKey', 'nodeID'].forEach(property => delete argumentsList[0][property]) // remove subgraph template node related identifiers.
       argumentsList[0].implementationKey = argumentsList[0].implementationKey ? Object.assign(parameter.traversalConfiguration, argumentsList[0].implementationKey) : parameter.traversalConfiguration
       argumentsList[0].additionalChildNode = argumentsList[0].additionalChildNode ? [...argumentsList[0].additionalChildNode, ...parameter.additionalChildNode] : parameter.additionalChildNode
