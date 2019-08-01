@@ -1,0 +1,34 @@
+{
+    "name": "@dependency/graphTraversal",
+    "version": "1.2.3",
+    "main": "./entrypoint/programmaticAPI",
+    "scripts": {
+        "setup": "yarn install --production=false",
+        "sleep": "yarn run scriptManager sleep '.setInterval()' ",
+        "test": "export NODE_OPTIONS='--inspect-brk' && yarn run scriptManager test \"({ testPath: './test', shouldDebugger: false, shouldCompileTest: true })\"",
+        "generateTypes": "tsc --project ./configuration/typescript.config.json",
+        "export": "yarn run scriptManager shouldCompileScript=true exportGraphData.js",
+        "build": "yarn run scriptManager shouldCompileScript=true JSProject/buildSourceCode \".moduleProject({})\""
+    },
+    "dependencies": {
+        "@dependency/classMixin": "https://github.com/AppScriptIO/classMixin#semver:^1.x.x",
+        "@dependency/commonPattern": "https://github.com/AppScriptIO/commonPattern#semver:^1.x.x",
+        "@dependency/databaseUtility": "https://github.com/AppScriptIO/databaseUtility#semver:^1.x.x",
+        "@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^1.x.x",
+        "@dependency/moduleContext": "https://github.com/AppScriptIO/moduleContext#semver:^1.x.x",
+        "@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x",
+        "@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x",
+        "@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug#semver:^1.x.x",
+        "neo4j-driver": "^1.7.5",
+        "redisgraph.js": "^1.1.4",
+        "rethinkdb": "*",
+        "uuid": "^3.3.2"
+    },
+    "devDependencies": {
+        "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^1.x.x",
+        "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis#semver:^1.x.x",
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
+        "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager#semver:^1.x.x",
+        "typescript": "^3.3.3333"
+    }
+}
