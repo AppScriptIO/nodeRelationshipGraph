@@ -53,4 +53,8 @@ create (p)-[:NEXT]->(subgraph1)
 create (p)-[:NEXT]->(subgraph2)
 create (p)-[:NEXT]->(subgraph3)
 create (p)-[:NEXT]->(subgraph4)
+``// create (s:Stage:Process {key:'82900056-9877-49b0-bd4c-df916bfb9507', name:''})<-[:RESOURCE {key:'4c48a364-f078-431d-be15-68ffc5193627', context:'applicationReference'}]-(t:Task {key:'ac63f49a-f5c4-420d-b536-3edb10f01841', functionName:''})
+``match (sub:SubgraphTemplate {key:'171d18f8-9d25-4483-aeb9-a29c9fbed6ac'})
+create (sub)-[:ROOT]->(s:Stage:Port {key: 'dc6aa15a-5f7c-4d2e-9bc0-e64d3584296f', handlePropagationImplementation: "chronological"})
+create (s)-[:FORK]->(s)
 `

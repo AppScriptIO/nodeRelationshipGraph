@@ -11,4 +11,8 @@ if (filesystem.existsSync(projectConfig.directory.distribution)) {
   let compiler = new Compiler({ callerPath: __dirname })
   compiler.requireHook()
   module.exports = require(path.join(projectConfig.directory.source, projectConfig.entrypoint.programmaticAPI))
+  // process.on('exit', () => {
+  //   console.log(compiler.loadedFiles.map(value => value.filename))
+  //   console.log(compiler.babelRegisterConfig.ignore)
+  // })
 }
