@@ -8,7 +8,7 @@
         "test": "export NODE_OPTIONS='--inspect-brk' && yarn run scriptManager test \"({ testPath: './test', shouldDebugger: false, shouldCompileTest: true })\"",
         "generateTypes": "tsc --project ./configuration/typescript.config.json",
         "export": "yarn run scriptManager shouldCompileScript=true exportGraphData.js",
-        "build": "yarn run scriptManager shouldCompileScript=true JSProject/buildSourceCode \".moduleProject({})\""
+        "build": "yarn run scriptManager shouldCompileScript=true JSProject/buildSourceCode \".moduleProject({}, {compile:[/**'./test'*/})\""
     },
     "dependencies": {
         "@dependency/classMixin": "https://github.com/AppScriptIO/classMixin#semver:^1.x.x",
