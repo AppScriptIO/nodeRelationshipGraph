@@ -38,6 +38,7 @@ const ownConfig = {
         // path.relative(ownConfig.directory.root, ownConfig.directory.script),
       ]
     },
+    repositoryURL: 'https://github.com/AppScriptIO/graphTraversal',
   },
 }
 
