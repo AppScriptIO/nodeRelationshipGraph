@@ -14,7 +14,7 @@ export async function* traverseNode({ node, additionalChildNode, implementation,
         assert(_handlePropagationImplementation, `• "${traversalIteration.traversalConfig.handlePropagationImplementation}" implementation isn't registered in traversal concrete instance.`)
       } else _handlePropagationImplementation = handlePropagationImplementation
       let nextIterator = graphInstance::graphInstance.handlePropagation({ nodeIteratorFeed: traversalIteration.nextIterator, implementation: node::_handlePropagationImplementation })
-      yield { nextIterator, forkNode: traversalIteration.forkNode }
+      yield { nextIterator, fork: traversalIteration.fork }
     }
   }
   yield* trapAsyncIterator(traversalIteratorFeed)

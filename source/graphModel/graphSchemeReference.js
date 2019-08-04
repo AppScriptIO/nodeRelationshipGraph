@@ -6,6 +6,7 @@ export const nodeLabel = {
   configuration: 'Configuration',
   evaluation: 'Evaluation',
   file: 'File',
+  function: 'Function',
 }
 
 export const connectionType = {

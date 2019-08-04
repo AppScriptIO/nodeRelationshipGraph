@@ -1,54 +1,45 @@
 import assert from 'assert'
-import { nodeLabel, connectionType, connectionProperty } from '../../../graphSchemeReference.js'
+import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
 import { traversalOption } from '../../GraphTraversal.class.js'
+
+function extractTraversalConfigProperty(propertyObject) {
+  return Object.entries(propertyObject).reduce((accumulator, [key, value]) => {
+    if (traversalOption.includes(key)) accumulator[key] = value
+    return accumulator
+  }, {})
+}
 
 // load `subgraph template` node parameters for traversal call usage.
 export async function laodSubgraphTemplateParameter({ node, graphInstance = this }) {
-  let rootRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.root })
-  assert(rootRelationshipArray.every(n => n.destination.labels.includes(nodeLabel.stage)), `• Unsupported node type for a ROOT connection.`) // verify node type
-  let extendRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.extend })
-  assert(extendRelationshipArray.every(n => n.destination.labels.includes(nodeLabel.subgraphTemplate)), `• Unsupported node type for a EXTEND connection.`) // verify node type
-  let configureRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'incoming', nodeID: node.identity, connectionType: connectionType.configure })
-  assert(configureRelationshipArray.every(n => n.destination.labels.includes(nodeLabel.configuration)), `• Unsupported node type for a EXTEND connection.`) // verify node type
-
-  let rootNode,
-    traversalConfiguration = {},
-    additionalChildNode = [] // additional nodes
+  let { configureArray } = await graphInstance.databaseWrapper.getConfigure({ concreteDatabase: graphInstance.database, nodeID: node.identity })
+  const { root, extend, insertArray } = await graphInstance.databaseWrapper.getSubgraphTemplateElement({ concreteDatabase: graphInstance.database, nodeID: node.identity })
 
   // get traversal configuration node
-  if (configureRelationshipArray.length > 0) {
-    function extractTraversalConfigProperty(propertyObject) {
-      return Object.entries(propertyObject).reduce((accumulator, [key, value]) => {
-        if (traversalOption.includes(key)) accumulator[key] = value
-        return accumulator
-      }, {})
-    }
-    let configureNode = configureRelationshipArray[0].destination
-    traversalConfiguration = extractTraversalConfigProperty(configureNode.properties)
+  let traversalConfiguration = {}
+  for (let configure of configureArray) {
+    Object.assign(traversalConfiguration, extractTraversalConfigProperty(configure.destination.properties))
   }
 
   // get additional nodes
-  let insertRelationshipArray = await graphInstance.database.getNodeConnection({ direction: 'incoming', nodeID: node.identity, connectionType: connectionType.insert })
-  insertRelationshipArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
-  for (let insertRelationship of insertRelationshipArray) {
-    let insertNode = insertRelationship.destination
-    assert(insertNode.labels.includes(nodeLabel.stage), `• "${insertNode.labels}" Unsupported node type for a ROOT connection.`) // verify node type
+  let additionalChildNode = [] // additional nodes
+  insertArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
+  for (let insert of insertArray) {
     additionalChildNode.push({
-      node: insertNode,
+      node: insert.destination,
       placement: {
         // convention for data structure of placement array - 0: 'before' | 'after', 1: connectionKey
-        position: insertRelationship.connection.properties.placement[0],
-        connectionKey: insertRelationship.connection.properties.placement[1],
+        position: insert.connection.properties?.placement[0],
+        connectionKey: insert.connection.properties?.placement[1],
       },
     })
   }
 
   // get rootNode and handle extended node.
-  if (rootRelationshipArray.length > 0) {
-    rootNode = rootRelationshipArray[0].destination
-  } else if (extendRelationshipArray.length > 0) {
-    let extendNode = extendRelationshipArray[0].destination
-    let recursiveCallResult = await graphInstance::graphInstance.laodSubgraphTemplateParameter({ node: extendNode, graphInstance })
+  let rootNode
+  if (root) {
+    rootNode = root.destination
+  } else if (extend) {
+    let recursiveCallResult = await graphInstance::graphInstance.laodSubgraphTemplateParameter({ node: extend.destination, graphInstance })
     additionalChildNode = [...recursiveCallResult.additionalChildNode, ...additionalChildNode]
     traversalConfiguration = Object.assign(recursiveCallResult.traversalConfiguration, traversalConfiguration)
     rootNode = recursiveCallResult.rootNode

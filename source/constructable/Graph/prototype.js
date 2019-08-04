@@ -5,14 +5,16 @@ import { mergeDefaultParameter } from '../../utility/mergeDefaultParameter.js'
 import { removeUndefinedFromObject } from '../../utility/removeUndefinedFromObject.js'
 import { Context } from '../Context.class.js'
 import { GraphTraversal } from '../GraphTraversal.class.js'
-import { nodeLabel, connectionType, connectionProperty } from '../../graphSchemeReference.js'
+import { nodeLabel, connectionType, connectionProperty } from '../../graphModel/graphSchemeReference.js'
 
+// Each exported property ends up as the prototype property of the class.
 export * from './method/evaluatePosition.js'
 export * from './method/traverseNode.js'
 export * from './method/handlePropagation.js'
 export * from './method/laodSubgraphTemplateParameter.js'
 export * from './method/dataProcess.js'
 export * from './method/recursiveIteration.js'
+export * as databaseWrapper from '../../graphModel/concreteDatabaseWrapper.js'
 
 // load graph into memory
 export async function load({ graphData, graphInstance = this } = {}) {
@@ -122,7 +124,7 @@ export const { traverse } = {
         traverseNode: 'iterateFork',
         aggregator: 'AggregatorArray',
         traversalInterception: 'processThenTraverse' || 'traverseThenProcess',
-        evaluatePosition: 'evaluateCondition',
+        evaluatePosition: 'evaluateConditionReference',
       } |> removeUndefinedFromObject // remove undefined values because native Object.assign doesn't override keys with `undefined` values
 
     // Context instance parameter

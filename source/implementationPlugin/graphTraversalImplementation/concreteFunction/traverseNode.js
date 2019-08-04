@@ -1,25 +1,24 @@
-import { nodeLabel, connectionType } from '../../../graphSchemeReference.js'
 import assert from 'assert'
+import { nodeLabel, connectionType } from '../../../graphModel/graphSchemeReference.js'
 
 /**
  * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
  * TODO: add ability to pass traversal configuration to a group of connections. Each port holds traversal cofigs that should affect all connection connected to this port.
  */
 export async function* iterateFork({ node, additionalChildNode, graphInstance }) {
-  let forkArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.fork })
+  const { forkArray } = await graphInstance.databaseWrapper.getFork({ concreteDatabase: graphInstance.database, nodeID: node.identity })
   if (forkArray.length == 0) return
 
   // Bulk actions on forks - sort forks
   forkArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property
 
   for (let fork of forkArray) {
-    let forkNode = fork.destination
-    assert(forkNode.labels.includes(nodeLabel.port), `• "${forkNode.labels}" Unsupported node type for a FORK connection.`) // verify node type
-    let traversalConfig = { handlePropagationImplementation: forkNode.properties.handlePropagationImplementation }
+    assert(fork.destination.labels.includes(nodeLabel.port), `• "${fork.destination.labels}" Unsupported node type for a FORK connection.`) // verify node type
+    let traversalConfig = { handlePropagationImplementation: fork.destination.properties.handlePropagationImplementation }
     let nextIterator = yield {
-      traversalConfig: traversalConfig,
-      forkNode,
-      nextIterator: await iterateNext({ node: forkNode, additionalChildNode, graphInstance }),
+      traversalConfig,
+      fork,
+      nextIterator: await iterateNext({ node: fork.destination, additionalChildNode, graphInstance }),
     }
   }
 }
@@ -29,7 +28,7 @@ export async function* iterateFork({ node, additionalChildNode, graphInstance })
  * @param {*} nodeConnectionArray - array of connection for the particular node
  */
 async function* iterateNext({ node, additionalChildNode, graphInstance } = {}) {
-  let nextArray = await graphInstance.database.getNodeConnection({ direction: 'outgoing', nodeID: node.identity, connectionType: connectionType.next })
+  const { nextArray } = await graphInstance.databaseWrapper.getNext({ concreteDatabase: graphInstance.database, nodeID: node.identity })
   if (nextArray.length == 0) return
 
   // Bulk action - sort connection array - in addition to the database sorting of the query results.
@@ -51,7 +50,6 @@ async function* iterateNext({ node, additionalChildNode, graphInstance } = {}) {
 
     // add additional nodes to current node and yield all sequentially.
     for (let nextNode of [...insertAdditional.before, next.destination, ...insertAdditional.after]) {
-      assert(nextNode.labels.includes(nodeLabel.stage) || nextNode.labels.includes(nodeLabel.subgraphTemplate), `• "${nextNode.labels}" Unsupported node type for a NEXT connection.`) // verify node type
       yield nextNode
     }
   }

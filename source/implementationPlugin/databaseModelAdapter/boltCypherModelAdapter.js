@@ -1,7 +1,7 @@
 import assert from 'assert'
 const boltProtocolDriver = require('neo4j-driver').v1
 import generateUUID from 'uuid/v4'
-import { nodeLabel, connectionType } from '../../graphSchemeReference.js'
+import { nodeLabel, connectionType } from '../../graphModel/graphSchemeReference.js'
 
 // convention of data structure - `connection: { source: [<nodeKey>, <portKey>], destination: [<nodeKey>, <portKey>] }`
 const jsonToCepherAdapter = {

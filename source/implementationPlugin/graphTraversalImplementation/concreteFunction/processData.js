@@ -1,5 +1,7 @@
-import { exec, execSync, spawn, spawnSync } from 'child_process'
 import path from 'path'
+import assert from 'assert'
+import { exec, execSync, spawn, spawnSync } from 'child_process'
+import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
 
 export async function returnDataItemKey({ node }) {
   let processedData = `${node.properties?.name}`
@@ -18,6 +20,26 @@ export async function timeout({ node }) {
   )
 }
 
+/**
+ * `processData` implementation of `graphTraversal` module
+ * Executes tasks through a string reference from the database that match the key of the application task context object (task.js exported object).
+ */
+export async function executeFunctionReference({ node, resource, graphInstance }) {
+  let functionContext = graphInstance.context.functionContext
+  assert(functionContext, `• Context "functionContext" variable is required to reference functions from graph database strings.`)
+
+  if (resource) {
+    assert(resource.destination.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
+    let functionName = resource.destination.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.destination.properties.functionName}`)
+    let functionCallback = functionContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
+    try {
+      await functionCallback({ node, context: graphInstance.context })
+    } catch (error) {
+      console.error(error) && process.exit()
+    }
+  }
+}
+
 /*
                           _      _____         _     ____            _       _   
   _____  _____  ___ _   _| |_ __|_   _|_ _ ___| | __/ ___|  ___ _ __(_)_ __ | |_ 
@@ -33,7 +55,7 @@ let message = ` _____                          _
 |_____|/_/\\_\\\\___| \\___| \\__,_| \\__|\\___|`
 const rootPath = path.normalize(path.join(__dirname, '../../../../'))
 
-export async function executeScriptSpawn({ node, resourceNode }) {
+export async function executeScriptSpawn({ node, resource }) {
   let childProcess
   try {
     console.log(message)
@@ -46,7 +68,7 @@ export async function executeScriptSpawn({ node, resourceNode }) {
   // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
 }
 
-export async function executeScriptSpawnIgnoreError({ node, resourceNode }) {
+export async function executeScriptSpawnIgnoreError({ node, resource }) {
   let childProcess
   try {
     console.log(message)
@@ -59,7 +81,7 @@ export async function executeScriptSpawnIgnoreError({ node, resourceNode }) {
   // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
 }
 
-export async function executeScriptSpawnAsynchronous({ node, resourceNode }) {
+export async function executeScriptSpawnAsynchronous({ node, resource }) {
   let childProcess
   try {
     console.log(message)
@@ -72,11 +94,11 @@ export async function executeScriptSpawnAsynchronous({ node, resourceNode }) {
   // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
 }
 
-export async function executeShellscriptFile({ node, resourceNode }) {
+export async function executeShellscriptFile({ node, resource }) {
   try {
     console.log(message)
-    console.log(`\x1b[45m%s\x1b[0m`, `shellscript path: ${resourceNode.properties.path}`)
-    let absolutePath = path.join('/', rootPath, resourceNode.properties.path)
+    console.log(`\x1b[45m%s\x1b[0m`, `shellscript path: ${resource.properties.path}`)
+    let absolutePath = path.join('/', rootPath, resource.properties.path)
     execSync(`sh ${absolutePath}`, { cwd: path.dirname(absolutePath), shell: true, stdio: ['inherit', 'inherit', 'inherit'] })
   } catch (error) {
     throw error
