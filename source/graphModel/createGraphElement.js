@@ -57,4 +57,10 @@ create (p)-[:NEXT]->(subgraph4)
 ``match (sub:SubgraphTemplate {key:'171d18f8-9d25-4483-aeb9-a29c9fbed6ac'})
 create (sub)-[:ROOT]->(s:Stage:Port {key: 'dc6aa15a-5f7c-4d2e-9bc0-e64d3584296f', handlePropagationImplementation: "chronological"})
 create (s)-[:FORK]->(s)
+``
+
+match (e:Evaluation {key:'b57fbb1d-c65b-4bcf-8f76-04a9444d301f'})
+create (e)-[:CASE {key:'25874628-f586-48ab-9cd9-99b5e0d7841f',expected:true}]->(c2:Configuration {aggregation: 'process&include', propagation: 'continue', key:'35df021f-7999-4194-97e4-83ec76a2d4e0'})
+create (e)-[:CASE {key:'1d136ca2-a7fc-4179-984e-b22b1f375869',expected:false}]->(c3:Configuration {aggregation: 'skipProcess', propagation: 'break', key:'4c02c2a0-4460-4121-b214-7f27411b1b33'})
+create (e)-[:DEFAULT {key:'b7067a2a-33e9-4f3b-922a-d41a3f7f6df0'}]->(c2)
 `
