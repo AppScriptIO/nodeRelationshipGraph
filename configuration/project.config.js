@@ -21,7 +21,7 @@ const ownConfig = {
     programmaticAPI: './script.js',
   },
   get script() {
-    return script.concat([{ type: 'directory', path: ownConfig.directory.script }])
+    return [...script, ...[{ type: 'directory', path: ownConfig.directory.script }]]
   },
   transpilation: {
     babelConfigKey: 'serverRuntime.BabelConfig.js',
