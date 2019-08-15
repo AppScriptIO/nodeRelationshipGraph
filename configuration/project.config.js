@@ -32,11 +32,7 @@ const ownConfig = {
   },
   build: {
     get compile() {
-      return [
-        path.relative(ownConfig.directory.root, ownConfig.directory.source),
-        // path.relative(ownConfig.directory.root, ownConfig.directory.test),
-        // path.relative(ownConfig.directory.root, ownConfig.directory.script),
-      ]
+      return [path.relative(ownConfig.directory.root, ownConfig.directory.source)]
     },
     repositoryURL: 'https://github.com/AppScriptIO/graphTraversal',
   },

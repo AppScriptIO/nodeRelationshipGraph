@@ -4,9 +4,7 @@
 	"main": "./entrypoint/programmaticAPI",
 	"scripts": {
 		"setup": "yarn install --production=false",
-		"sleep": "yarn run scriptManager sleep '.setInterval()' ",
 		"test": "export NODE_OPTIONS='--inspect-brk' && yarn run scriptManager test \"({ testPath: './test', shouldDebugger: false, shouldCompileTest: true })\"",
-		"generateTypes": "tsc --project ./configuration/typescript.config.json",
 		"build": "yarn run scriptManager shouldCompileScript=true JSProject/buildSourceCode \".moduleProject({}, {compile:[/**'./test'*/]})\"",
 		"bumpVersion": "yarn run scriptManager shouldCompileScript=true JSProject/packageVersion \".bumpVersion({})\"",
 		"buildAndRelease": "yarn run scriptManager shouldCompileScript=true JSProject/buildAndRelease \".moduleProject({})\""
