@@ -1,4 +1,4 @@
-export const nodeLabel = {
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.connectionProperty = exports.connectionType = exports.nodeLabel = void 0;const nodeLabel = {
   subgraphTemplate: 'SubgraphTemplate',
   port: 'Port',
   stage: 'Stage',
@@ -6,10 +6,10 @@ export const nodeLabel = {
   configuration: 'Configuration',
   evaluation: 'Evaluation',
   file: 'File',
-  function: 'Function',
-}
+  function: 'Function' };exports.nodeLabel = nodeLabel;
 
-export const connectionType = {
+
+const connectionType = {
   next: 'NEXT',
   fork: 'FORK',
   insert: 'INSERT',
@@ -21,9 +21,9 @@ export const connectionType = {
   configure: 'CONFIGURE',
   default: 'DEFAULT',
   case: 'CASE',
-  resource: 'RESOURCE',
-}
+  resource: 'RESOURCE' };exports.connectionType = connectionType;
 
-export const connectionProperty = {
-  context: ['applicationReference', 'filesystemReference'],
-}
+
+const connectionProperty = {
+  context: ['applicationReference', 'filesystemReference'] };exports.connectionProperty = connectionProperty;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9ncmFwaE1vZGVsL2dyYXBoU2NoZW1lUmVmZXJlbmNlLmpzIl0sIm5hbWVzIjpbIm5vZGVMYWJlbCIsInN1YmdyYXBoVGVtcGxhdGUiLCJwb3J0Iiwic3RhZ2UiLCJwcm9jZXNzIiwiY29uZmlndXJhdGlvbiIsImV2YWx1YXRpb24iLCJmaWxlIiwiZnVuY3Rpb24iLCJjb25uZWN0aW9uVHlwZSIsIm5leHQiLCJmb3JrIiwiaW5zZXJ0IiwiZXh0ZW5kIiwicm9vdCIsImV4ZWN1dGUiLCJydW4iLCJpbmhlcml0IiwiY29uZmlndXJlIiwiZGVmYXVsdCIsImNhc2UiLCJyZXNvdXJjZSIsImNvbm5lY3Rpb25Qcm9wZXJ0eSIsImNvbnRleHQiXSwibWFwcGluZ3MiOiI0SkFBTyxNQUFNQSxTQUFTLEdBQUc7QUFDdkJDLEVBQUFBLGdCQUFnQixFQUFFLGtCQURLO0FBRXZCQyxFQUFBQSxJQUFJLEVBQUUsTUFGaUI7QUFHdkJDLEVBQUFBLEtBQUssRUFBRSxPQUhnQjtBQUl2QkMsRUFBQUEsT0FBTyxFQUFFLFNBSmM7QUFLdkJDLEVBQUFBLGFBQWEsRUFBRSxlQUxRO0FBTXZCQyxFQUFBQSxVQUFVLEVBQUUsWUFOVztBQU92QkMsRUFBQUEsSUFBSSxFQUFFLE1BUGlCO0FBUXZCQyxFQUFBQSxRQUFRLEVBQUUsVUFSYSxFQUFsQixDOzs7QUFXQSxNQUFNQyxjQUFjLEdBQUc7QUFDNUJDLEVBQUFBLElBQUksRUFBRSxNQURzQjtBQUU1QkMsRUFBQUEsSUFBSSxFQUFFLE1BRnNCO0FBRzVCQyxFQUFBQSxNQUFNLEVBQUUsUUFIb0I7QUFJNUJDLEVBQUFBLE1BQU0sRUFBRSxRQUpvQjtBQUs1QkMsRUFBQUEsSUFBSSxFQUFFLE1BTHNCO0FBTTVCQyxFQUFBQSxPQUFPLEVBQUUsU0FObUI7QUFPNUJDLEVBQUFBLEdBQUcsRUFBRSxLQVB1QjtBQVE1QkMsRUFBQUEsT0FBTyxFQUFFLFNBUm1CO0FBUzVCQyxFQUFBQSxTQUFTLEVBQUUsV0FUaUI7QUFVNUJDLEVBQUFBLE9BQU8sRUFBRSxTQVZtQjtBQVc1QkMsRUFBQUEsSUFBSSxFQUFFLE1BWHNCO0FBWTVCQyxFQUFBQSxRQUFRLEVBQUUsVUFaa0IsRUFBdkIsQzs7O0FBZUEsTUFBTUMsa0JBQWtCLEdBQUc7QUFDaENDLEVBQUFBLE9BQU8sRUFBRSxDQUFDLHNCQUFELEVBQXlCLHFCQUF6QixDQUR1QixFQUEzQixDIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGNvbnN0IG5vZGVMYWJlbCA9IHtcbiAgc3ViZ3JhcGhUZW1wbGF0ZTogJ1N1YmdyYXBoVGVtcGxhdGUnLFxuICBwb3J0OiAnUG9ydCcsXG4gIHN0YWdlOiAnU3RhZ2UnLFxuICBwcm9jZXNzOiAnUHJvY2VzcycsXG4gIGNvbmZpZ3VyYXRpb246ICdDb25maWd1cmF0aW9uJyxcbiAgZXZhbHVhdGlvbjogJ0V2YWx1YXRpb24nLFxuICBmaWxlOiAnRmlsZScsXG4gIGZ1bmN0aW9uOiAnRnVuY3Rpb24nLFxufVxuXG5leHBvcnQgY29uc3QgY29ubmVjdGlvblR5cGUgPSB7XG4gIG5leHQ6ICdORVhUJyxcbiAgZm9yazogJ0ZPUksnLFxuICBpbnNlcnQ6ICdJTlNFUlQnLFxuICBleHRlbmQ6ICdFWFRFTkQnLFxuICByb290OiAnUk9PVCcsXG4gIGV4ZWN1dGU6ICdFWEVDVVRFJyxcbiAgcnVuOiAnUlVOJyxcbiAgaW5oZXJpdDogJ0lOSEVSSVQnLFxuICBjb25maWd1cmU6ICdDT05GSUdVUkUnLFxuICBkZWZhdWx0OiAnREVGQVVMVCcsXG4gIGNhc2U6ICdDQVNFJyxcbiAgcmVzb3VyY2U6ICdSRVNPVVJDRScsXG59XG5cbmV4cG9ydCBjb25zdCBjb25uZWN0aW9uUHJvcGVydHkgPSB7XG4gIGNvbnRleHQ6IFsnYXBwbGljYXRpb25SZWZlcmVuY2UnLCAnZmlsZXN5c3RlbVJlZmVyZW5jZSddLFxufVxuIl19

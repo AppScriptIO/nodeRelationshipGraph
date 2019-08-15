@@ -1,31 +1,31 @@
-// Aggregates graph traversal results
-export class AggregatorArray {
-  value: Array
-  constructor(initialValue: Array) {
-    this.value = initialValue || []
-    return this
-  }
-  // add item to aggregator
-  add(item, aggregator = this) {
-    // filter null and undefined
-    // if (!item) throw new Error(`• Returned undefined or null result of data processing.`)
-    if (item) aggregator.value.push(item) && aggregator
-    else aggregator
-    // return aggregator.value.unshift(item) // insert at start
-  }
-  // merge aggregators
-  merge(additionalAggregatorArray: [Aggregator], targetAggregator: Aggregator = this) {
-    for (let additionalAggregator of additionalAggregatorArray) {
-      targetAggregator.value = [...targetAggregator.value, ...additionalAggregator.value]
-    }
-    return targetAggregator
-  }
-}
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.ConditionCheck = exports.AggregatorArray = void 0;
+class AggregatorArray {
 
-export class ConditionCheck {
-  value: Boolean
   constructor(initialValue) {
-    this.value = initialValue || true // assume true till check fails.
-    return this
+    this.value = initialValue || [];
+    return this;
   }
-}
+
+  add(item, aggregator = this) {
+
+
+    if (item) aggregator.value.push(item) && aggregator;else
+    aggregator;
+
+  }
+
+  merge(additionalAggregatorArray, targetAggregator = this) {
+    for (let additionalAggregator of additionalAggregatorArray) {
+      targetAggregator.value = [...targetAggregator.value, ...additionalAggregator.value];
+    }
+    return targetAggregator;
+  }}exports.AggregatorArray = AggregatorArray;
+
+
+class ConditionCheck {
+
+  constructor(initialValue) {
+    this.value = initialValue || true;
+    return this;
+  }}exports.ConditionCheck = ConditionCheck;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9ncmFwaFRyYXZlcnNhbEltcGxlbWVudGF0aW9uL2NvbmNyZXRlRnVuY3Rpb24vYWdncmVnYXRvci5qcyJdLCJuYW1lcyI6WyJBZ2dyZWdhdG9yQXJyYXkiLCJjb25zdHJ1Y3RvciIsImluaXRpYWxWYWx1ZSIsInZhbHVlIiwiYWRkIiwiaXRlbSIsImFnZ3JlZ2F0b3IiLCJwdXNoIiwibWVyZ2UiLCJhZGRpdGlvbmFsQWdncmVnYXRvckFycmF5IiwidGFyZ2V0QWdncmVnYXRvciIsImFkZGl0aW9uYWxBZ2dyZWdhdG9yIiwiQ29uZGl0aW9uQ2hlY2siXSwibWFwcGluZ3MiOiI7QUFDTyxNQUFNQSxlQUFOLENBQXNCOztBQUUzQkMsRUFBQUEsV0FBVyxDQUFDQyxZQUFELEVBQXNCO0FBQy9CLFNBQUtDLEtBQUwsR0FBYUQsWUFBWSxJQUFJLEVBQTdCO0FBQ0EsV0FBTyxJQUFQO0FBQ0Q7O0FBRURFLEVBQUFBLEdBQUcsQ0FBQ0MsSUFBRCxFQUFPQyxVQUFVLEdBQUcsSUFBcEIsRUFBMEI7OztBQUczQixRQUFJRCxJQUFKLEVBQVVDLFVBQVUsQ0FBQ0gsS0FBWCxDQUFpQkksSUFBakIsQ0FBc0JGLElBQXRCLEtBQStCQyxVQUEvQixDQUFWO0FBQ0tBLElBQUFBLFVBQVU7O0FBRWhCOztBQUVERSxFQUFBQSxLQUFLLENBQUNDLHlCQUFELEVBQTBDQyxnQkFBNEIsR0FBRyxJQUF6RSxFQUErRTtBQUNsRixTQUFLLElBQUlDLG9CQUFULElBQWlDRix5QkFBakMsRUFBNEQ7QUFDMURDLE1BQUFBLGdCQUFnQixDQUFDUCxLQUFqQixHQUF5QixDQUFDLEdBQUdPLGdCQUFnQixDQUFDUCxLQUFyQixFQUE0QixHQUFHUSxvQkFBb0IsQ0FBQ1IsS0FBcEQsQ0FBekI7QUFDRDtBQUNELFdBQU9PLGdCQUFQO0FBQ0QsR0FwQjBCLEM7OztBQXVCdEIsTUFBTUUsY0FBTixDQUFxQjs7QUFFMUJYLEVBQUFBLFdBQVcsQ0FBQ0MsWUFBRCxFQUFlO0FBQ3hCLFNBQUtDLEtBQUwsR0FBYUQsWUFBWSxJQUFJLElBQTdCO0FBQ0EsV0FBTyxJQUFQO0FBQ0QsR0FMeUIsQyIsInNvdXJjZXNDb250ZW50IjpbIi8vIEFnZ3JlZ2F0ZXMgZ3JhcGggdHJhdmVyc2FsIHJlc3VsdHNcbmV4cG9ydCBjbGFzcyBBZ2dyZWdhdG9yQXJyYXkge1xuICB2YWx1ZTogQXJyYXlcbiAgY29uc3RydWN0b3IoaW5pdGlhbFZhbHVlOiBBcnJheSkge1xuICAgIHRoaXMudmFsdWUgPSBpbml0aWFsVmFsdWUgfHwgW11cbiAgICByZXR1cm4gdGhpc1xuICB9XG4gIC8vIGFkZCBpdGVtIHRvIGFnZ3JlZ2F0b3JcbiAgYWRkKGl0ZW0sIGFnZ3JlZ2F0b3IgPSB0aGlzKSB7XG4gICAgLy8gZmlsdGVyIG51bGwgYW5kIHVuZGVmaW5lZFxuICAgIC8vIGlmICghaXRlbSkgdGhyb3cgbmV3IEVycm9yKGDigKIgUmV0dXJuZWQgdW5kZWZpbmVkIG9yIG51bGwgcmVzdWx0IG9mIGRhdGEgcHJvY2Vzc2luZy5gKVxuICAgIGlmIChpdGVtKSBhZ2dyZWdhdG9yLnZhbHVlLnB1c2goaXRlbSkgJiYgYWdncmVnYXRvclxuICAgIGVsc2UgYWdncmVnYXRvclxuICAgIC8vIHJldHVybiBhZ2dyZWdhdG9yLnZhbHVlLnVuc2hpZnQoaXRlbSkgLy8gaW5zZXJ0IGF0IHN0YXJ0XG4gIH1cbiAgLy8gbWVyZ2UgYWdncmVnYXRvcnNcbiAgbWVyZ2UoYWRkaXRpb25hbEFnZ3JlZ2F0b3JBcnJheTogW0FnZ3JlZ2F0b3JdLCB0YXJnZXRBZ2dyZWdhdG9yOiBBZ2dyZWdhdG9yID0gdGhpcykge1xuICAgIGZvciAobGV0IGFkZGl0aW9uYWxBZ2dyZWdhdG9yIG9mIGFkZGl0aW9uYWxBZ2dyZWdhdG9yQXJyYXkpIHtcbiAgICAgIHRhcmdldEFnZ3JlZ2F0b3IudmFsdWUgPSBbLi4udGFyZ2V0QWdncmVnYXRvci52YWx1ZSwgLi4uYWRkaXRpb25hbEFnZ3JlZ2F0b3IudmFsdWVdXG4gICAgfVxuICAgIHJldHVybiB0YXJnZXRBZ2dyZWdhdG9yXG4gIH1cbn1cblxuZXhwb3J0IGNsYXNzIENvbmRpdGlvbkNoZWNrIHtcbiAgdmFsdWU6IEJvb2xlYW5cbiAgY29uc3RydWN0b3IoaW5pdGlhbFZhbHVlKSB7XG4gICAgdGhpcy52YWx1ZSA9IGluaXRpYWxWYWx1ZSB8fCB0cnVlIC8vIGFzc3VtZSB0cnVlIHRpbGwgY2hlY2sgZmFpbHMuXG4gICAgcmV0dXJuIHRoaXNcbiAgfVxufVxuIl19
