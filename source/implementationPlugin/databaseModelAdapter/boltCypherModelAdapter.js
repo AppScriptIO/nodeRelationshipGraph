@@ -66,8 +66,12 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       //   })
       // }
 
+      const idMap = {
+        nodeIdentity: new Map(), // maps old graph data ids to new data ids. (as ids cannot be set in the database when loaded the graph data.)
+      }
       for (let entry of nodeEntryData) {
-        await implementation.addNode({ nodeData: entry })
+        let createdNode = await implementation.addNode({ nodeData: entry })
+        idMap.nodeIdentity.set(entry.identity, createdNode.identity) // <loaded parameter ID>: <new database ID>
       }
 
       // rely on `key` property to create connections
@@ -76,7 +80,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
         connection.endKey = nodeEntryData.filter(node => node.identity == connection.end)[0].properties.key
       })
       for (let entry of connectionEntryData) {
-        await implementation.addConnection({ connectionData: entry })
+        await implementation.addConnection({ connectionData: entry, idMap })
       }
     },
     addNode: async ({ nodeData /*conforms with the Cypher query results data convention*/ }) => {
@@ -88,18 +92,18 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
         return n
       `
       let result = await session.run(query)
-      // result.records.forEach(record => record.toObject() |> console.log)
       await session.close()
-      return result
+      return result.records[0].toObject().n
     },
-    addConnection: async ({ connectionData /*conforms with the Cypher query results data convention*/ }) => {
+    addConnection: async ({ connectionData /*conforms with the Cypher query results data convention*/, idMap }) => {
       assert(typeof connectionData.start == 'number' && typeof connectionData.end == 'number', `• Connection must have a start and end nodes.`)
       if (connectionData.type == connectionType.next) assert(connectionData.properties?.key, '• Connection object must have a key property.')
       let nodeArray = await implementation.getAllNode()
       let session = await graphDBDriver.session()
+
       let query = `
-        match (source { key: '${connectionData.startKey}' })
-        match (destination { key: '${connectionData.endKey}' })
+        match (source { key: '${connectionData.startKey}' }) ${idMap ? `where ID(source) = ${idMap.nodeIdentity.get(connectionData.start)}` : ''}
+        match (destination { key: '${connectionData.endKey}' }) ${idMap ? `where ID(destination) = ${idMap.nodeIdentity.get(connectionData.end)}` : ''}
         create 
           (source)
           -[l:${connectionData.type} {${jsonToCepherAdapter.convertObjectToCepherProperty(connectionData.properties)}}]->
