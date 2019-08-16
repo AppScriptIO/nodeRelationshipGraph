@@ -14,10 +14,10 @@ const jsonToCepherAdapter = {
           propertyArray.push(`${key}: ${value}`)
           break
         case 'string':
-          propertyArray.push(`${key}:"${value}"`)
+          propertyArray.push(`${key}:'${value}'`) // Note: use single-quotes to allow json strings that rely on double qoutes.
           break
         case 'object': // an array (as the property cannot be an object in property graph databases)
-          propertyArray.push(`${key}: [${value.map(item => (typeof item == 'string' ? `"${item}"` : item)).join(', ')}]`)
+          propertyArray.push(`${key}: [${value.map(item => (typeof item == 'string' ? `'${item}'` : item)).join(', ')}]`)
           break
         default:
           throw new Error(`• "${typeof value}" Property value type for graph data is not supported.`)
@@ -80,7 +80,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       }
     },
     addNode: async ({ nodeData /*conforms with the Cypher query results data convention*/ }) => {
-      assert(nodeData.properties?.key, '• Node data must have a key property.')
+      assert(nodeData.properties?.key, '• Node data must have a key property - ' + nodeData)
 
       let session = await graphDBDriver.session()
       let query = `
