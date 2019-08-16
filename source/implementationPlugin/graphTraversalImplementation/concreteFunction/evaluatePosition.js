@@ -1,18 +1,19 @@
-import assert from 'assert'
-import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
+"use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.evaluateConditionReference = evaluateConditionReference;var _assert = _interopRequireDefault(require("assert"));
+var _graphSchemeReference = require("../../../graphModel/graphSchemeReference.js");
 
-export async function evaluateConditionReference({ node, configure, execute, resource, graphInstance }) {
-  let conditionContext = graphInstance.context?.conditionContext
-  assert(conditionContext, `• Context "conditionContext" variable is required to reference conditions from graph database strings.`)
+async function evaluateConditionReference({ node, configure, execute, resource, graphInstance }) {var _graphInstance$contex;
+  let conditionContext = (_graphInstance$contex = graphInstance.context) === null || _graphInstance$contex === void 0 ? void 0 : _graphInstance$contex.conditionContext;
+  (0, _assert.default)(conditionContext, `• Context "conditionContext" variable is required to reference conditions from graph database strings.`);
 
   if (resource) {
-    assert(resource.destination.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
-    let functionName = resource.destination.properties.functionName || throw new Error(`• condition resource must have a "functionName" - ${resource.destination.properties.functionName}`)
-    let functionCallback = conditionContext[functionName] || throw new Error(`• reference condition name doesn't exist.`)
+    (0, _assert.default)(resource.destination.labels.includes(_graphSchemeReference.nodeLabel.function), `• Unsupported Node type for resource connection.`);
+    let functionName = resource.destination.properties.functionName || function (e) {throw e;}(new Error(`• condition resource must have a "functionName" - ${resource.destination.properties.functionName}`));
+    let functionCallback = conditionContext[functionName] || function (e) {throw e;}(new Error(`• reference condition name doesn't exist.`));
     try {
-      return await functionCallback({ node, context: graphInstance.context })
+      return await functionCallback({ node, context: graphInstance.context });
     } catch (error) {
-      console.error(error) && process.exit()
+      console.error(error) && process.exit();
     }
   }
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uL3NvdXJjZS9pbXBsZW1lbnRhdGlvblBsdWdpbi9ncmFwaFRyYXZlcnNhbEltcGxlbWVudGF0aW9uL2NvbmNyZXRlRnVuY3Rpb24vZXZhbHVhdGVQb3NpdGlvbi5qcyJdLCJuYW1lcyI6WyJldmFsdWF0ZUNvbmRpdGlvblJlZmVyZW5jZSIsIm5vZGUiLCJjb25maWd1cmUiLCJleGVjdXRlIiwicmVzb3VyY2UiLCJncmFwaEluc3RhbmNlIiwiY29uZGl0aW9uQ29udGV4dCIsImNvbnRleHQiLCJkZXN0aW5hdGlvbiIsImxhYmVscyIsImluY2x1ZGVzIiwibm9kZUxhYmVsIiwiZnVuY3Rpb24iLCJmdW5jdGlvbk5hbWUiLCJwcm9wZXJ0aWVzIiwiRXJyb3IiLCJmdW5jdGlvbkNhbGxiYWNrIiwiZXJyb3IiLCJjb25zb2xlIiwicHJvY2VzcyIsImV4aXQiXSwibWFwcGluZ3MiOiJnT0FBQTtBQUNBOztBQUVPLGVBQWVBLDBCQUFmLENBQTBDLEVBQUVDLElBQUYsRUFBUUMsU0FBUixFQUFtQkMsT0FBbkIsRUFBNEJDLFFBQTVCLEVBQXNDQyxhQUF0QyxFQUExQyxFQUFpRztBQUN0RyxNQUFJQyxnQkFBZ0IsNEJBQUdELGFBQWEsQ0FBQ0UsT0FBakIsMERBQUcsc0JBQXVCRCxnQkFBOUM7QUFDQSx1QkFBT0EsZ0JBQVAsRUFBMEIsd0dBQTFCOztBQUVBLE1BQUlGLFFBQUosRUFBYztBQUNaLHlCQUFPQSxRQUFRLENBQUNJLFdBQVQsQ0FBcUJDLE1BQXJCLENBQTRCQyxRQUE1QixDQUFxQ0MsZ0NBQVVDLFFBQS9DLENBQVAsRUFBa0Usa0RBQWxFO0FBQ0EsUUFBSUMsWUFBWSxHQUFHVCxRQUFRLENBQUNJLFdBQVQsQ0FBcUJNLFVBQXJCLENBQWdDRCxZQUFoQyw0QkFBc0QsSUFBSUUsS0FBSixDQUFXLHFEQUFvRFgsUUFBUSxDQUFDSSxXQUFULENBQXFCTSxVQUFyQixDQUFnQ0QsWUFBYSxFQUE1RyxDQUF0RCxDQUFuQjtBQUNBLFFBQUlHLGdCQUFnQixHQUFHVixnQkFBZ0IsQ0FBQ08sWUFBRCxDQUFoQiw0QkFBd0MsSUFBSUUsS0FBSixDQUFXLDJDQUFYLENBQXhDLENBQXZCO0FBQ0EsUUFBSTtBQUNGLGFBQU8sTUFBTUMsZ0JBQWdCLENBQUMsRUFBRWYsSUFBRixFQUFRTSxPQUFPLEVBQUVGLGFBQWEsQ0FBQ0UsT0FBL0IsRUFBRCxDQUE3QjtBQUNELEtBRkQsQ0FFRSxPQUFPVSxLQUFQLEVBQWM7QUFDZEMsTUFBQUEsT0FBTyxDQUFDRCxLQUFSLENBQWNBLEtBQWQsS0FBd0JFLE9BQU8sQ0FBQ0MsSUFBUixFQUF4QjtBQUNEO0FBQ0Y7QUFDRiIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBhc3NlcnQgZnJvbSAnYXNzZXJ0J1xuaW1wb3J0IHsgbm9kZUxhYmVsLCBjb25uZWN0aW9uVHlwZSwgY29ubmVjdGlvblByb3BlcnR5IH0gZnJvbSAnLi4vLi4vLi4vZ3JhcGhNb2RlbC9ncmFwaFNjaGVtZVJlZmVyZW5jZS5qcydcblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGV2YWx1YXRlQ29uZGl0aW9uUmVmZXJlbmNlKHsgbm9kZSwgY29uZmlndXJlLCBleGVjdXRlLCByZXNvdXJjZSwgZ3JhcGhJbnN0YW5jZSB9KSB7XG4gIGxldCBjb25kaXRpb25Db250ZXh0ID0gZ3JhcGhJbnN0YW5jZS5jb250ZXh0Py5jb25kaXRpb25Db250ZXh0XG4gIGFzc2VydChjb25kaXRpb25Db250ZXh0LCBg4oCiIENvbnRleHQgXCJjb25kaXRpb25Db250ZXh0XCIgdmFyaWFibGUgaXMgcmVxdWlyZWQgdG8gcmVmZXJlbmNlIGNvbmRpdGlvbnMgZnJvbSBncmFwaCBkYXRhYmFzZSBzdHJpbmdzLmApXG5cbiAgaWYgKHJlc291cmNlKSB7XG4gICAgYXNzZXJ0KHJlc291cmNlLmRlc3RpbmF0aW9uLmxhYmVscy5pbmNsdWRlcyhub2RlTGFiZWwuZnVuY3Rpb24pLCBg4oCiIFVuc3VwcG9ydGVkIE5vZGUgdHlwZSBmb3IgcmVzb3VyY2UgY29ubmVjdGlvbi5gKVxuICAgIGxldCBmdW5jdGlvbk5hbWUgPSByZXNvdXJjZS5kZXN0aW5hdGlvbi5wcm9wZXJ0aWVzLmZ1bmN0aW9uTmFtZSB8fCB0aHJvdyBuZXcgRXJyb3IoYOKAoiBjb25kaXRpb24gcmVzb3VyY2UgbXVzdCBoYXZlIGEgXCJmdW5jdGlvbk5hbWVcIiAtICR7cmVzb3VyY2UuZGVzdGluYXRpb24ucHJvcGVydGllcy5mdW5jdGlvbk5hbWV9YClcbiAgICBsZXQgZnVuY3Rpb25DYWxsYmFjayA9IGNvbmRpdGlvbkNvbnRleHRbZnVuY3Rpb25OYW1lXSB8fCB0aHJvdyBuZXcgRXJyb3IoYOKAoiByZWZlcmVuY2UgY29uZGl0aW9uIG5hbWUgZG9lc24ndCBleGlzdC5gKVxuICAgIHRyeSB7XG4gICAgICByZXR1cm4gYXdhaXQgZnVuY3Rpb25DYWxsYmFjayh7IG5vZGUsIGNvbnRleHQ6IGdyYXBoSW5zdGFuY2UuY29udGV4dCB9KVxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICBjb25zb2xlLmVycm9yKGVycm9yKSAmJiBwcm9jZXNzLmV4aXQoKVxuICAgIH1cbiAgfVxufVxuIl19
