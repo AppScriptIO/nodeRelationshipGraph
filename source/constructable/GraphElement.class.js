@@ -1,55 +1,56 @@
-import { Entity, Constructable, symbol } from '@dependency/entity'
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.entityPrototype = exports.constructablePrototype = exports.Reference = exports.GraphElement = void 0;var _entity = require("@dependency/entity");
 
-interface GraphElementData {
-  label: object;
-  key: string | number;
-  [key: string]: any; // optional other fields
-}
 
-export const { class: GraphElement, reference: Reference, constructablePrototype, entityPrototype } = new Entity.clientInterface({ description: 'GraphElement' })
 
-/*
-                   _        _                    ____       _                  _   _             
-   _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___|  _ \  ___| | ___  __ _  __ _| |_(_) ___  _ __  
-  | '_ \| '__/ _ \| __/ _ \| __| | | | '_ \ / _ \ | | |/ _ \ |/ _ \/ _` |/ _` | __| |/ _ \| '_ \ 
-  | |_) | | | (_) | || (_) | |_| |_| | |_) |  __/ |_| |  __/ |  __/ (_| | (_| | |_| | (_) | | | |
-  | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
-  |_|                           |___/|_|                           |___/                         
-*/
+
+
+
+
+const { class: GraphElement, reference: Reference, constructablePrototype, entityPrototype } = new _entity.Entity.clientInterface({ description: 'GraphElement' });exports.entityPrototype = entityPrototype;exports.constructablePrototype = constructablePrototype;exports.Reference = Reference;exports.GraphElement = GraphElement;
+
+
+
+
+
+
+
+
+
 Object.assign(entityPrototype, {
-  getKey: function(key) {
-    return this.key
-  },
-})
+  getKey: function (key) {
+    return this.key;
+  } });
 
-/*
-   _       _ _   _       _ _         
-  (_)_ __ (_) |_(_) __ _| (_)_______ 
-  | | '_ \| | __| |/ _` | | |_  / _ \
-  | | | | | | |_| | (_| | | |/ /  __/
-  |_|_| |_|_|\__|_|\__,_|_|_/___\___|
-*/
-constructablePrototype::GraphElement[Constructable.reference.initialize.functionality].setter({
-  [Entity.reference.key.concereteBehavior]({ targetInstance, concereteBehaviorList } = {}, previousResult) {},
-})
 
-/*
-                       _                   _             
-    ___ ___  _ __  ___| |_ _ __ _   _  ___| |_ ___  _ __ 
-   / __/ _ \| '_ \/ __| __| '__| | | |/ __| __/ _ \| '__|
-  | (_| (_) | | | \__ \ |_| |  | |_| | (__| || (_) | |   
-   \___\___/|_| |_|___/\__|_|   \__,_|\___|\__\___/|_|   
-*/
-constructablePrototype::constructablePrototype[Constructable.reference.constructor.functionality].setter({})
 
-/*
-        _ _            _   ___       _             __                
-    ___| (_) ___ _ __ | |_|_ _|_ __ | |_ ___ _ __ / _| __ _  ___ ___ 
-   / __| | |/ _ \ '_ \| __|| || '_ \| __/ _ \ '__| |_ / _` |/ __/ _ \
-  | (__| | |  __/ | | | |_ | || | | | ||  __/ |  |  _| (_| | (_|  __/
-   \___|_|_|\___|_| |_|\__|___|_| |_|\__\___|_|  |_|  \__,_|\___\___|
-*/
-// client interface for creating sub class instance delegating to the `Entity` & `Constructable` functionality chain + in addition to the ImplementationManagement delegation in both Construtable & Entity instance prototype.
-GraphElement.clientInterface = GraphElement::GraphElement[Constructable.reference.clientInterface.functionality].switch({
-  implementationKey: Entity.reference.key.entityClass,
-})({})
+
+
+
+
+
+
+GraphElement[_entity.Constructable.reference.initialize.functionality].setter.call(constructablePrototype, {
+  [_entity.Entity.reference.key.concereteBehavior]({ targetInstance, concereteBehaviorList } = {}, previousResult) {} });
+
+
+
+
+
+
+
+
+
+constructablePrototype[_entity.Constructable.reference.constructor.functionality].setter.call(constructablePrototype, {});
+
+
+
+
+
+
+
+
+
+GraphElement.clientInterface = GraphElement[_entity.Constructable.reference.clientInterface.functionality].switch.call(GraphElement, {
+  implementationKey: _entity.Entity.reference.key.entityClass })(
+{});
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL0dyYXBoRWxlbWVudC5jbGFzcy5qcyJdLCJuYW1lcyI6WyJjbGFzcyIsIkdyYXBoRWxlbWVudCIsInJlZmVyZW5jZSIsIlJlZmVyZW5jZSIsImNvbnN0cnVjdGFibGVQcm90b3R5cGUiLCJlbnRpdHlQcm90b3R5cGUiLCJFbnRpdHkiLCJjbGllbnRJbnRlcmZhY2UiLCJkZXNjcmlwdGlvbiIsIk9iamVjdCIsImFzc2lnbiIsImdldEtleSIsImtleSIsIkNvbnN0cnVjdGFibGUiLCJpbml0aWFsaXplIiwiZnVuY3Rpb25hbGl0eSIsInNldHRlciIsImNvbmNlcmV0ZUJlaGF2aW9yIiwidGFyZ2V0SW5zdGFuY2UiLCJjb25jZXJldGVCZWhhdmlvckxpc3QiLCJwcmV2aW91c1Jlc3VsdCIsImNvbnN0cnVjdG9yIiwic3dpdGNoIiwiaW1wbGVtZW50YXRpb25LZXkiLCJlbnRpdHlDbGFzcyJdLCJtYXBwaW5ncyI6IndMQUFBOzs7Ozs7OztBQVFPLE1BQU0sRUFBRUEsS0FBSyxFQUFFQyxZQUFULEVBQXVCQyxTQUFTLEVBQUVDLFNBQWxDLEVBQTZDQyxzQkFBN0MsRUFBcUVDLGVBQXJFLEtBQXlGLElBQUlDLGVBQU9DLGVBQVgsQ0FBMkIsRUFBRUMsV0FBVyxFQUFFLGNBQWYsRUFBM0IsQ0FBL0YsQzs7Ozs7Ozs7OztBQVVQQyxNQUFNLENBQUNDLE1BQVAsQ0FBY0wsZUFBZCxFQUErQjtBQUM3Qk0sRUFBQUEsTUFBTSxFQUFFLFVBQVNDLEdBQVQsRUFBYztBQUNwQixXQUFPLEtBQUtBLEdBQVo7QUFDRCxHQUg0QixFQUEvQjs7Ozs7Ozs7OztBQWF3QlgsWUFBWSxDQUFDWSxzQkFBY1gsU0FBZCxDQUF3QlksVUFBeEIsQ0FBbUNDLGFBQXBDLENBQVosQ0FBK0RDLE1BQXZGLE1BQUFaLHNCQUFzQixFQUF3RTtBQUM1RixHQUFDRSxlQUFPSixTQUFQLENBQWlCVSxHQUFqQixDQUFxQkssaUJBQXRCLEVBQXlDLEVBQUVDLGNBQUYsRUFBa0JDLHFCQUFsQixLQUE0QyxFQUFyRixFQUF5RkMsY0FBekYsRUFBeUcsQ0FBRSxDQURmLEVBQXhFLENBQXRCOzs7Ozs7Ozs7O0FBV3dCaEIsc0JBQXNCLENBQUNTLHNCQUFjWCxTQUFkLENBQXdCbUIsV0FBeEIsQ0FBb0NOLGFBQXJDLENBQXRCLENBQTBFQyxNQUFsRyxNQUFBWixzQkFBc0IsRUFBbUYsRUFBbkYsQ0FBdEI7Ozs7Ozs7Ozs7QUFVQUgsWUFBWSxDQUFDTSxlQUFiLEdBQTZDTixZQUFZLENBQUNZLHNCQUFjWCxTQUFkLENBQXdCSyxlQUF4QixDQUF3Q1EsYUFBekMsQ0FBWixDQUFvRU8sTUFBbEYsTUFBQXJCLFlBQVksRUFBNkU7QUFDdEhzQixFQUFBQSxpQkFBaUIsRUFBRWpCLGVBQU9KLFNBQVAsQ0FBaUJVLEdBQWpCLENBQXFCWSxXQUQ4RSxFQUE3RSxDQUFaO0FBRTVCLEVBRjRCLENBQS9CIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgRW50aXR5LCBDb25zdHJ1Y3RhYmxlLCBzeW1ib2wgfSBmcm9tICdAZGVwZW5kZW5jeS9lbnRpdHknXG5cbmludGVyZmFjZSBHcmFwaEVsZW1lbnREYXRhIHtcbiAgbGFiZWw6IG9iamVjdDtcbiAga2V5OiBzdHJpbmcgfCBudW1iZXI7XG4gIFtrZXk6IHN0cmluZ106IGFueTsgLy8gb3B0aW9uYWwgb3RoZXIgZmllbGRzXG59XG5cbmV4cG9ydCBjb25zdCB7IGNsYXNzOiBHcmFwaEVsZW1lbnQsIHJlZmVyZW5jZTogUmVmZXJlbmNlLCBjb25zdHJ1Y3RhYmxlUHJvdG90eXBlLCBlbnRpdHlQcm90b3R5cGUgfSA9IG5ldyBFbnRpdHkuY2xpZW50SW50ZXJmYWNlKHsgZGVzY3JpcHRpb246ICdHcmFwaEVsZW1lbnQnIH0pXG5cbi8qXG4gICAgICAgICAgICAgICAgICAgXyAgICAgICAgXyAgICAgICAgICAgICAgICAgICAgX19fXyAgICAgICBfICAgICAgICAgICAgICAgICAgXyAgIF8gICAgICAgICAgICAgXG4gICBfIF9fICBfIF9fIF9fXyB8IHxfIF9fXyB8IHxfIF8gICBfIF8gX18gICBfX198ICBfIFxcICBfX198IHwgX19fICBfXyBfICBfXyBffCB8XyhfKSBfX18gIF8gX18gIFxuICB8ICdfIFxcfCAnX18vIF8gXFx8IF9fLyBfIFxcfCBfX3wgfCB8IHwgJ18gXFwgLyBfIFxcIHwgfCB8LyBfIFxcIHwvIF8gXFwvIF9gIHwvIF9gIHwgX198IHwvIF8gXFx8ICdfIFxcIFxuICB8IHxfKSB8IHwgfCAoXykgfCB8fCAoXykgfCB8X3wgfF98IHwgfF8pIHwgIF9fLyB8X3wgfCAgX18vIHwgIF9fLyAoX3wgfCAoX3wgfCB8X3wgfCAoXykgfCB8IHwgfFxuICB8IC5fXy98X3wgIFxcX19fLyBcXF9fXFxfX18vIFxcX198XFxfXywgfCAuX18vIFxcX19ffF9fX18vIFxcX19ffF98XFxfX198XFxfXywgfFxcX18sX3xcXF9ffF98XFxfX18vfF98IHxffFxuICB8X3wgICAgICAgICAgICAgICAgICAgICAgICAgICB8X19fL3xffCAgICAgICAgICAgICAgICAgICAgICAgICAgIHxfX18vICAgICAgICAgICAgICAgICAgICAgICAgIFxuKi9cbk9iamVjdC5hc3NpZ24oZW50aXR5UHJvdG90eXBlLCB7XG4gIGdldEtleTogZnVuY3Rpb24oa2V5KSB7XG4gICAgcmV0dXJuIHRoaXMua2V5XG4gIH0sXG59KVxuXG4vKlxuICAgXyAgICAgICBfIF8gICBfICAgICAgIF8gXyAgICAgICAgIFxuICAoXylfIF9fIChfKSB8XyhfKSBfXyBffCAoXylfX19fX19fIFxuICB8IHwgJ18gXFx8IHwgX198IHwvIF9gIHwgfCB8XyAgLyBfIFxcXG4gIHwgfCB8IHwgfCB8IHxffCB8IChffCB8IHwgfC8gLyAgX18vXG4gIHxffF98IHxffF98XFxfX3xffFxcX18sX3xffF8vX19fXFxfX198XG4qL1xuY29uc3RydWN0YWJsZVByb3RvdHlwZTo6R3JhcGhFbGVtZW50W0NvbnN0cnVjdGFibGUucmVmZXJlbmNlLmluaXRpYWxpemUuZnVuY3Rpb25hbGl0eV0uc2V0dGVyKHtcbiAgW0VudGl0eS5yZWZlcmVuY2Uua2V5LmNvbmNlcmV0ZUJlaGF2aW9yXSh7IHRhcmdldEluc3RhbmNlLCBjb25jZXJldGVCZWhhdmlvckxpc3QgfSA9IHt9LCBwcmV2aW91c1Jlc3VsdCkge30sXG59KVxuXG4vKlxuICAgICAgICAgICAgICAgICAgICAgICBfICAgICAgICAgICAgICAgICAgIF8gICAgICAgICAgICAgXG4gICAgX19fIF9fXyAgXyBfXyAgX19ffCB8XyBfIF9fIF8gICBfICBfX198IHxfIF9fXyAgXyBfXyBcbiAgIC8gX18vIF8gXFx8ICdfIFxcLyBfX3wgX198ICdfX3wgfCB8IHwvIF9ffCBfXy8gXyBcXHwgJ19ffFxuICB8IChffCAoXykgfCB8IHwgXFxfXyBcXCB8X3wgfCAgfCB8X3wgfCAoX198IHx8IChfKSB8IHwgICBcbiAgIFxcX19fXFxfX18vfF98IHxffF9fXy9cXF9ffF98ICAgXFxfXyxffFxcX19ffFxcX19cXF9fXy98X3wgICBcbiovXG5jb25zdHJ1Y3RhYmxlUHJvdG90eXBlOjpjb25zdHJ1Y3RhYmxlUHJvdG90eXBlW0NvbnN0cnVjdGFibGUucmVmZXJlbmNlLmNvbnN0cnVjdG9yLmZ1bmN0aW9uYWxpdHldLnNldHRlcih7fSlcblxuLypcbiAgICAgICAgXyBfICAgICAgICAgICAgXyAgIF9fXyAgICAgICBfICAgICAgICAgICAgIF9fICAgICAgICAgICAgICAgIFxuICAgIF9fX3wgKF8pIF9fXyBfIF9fIHwgfF98XyBffF8gX18gfCB8XyBfX18gXyBfXyAvIF98IF9fIF8gIF9fXyBfX18gXG4gICAvIF9ffCB8IHwvIF8gXFwgJ18gXFx8IF9ffHwgfHwgJ18gXFx8IF9fLyBfIFxcICdfX3wgfF8gLyBfYCB8LyBfXy8gXyBcXFxuICB8IChfX3wgfCB8ICBfXy8gfCB8IHwgfF8gfCB8fCB8IHwgfCB8fCAgX18vIHwgIHwgIF98IChffCB8IChffCAgX18vXG4gICBcXF9fX3xffF98XFxfX198X3wgfF98XFxfX3xfX198X3wgfF98XFxfX1xcX19ffF98ICB8X3wgIFxcX18sX3xcXF9fX1xcX19ffFxuKi9cbi8vIGNsaWVudCBpbnRlcmZhY2UgZm9yIGNyZWF0aW5nIHN1YiBjbGFzcyBpbnN0YW5jZSBkZWxlZ2F0aW5nIHRvIHRoZSBgRW50aXR5YCAmIGBDb25zdHJ1Y3RhYmxlYCBmdW5jdGlvbmFsaXR5IGNoYWluICsgaW4gYWRkaXRpb24gdG8gdGhlIEltcGxlbWVudGF0aW9uTWFuYWdlbWVudCBkZWxlZ2F0aW9uIGluIGJvdGggQ29uc3RydXRhYmxlICYgRW50aXR5IGluc3RhbmNlIHByb3RvdHlwZS5cbkdyYXBoRWxlbWVudC5jbGllbnRJbnRlcmZhY2UgPSBHcmFwaEVsZW1lbnQ6OkdyYXBoRWxlbWVudFtDb25zdHJ1Y3RhYmxlLnJlZmVyZW5jZS5jbGllbnRJbnRlcmZhY2UuZnVuY3Rpb25hbGl0eV0uc3dpdGNoKHtcbiAgaW1wbGVtZW50YXRpb25LZXk6IEVudGl0eS5yZWZlcmVuY2Uua2V5LmVudGl0eUNsYXNzLFxufSkoe30pXG4iXX0=
