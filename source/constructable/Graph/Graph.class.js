@@ -99,7 +99,7 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     let concreteTraversal = instance[Entity.reference.getInstanceOf](GraphTraversal)
     instance.traversal = concreteTraversal[ImplementationManagement.reference.key.getter]()
     let context = instance[Entity.reference.getInstanceOf](Context)
-    instance.context = context[Context.reference.key.getter]()
+    instance.context = context ? context[Context.reference.key.getter]() : {}
 
     // configure Graph element classes
     // instance.configuredNode = Node.clientInterface({ parameter: [{ concreteBehaviorList: [] }] })
