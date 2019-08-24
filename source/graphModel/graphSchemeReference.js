@@ -7,21 +7,28 @@ export const nodeLabel = {
   evaluation: 'Evaluation',
   file: 'File',
   function: 'Function',
+  nodeReference: 'NodeReference', // holding reference information to a node that exist in another location, when imported to an existing graph database, a connection will be created to the referenced graph
 }
 
 export const connectionType = {
+  // Stage
   next: 'NEXT',
   fork: 'FORK',
+  configure: 'CONFIGURE',
+  // SubgraphTemplate
   insert: 'INSERT',
   extend: 'EXTEND',
   root: 'ROOT',
+  // Process
   execute: 'EXECUTE',
-  run: 'RUN',
-  inherit: 'INHERIT',
-  configure: 'CONFIGURE',
-  default: 'DEFAULT',
-  case: 'CASE',
   resource: 'RESOURCE',
+  value: 'VALUE', // {type: 'node' || 'properties'} i.e. return the node reference or return its properties.
+  // Evaluation
+  case: 'CASE',
+  default: 'DEFAULT',
+  run: 'RUN',
+
+  inherit: 'INHERIT',
 }
 
 export const connectionProperty = {
