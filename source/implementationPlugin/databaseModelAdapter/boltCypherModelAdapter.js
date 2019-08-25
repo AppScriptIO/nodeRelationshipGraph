@@ -46,38 +46,59 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
     driverInstance: graphDBDriver, // expose driver instance
     // load nodes and connections from json file data.
     async loadGraphData({ nodeEntryData = [], connectionEntryData = [] } = {}) {
-      // {
-      //   const map = {
-      //     nodeKey: new Map(),
-      //     connectionKey: new Map(),
-      //   }
-      //   // create unique keys for each node and connection
-      //   nodeEntryData.map(node => {
-      //     let oldKey = node.properties.key
-      //     map.nodeKey.set(oldKey, generateUUID())
-      //     node.properties.key = map.nodeKey.get(oldKey)
-      //     return node
-      //   })
-      //   connectionEntryData.map(c => {
-      //     let oldKey = c.properties.key
-      //     map.connectionKey.set(oldKey, generateUUID())
-      //     c.properties.key = map.connectionKey.get(oldKey)
-      //     return c
-      //   })
-      // }
-
-      const idMap = {
-        nodeIdentity: new Map(), // maps old graph data ids to new data ids. (as ids cannot be set in the database when loaded the graph data.)
+      // deal with `NodeReference`
+      let referenceNodeArray = nodeEntryData.filter(node => node.labels.includes(nodeLabel.nodeReference)) // extract `NodeReference` nodes
+      nodeEntryData = nodeEntryData.filter(node => !referenceNodeArray.some(i => i == node)) // remove reference nodes from node array.
+      let referenceNodeMap = new Map()
+      let reintroduceNodeArray = []
+      for (let referenceNode of referenceNodeArray) {
+        let actualTargetNode = await implementation.getNodeByKey({ key: referenceNode.properties.key, shouldThrow: false })
+        // <reference id>: <actual id in graph>
+        if (actualTargetNode) {
+          referenceNodeMap.set(referenceNode.identity, actualTargetNode)
+          console.log(`• Found "NodeReference" target in current graph ${referenceNode.identity} -> ${actualTargetNode.identity}`)
+        } else {
+          // if reference node key was not found in the current graph data, reintroduce it as a NodeReference node
+          reintroduceNodeArray.push(referenceNode)
+          console.log(`• "NodeReference" was not found in current graph - ${referenceNode.properties.key}.`)
+        }
       }
+      // reintroduce reference nodes that where not found in current graph
+      for (let node of reintroduceNodeArray) {
+        nodeEntryData.push(node)
+      }
+      // replace node reference with actual graph identity of the target reference node
+      for (let edge of connectionEntryData) {
+        if (referenceNodeMap.get(edge.start)) {
+          let actualReferenceNode = referenceNodeMap.get(edge.start)
+          edge.start = actualReferenceNode.identity
+          // add connection keys for actual reference nodes that the latter function rely on.
+          edge.startKey = actualReferenceNode.properties.key
+        }
+        if (referenceNodeMap.get(edge.end)) {
+          let actualReferenceNode = referenceNodeMap.get(edge.end)
+          edge.end = actualReferenceNode.identity
+          // add connection keys for actual reference nodes that the latter function rely on.
+          edge.endKey = actualReferenceNode.properties.key
+        }
+      }
+
+      const idMap = { nodeIdentity: new Map() /** maps old graph data ids to new data ids. (as ids cannot be set in the database when loaded the graph data.) */ }
       for (let entry of nodeEntryData) {
         let createdNode = await implementation.addNode({ nodeData: entry })
         idMap.nodeIdentity.set(entry.identity, createdNode.identity) // <loaded parameter ID>: <new database ID>
       }
 
+      // add reference target nodes to the list of nodes for usage in `addConnection function
+      let actualReferenceNodeArray = Array.from(referenceNodeMap.values())
+      for (let actualReferenceNode of actualReferenceNodeArray) {
+        idMap.nodeIdentity.set(actualReferenceNode.identity, actualReferenceNode.identity)
+      }
+
       // rely on `key` property to create connections
       connectionEntryData.map(connection => {
-        connection.startKey = nodeEntryData.filter(node => node.identity == connection.start)[0].properties.key
-        connection.endKey = nodeEntryData.filter(node => node.identity == connection.end)[0].properties.key
+        if (!connection.startKey) connection.startKey = nodeEntryData.filter(node => node.identity == connection.start)[0].properties.key
+        if (!connection.endKey) connection.endKey = nodeEntryData.filter(node => node.identity == connection.end)[0].properties.key
       })
       for (let entry of connectionEntryData) {
         await implementation.addConnection({ connectionData: entry, idMap })
@@ -95,7 +116,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       await session.close()
       return result.records[0].toObject().n
     },
-    addConnection: async ({ connectionData /*conforms with the Cypher query results data convention*/, idMap }) => {
+    addConnection: async ({ connectionData /*conforms with the Cypher query results data convention*/, idMap /*Use identities to create edges */ }) => {
       assert(typeof connectionData.start == 'number' && typeof connectionData.end == 'number', `• Connection must have a start and end nodes.`)
       if (connectionData.type == connectionType.next) assert(connectionData.properties?.key, '• Connection object must have a key property.')
       let nodeArray = await implementation.getAllNode()
@@ -145,15 +166,16 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
      * }]
      */
     getNodeConnection: async function({
-      direction /* filter connection array to match outgoing connections only*/,
       nodeID,
+      direction /* filter connection array to match outgoing connections only*/,
       destinationNodeType,
       connectionType,
     }: {
       direction: 'outgoing' | 'incoming' | undefined /*both incoming and outgoing*/,
     }) {
       let session = await graphDBDriver.session()
-      let connection = direction == 'outgoing' ? `-[connection:${connectionType}]->` : direction == 'incoming' ? `<-[connection:${connectionType}]-` : `-[connection:${connectionType}]-`
+      let connectionTypeQuery = connectionType ? `:${connectionType}` : ``
+      let connection = direction == 'outgoing' ? `-[connection${connectionTypeQuery}]->` : direction == 'incoming' ? `<-[connection${connectionTypeQuery}]-` : `-[connection${connectionTypeQuery}]-`
       let query = `
         match 
           (source)
@@ -168,7 +190,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       await session.close()
       return result
     },
-    getNodeByKey: async function({ key }) {
+    getNodeByKey: async function({ key, shouldThrow = true }) {
       let session = await graphDBDriver.session()
       let query = `
         match (n {key: '${key}'})
@@ -176,7 +198,8 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       `
       let result = await session.run(query)
       await session.close()
-      assert(result.records[0], `• Cannot find node where node.key="${key}"`)
+      if (shouldThrow) assert(result.records[0], `• Cannot find node where node.key="${key}"`)
+      if (result.records.length == 0) return false
       return result.records[0].toObject().n
     },
     getNodeByID: async function({ id }) {
