@@ -11,3 +11,4 @@ export * as GraphTraversal from './constructable/GraphTraversal.class.js'
 export * as Node from './constructable/Node.class.js'
 
 export * as modelAdapter from './implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
+export * as graphScheme from './graphModel/graphSchemeReference.js'
