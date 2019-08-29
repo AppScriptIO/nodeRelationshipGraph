@@ -41,6 +41,50 @@ export async function executeFunctionReference({ node, resource, graphInstance }
 }
 
 /*
+   __  __ _     _     _ _                             
+  |  \/  (_) __| | __| | | _____      ____ _ _ __ ___ 
+  | |\/| | |/ _` |/ _` | |/ _ \ \ /\ / / _` | '__/ _ \
+  | |  | | | (_| | (_| | |  __/\ V  V / (_| | | |  __/
+  |_|  |_|_|\__,_|\__,_|_|\___| \_/\_/ \__,_|_|  \___|
+  Creates middleware array from graph-  The graph traversal @return {Array of Objects} where each object contains instruction settings to be used through an implementing module to add to a chain of middlewares.                                                   
+  or Immediately execute middleware
+*/
+// a function that complies with graphTraversal processData implementation.
+export const immediatelyExecuteMiddleware = async ({ node, resource, graphInstance, nextProcessData }, { nextFunction }) => {
+  let functionContext = graphInstance.context.functionContext
+  assert(functionContext, `• Context "functionContext" variable is required to reference functions from graph database strings.`)
+  assert(graphInstance.middlewareParameter?.context, `• Middleware graph traversal relies on graphInstance.middlewareParameter.context`)
+
+  if (resource) {
+    assert(resource.destination.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
+    let functionName = resource.destination.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.destination.properties.functionName}`)
+    let middlewareFunction = functionContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
+    try {
+      await middlewareFunction(graphInstance.middlewareParameter.context, nextFunction) // execute middleware
+      return middlewareFunction // allow to aggregate middleware function for debugging purposes.
+    } catch (error) {
+      console.error(error) && process.exit()
+    }
+  }
+}
+
+export const returnMiddlewareFunction = async ({ node, resource, graphInstance }) => {
+  let functionContext = graphInstance.context.functionContext
+  assert(functionContext, `• Context "functionContext" variable is required to reference functions from graph database strings.`)
+
+  if (resource) {
+    assert(resource.destination.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
+    let functionName = resource.destination.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.destination.properties.functionName}`)
+    let middlewareFunction = functionContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
+    try {
+      return middlewareFunction
+    } catch (error) {
+      console.error(error) && process.exit()
+    }
+  }
+}
+
+/*
                           _      _____         _     ____            _       _   
   _____  _____  ___ _   _| |_ __|_   _|_ _ ___| | __/ ___|  ___ _ __(_)_ __ | |_ 
  / _ \ \/ / _ \/ __| | | | __/ _ \| |/ _` / __| |/ /\___ \ / __| '__| | '_ \| __|
@@ -107,15 +151,6 @@ export async function executeShellscriptFile({ node, resource }) {
   // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
   return null
 }
-
-/*
-   __  __ _     _     _ _                             
-  |  \/  (_) __| | __| | | _____      ____ _ _ __ ___ 
-  | |\/| | |/ _` |/ _` | |/ _ \ \ /\ / / _` | '__/ _ \
-  | |  | | | (_| | (_| | |  __/\ V  V / (_| | | |  __/
-  |_|  |_|_|\__,_|\__,_|_|\___| \_/\_/ \__,_|_|  \___|
-  Creates middleware array from graph-  The graph traversal @return {Array of Objects} where each object contains instruction settings to be used through an implementing module to add to a chain of middlewares.                                                   
-*/
 
 /*
  

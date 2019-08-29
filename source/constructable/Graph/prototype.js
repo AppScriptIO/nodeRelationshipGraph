@@ -208,8 +208,8 @@ export const { traverse } = {
       additionalChildNode,
     })
 
-    let dataProcessCallback = nextProcessData =>
-      graphInstance::graphInstance.dataProcess({ node: nodeInstance, nextProcessData, evaluation, aggregator, implementation: implementation.dataProcess, graphInstance })
+    let dataProcessCallback = ({ nextProcessData, additionalParameter }) =>
+      graphInstance::graphInstance.dataProcess({ node: nodeInstance, nextProcessData, evaluation, aggregator, implementation: implementation.dataProcess, graphInstance }, additionalParameter)
 
     let proxyify = target => graphInstance::implementation.traversalInterception({ targetFunction: target, aggregator, dataProcessCallback })
     let result = await (graphInstance::graphInstance.recursiveIteration |> proxyify)({
