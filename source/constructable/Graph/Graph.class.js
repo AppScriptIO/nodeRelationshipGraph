@@ -1,6 +1,6 @@
 import { Entity, Constructable, symbol } from '@dependency/entity'
 import { Node } from './Node.class.js'
-import { GraphTraversal, traversalOption } from '../GraphTraversal.class.js'
+import { GraphTraversal } from '../GraphTraversal.class.js'
 import { Connection } from '../Connection.class.js'
 import { Database } from '../Database.class.js'
 import { Cache } from '../Cache.class.js'

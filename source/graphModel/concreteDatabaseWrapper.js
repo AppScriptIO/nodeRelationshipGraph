@@ -30,9 +30,10 @@ export async function getNext({ concreteDatabase, nodeID }) {
 export async function getConfigure({ concreteDatabase, nodeID }) {
   let configureArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: connectionType.configure })
   assert(
-    configureArray.every(n => n.destination.labels.includes(nodeLabel.configuration) || n.destination.labels.includes(nodeLabel.evaluation)),
+    configureArray.every(n => (n.destination.labels.includes(nodeLabel.configuration) || n.destination.labels.includes(nodeLabel.stage)) && n.connection.properties.setting),
     `• Unsupported property value for a CONFIGURE connection.`,
   ) // verify node type
+
   return { configureArray }
 }
 
@@ -86,7 +87,6 @@ export async function getSubgraphTemplateElement({ concreteDatabase, nodeID }) {
   return { extend: extendArray.length > 0 ? extendArray[0] : null, root: rootArray.length > 0 ? rootArray[0] : null, insertArray }
 }
 
-// TODO: Add Switch node label to Evaluation node that relay on cases relationships
 export async function getSwitchElement({ concreteDatabase, nodeID }) {
   const { caseArray } = await getCase({ concreteDatabase, nodeID })
   const { defaultArray } = await getDefault({ concreteDatabase, nodeID })

@@ -1,13 +1,7 @@
 import assert from 'assert'
 import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
-import { traversalOption } from '../../GraphTraversal.class.js'
-
-function extractTraversalConfigProperty(propertyObject) {
-  return Object.entries(propertyObject).reduce((accumulator, [key, value]) => {
-    if (traversalOption.includes(key)) accumulator[key] = value
-    return accumulator
-  }, {})
-}
+import { traversalOption } from '../../../graphModel/graphSchemeReference.js'
+import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
 
 // load `subgraph template` node parameters for traversal call usage.
 export async function laodSubgraphTemplateParameter({ node, graphInstance = this }) {
@@ -17,7 +11,7 @@ export async function laodSubgraphTemplateParameter({ node, graphInstance = this
   // get traversal configuration node
   let traversalConfiguration = {}
   for (let configure of configureArray) {
-    Object.assign(traversalConfiguration, extractTraversalConfigProperty(configure.destination.properties))
+    Object.assign(traversalConfiguration, extractConfigProperty(configure.destination.properties, traversalOption))
   }
 
   // get additional nodes

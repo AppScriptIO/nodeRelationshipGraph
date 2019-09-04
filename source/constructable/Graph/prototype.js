@@ -6,6 +6,8 @@ import { removeUndefinedFromObject } from '../../utility/removeUndefinedFromObje
 import { Context } from '../Context.class.js'
 import { GraphTraversal } from '../GraphTraversal.class.js'
 import { nodeLabel, connectionType, connectionProperty } from '../../graphModel/graphSchemeReference.js'
+import { EvaluatorFunction } from '../../Evaluator.class.js'
+const Evaluator = EvaluatorFunction()
 
 // Each exported property ends up as the prototype property of the class.
 export * from './method/evaluatePosition.js'
@@ -47,161 +49,188 @@ export async function count({ graphInstance = this } = {}) {
   }
 }
 
-// Note: wrapping in object allows the usage of decorators
-export const { traverse } = {
-  /** Graph traversal - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
-   * Dynamic implementation - not restricted to specific initialization algorithm, rather choosen from setting of each node in the traversed graph.
-   */
-  @proxifyMethodDecorator(async (target, thisArg, argumentsList, targetClass, methodName) => {
-    // create node instance, in case string key is passed as parameter.
-    let { nodeInstance, nodeKey, nodeID, graphInstance = thisArg } = argumentsList[0]
-    let nodeData
-    if (nodeInstance) {
-      nodeData = nodeInstance
-    } else if (nodeKey) {
-      nodeData = await graphInstance.database.getNodeByKey({ key: nodeKey }) // retrieve node data on-demand
-    } else if (nodeID) {
-      nodeData = await graphInstance.database.getNodeByID({ id: nodeID }) // retrieve node data on-demand
-    } else {
-      throw new Error('• node identifier or object must be passed in.')
-    }
+/** 
+ * TODO:  REFACTOR adding Traversal description class - ability to pick a defined set of implementation keys to be used to gether - e.g. implementation type: Condition, Middleware, Template, Schema, Shellscript.
+  - https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/graphdb/traversal/TraversalConfig.html
+  - Implement 'depthAffected' for the affected depth of the configure connections on a stage and its child nodes.
+  */
+// Handles parameter hierarchy handling:
+class TraversalConfig {
+  traversalImplementationHierarchy = {}
+  evaluation // evaluation object that contains configuration relating to traverser action on the current position
 
-    // deal with SubgraphTemplate
-    if (nodeData.labels.includes(nodeLabel.subgraphTemplate)) {
-      let parameter = await graphInstance.laodSubgraphTemplateParameter({ node: nodeData })
-      if (!parameter)
-        return // in case no destination node (ROOT/Extend) are present
-        // set additional parameters
-      ;['nodeInstance', 'nodeKey', 'nodeID'].forEach(property => delete argumentsList[0][property]) // remove subgraph template node related identifiers.
-      argumentsList[0].implementationKey = argumentsList[0].implementationKey ? Object.assign(parameter.traversalConfiguration, argumentsList[0].implementationKey) : parameter.traversalConfiguration
-      argumentsList[0].additionalChildNode = argumentsList[0].additionalChildNode ? [...argumentsList[0].additionalChildNode, ...parameter.additionalChildNode] : parameter.additionalChildNode
-      Object.assign(argumentsList[0], { nodeInstance: parameter.rootNode })
-    } else {
-      argumentsList[0].nodeInstance = nodeData // set node data
-    }
-    return Reflect.apply(target, thisArg, argumentsList)
-  })
-  @proxifyMethodDecorator((target, thisArg /*Graph Instance*/, argumentsList, targetClass, methodName) => {
-    // set default parameters and expose them to subsequent method decorators.
-    argumentsList = mergeDefaultParameter({
-      passedArg: argumentsList,
-      defaultArg: [
-        {
-          traversalDepth: 0,
-          path: null, // TODO: implement path sequence preservation. allow for the node traverse function to rely on the current path data.
-          graphInstance: thisArg,
-          additionalChildNode: [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
-          nodeType: 'Stage', // Traversal step or stage - defines when and how to run processes.
-        },
-        { parentTraversalArg: null },
-      ],
-    })
-    return Reflect.apply(target, thisArg, argumentsList)
-  })
-  /** 
-   * TODO:  REFACTOR adding Traversal description class - ability to pick a defined set of implementation keys to be used to gether - e.g. implementation type: Condition, Middleware, Template, Schema, Shellscript.
-    - https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/graphdb/traversal/TraversalDescription.html
-    - Split traversal configurations that are configured by the node graph data itself from those that are passed to the call as parameters. OR merge them, by using some as defaults in case both are set.
-    - Implement 'depthAffected' for the affected depth of the configure connections on a stage and its child nodes.
-   */
-  @proxifyMethodDecorator((target, thisArg, argumentsList, targetClass, methodName) => {
-    /** Choose concrete implementation
-     * Parameter hirerchy for graph traversal implementations: (1 as first priority)
-     * 1. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
-     * 2. call parameters that are passed directly
-     * 3. node instance configuration/properties
-     * 4. default values specified in the function scope.
-     */
-    let { nodeInstance, implementationKey: parameterImplementationKey = {}, graphInstance } = argumentsList[0],
-      { parentTraversalArg } = argumentsList[1]
+  constructor({ traversalImplementationHierarchy, evaluationHierarchy }) {
+    this.traversalImplementationHierarchy = traversalImplementationHierarchy
+    this.evaluationHierarchy = this.evaluationHierarchy
+  }
 
-    // TODO: refactor parameter hirerchy merging to be more readable.
-    // implementation keys of node instance own config parameters and of default values set in function scope
-    let implementationKey =
-      {
-        processData: 'returnDataItemKey',
-        handlePropagation: 'chronological',
-        traverseNode: 'iterateFork',
-        aggregator: 'AggregatorArray',
-        traversalInterception: 'processThenTraverse' || 'traverseThenProcess',
-        evaluatePosition: 'evaluateConditionReference',
-      } |> removeUndefinedFromObject // remove undefined values because native Object.assign doesn't override keys with `undefined` values
-
-    // Context instance parameter
-    let contextImplementationKey = (graphInstance[Context.reference.key.getter] ? graphInstance[Context.reference.key.getter]()?.implementationKey : {}) || {}
-    // parent arguments
-    let parentImplementationKey = parentTraversalArg ? parentTraversalArg[0].implementationKey || {} : {}
-    // overwrite (for all subtraversals) implementation through directly passed parameters - overwritable traversal implementation ignoring each nodes configuration, i.e. overwritable over nodeInstance own property implementation keys
-    implementationKey
-      |> (targetObject =>
-        Object.assign(targetObject, parentImplementationKey, implementationKey, parameterImplementationKey |> removeUndefinedFromObject, contextImplementationKey |> removeUndefinedFromObject))
-    argumentsList[0].implementationKey = implementationKey
-
-    // get implementation functions
+  getAllImplementation({ graphInstance }) {
+    let implementationKey = this.getTraversalImplementationKey()
     let implementation = {
       dataProcess: graphInstance.traversal.processData[implementationKey.processData],
       handlePropagation: graphInstance.traversal.handlePropagation[implementationKey.handlePropagation],
       traverseNode: graphInstance.traversal.traverseNode[implementationKey.traverseNode],
-      traversalInterception: graphInstance.traversal.traversalInterception[implementationKey.traversalInterception] || (({ targetFunction }) => new Proxy(targetFunction, {})), // in case no implementation exists for intercepting traversal, use an empty proxy.
+      traversalInterception: graphInstance.traversal.traversalInterception[implementationKey.traversalInterception],
       aggregator: graphInstance.traversal.aggregator[implementationKey.aggregator],
-      evaluatePosition: graphInstance.traversal.evaluatePosition[implementationKey.evaluatePosition],
     }
     assert(
       Object.entries(implementation).every(([key, value]) => Boolean(value)),
       '• All `implementation` concerete functions must be registered, the implementationKey provided doesn`t match any of the registered implementaions.',
     )
-    // deep merge of nested parameter (TODO: use utility function from different module that does this function.)
+    return implementation
+  }
+
+  getImplementationCallback({ key, graphInstance }) {
+    let getTraversalImplementationKey = this.getTraversalImplementationKey
+    return ({ nodeImplementationKey }) => {
+      let implementationKey = getTraversalImplementationKey({ key: key, nodeImplementationKey })
+      let implementation = graphInstance.traversal[key][implementationKey]
+      assert(implementation, '• `implementation` concerete function must be registered, the implementationKey provided doesn`t match any of the registered implementaions.')
+      return implementation
+    }
+  }
+  // get implementation functions
+  getTraversalImplementationKey({ key } = {}) {
+    let implementationKey = this.calculateImplementationHierarchy()
+    if (key) return implementationKey[key]
+    else return implementationKey
+  }
+
+  calculateImplementationHierarchy({ nodeImplementationKey = {} }) {
+    // overwrite (for all subtraversals) implementation through directly passed parameters - overwritable traversal implementation ignoring each nodes configuration, i.e. overwritable over nodeInstance own property implementation keys
+    /** Pick implementation function from implemntation keys
+     * Parameter hirerchy for graph traversal implementations: (1 as first priority)
+     * 1. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
+     * 2. call parameters that are passed directly
+     * 3. node instance and edge properties
+     * 4. node configurations
+     * 5. default values specified in the function scope.
+     * 6. parent parameters
+     */
+    let implementationKey = Object.assign(
+      {},
+      this.traversalImplementationHierarchy.parent,
+      this.traversalImplementationHierarchy.default,
+      this.traversalImplementationHierarchy.configuration,
+      nodeImplementationKey,
+      this.traversalImplementationHierarchy.parameter,
+      this.traversalImplementationHierarchy.context,
+    )
+    return implementationKey
+  }
+
+  calculateEvaluationHierarchy() {
+    let evaluation = Object.assign({}, this.evaluationHierarchy.default, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
+    return evaluation
+  }
+}
+
+/** Graph traversal - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
+ * Dynamic implementation - not restricted to specific initialization algorithm, rather choosen from setting of each node in the traversed graph.
+ */
+// Note: wrapping in object allows the usage of decorators
+export const { traverse } = {
+  /** An approach to set default parameters for the function.
+   * @proxifyMethodDecorator((target, thisArg, argumentsList, targetClass, methodName) => {
+    // set default parameters and expose them to subsequent method decorators. - deep merge of nested parameter
     argumentsList = mergeDefaultParameter({
       passedArg: argumentsList,
       defaultArg: [
         {
-          implementation,
+          graphInstance: thisArg,
+          traversalDepth: 0,
+          path: null,
+          additionalChildNode: [],
+          nodeType: 'Stage',
         },
+        { parentTraversalArg: null },
       ],
     })
+    return Reflect.apply(target, thisArg, argumentsList)
+  }) */
+  @proxifyMethodDecorator(async (target, thisArg, argumentsList, targetClass, methodName) => {
+    // create node instance, in case string key is passed as parameter.
+    let { nodeInstance /* type Node */, nodeKey, nodeID, graphInstance = thisArg } = argumentsList[0]
+
+    let nodeData
+    if (nodeInstance) nodeData = nodeInstance
+    else if (nodeKey) nodeData = await graphInstance.database.getNodeByKey({ key: nodeKey })
+    // retrieve node data on-demand
+    else if (nodeID) nodeData = await graphInstance.database.getNodeByID({ id: nodeID })
+    // retrieve node data on-demand
+    else throw new Error('• node identifier or object must be passed in.')
+
+    argumentsList[0].nodeInstance = nodeData // set node data
+    return Reflect.apply(target, thisArg, argumentsList)
+  })
+  @proxifyMethodDecorator(async (target, thisArg, argumentsList, targetClass, methodName) => {
+    // handle nodes with different labels
+    let { nodeInstance } = argumentsList[0]
+    // deal with SubgraphTemplate
+    if (nodeInstance.labels.includes(nodeLabel.subgraphTemplate)) {
+      let parameter = await graphInstance.laodSubgraphTemplateParameter({ node: nodeInstance })
+      // in case no destination node (ROOT/Extend) are present
+      if (!parameter) return
+      ;['nodeInstance', 'nodeKey', 'nodeID'].forEach(property => delete argumentsList[0][property]) // remove subgraph template node related identifiers.
+      // set additional parameters
+      argumentsList[0].implementationKey = argumentsList[0].implementationKey ? Object.assign(parameter.traversalConfiguration, argumentsList[0].implementationKey) : parameter.traversalConfiguration
+      argumentsList[0].additionalChildNode = argumentsList[0].additionalChildNode ? [...argumentsList[0].additionalChildNode, ...parameter.additionalChildNode] : parameter.additionalChildNode
+      Object.assign(argumentsList[0], { nodeInstance: parameter.rootNode })
+    }
 
     return Reflect.apply(target, thisArg, argumentsList)
   })
   async traverse(
     {
-      graphInstance,
+      graphInstance = this, // <type Graph>
       nodeInstance,
-      traversalIteratorFeed, // iterator providing node parameters for recursive traversal calls.
-      traversalDepth, // level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
-      path,
-      concreteTraversal, // implementation registered functions
-      implementationKey, // used by decorator to retreive implementation functions
-      implementation, // implementation functions
-      additionalChildNode,
+      implementationKey: parameterImplementationKey = {},
+      evaluation: parameterEvaluation = {},
+      traversalDepth = 0, // <type Number> level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
+      path = null, // path to the current traversal.  // TODO: implement path sequence preservation. allow for the node traverse function to rely on the current path data.
+      additionalChildNode = [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
       eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
-      aggregator = new (nodeInstance::implementation.aggregator)(), // used to aggregate results of nested nodes.
-      nodeType, // the type of node to traverse
-      evaluation, // evaluation object that contains configuration relating to traverser action on the current position
-    }: {
-      graphInstance: Graph,
-      nodeInstance: String | Node,
-      concreteTraversal: GraphTraversal /** TODO: Currently it is an object derived from a GraphTraversal instance */,
-      traversalDepth: Number,
-      implementaion: Object,
-      implementationKey: {
-        // the the default registered implementations or internal module implementations.
-        processData: 'returnDataItemKey' | 'returnKey' | 'timeout',
-        traverseNode: 'allPromise' | 'chronological' | 'raceFirstPromise',
-        aggregator: 'AggregatorArray' | 'ConditionCheck',
-        traversalInterception: 'processThenTraverse' | 'conditionCheck',
-      },
-      nodeType: 'Stage',
-      evaluation: {
-        process: 'include' | 'exclude', // execute & include or don't execute & exclude from aggregated results.
-        traverse: 'continue' | 'break', // traverse neighbours or not.
-      },
+      aggregator, // used to aggregate results of nested nodes.
+      nodeType = 'Stage', // Traversal step or stage - defines when and how to run processes.-  the type of node to traverse
     } = {},
-    { parentTraversalArg } = {},
+    { parentTraversalArg = null } = {},
   ) {
-    evaluation ||= await graphInstance.evaluatePosition({ evaluation, node: nodeInstance, implementation: nodeInstance::implementation.evaluatePosition })
+    // get configuration of type 'evaluation' & 'implementation'
+    let { implementationConfiguration, evaluationConfiguration } = await graphInstance.evaluatePosition({ node: nodeInstance })
+
+    let traversalConfig = new TraversalConfig({
+      traversalImplementationHierarchy: {
+        // Context instance parameter
+        context: (graphInstance[Context.reference.key.getter] ? graphInstance[Context.reference.key.getter]()?.implementationKey : {}) || {} |> removeUndefinedFromObject,
+        // implementation keys of node instance own config parameters and of default values set in function scope
+        default: {
+          processData: 'returnDataItemKey',
+          handlePropagation: 'chronological',
+          traverseNode: 'iterateFork',
+          aggregator: 'AggregatorArray',
+          traversalInterception: 'processThenTraverse',
+        },
+        configuration: implementationConfiguration,
+        // parameter arguments
+        parameter: parameterImplementationKey |> removeUndefinedFromObject, // remove undefined values because native Object.assign doesn't override keys with `undefined` values
+        // parent arguments
+        parent: parentTraversalArg ? parentTraversalArg[0].implementationKey || {} : {},
+      },
+      evaluationHierarchy: {
+        default: new Evaluator({ propagation: evaluationOption.propagation.continue, aggregation: evaluationOption.aggregation.include }),
+        configuration: evaluationConfiguration,
+        parameter: parameterEvaluation,
+      },
+    })
+
+    let implementation = traversalConfig.getAllImplementation({ graphInstance })
+    let evaluation = traversalConfig.calculateEvaluationHierarchy()
+
+    aggregator ||= new (nodeInstance::implementation.aggregator)()
 
     // Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
-    traversalIteratorFeed ||= graphInstance::graphInstance.traverseNode({
+    // iterator providing node parameters for recursive traversal calls.
+    let traversalIteratorFeed = graphInstance::graphInstance.traverseNode({
       node: nodeInstance,
       implementation: implementation.traverseNode,
       handlePropagationImplementation: implementation.handlePropagation,
@@ -209,9 +238,13 @@ export const { traverse } = {
     })
 
     let dataProcessCallback = ({ nextProcessData, additionalParameter }) =>
-      graphInstance::graphInstance.dataProcess({ node: nodeInstance, nextProcessData, evaluation, aggregator, implementation: implementation.dataProcess, graphInstance }, additionalParameter)
+      graphInstance::graphInstance.dataProcess(
+        { node: nodeInstance, nextProcessData, evaluation, aggregator, getImplementation: traversalConfig.getImplementationCallback({ key: 'dataProcess', graphInstance }), graphInstance },
+        additionalParameter,
+      )
 
-    let proxyify = target => graphInstance::implementation.traversalInterception({ targetFunction: target, aggregator, dataProcessCallback })
+    let traversalInterceptionImplementation = implementation.traversalInterception || (({ targetFunction }) => new Proxy(targetFunction, {})) // in case no implementation exists for intercepting traversal, use an empty proxy.
+    let proxyify = target => graphInstance::traversalInterceptionImplementation({ targetFunction: target, aggregator, dataProcessCallback })
     let result = await (graphInstance::graphInstance.recursiveIteration |> proxyify)({
       traversalIteratorFeed,
       nodeInstance,

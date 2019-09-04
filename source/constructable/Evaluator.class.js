@@ -1,16 +1,4 @@
-export const evaluationOption = {
-  propagation: {
-    continue: 'continue',
-    break: 'break',
-    hult: 'hult',
-  },
-  aggregation: {
-    include: 'process&include',
-    exclude: 'process&exclude',
-    skip: 'skipProcess',
-  },
-}
-
+import { evaluationOption } from '../graphModel/graphSchemeReference.js'
 /**
  * Responsible for creating evaluator configuration for each traverser and deciding whether traversal and actions should be performed on each position accordingly.
  */

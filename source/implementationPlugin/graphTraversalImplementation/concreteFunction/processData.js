@@ -41,6 +41,30 @@ export async function executeFunctionReference({ node, resource, graphInstance }
 }
 
 /*
+/*
+    ____                _ _ _   _             
+   / ___|___  _ __   __| (_) |_(_) ___  _ __  
+  | |   / _ \| '_ \ / _` | | __| |/ _ \| '_ \ 
+  | |__| (_) | | | | (_| | | |_| | (_) | | | |
+   \____\___/|_| |_|\__,_|_|\__|_|\___/|_| |_|
+*/
+export async function evaluateConditionReference({ node, configure, execute, resource, graphInstance }) {
+  let conditionContext = graphInstance.context?.conditionContext
+  assert(conditionContext, `• Context "conditionContext" variable is required to reference conditions from graph database strings.`)
+
+  if (resource) {
+    assert(resource.destination.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
+    let functionName = resource.destination.properties.functionName || throw new Error(`• condition resource must have a "functionName" - ${resource.destination.properties.functionName}`)
+    let functionCallback = conditionContext[functionName] || throw new Error(`• reference condition name doesn't exist.`)
+    try {
+      return await functionCallback({ node, context: graphInstance.context })
+    } catch (error) {
+      console.error(error) && process.exit()
+    }
+  }
+}
+
+/*
    __  __ _     _     _ _                             
   |  \/  (_) __| | __| | | _____      ____ _ _ __ ___ 
   | |\/| | |/ _` |/ _` | |/ _ \ \ /\ / / _` | '__/ _ \
