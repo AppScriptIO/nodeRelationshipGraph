@@ -33,6 +33,15 @@ Different applications may use this module:
 
 # Graph Concepts: 
 - **Graph** _(Node Relationship Graph / Nested Unit Tree)_ - can represent any collection of objects having some kind of pairwise relationship (conveying of relational information). Many realworld systems and problems can be modeled using a graph.
+- Programming concepts implemented in the graph: 
+    - Command execution in sequence and in parallel.
+    - Conditionals - logical operations: 
+        - Switch multiple cases
+        - Switch boolean cases
+        (Both of the above could be represented as a special type of Stage node) 
+        - AND logical operator
+        - OR logical operator 
+        (Both of the above can be represented as a propagation implementation in a port with several next stages traversed.)
 
 - **Graph type & features** - Usually the Graph that is used is Directed, Acyclic or cyclic, Weighed, Sparsed _(few edges in comparison to complexity analysis)_, & immediately-processed graph (created to be processed during traversal).  e.g. Trees/Herarchies/Nested Treemaps.
     - **Multiedge/Parallel edges** - Multiple connections between 2 verticies/nodes.
