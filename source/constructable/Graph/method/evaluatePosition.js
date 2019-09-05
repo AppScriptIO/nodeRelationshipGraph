@@ -17,7 +17,8 @@ export async function evaluatePosition({ node, graphInstance = this }) {
       let configurationNode = await graphInstance.traverse({
         nodeInstance: configure.destination,
         implementationKey: {
-          // implementations for condition checking and aggregation
+          // TODO: implementations for condition checking and aggregation
+          processData: 'evaluateConditionReference',
         },
       }) // traverse subgraph to retrieve a configuration node.
       assert(configurationNode.labels.include(nodeLabel.configuration), `• CONFIGURE subgraph traversal must return a Configuration node.`)

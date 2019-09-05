@@ -61,6 +61,8 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
   TraversalConfig: class TraversalConfig {
     traversalImplementationHierarchy = {}
     evaluationHierarchy = {} // evaluation object that contains configuration relating to traverser action on the current position
+    evaluation
+    implementation
 
     constructor({ traversalImplementationHierarchy, evaluationHierarchy }) {
       this.traversalImplementationHierarchy = traversalImplementationHierarchy
@@ -75,6 +77,13 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     setImplementationHierarchy(parameterType, implementationKey) {
       if (!this.traversalImplementationHierarchy[parameterType]) this.traversalImplementationHierarchy[parameterType] = {}
       Object.assign(this.traversalImplementationHierarchy[parameterType], implementationKey)
+    }
+
+    calculateConfig({ graphInstance }) {
+      return {
+        evaluation: this.calculateEvaluationHierarchy(),
+        implementation: this.getAllImplementation({ graphInstance }),
+      }
     }
 
     getAllImplementation({ graphInstance }) {
@@ -133,20 +142,15 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     }
 
     calculateEvaluationHierarchy() {
-      let evaluation = Object.assign({}, this.evaluationHierarchy.default, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
-      return evaluation
+      this.evaluation = Object.assign({}, this.evaluationHierarchy.default, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
+      return this.evaluation
     }
-  },
-  /**
-   * Responsible for creating evaluator configuration for each traverser and deciding whether traversal and actions should be performed on each position accordingly.
-   */
-  Evaluator: class Evaluator {
-    constructor({ propagation = defaultParameter.propagation, aggregation = defaultParameter.aggregation } = {}) {
-      this.propagation = propagation
-      this.aggregation = aggregation
-    }
+
+    /**
+     * Responsible for creating evaluator configuration for each traverser and deciding whether traversal and actions should be performed on each position accordingly.
+     */
     shouldContinue() {
-      switch (this.propagation) {
+      switch (this.evaluation.propagation) {
         case evaluationOption.propagation.continue:
           return true
           break
@@ -155,12 +159,12 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
           return false
           break
         default:
-          throw new Error(`• Unknown option for 'evaluator.propagation' = ${this.propagation}.`)
+          throw new Error(`• Unknown option for 'evaluator.propagation' = ${this.evaluation.propagation}.`)
           break
       }
     }
     shouldIncludeResult() {
-      switch (this.aggregation) {
+      switch (this.evaluation.aggregation) {
         case evaluationOption.aggregation.include:
           return true
           break
@@ -169,12 +173,12 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
           return false
           break
         default:
-          throw new Error(`• Unknown option for 'evaluator.aggregation' = ${this.aggregation}.`)
+          throw new Error(`• Unknown option for 'evaluator.aggregation' = ${this.evaluation.aggregation}.`)
           break
       }
     }
     shouldExecuteProcess() {
-      switch (this.aggregation) {
+      switch (this.evaluation.aggregation) {
         case evaluationOption.aggregation.include:
         case evaluationOption.aggregation.exclude:
           return true
@@ -183,7 +187,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
           return false
           break
         default:
-          throw new Error(`• Unknown option for 'evaluator.aggregation' = ${this.aggregation}.`)
+          throw new Error(`• Unknown option for 'evaluator.aggregation' = ${this.evaluation.aggregation}.`)
           break
       }
     }
@@ -241,7 +245,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
         parent: parentTraversalArg ? parentTraversalArg[0].implementationKey || {} : {},
       },
       evaluationHierarchy: {
-        default: new graphInstance.Evaluator({ propagation: evaluationOption.propagation.continue, aggregation: evaluationOption.aggregation.include }),
+        default: { propagation: evaluationOption.propagation.continue, aggregation: evaluationOption.aggregation.include },
       },
     })
 
@@ -327,8 +331,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     } = {},
     { parentTraversalArg = null } = {},
   ) {
-    let implementation = traversalConfig.getAllImplementation({ graphInstance })
-    let evaluation = traversalConfig.calculateEvaluationHierarchy()
+    let { implementation } = traversalConfig.calculateConfig({ graphInstance })
 
     aggregator ||= new (nodeInstance::implementation.aggregator)()
 
@@ -343,7 +346,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
 
     let dataProcessCallback = ({ nextProcessData, additionalParameter }) =>
       graphInstance::graphInstance.dataProcess(
-        { node: nodeInstance, nextProcessData, evaluation, aggregator, getImplementation: traversalConfig.getImplementationCallback({ key: 'dataProcess', graphInstance }), graphInstance },
+        { node: nodeInstance, nextProcessData, traversalConfig, aggregator, getImplementation: traversalConfig.getImplementationCallback({ key: 'dataProcess', graphInstance }), graphInstance },
         additionalParameter,
       )
 
@@ -354,7 +357,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       nodeInstance,
       traversalDepth,
       eventEmitter,
-      evaluation,
+      traversalConfig,
       additionalChildNode,
       parentTraversalArg: arguments,
     })

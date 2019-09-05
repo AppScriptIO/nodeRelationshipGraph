@@ -9,13 +9,13 @@ export async function* recursiveIteration({
   recursiveCallback = graphInstance::graphInstance.traverse,
   traversalDepth,
   eventEmitter,
-  evaluation,
+  traversalConfig,
   additionalChildNode,
   parentTraversalArg,
 }: {
   eventEmitter: Event,
 }) {
-  if (!evaluation.shouldContinue()) return // skip traversal
+  if (!traversalConfig.shouldContinue()) return // skip traversal
   let eventEmitterCallback = (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args)
   traversalDepth += 1 // increase traversal depth
   for await (let traversalIteration of traversalIteratorFeed) {
