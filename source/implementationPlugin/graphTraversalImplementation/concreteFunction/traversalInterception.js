@@ -63,6 +63,26 @@ export const traverseThenProcess = ({ dataProcessCallback, targetFunction, aggre
   })
 }
 
+export const traverseBooleanCheck = ({ dataProcessCallback, targetFunction, aggregator }) => {
+  return new Proxy(targetFunction, {
+    async apply(target, thisArg, argArray) {
+      let { nodeInstance, traversalDepth, eventEmitter } = argArray[0]
+      eventEmitter.on('nodeTraversalCompleted', data => {
+        // console.log(data.value, ' resolved.')
+      })
+
+      let traversalResultIterator = await Reflect.apply(...arguments)
+      for await (let traversalResult of traversalResultIterator) {
+        aggregator.merge(traversalResult.result)
+      }
+
+      let result = await dataProcessCallback({ nextProcessData: aggregator.value, additionalParameter: {} })
+
+      return traversalDepth == 0 ? aggregator.value : aggregator // check if top level call and not an initiated nested recursive call.
+    },
+  })
+}
+
 export const conditionCheck = ({ dataProcessCallback, targetFunction, aggregator }) => {
   // Check condition
   async function checkCondition(nodeInstance) {

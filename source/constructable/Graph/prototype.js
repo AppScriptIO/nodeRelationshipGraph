@@ -269,8 +269,27 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       arguments[0].additionalChildNode = [...(arguments[0].additionalChildNode || []), ...additionalChildNode]
       return await graphInstance.traverse(...arguments)
     } else if (nodeInstance.labels.includes(nodeLabel.switch)) {
-      // Switch node
       console.log('switch node reached.')
+      // run condition check
+      let comparisonValue
+      if (nodeInstance.properties?.value) comparisonValue = nodeInstance.properties?.value
+      else if (nodeInstance.labels.include(nodeLabel.stage)) {
+        comparisonValue = await graphInstance.traverseStage(
+          { graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator },
+          { parentTraversalArg },
+        )
+      } else comparisonValue = undefined
+
+      // Switch cases: return evaluation configuration
+      const { caseArray, default: defaultRelationship } = await graphInstance.databaseWrapper.getSwitchElement({ concreteDatabase: graphInstance.database, nodeID: nodeInstance.identity })
+      let configurationNode
+      if (caseArray) {
+        // compare expected value with result
+        let caseRelationship = caseArray.filter(caseRelationship => caseRelationship.connection.properties?.expected == comparisonValue)[0]
+        configurationNode = caseRelationship?.destination
+      }
+      configurationNode ||= defaultRelationship?.destination || {}
+      return configurationNode
     } else if (nodeInstance.labels.includes(nodeLabel.stage))
       return await graphInstance.traverseStage({ graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator }, { parentTraversalArg })
     else throw new Error(`• Unsupported node type for traversal function - ${nodeInstance.labels}`)
