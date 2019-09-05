@@ -48,7 +48,7 @@ export async function executeFunctionReference({ node, resource, graphInstance }
   | |__| (_) | | | | (_| | | |_| | (_) | | | |
    \____\___/|_| |_|\__,_|_|\__|_|\___/|_| |_|
 */
-export async function evaluateConditionReference({ node, configure, execute, resource, graphInstance }) {
+export async function evaluateConditionReference({ node, resource, graphInstance }) {
   let conditionContext = graphInstance.context?.conditionContext
   assert(conditionContext, `• Context "conditionContext" variable is required to reference conditions from graph database strings.`)
 

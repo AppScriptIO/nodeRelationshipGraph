@@ -5,9 +5,8 @@ import { isArray } from 'util'
 import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
 
 /**
- * Node's include/exclude evaluation - evaluate whether or not a node whould be included in the node feed and subsequently in the traversal.
- * continue child nodes traversal or break traversal.
- * & implementation configuration
+ * Node's include/exclude evaluation - evaluate whether or not a node whould be included in the node feed and subsequently in the traversal. continue child nodes traversal or break traversal.
+ * & traversal implementation configuration - chooses the custom functions to be used in the traversal.
  */
 export async function evaluatePosition({ node, graphInstance = this }) {
   let { configureArray } = await graphInstance.databaseWrapper.getConfigure({ concreteDatabase: graphInstance.database, nodeID: node.identity })
@@ -15,7 +14,12 @@ export async function evaluatePosition({ node, graphInstance = this }) {
   // evaluate configuration by traversing subgraph nodes (traverse switch stage node) & replace destination node with a configuration node:
   for (let configure of configureArray)
     if (configure.destination.labels.includes(nodeLabel.stage)) {
-      let configurationNode = await graphInstance.traverse({ nodeInstance: configure.destination }) // traverse subgraph to retrieve a configuration node.
+      let configurationNode = await graphInstance.traverse({
+        nodeInstance: configure.destination,
+        implementationKey: {
+          // implementations for condition checking and aggregation
+        },
+      }) // traverse subgraph to retrieve a configuration node.
       assert(configurationNode.labels.include(nodeLabel.configuration), `• CONFIGURE subgraph traversal must return a Configuration node.`)
       // replace destination node with appropriate evaluated configuration:
       configure.destination = configurationNode
