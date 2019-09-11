@@ -4,8 +4,7 @@ import { exec, execSync, spawn, spawnSync } from 'child_process'
 import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
 
 export async function returnDataItemKey({ node }) {
-  let processedData = `${node.properties?.name}`
-  return processedData
+  if (node.properties?.name) return `${node.properties?.name}`
 }
 
 // implementation delays promises for testing `iterateConnection` of promises e.g. `allPromise`, `raceFirstPromise`, etc.
@@ -65,8 +64,6 @@ export async function switchCase({ node, graphInstance, nextProcessData }) {
   let comparisonValue
   if (value) comparisonValue = value
   else comparisonValue = nextProcessData
-  // TODO:
-  console.log(`comparisonValue: ${comparisonValue}`)
 
   // Switch cases: return evaluation configuration
   let chosenNode

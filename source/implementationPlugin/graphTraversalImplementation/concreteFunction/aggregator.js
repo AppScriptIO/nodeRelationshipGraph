@@ -9,8 +9,7 @@ export class AggregatorArray {
   add(item, aggregator = this) {
     // filter null and undefined
     // if (!item) throw new Error(`• Returned undefined or null result of data processing.`)
-    if (item) aggregator.value.push(item) && aggregator
-    else aggregator
+    if (item) aggregator.value.push(item)
     // return aggregator.value.unshift(item) // insert at start
   }
   // merge aggregators

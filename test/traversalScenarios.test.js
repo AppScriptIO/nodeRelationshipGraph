@@ -58,7 +58,7 @@ let configuredGraph = Graph.clientInterface({
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
   setup(async () => await clearGraphData())
 
-  suite.only('nodeConnection subgraph template:', () => {
+  suite('nodeConnection subgraph template:', () => {
     const fixture = ['dataItem-key-1', 'dataItem-key-2', 'dataItem-key-4', 'dataItem-key-5', 'dataItem-key-6', 'dataItem-key-7', 'dataItem-key-9']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully ', async () => {
@@ -106,16 +106,16 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
       let result = await graph.traverse({ nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
+  })
 
-    suite('CONFIGURE relationship:', () => {
-      const fixture = []
-      let graph = new configuredGraph({})
-      test('Should traverse graph successfully', async () => {
-        await graph.load({ graphData })
-        let result = await graph.traverse({ nodeKey: 'aadfac41-66bf-4b78-a039-1e25480a2f50', implementationKey: {} })
-        chaiAssertion.deepEqual(result, fixture)
-      })
-  
+  suite.only('CONFIGURE relationship:', () => {
+    const fixture = []
+    let graph = new configuredGraph({})
+    test('Should traverse graph successfully', async () => {
+      await graph.load({ graphData })
+      let result = await graph.traverse({ nodeKey: 'aadfac41-66bf-4b78-a039-1e25480a2f50', implementationKey: {} })
+      chaiAssertion.deepEqual(result, fixture)
+    })
   })
 
   // TODO: Define node inheritance concept and implement it.

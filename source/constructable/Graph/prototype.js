@@ -264,8 +264,6 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       arguments[0].nodeInstance = rootNode
       arguments[0].additionalChildNode = [...(arguments[0].additionalChildNode || []), ...additionalChildNode]
       return await graphInstance.traverse(...arguments)
-    } else if (nodeInstance.labels.includes(nodeLabel.switch)) {
-      console.log('switch node reached.')
     } else if (nodeInstance.labels.includes(nodeLabel.stage))
       return await graphInstance.traverseStage({ graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator }, { parentTraversalArg })
     else throw new Error(`• Unsupported node type for traversal function - ${nodeInstance.labels}`)
