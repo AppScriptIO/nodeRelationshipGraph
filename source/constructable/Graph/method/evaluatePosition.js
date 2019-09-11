@@ -1,7 +1,6 @@
 import assert from 'assert'
 import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
 import { evaluationOption, traversalOption } from '../../../graphModel/graphSchemeReference.js'
-import { isArray } from 'util'
 import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
 
 /**
@@ -17,7 +16,7 @@ export async function evaluatePosition({ node, graphInstance = this }) {
       let configurationNode = await graphInstance.traverse({
         nodeInstance: configure.destination,
         implementationKey: {
-          processData: 'evaluateConditionReference',
+          processData: 'checkConditionReference',
           traversalInterception: 'traverseBooleanCheck',
         },
       }) // traverse subgraph to retrieve a configuration node.
@@ -35,8 +34,8 @@ export async function evaluatePosition({ node, graphInstance = this }) {
     .map(configure => extractConfigProperty(configure.destination.properties, evaluationOption))
 
   // merge multiple configurations of the same type
-  let implementationConfiguration = Object.assign(...implementationConfigurationArray)
-  let evaluationConfiguration = Object.assign(...evaluationConfigurationArray)
+  let implementationConfiguration = implementationConfigurationArray.length > 0 ? Object.assign(...implementationConfigurationArray) : {}
+  let evaluationConfiguration = evaluationConfigurationArray.length > 0 ? Object.assign(...evaluationConfigurationArray) : {}
 
   return { implementationConfiguration, evaluationConfiguration }
 }

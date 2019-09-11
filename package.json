@@ -4,7 +4,7 @@
 	"main": "./entrypoint/programmaticAPI",
 	"scripts": {
 		"setup": "yarn install --production=false",
-		"test": "export NODE_OPTIONS='--inspect-brk' && yarn run scriptManager test \"({ testPath: './test', shouldDebugger: false, shouldCompileTest: true })\"",
+		"test": "export NODE_OPTIONS='--inspect-brk' && yarn run scriptManager JSProject/test \"({ testPath: ['./test'], shouldDebugger: false, shouldCompileTest: true })\"",
 		"build": "yarn run scriptManager shouldCompileScript=true JSProject/buildSourceCode \".moduleProject({}, {compile:[/**'./test'*/]})\"",
 		"bumpVersion": "yarn run scriptManager shouldCompileScript=true JSProject/packageVersion \".bumpVersion({})\"",
 		"buildAndRelease": "yarn run scriptManager shouldCompileScript=true JSProject/buildAndRelease \".moduleProject({})\""

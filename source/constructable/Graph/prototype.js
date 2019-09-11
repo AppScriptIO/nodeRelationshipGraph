@@ -12,7 +12,7 @@ import { extractConfigProperty } from '../../../utility/extractPropertyFromObjec
 export * from './method/evaluatePosition.js'
 export * from './method/traverseNode.js'
 export * from './method/handlePropagation.js'
-export * from './method/dataProcess.js'
+export * from './method/processData.js'
 export * from './method/recursiveIteration.js'
 export * as databaseWrapper from '../../graphModel/concreteDatabaseWrapper.js'
 
@@ -89,7 +89,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     getAllImplementation({ graphInstance }) {
       let implementationKey = this.getTraversalImplementationKey()
       let implementation = {
-        dataProcess: graphInstance.traversal.processData[implementationKey.processData],
+        processData: graphInstance.traversal.processData[implementationKey.processData],
         handlePropagation: graphInstance.traversal.handlePropagation[implementationKey.handlePropagation],
         traverseNode: graphInstance.traversal.traverseNode[implementationKey.traverseNode],
         traversalInterception: graphInstance.traversal.traversalInterception[implementationKey.traversalInterception],
@@ -105,20 +105,20 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     getImplementationCallback({ key, graphInstance }) {
       let getTraversalImplementationKey = this.getTraversalImplementationKey
       return ({ nodeImplementationKey }) => {
-        let implementationKey = getTraversalImplementationKey({ key: key, nodeImplementationKey })
+        let implementationKey = this.getTraversalImplementationKey({ key: key, nodeImplementationKey })
         let implementation = graphInstance.traversal[key][implementationKey]
         assert(implementation, '• `implementation` concerete function must be registered, the implementationKey provided doesn`t match any of the registered implementaions.')
         return implementation
       }
     }
     // get implementation functions
-    getTraversalImplementationKey({ key } = {}) {
-      let implementationKey = this.calculateImplementationHierarchy()
+    getTraversalImplementationKey({ key, nodeImplementationKey } = {}) {
+      let implementationKey = this.calculateImplementationHierarchy({ nodeImplementationKey })
       if (key) return implementationKey[key]
       else return implementationKey
     }
 
-    calculateImplementationHierarchy({ nodeImplementationKey = {} }) {
+    calculateImplementationHierarchy({ nodeImplementationKey = {} } = {}) {
       // overwrite (for all subtraversals) implementation through directly passed parameters - overwritable traversal implementation ignoring each nodes configuration, i.e. overwritable over nodeInstance own property implementation keys
       /** Pick implementation function from implemntation keys
        * Parameter hirerchy for graph traversal implementations: (1 as first priority)
@@ -193,10 +193,6 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     }
   },
 
-  // TODO:
-  //* Deal with SubgraphTemplate nodes configuration retrival logic to be shared with the stage node's logic.
-  //* Execute Switch node type adn continue it's execution as a Stage node.
-  //* handle dataProcess implementation for conditions and traversalInterception implementation to return a reference node through the Switch node traversal.
   @proxifyMethodDecorator(async (target, thisArg, argumentsList, targetClass, methodName) => {
     // create node instance, in case string key is passed as parameter.
     let { nodeInstance /* type Node */, nodeKey, nodeID, graphInstance = thisArg } = argumentsList[0]
@@ -207,7 +203,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       else if (nodeID) nodeInstance = await graphInstance.database.getNodeByID({ id: nodeID })
       // retrieve node data on-demand
       else throw new Error('• node identifier or object must be passed in.')
-      ;['nodeKey', 'nodeID'].forEach(property => delete arguments[0][property]) // remove node related identifiers.
+      ;['nodeKey', 'nodeID'].forEach(property => delete argumentsList[0][property]) // remove node related identifiers.
       argumentsList[0].nodeInstance = nodeInstance // set node data
     }
 
@@ -270,26 +266,6 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       return await graphInstance.traverse(...arguments)
     } else if (nodeInstance.labels.includes(nodeLabel.switch)) {
       console.log('switch node reached.')
-      // run condition check
-      let comparisonValue
-      if (nodeInstance.properties?.value) comparisonValue = nodeInstance.properties?.value
-      else if (nodeInstance.labels.include(nodeLabel.stage)) {
-        comparisonValue = await graphInstance.traverseStage(
-          { graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator },
-          { parentTraversalArg },
-        )
-      } else comparisonValue = undefined
-
-      // Switch cases: return evaluation configuration
-      const { caseArray, default: defaultRelationship } = await graphInstance.databaseWrapper.getSwitchElement({ concreteDatabase: graphInstance.database, nodeID: nodeInstance.identity })
-      let configurationNode
-      if (caseArray) {
-        // compare expected value with result
-        let caseRelationship = caseArray.filter(caseRelationship => caseRelationship.connection.properties?.expected == comparisonValue)[0]
-        configurationNode = caseRelationship?.destination
-      }
-      configurationNode ||= defaultRelationship?.destination || {}
-      return configurationNode
     } else if (nodeInstance.labels.includes(nodeLabel.stage))
       return await graphInstance.traverseStage({ graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator }, { parentTraversalArg })
     else throw new Error(`• Unsupported node type for traversal function - ${nodeInstance.labels}`)
@@ -345,6 +321,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       traversalDepth = 0, // <type Number> level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
       path = null, // path to the current traversal.  // TODO: implement path sequence preservation. allow for the node traverse function to rely on the current path data.
       additionalChildNode = [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
+      // supported events: 'nodeTraversalCompleted'
       eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
       aggregator, // used to aggregate results of nested nodes.
     } = {},
@@ -364,8 +341,8 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     })
 
     let dataProcessCallback = ({ nextProcessData, additionalParameter }) =>
-      graphInstance::graphInstance.dataProcess(
-        { node: nodeInstance, nextProcessData, traversalConfig, aggregator, getImplementation: traversalConfig.getImplementationCallback({ key: 'dataProcess', graphInstance }), graphInstance },
+      graphInstance::graphInstance.processData(
+        { node: nodeInstance, nextProcessData, traversalConfig, aggregator, getImplementation: traversalConfig.getImplementationCallback({ key: 'processData', graphInstance }), graphInstance },
         additionalParameter,
       )
 

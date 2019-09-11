@@ -4,7 +4,7 @@ import { assert as chaiAssertion } from 'chai'
 import util from 'util'
 import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
 import { Entity } from '@dependency/entity'
-import { Graph } from '../source/constructable/Graph.class.js'
+import { Graph } from '../source/constructable/Graph'
 import { GraphTraversal } from '../source/constructable/GraphTraversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
 import { Cache } from '../source/constructable/Cache.class.js'
@@ -49,9 +49,7 @@ suite('Configure Graph class', () => {
       let graph = new configuredGraph({})
       let multiplePrototypeProxy = Object.getPrototypeOf(graph)
       let multiplePrototypeArray = multiplePrototypeProxy[MultipleDelegation.Reference.list]
-      chaiAssertion.isTrue(
-        multiplePrototypeArray.includes(contextInstance) && multiplePrototypeArray.includes(concreteGraphTraversalBehavior) && multiplePrototypeArray.includes(concreteDatabaseBehavior),
-      )
+      chaiAssertion.isTrue([contextInstance, concreteGraphTraversalBehavior, concreteDatabaseBehavior].every(behavior => multiplePrototypeArray.includes(behavior)))
     })
   })
 })

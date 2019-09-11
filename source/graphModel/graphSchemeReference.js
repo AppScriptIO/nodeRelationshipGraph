@@ -3,7 +3,7 @@ export const nodeLabel = {
   port: 'Port',
   stage: 'Stage',
   switch: 'Switch',
-  switchBoolean: 'SwitchBoolean',
+  // switchBoolean: 'SwitchBoolean',
   process: 'Process',
   configuration: 'Configuration',
   evaluation: 'Evaluation',
@@ -17,7 +17,7 @@ export const connectionType = {
   next: 'NEXT',
   fork: 'FORK',
   configure: 'CONFIGURE',
-  run: 'RUN', // run as subgraph where the result of the subgraph traversal is to be used in the stage node calling it.
+  // run: 'RUN', // run as subgraph where the result of the subgraph traversal is to be used in the stage node calling it.
   // SubgraphTemplate
   insert: 'INSERT',
   extend: 'EXTEND',
@@ -30,19 +30,20 @@ export const connectionType = {
   case: 'CASE',
   default: 'DEFAULT',
 
-  inherit: 'INHERIT',
+  // inherit: 'INHERIT',
 }
 
 export const connectionProperty = {
   context: ['applicationReference', 'filesystemReference'],
+  type: ['properties', 'node', 'valueProperty'],
 }
 
 export const evaluationOption = {
   propagation: {
     // traverse neighbours or not.
-    continue: 'continue',
-    break: 'break',
-    hult: 'hult',
+    continue: 'continue', // continue traversal of child nodes
+    break: 'break', // do not traverse subprocess
+    hult: 'hult', // hult traversal all together and return.
   },
   aggregation: {
     // execute & include or don't execute & exclude from aggregated results.
@@ -53,11 +54,3 @@ export const evaluationOption = {
 }
 
 export const traversalOption = ['processData', 'handlePropagation', 'traverseNode', 'aggregator', 'traversalInterception']
-
-const traversalImplementationKey = {
-  // the the default registered implementations or internal module implementations.
-  processData: ['returnDataItemKey', 'returnKey', 'timeout'],
-  traverseNode: ['allPromise', 'chronological', 'raceFirstPromise'],
-  aggregator: ['AggregatorArray', 'ConditionCheck'],
-  traversalInterception: ['processThenTraverse', 'conditionCheck'],
-}

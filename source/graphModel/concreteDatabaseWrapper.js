@@ -9,6 +9,12 @@ export async function getResource({ concreteDatabase, nodeID }) {
   return { resourceArray }
 }
 
+export async function getValue({ concreteDatabase, nodeID }) {
+  let valueArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID, connectionType: connectionType.value })
+  assert(valueArray.every(n => connectionProperty.type.includes(n.connection.properties.type)), `• Unsupported "type" property value for a VALUE connection.`) // verify node type
+  return { valueArray: valueArray }
+}
+
 export async function getExecution({ concreteDatabase, nodeID }) {
   let executeArray = await concreteDatabase.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: connectionType.execute })
   assert(executeArray.every(n => n.destination.labels.includes(nodeLabel.process)), `• Unsupported node type for a EXECUTE connection.`) // verify node type
@@ -29,10 +35,8 @@ export async function getNext({ concreteDatabase, nodeID }) {
 
 export async function getConfigure({ concreteDatabase, nodeID }) {
   let configureArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: connectionType.configure })
-  assert(
-    configureArray.every(n => (n.destination.labels.includes(nodeLabel.configuration) || n.destination.labels.includes(nodeLabel.stage)) && n.connection.properties.setting),
-    `• Unsupported property value for a CONFIGURE connection.`,
-  ) // verify node type
+  assert(configureArray.every(n => n.destination.labels.includes(nodeLabel.configuration) || n.destination.labels.includes(nodeLabel.stage)), `• Unsupported node type for a CONFIGURE connection.`) // verify node type
+  assert(configureArray.every(n => n.connection.properties.setting), `• Missing "setting" property on a CONFIGURE connection.`)
 
   return { configureArray }
 }
@@ -96,12 +100,26 @@ export async function getSwitchElement({ concreteDatabase, nodeID }) {
   return { caseArray: caseArray.length > 0 ? caseArray : null, default: defaultArray.length > 0 ? defaultArray[0] : null }
 }
 
-export async function getProcessElement({ concreteDatabase, nodeID }) {
-  const { resourceArray } = await getResource({ concreteDatabase, nodeID })
-  const { executeArray } = await getExecution({ concreteDatabase, nodeID })
-
-  if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`)
-  if (executeArray.length > 1) throw new Error(`• Multiple execute relationships are not supported for Process node.`)
-
-  return { resource: resourceArray.length > 0 ? resourceArray[0] : null, execute: executeArray.length > 0 ? executeArray[0] : null }
+// Value connection concept implementation
+export async function getTargetValue({ concreteDatabase, nodeID }) {
+  // get VALUE connection
+  let value
+  const { valueArray } = await getValue({ concreteDatabase, nodeID })
+  if (valueArray.length > 1) throw new Error(`• Multiple VALUE relationships are not supported for Process node.`)
+  else if (valueArray.length != 0 && valueArray[0])
+    switch (valueArray[0].connection.properties.type) {
+      case 'properties':
+        value = valueArray[0].source.properties
+        break
+      case 'node':
+        value = valueArray[0].source
+        break
+      case 'valueProperty':
+        value = valueArray[0].source.properties.value
+        break
+      default:
+        throw new Error(`• VALUE edge "type" property value is not supported.`)
+        break
+    }
+  return value
 }
