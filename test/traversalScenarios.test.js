@@ -109,11 +109,11 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
   })
 
   suite.only('CONFIGURE relationship:', () => {
-    const fixture = []
+    const fixture = ['stage-1'] // traverses graph and skips "stage-0"
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: 'aadfac41-66bf-4b78-a039-1e25480a2f50', implementationKey: {} })
+      let result = await graph.traverse({ nodeKey: 'aadfac41-66bf-4b78-a039-1e25480a2f50', implementationKey: { processData: 'returnDataItemKey' } })
       chaiAssertion.deepEqual(result, fixture)
     })
   })

@@ -3,12 +3,13 @@ import assert from 'assert'
 import { exec, execSync, spawn, spawnSync } from 'child_process'
 import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
 
-export async function returnDataItemKey({ node }) {
-  if (node.properties?.name) return `${node.properties?.name}`
+export async function returnDataItemKey({ stageNode, processNode }) {
+  if (stageNode.properties?.name) return `${stageNode.properties?.name}`
 }
 
 // implementation delays promises for testing `iterateConnection` of promises e.g. `allPromise`, `raceFirstPromise`, etc.
 export async function timeout({ node }) {
+  console.log('timeout')
   if (typeof node.properties?.timerDelay != 'number') throw new Error('• DataItem must have a delay value.')
   let delay = node.properties?.timerDelay
   return await new Promise((resolve, reject) =>
