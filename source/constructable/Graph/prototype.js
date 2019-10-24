@@ -206,7 +206,6 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       ;['nodeKey', 'nodeID'].forEach(property => delete argumentsList[0][property]) // remove node related identifiers.
       argumentsList[0].nodeInstance = nodeInstance // set node data
     }
-
     return Reflect.apply(target, thisArg, argumentsList)
   })
   async traverse(

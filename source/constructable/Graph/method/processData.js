@@ -11,9 +11,9 @@ export async function processData({ node, nextProcessData, aggregator, traversal
   else execute = executeArray[0]
 
   // node/edge properties implementation hierarchy
-  let nodeTraversalImplementationKey
-  if (execute.connection.properties.processDataImplementation) nodeTraversalImplementationKey = { processData: execute.connection.properties.processDataImplementation }
-  let implementation = getImplementation({ nodeTraversalImplementationKey }) // calculate and pick correct implementation according to parameter hierarchy.
+  let nodeImplementationKey // traversal implementatio key
+  if (execute.connection.properties.processDataImplementation) nodeImplementationKey = { processData: execute.connection.properties.processDataImplementation }
+  let implementation = getImplementation({ nodeImplementationKey }) // calculate and pick correct implementation according to parameter hierarchy.
 
   // Execute node dataItem
   let result = await node::implementation(
