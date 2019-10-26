@@ -34,18 +34,18 @@ export async function evaluatePosition({ node, graphInstance = this }) {
   let implementationConfigurationArray = configureArray
     .filter(configure => configure.connection.properties.setting == 'implementation')
     .map(configure => {
-      if (configurationMap.get(configure)) {
-        let configuration = configurationMap.get(configure)
-        return extractConfigProperty(configuration.properties, traversalOption)
-      }
+      let configuration
+      if (configurationMap.get(configure)) configuration = configurationMap.get(configure)
+      else configuration = configure.destination
+      return extractConfigProperty(configuration.properties, traversalOption)
     })
   let evaluationConfigurationArray = configureArray
     .filter(configure => configure.connection.properties.setting == 'evaluation')
     .map(configure => {
-      if (configurationMap.get(configure)) {
-        let configuration = configurationMap.get(configure)
-        return extractConfigProperty(configuration.properties, evaluationOption)
-      }
+      let configuration
+      if (configurationMap.get(configure)) configuration = configurationMap.get(configure)
+      else configuration = configure.destination
+      return extractConfigProperty(configuration.properties, evaluationOption)
     })
 
   // merge multiple configurations of the same type
