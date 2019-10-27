@@ -56,13 +56,13 @@ let configuredGraph = Graph.clientInterface({
 })
 
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
-  setup(async () => await clearGraphData())
+  // setup(async () => await clearGraphData())
 
-  suite('nodeConnection subgraph template:', () => {
+  suite.only('nodeConnection subgraph template:', () => {
     const fixture = ['dataItem-key-1', 'dataItem-key-2', 'dataItem-key-4', 'dataItem-key-5', 'dataItem-key-6', 'dataItem-key-7', 'dataItem-key-9']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully ', async () => {
-      await graph.load({ graphData })
+      // await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '9160338f-6990-4957-9506-deebafdb6e29', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
@@ -108,7 +108,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite.only('CONFIGURE relationship:', () => {
+  suite('CONFIGURE relationship:', () => {
     const fixture = ['stage-1'] // traverses graph and skips "stage-0"
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
