@@ -2,6 +2,8 @@ process.env['SZN_DEBUG'] = true
 import assert from 'assert'
 import { assert as chaiAssertion } from 'chai'
 import util from 'util'
+import path from 'path'
+import filesystem from 'fs'
 const boltProtocolDriver = require('neo4j-driver').v1
 
 import { Entity } from '@dependency/entity'
@@ -56,13 +58,23 @@ let configuredGraph = Graph.clientInterface({
 })
 
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
-  // setup(async () => await clearGraphData())
+  setup(async () => await clearGraphData())
 
-  suite.only('nodeConnection subgraph template:', () => {
-    const fixture = ['dataItem-key-1', 'dataItem-key-2', 'dataItem-key-4', 'dataItem-key-5', 'dataItem-key-6', 'dataItem-key-7', 'dataItem-key-9']
+  suite('nodeConnection subgraph template:', () => {
+    const fixture = [
+      'dataItem-key-1',
+      'dataItem-key-2',
+      /*skipped* 'dataItem-key-3',*/
+      'dataItem-key-4',
+      'dataItem-key-5',
+      'dataItem-key-6',
+      'dataItem-key-7',
+      /*skipped* 'dataItem-key-8',*/
+      'dataItem-key-9',
+    ]
     let graph = new configuredGraph({})
     test('Should traverse graph successfully ', async () => {
-      // await graph.load({ graphData })
+      await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '9160338f-6990-4957-9506-deebafdb6e29', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
@@ -78,8 +90,12 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite('nodePort subgraph template', () => {
+  suite.only('nodePort subgraph template', () => {
     const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
+    contextInstance[Context.reference.key.setter]({
+      // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
+      fileContext: { shellscript: path.join(__dirname, './asset/shellscript.sh') },
+    })
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })

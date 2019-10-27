@@ -277,7 +277,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     let additionalChildNode = insertArray
       .sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
       .map(insert => ({
-        node: insert.destination,
+        node: insert.source,
         placement: {
           // convention for data structure of placement array - 0: 'before' | 'after', 1: connectionKey
           position: insert.connection.properties?.placement[0],

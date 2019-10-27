@@ -35,7 +35,7 @@ export async function getNext({ concreteDatabase, nodeID }) {
 
 export async function getConfigure({ concreteDatabase, nodeID }) {
   let configureArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: connectionType.configure })
-  assert(configureArray.every(n => n.destination.labels.includes(nodeLabel.configuration) || n.destination.labels.includes(nodeLabel.stage)), `• Unsupported node type for a CONFIGURE connection.`) // verify node type
+  assert(configureArray.every(n => n.source.labels.includes(nodeLabel.configuration) || n.source.labels.includes(nodeLabel.stage)), `• Unsupported node type for a CONFIGURE connection.`) // verify node type
   assert(configureArray.every(n => n.connection.properties.setting), `• Missing "setting" property on a CONFIGURE connection.`)
 
   return { configureArray }
@@ -67,7 +67,7 @@ export async function getExtend({ concreteDatabase, nodeID }) {
 
 export async function getInsert({ concreteDatabase, nodeID }) {
   let insertArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: connectionType.insert })
-  assert(insertArray.every(n => n.destination.labels.includes(nodeLabel.stage)), `• Unsupported node type for a INSERT connection.`) // verify node type
+  assert(insertArray.every(n => n.source.labels.includes(nodeLabel.stage)), `• Unsupported node type for a INSERT connection.`) // verify node type
   return { insertArray }
 }
 
@@ -109,13 +109,13 @@ export async function getTargetValue({ concreteDatabase, nodeID }) {
   else if (valueArray.length != 0 && valueArray[0])
     switch (valueArray[0].connection.properties.type) {
       case 'properties':
-        value = valueArray[0].source.properties
+        value = valueArray[0].destination.properties
         break
       case 'node':
-        value = valueArray[0].source
+        value = valueArray[0].destination
         break
       case 'valueProperty':
-        value = valueArray[0].source.properties.value
+        value = valueArray[0].destination.properties.value
         break
       default:
         throw new Error(`• VALUE edge "type" property value is not supported.`)

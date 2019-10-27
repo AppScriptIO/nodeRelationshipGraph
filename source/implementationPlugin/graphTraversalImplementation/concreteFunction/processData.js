@@ -4,12 +4,11 @@ import { exec, execSync, spawn, spawnSync } from 'child_process'
 import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
 
 export async function returnDataItemKey({ stageNode, processNode }) {
-  if (stageNode.properties?.name) return `${stageNode.properties?.name}`
+  if (processNode.properties?.name) return `${processNode.properties?.name}`
 }
 
 // implementation delays promises for testing `iterateConnection` of promises e.g. `allPromise`, `raceFirstPromise`, etc.
 export async function timeout({ node }) {
-  console.log('timeout')
   if (typeof node.properties?.timerDelay != 'number') throw new Error('• DataItem must have a delay value.')
   let delay = node.properties?.timerDelay
   return await new Promise((resolve, reject) =>
@@ -35,8 +34,8 @@ const executeReference = contextPropertyName =>
     else if (resourceArray.length == 0) return
     else resource = resourceArray[0]
 
-    assert(resource.destination.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
-    let functionName = resource.destination.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.destination.properties.functionName}`)
+    assert(resource.source.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
+    let functionName = resource.source.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.source.properties.functionName}`)
     let functionCallback = referenceContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
     try {
       return await functionCallback({ node, context: graphInstance.context })
@@ -99,8 +98,8 @@ export const immediatelyExecuteMiddleware = async ({ node, graphInstance, nextPr
   else if (resourceArray.length == 0) return
   else resource = resourceArray[0]
 
-  assert(resource.destination.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
-  let functionName = resource.destination.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.destination.properties.functionName}`)
+  assert(resource.source.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
+  let functionName = resource.source.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.source.properties.functionName}`)
   let middlewareFunction = functionContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
   try {
     await middlewareFunction(graphInstance.middlewareParameter.context, nextFunction) // execute middleware
@@ -120,8 +119,8 @@ export const returnMiddlewareFunction = async ({ node, graphInstance }) => {
   else if (resourceArray.length == 0) return
   else resource = resourceArray[0]
 
-  assert(resource.destination.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
-  let functionName = resource.destination.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.destination.properties.functionName}`)
+  assert(resource.source.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
+  let functionName = resource.source.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.source.properties.functionName}`)
   let middlewareFunction = functionContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
   try {
     return middlewareFunction
@@ -184,12 +183,25 @@ export async function executeScriptSpawnAsynchronous({ node }) {
   // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
 }
 
-export async function executeShellscriptFile({ node }) {
+export async function executeShellscriptFile({ node, graphInstance }) {
+  let contextPropertyName = 'fileContext',
+    referenceContext = graphInstance.context[contextPropertyName]
+  assert(referenceContext, `• Context "${contextPropertyName}" variable is required to reference functions from graph database strings.`)
+
+  let resource
+  const { resourceArray } = await graphInstance.databaseWrapper.getResource({ concreteDatabase: graphInstance.database, nodeID: node.identity })
+  if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`)
+  else if (resourceArray.length == 0) return
+  else resource = resourceArray[0]
+  let scriptReferenceKey = resource.source.properties.referenceKey
+  assert(scriptReferenceKey, `• resource File node (with key: ${resource.source.properties.key}) must have "referenceKey" property.`)
+
   try {
     console.log(message)
-    console.log(`\x1b[45m%s\x1b[0m`, `shellscript path: ${resource.properties.path}`)
-    let absolutePath = path.join('/', rootPath, resource.properties.path)
-    execSync(`sh ${absolutePath}`, { cwd: path.dirname(absolutePath), shell: true, stdio: ['inherit', 'inherit', 'inherit'] })
+    let scriptPath = referenceContext[scriptReferenceKey]
+    assert(scriptPath, `• referenceKey of File node (referenceKey = ${scriptReferenceKey}) was not found in the graphInstance context: ${referenceContext} `)
+    console.log(`\x1b[45m%s\x1b[0m`, `shellscript path: ${scriptPath}`)
+    execSync(`sh ${scriptPath}`, { cwd: path.dirname(scriptPath), shell: true, stdio: ['inherit', 'inherit', 'inherit'] })
   } catch (error) {
     throw error
     process.exit(1)

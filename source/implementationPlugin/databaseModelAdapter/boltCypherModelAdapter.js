@@ -136,6 +136,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       await session.close()
       return result
     },
+    // TODO: Update this function to consider the returned destination & source nodes, would match their role in the connection pair (e.g. check `getNodeConnection` below).
     getNodeConnectionByKey: async function({
       direction = 'outgoing' /* filter connection array to match outgoing connections only*/,
       sourceKey,
@@ -168,7 +169,7 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
     getNodeConnection: async function({
       nodeID,
       direction /* filter connection array to match outgoing connections only*/,
-      destinationNodeType,
+      otherPairNodeType,
       connectionType,
     }: {
       direction: 'outgoing' | 'incoming' | undefined /*both incoming and outgoing*/,
@@ -176,15 +177,32 @@ export function boltCypherModelAdapterFunction({ url = { protocol: 'bolt', hostn
       let session = await graphDBDriver.session()
       let connectionTypeQuery = connectionType ? `:${connectionType}` : ``
       let connection = direction == 'outgoing' ? `-[connection${connectionTypeQuery}]->` : direction == 'incoming' ? `<-[connection${connectionTypeQuery}]-` : `-[connection${connectionTypeQuery}]-`
-      let query = `
-        match 
-          (source)
-          ${connection}
-          (destination${destinationNodeType ? `:${destinationNodeType}` : ''}) 
-        where id(source)=${nodeID}
-        return connection, source, destination
-        order by destination.key
-      `
+      let query
+
+      // switch direction to return destination and source correctly according to the different cases.
+      switch (direction) {
+        case 'outgoing':
+          query = `
+            match (source)  ${connection} (destination${otherPairNodeType ? `:${otherPairNodeType}` : ''}) 
+            where id(source)=${nodeID}
+            return connection, source, destination order by destination.key
+          `
+          break
+        case 'incoming':
+          query = `
+            match (destination)  ${connection} (source${otherPairNodeType ? `:${otherPairNodeType}` : ''})
+            where id(destination)=${nodeID}
+            return connection, source, destination order by source.key
+          `
+          break
+        default:
+          query = `
+            match (source)  ${connection} (destination${otherPairNodeType ? `:${otherPairNodeType}` : ''}) 
+            where id(source)=${nodeID}
+            return connection, source, destination order by destination.key
+          `
+          break
+      }
       let result = await session.run(query)
       result = result.records.map(record => record.toObject())
       await session.close()

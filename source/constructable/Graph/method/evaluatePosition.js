@@ -13,9 +13,9 @@ export async function evaluatePosition({ node, graphInstance = this }) {
   // evaluate configuration by traversing subgraph nodes (traverse switch stage node) & replace destination node with a configuration node:
   let configurationMap = new Map() // maps evaluated configuration to the CONFIGURE relationships.
   for (let configure of configureArray)
-    if (configure.destination.labels.includes(nodeLabel.stage)) {
+    if (configure.source.labels.includes(nodeLabel.stage)) {
       let configurationNodeArray = await graphInstance.traverse({
-        nodeInstance: configure.destination,
+        nodeInstance: configure.source,
         implementationKey: {
           processData: 'switchCase',
           traversalInterception: 'traverseThenProcess',
@@ -24,7 +24,7 @@ export async function evaluatePosition({ node, graphInstance = this }) {
       if (configurationNodeArray.length > 1) throw new Error('• CONFIGURE that returns multiple configurations is not supported.')
       else if (configurationNodeArray.length != 0) {
         let configurationNode = configurationNodeArray[0]
-        assert(configurationNode.labels.includes(nodeLabel.configuration), `• CONFIGURE subgraph traversal must return a Configuration node.`)
+        assert(configurationNode.labels.includes(nodeLabel.configuration), `• CONFIGURE sub-graph traversal must return a Configuration node.`)
         // replace destination node with appropriate evaluated configuration:
         configurationMap.set(configure, configurationNode)
       }
@@ -36,7 +36,7 @@ export async function evaluatePosition({ node, graphInstance = this }) {
     .map(configure => {
       let configuration
       if (configurationMap.get(configure)) configuration = configurationMap.get(configure)
-      else configuration = configure.destination
+      else configuration = configure.source
       return extractConfigProperty(configuration.properties, traversalOption)
     })
   let evaluationConfigurationArray = configureArray
@@ -44,7 +44,7 @@ export async function evaluatePosition({ node, graphInstance = this }) {
     .map(configure => {
       let configuration
       if (configurationMap.get(configure)) configuration = configurationMap.get(configure)
-      else configuration = configure.destination
+      else configuration = configure.source
       return extractConfigProperty(configuration.properties, evaluationOption)
     })
 
