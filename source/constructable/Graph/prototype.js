@@ -131,8 +131,8 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
        */
       let implementationKey = Object.assign(
         {},
-        this.traversalImplementationHierarchy.parent,
         this.traversalImplementationHierarchy.default,
+        this.traversalImplementationHierarchy.parent,
         this.traversalImplementationHierarchy.configuration,
         nodeImplementationKey,
         this.traversalImplementationHierarchy.parameter,
@@ -237,17 +237,26 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
           traversalInterception: 'processThenTraverse',
         },
         // parent arguments
-        parent: parentTraversalArg ? parentTraversalArg[0].implementationKey || {} : {},
+        // TODO: deal with depth property configuration effect in nested nodes.
+        parent: parentTraversalArg ? parentTraversalArg[0].traversalConfig.getTraversalImplementationKey() || {} : {},
       },
       evaluationHierarchy: {
         default: { propagation: evaluationOption.propagation.continue, aggregation: evaluationOption.aggregation.include },
       },
     })
 
-    // parameter arguments
-    if (implementationKey) traversalConfig.setImplementationHierarchy('parameter', implementationKey |> removeUndefinedFromObject) && delete arguments[0].implementationKey
+    if (implementationKey) {
+      traversalConfig.setImplementationHierarchy('parameter', implementationKey |> removeUndefinedFromObject)
+      // TODO: Add if statement to check for configuration depth value, where it controls the effect of the configuratiopn option on the next nested nodes in the graph. i.e. Passing the parent argument or removing it.
+      /* for now, pass argument to all nested nodes by default (by not removing the argument)
+       delete arguments[0].implementationKey */
+    }
     // remove undefined values because native Object.assign doesn't override keys with `undefined` values
-    if (evaluation) traversalConfig.setEvaluationHierarchy('parameter', evaluation) && delete arguments[0].evaluation
+    if (evaluation) {
+      traversalConfig.setEvaluationHierarchy('parameter', evaluation)
+      // TODO: Add if statement to check for configuration depth value, where it controls the effect of the configuratiopn option on the next nested nodes in the graph. i.e. Passing the parent argument or removing it.
+      delete arguments[0].evaluation
+    }
 
     // get configuration of type 'evaluation' & 'implementation'
     let { implementationConfiguration, evaluationConfiguration } = await graphInstance.evaluatePosition({ node: nodeInstance })
