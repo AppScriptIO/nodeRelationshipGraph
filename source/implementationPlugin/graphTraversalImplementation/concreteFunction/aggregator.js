@@ -31,21 +31,39 @@ export class ConditionCheck {
 
 // Conditions aggregator
 export class ConditionAggregator {
-  value: Boolean
-  constructor(initialValue: Boolean) {
-    this.value = initialValue || true
+  processResultArray: Array
+  calculatedLogicalOperaion: Boolean // the result of the logical operation on the array values.
+
+  constructor(initialValue: Array) {
+    this.processResultArray = initialValue || []
     return this
   }
+
   // add item to aggregator
   add(item, aggregator = this) {
-    if (item) {
-      aggregator.value = aggregator.value && Boolean(item)
-    }
-    // return aggregator.value.unshift(item) // insert at start
+    if (item) aggregator.processResultArray.push(item)
   }
+
   // merge aggregators
-  merge(additionalAggregator: Boolean, targetAggregator: Aggregator = this) {
-    targetAggregator.value = additionalAggregator && targetAggregator.value
+  merge(additionalAggregatorArray: Aggregator, targetAggregator: Aggregator = this, logicalOperator: 'and' | 'or') {
+    if (!targetAggregator.calculatedLogicalOperaion) targetAggregator.calculateLogicalOperation(logicalOperator)
+    // TODO: test if it works with multiple nested condition statges.
+    for (let additionalAggregator of additionalAggregatorArray) {
+      if (!additionalAggregator.calculatedLogicalOperaion) additionalAggregator.calculateLogicalOperation(logicalOperator)
+      targetAggregator.calculatedLogicalOperaion = Boolean(additionalAggregator.calculatedLogicalOperaion) && Boolean(targetAggregator.calculatedLogicalOperaion)
+    }
     return targetAggregator
+  }
+
+  calculateLogicalOperation(logicalOperator) {
+    switch (logicalOperator) {
+      case 'or':
+        this.calculatedLogicalOperaion = this.processResultArray.some(item => Boolean(item))
+        break
+      case 'and':
+      default:
+        this.calculatedLogicalOperaion = this.processResultArray.every(item => Boolean(item))
+        break
+    }
   }
 }

@@ -1,3 +1,5 @@
+import assert from 'assert'
+
 // visiting each node before visiting it's child nodes.
 export const handleMiddlewareNextCall = ({ dataProcessCallback, targetFunction, aggregator }) => {
   return new Proxy(targetFunction, {
@@ -59,7 +61,7 @@ export const traverseThenProcess = ({ dataProcessCallback, targetFunction, aggre
 }
 
 // returns the process result of the root node, while returnning the aggregator for any nested nodes that will eventually be merged together through the Aggregator implementation. Used for CONFIGURE relationship with case switches.
-export const traverseThenProcessAndReturnResult = ({ dataProcessCallback, targetFunction, aggregator }) => {
+export const traverseThenProcessWithLogicalOperator = ({ dataProcessCallback, targetFunction, aggregator }) => {
   return new Proxy(targetFunction, {
     async apply(target, thisArg, argArray) {
       let { nodeInstance, traversalDepth, eventEmitter } = argArray[0]
@@ -68,9 +70,15 @@ export const traverseThenProcessAndReturnResult = ({ dataProcessCallback, target
       })
 
       let traversalResultIterator = await Reflect.apply(...arguments)
-      for await (let traversalResult of traversalResultIterator) aggregator.merge(traversalResult.result)
+      for await (let traversalResult of traversalResultIterator) {
+        let relatedPort = traversalResult.config.port
+        assert(relatedPort.properties.logicalOperator, `• port (key="${relatedPort.properties.key}") must have "logicalOperator" property assigned, to aggregate results.`)
+        // conditional comparison type to use for resolving boolean results.
+        let logicalOperator = relatedPort.properties.logicalOperator
+        aggregator.merge(traversalResult.result, undefined, logicalOperator)
+      }
 
-      let result = await dataProcessCallback({ nextProcessData: aggregator.value, additionalParameter: {} })
+      let result = await dataProcessCallback({ nextProcessData: aggregator.calculatedLogicalOperaion, additionalParameter: {} })
 
       return traversalDepth == 0 ? [result] : aggregator // check if top level call and not an initiated nested recursive call.
     },

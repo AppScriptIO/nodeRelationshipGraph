@@ -29,7 +29,12 @@ export async function* recursiveIteration({
       n.result = await n.iterator.next({ promise })
     }
     // last node iterator feed should be an array of resolved node promises that will be forwarded through this function
-    let portTraversalResult = { config: { name: traversalIteration.fork.destination.properties.name }, result: n.result.value }
+    let portTraversalResult = {
+      config: {
+        port: traversalIteration.fork.destination, // the related port which the stage originated from.
+      },
+      result: n.result.value,
+    }
     yield portTraversalResult // forward array of resolved results
   }
 }

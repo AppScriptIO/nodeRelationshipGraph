@@ -18,13 +18,13 @@ export async function evaluatePosition({ node, graphInstance = this }) {
       let configurationNodeArray = await graphInstance.traverse(
         /* TODO: Note: this is a quick implementation because digging into the core code is time consuming, the different concepts used in here could be improved and built upon other already existing concepts: 
           • 'traversalCallContext' - the 2nd provided argument could be instead applied as a regular Context specific for the call, by creating a new graphInstance chain with it's unique context, in addition to the already existing context instance.
-          • ConditionAggregator & traverseThenProcessAndReturnResult implementations could be integratted into the other implementations. and also the Aggregator should take into consideration the different ports rules for conditional comparisors ("and" port, "or" port)
+          was this done ? ~~• ConditionAggregator & traverseThenProcessWithLogicalOperator implementations could be integratted into the other implementations.~~
         */
         {
           nodeInstance: configure.source,
           implementationKey: {
             processData: 'switchCase',
-            traversalInterception: 'traverseThenProcessAndReturnResult',
+            traversalInterception: 'traverseThenProcessWithLogicalOperator',
             aggregator: 'ConditionAggregator',
           },
         },
