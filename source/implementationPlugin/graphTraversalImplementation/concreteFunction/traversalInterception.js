@@ -58,6 +58,25 @@ export const traverseThenProcess = ({ dataProcessCallback, targetFunction, aggre
   })
 }
 
+// returns the process result of the root node, while returnning the aggregator for any nested nodes that will eventually be merged together through the Aggregator implementation. Used for CONFIGURE relationship with case switches.
+export const traverseThenProcessAndReturnResult = ({ dataProcessCallback, targetFunction, aggregator }) => {
+  return new Proxy(targetFunction, {
+    async apply(target, thisArg, argArray) {
+      let { nodeInstance, traversalDepth, eventEmitter } = argArray[0]
+      eventEmitter.on('nodeTraversalCompleted', data => {
+        // console.log(data.value, ' resolved.')
+      })
+
+      let traversalResultIterator = await Reflect.apply(...arguments)
+      for await (let traversalResult of traversalResultIterator) aggregator.merge(traversalResult.result)
+
+      let result = await dataProcessCallback({ nextProcessData: aggregator.value, additionalParameter: {} })
+
+      return traversalDepth == 0 ? [result] : aggregator // check if top level call and not an initiated nested recursive call.
+    },
+  })
+}
+
 // export const traverseThenProcessForSwitch = ({ dataProcessCallback, targetFunction, aggregator }) => {
 //   return new Proxy(targetFunction, {
 //     async apply(target, thisArg, argArray) {

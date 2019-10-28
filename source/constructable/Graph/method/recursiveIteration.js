@@ -12,6 +12,7 @@ export async function* recursiveIteration({
   traversalConfig,
   additionalChildNode,
   parentTraversalArg,
+  traverseCallContext,
 }: {
   eventEmitter: Event,
 }) {
@@ -23,7 +24,7 @@ export async function* recursiveIteration({
     while (!n.result.done) {
       let nextNode = n.result.value.node
       // 🔁 recursion call
-      let nextCallArgument = [Object.assign({ nodeInstance: nextNode, traversalDepth, additionalChildNode }), { parentTraversalArg }]
+      let nextCallArgument = [Object.assign({ nodeInstance: nextNode, traversalDepth, additionalChildNode }), { parentTraversalArg, traverseCallContext }]
       let promise = recursiveCallback(...nextCallArgument)
       n.result = await n.iterator.next({ promise })
     }

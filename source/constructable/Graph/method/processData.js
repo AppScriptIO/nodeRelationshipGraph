@@ -1,6 +1,6 @@
 import assert from 'assert'
 
-export async function processData({ node, nextProcessData, aggregator, traversalConfig, getImplementation, graphInstance }, additionalParameter) {
+export async function processData({ node, nextProcessData, aggregator, traversalConfig, getImplementation, graphInstance }, { additionalParameter, traverseCallContext }) {
   if (!traversalConfig.shouldExecuteProcess()) return null
 
   let execute
@@ -18,7 +18,7 @@ export async function processData({ node, nextProcessData, aggregator, traversal
   // Execute node dataItem
   let result = await node::implementation(
     { processNode: execute.destination, stageNode: node, node: execute.destination /** backward compatibility */, graphInstance, nextProcessData },
-    additionalParameter,
+    { additionalParameter, traverseCallContext },
   )
 
   if (traversalConfig.shouldIncludeResult()) aggregator.add(result)

@@ -222,7 +222,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       aggregator,
       nodeType = 'Stage', // Traversal step or stage - defines when and how to run processes.-  the type of node to traverse
     },
-    { parentTraversalArg } = {},
+    { parentTraversalArg, traverseCallContext } = {},
   ) {
     traversalConfig ||= new graphInstance.TraversalConfig({
       traversalImplementationHierarchy: {
@@ -273,7 +273,10 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       arguments[0].additionalChildNode = [...(arguments[0].additionalChildNode || []), ...additionalChildNode]
       return await graphInstance.traverse(...arguments)
     } else if (nodeInstance.labels.includes(nodeLabel.stage))
-      return await graphInstance.traverseStage({ graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator }, { parentTraversalArg })
+      return await graphInstance.traverseStage(
+        { graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator },
+        { parentTraversalArg, traverseCallContext },
+      )
     else throw new Error(`• Unsupported node type for traversal function - ${nodeInstance.labels}`)
   },
 
@@ -331,7 +334,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
       aggregator, // used to aggregate results of nested nodes.
     } = {},
-    { parentTraversalArg = null } = {},
+    { parentTraversalArg = null, traverseCallContext = {} } = {},
   ) {
     let { implementation } = traversalConfig.calculateConfig({ graphInstance })
 
@@ -349,7 +352,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     let dataProcessCallback = ({ nextProcessData, additionalParameter }) =>
       graphInstance::graphInstance.processData(
         { node: nodeInstance, nextProcessData, traversalConfig, aggregator, getImplementation: traversalConfig.getImplementationCallback({ key: 'processData', graphInstance }), graphInstance },
-        additionalParameter,
+        { additionalParameter, traverseCallContext },
       )
 
     let traversalInterceptionImplementation = implementation.traversalInterception || (({ targetFunction }) => new Proxy(targetFunction, {})) // in case no implementation exists for intercepting traversal, use an empty proxy.
@@ -362,6 +365,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       traversalConfig,
       additionalChildNode,
       parentTraversalArg: arguments,
+      traverseCallContext
     })
 
     return result

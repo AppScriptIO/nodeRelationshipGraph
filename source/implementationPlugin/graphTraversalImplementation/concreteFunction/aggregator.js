@@ -28,3 +28,24 @@ export class ConditionCheck {
     return this
   }
 }
+
+// Conditions aggregator
+export class ConditionAggregator {
+  value: Boolean
+  constructor(initialValue: Boolean) {
+    this.value = initialValue || true
+    return this
+  }
+  // add item to aggregator
+  add(item, aggregator = this) {
+    if (item) {
+      aggregator.value = aggregator.value && Boolean(item)
+    }
+    // return aggregator.value.unshift(item) // insert at start
+  }
+  // merge aggregators
+  merge(additionalAggregator: Boolean, targetAggregator: Aggregator = this) {
+    targetAggregator.value = additionalAggregator && targetAggregator.value
+    return targetAggregator
+  }
+}

@@ -24,7 +24,7 @@ export async function timeout({ node }) {
  * execute functions through a string reference from the graph database that match the key of the application reference context object
  */
 const executeReference = contextPropertyName =>
-  async function({ node, graphInstance }) {
+  async function({ node, graphInstance }, { traverseCallContext }) {
     let referenceContext = graphInstance.context[contextPropertyName]
     assert(referenceContext, `• Context "${contextPropertyName}" variable is required to reference functions from graph database strings.`)
 
@@ -38,7 +38,7 @@ const executeReference = contextPropertyName =>
     let functionName = resource.source.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.source.properties.functionName}`)
     let functionCallback = referenceContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
     try {
-      return await functionCallback({ node, context: graphInstance.context })
+      return await functionCallback({ node, context: graphInstance.context, traverseCallContext })
     } catch (error) {
       console.error(error) && process.exit()
     }
@@ -56,11 +56,14 @@ export const executeFunctionReference = executeReference('functionContext')
 */
 export const checkConditionReference = executeReference('conditionContext')
 
-export async function switchCase({ node, graphInstance, nextProcessData }) {
+export async function switchCase({ node, graphInstance, nextProcessData }, { traverseCallContext }) {
   const { caseArray, default: defaultRelationship } = await graphInstance.databaseWrapper.getSwitchElement({ concreteDatabase: graphInstance.database, nodeID: node.identity })
   const value = await graphInstance.databaseWrapper.getTargetValue({ concreteDatabase: graphInstance.database, nodeID: node.identity })
 
-  // run condition check
+  /* run condition check against comparison value. Hierarchy of comparison value calculation: 
+    1. VALUE relationship data.
+    2. NEXT stages result 
+  */
   let comparisonValue
   if (value) comparisonValue = value
   else comparisonValue = nextProcessData
@@ -87,7 +90,8 @@ export async function switchCase({ node, graphInstance, nextProcessData }) {
   or Immediately execute middleware
 */
 // a function that complies with graphTraversal processData implementation.
-export const immediatelyExecuteMiddleware = async ({ node, graphInstance, nextProcessData }, { nextFunction }) => {
+export const immediatelyExecuteMiddleware = async ({ node, graphInstance, nextProcessData }, { additionalParameter }) => {
+  const { nextFunction } = additionalParameter
   let functionContext = graphInstance.context.functionContext
   assert(functionContext, `• Context "functionContext" variable is required to reference functions from graph database strings.`)
   assert(graphInstance.middlewareParameter?.context, `• Middleware graph traversal relies on graphInstance.middlewareParameter.context`)
