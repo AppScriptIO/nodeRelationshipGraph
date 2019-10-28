@@ -41,7 +41,7 @@ export class ConditionAggregator {
 
   // add item to aggregator
   add(item, aggregator = this) {
-    if (item) aggregator.processResultArray.push(item)
+    aggregator.processResultArray.push(item) // add item regardless if it is a true boolean or false boolean, as it is needed to be checked by the logical operator.
   }
 
   // merge aggregators
