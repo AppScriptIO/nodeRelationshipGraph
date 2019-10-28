@@ -1,4 +1,5 @@
 ### TODO:
+- Makr tests more concrete: testing specific concepts in depth and separately.
 - Change node name `File` and resource type context.
 - Consider merging Database class & GraphTraversal class into a Plugin class that can distinguish between the plugin groups. Because these classes do that same job and don't currently have unique methods.
 - Make nested unit implemenations pluggable. i.e. added as needed to the main nested unit classes. Maybe create a separate module for each implementation.

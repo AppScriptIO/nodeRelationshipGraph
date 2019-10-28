@@ -103,15 +103,6 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
       chaiAssertion.deepEqual(result, fixture)
     })
   })
-  suite('nodePlacement subgraph template:', () => {
-    const fixture = ['dataItem-key-1', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4']
-    let graph = new configuredGraph({})
-    test('Should traverse graph successfully', async () => {
-      await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4', implementationKey: {} })
-      chaiAssertion.deepEqual(result, fixture)
-    })
-  })
 
   suite('Extending nodePlacement subgraph template data:', () => {
     const fixture = ['dataItem-key-1', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4']
