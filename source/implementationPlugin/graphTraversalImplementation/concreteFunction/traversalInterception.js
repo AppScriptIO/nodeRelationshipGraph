@@ -1,11 +1,11 @@
 import assert from 'assert'
 
 // visiting each node before visiting it's child nodes.
+// The middlewares that follow the Koa specification use next to call one another. In this case the nextFunction will be used instead, in which it controlls the propagation of nested traversal nodes.
 export const handleMiddlewareNextCall = ({ dataProcessCallback, targetFunction, aggregator }) => {
   return new Proxy(targetFunction, {
     async apply(target, thisArg, argArray) {
       let { nodeInstance, traversalDepth, eventEmitter } = argArray[0]
-
       let nextCalled = false
       // A next function that will be used to compose in a sense the middlewares that are being executed during traversal. As middlewares relies on `next` function to chain the events.
       const nextFunction = async () => {

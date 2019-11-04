@@ -16,10 +16,7 @@ export async function processData({ node, nextProcessData, aggregator, traversal
   let implementation = getImplementation({ nodeImplementationKey }) // calculate and pick correct implementation according to parameter hierarchy.
 
   // Execute node dataItem
-  let result = await node::implementation(
-    { processNode: execute.destination, stageNode: node, node: execute.destination /** backward compatibility */, graphInstance, nextProcessData },
-    { additionalParameter, traverseCallContext },
-  )
+  let result = await node::implementation({ processNode: execute.destination, stageNode: node, graphInstance, nextProcessData }, { additionalParameter, traverseCallContext })
 
   if (traversalConfig.shouldIncludeResult()) aggregator.add(result)
   return result
