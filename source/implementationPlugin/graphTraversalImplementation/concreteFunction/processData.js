@@ -3,49 +3,121 @@ import assert from 'assert'
 import { exec, execSync, spawn, spawnSync } from 'child_process'
 import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
 
-export async function returnDataItemKey({ stageNode, processNode }) {
+export async function returnDataItemKey({ stageNode, processNode, graphInstance, nextProcessData }, { additionalParameter, traverseCallContext }) {
   if (processNode.properties?.name) return `${processNode.properties?.name}`
 }
 
 // implementation delays promises for testing `iterateConnection` of promises e.g. `allPromise`, `raceFirstPromise`, etc.
-export async function timeout({ node }) {
-  if (typeof node.properties?.timerDelay != 'number') throw new Error('• DataItem must have a delay value.')
-  let delay = node.properties?.timerDelay
+export async function timeout({ stageNode, processNode, graphInstance, nextProcessData }, { additionalParameter, traverseCallContext }) {
+  if (typeof processNode.properties?.timerDelay != 'number') throw new Error('• DataItem must have a delay value.')
+  let delay = processNode.properties?.timerDelay
   return await new Promise((resolve, reject) =>
     setTimeout(() => {
-      // console.log(`${delay}ms passed for key ${node.key}.`) // debug
-      resolve(node.properties?.name)
+      // console.log(`${delay}ms passed for key ${processNode.key}.`) // debug
+      resolve(processNode.properties?.name)
     }, delay),
   )
 }
 
 /**
+ * Relies on function reference concept - where a function is called from the graph using a node property that holds it's name, and a context object passed to the graph traverser, holding the functions map.
  * `processData` implementation of `graphTraversal` module
  * execute functions through a string reference from the graph database that match the key of the application reference context object
+ * Note: creating a similar implementation that would return only the functions is no different than returnning the names of the function, and then use the graph result array outside the traversal to retrieve the function references from an object.
+
+Used for:
+  - used for executing tasks and checks/conditions
+  - Middleware:
+    Approaches for middleware aggregation: 
+    - Creates middleware array from graph-  The graph traversal @return {Array of Objects} where each object contains instruction settings to be used through an implementing module to add to a chain of middlewares. 
+    - return middleware reference names, and then matching the names to function outside the traversal.
+    - Executing generator functions with node arguments that produce middleware functions.
  */
-const executeReference = contextPropertyName =>
-  async function({ node, graphInstance }, { traverseCallContext }) {
-    let referenceContext = graphInstance.context[contextPropertyName]
-    assert(referenceContext, `• Context "${contextPropertyName}" variable is required to reference functions from graph database strings.`)
+const executeFunctionReference = async function({ stageNode, processNode, graphInstance, nextProcessData }, { additionalParameter, traverseCallContext }) {
+  let contextPropertyName = 'functionReferenceContext', // TODO: after migrating to own repository, use Symbols instead of string keys and export them for client usage.
+    referenceContext = graphInstance.context[contextPropertyName]
+  assert(referenceContext, `• Context "${contextPropertyName}" variable is required to reference functions from graph database strings.`)
 
-    let resource
-    const { resourceArray } = await graphInstance.databaseWrapper.getResource({ concreteDatabase: graphInstance.database, nodeID: node.identity })
-    if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`)
-    else if (resourceArray.length == 0) return
-    else resource = resourceArray[0]
+  let resource
+  const { resourceArray } = await graphInstance.databaseWrapper.getResource({ concreteDatabase: graphInstance.database, nodeID: processNode.identity })
+  if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`)
+  else if (resourceArray.length == 0) return
+  else resource = resourceArray[0]
 
-    assert(resource.source.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
-    let functionName = resource.source.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.source.properties.functionName}`)
-    let functionCallback = referenceContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
-    try {
-      return await functionCallback({ node, context: graphInstance.context, traverseCallContext })
-    } catch (error) {
-      console.error(error) && process.exit()
-    }
+  assert(resource.source.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
+  let functionName = resource.source.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.source.properties.functionName}`)
+  let functionCallback = referenceContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
+  try {
+    return await functionCallback({ node: processNode, context: graphInstance.context, traverseCallContext })
+  } catch (error) {
+    console.error(error) && process.exit()
   }
+}
 
-// used for executing tasks
-export const executeFunctionReference = executeReference('functionContext')
+/*
+ 
+   ____            _       _     _____                     _   _             
+  / ___|  ___ _ __(_)_ __ | |_  | ____|_  _____  ___ _   _| |_(_) ___  _ __  
+  \___ \ / __| '__| | '_ \| __| |  _| \ \/ / _ \/ __| | | | __| |/ _ \| '_ \ 
+   ___) | (__| |  | | |_) | |_  | |___ >  <  __/ (__| |_| | |_| | (_) | | | |
+  |____/ \___|_|  |_| .__/ \__| |_____/_/\_\___|\___|\__,_|\__|_|\___/|_| |_|
+                    |_|                                                      
+ Relies on function reference concept.
+*/
+
+// Execute task script in the same process (nodejs childprocess.execSync) using a reference scriptPath property.
+export async function executeShellscriptFile({ stageNode, processNode, graphInstance, nextProcessData }, { additionalParameter, traverseCallContext }) {
+  let message = ` _____                          _        
+  | ____|__  __ ___   ___  _   _ | |_  ___ 
+  |  _|  \\ \\/ // _ \\ / __|| | | || __|/ _ \\
+  | |___  >  <|  __/| (__ | |_| || |_|  __/    
+  |_____|/_/\\_\\\\___| \\___| \\__,_| \\__|\\___|`
+  let contextPropertyName = 'fileContext',
+    referenceContext = graphInstance.context[contextPropertyName]
+  assert(referenceContext, `• Context "${contextPropertyName}" variable is required to reference functions from graph database strings.`)
+
+  let resource
+  const { resourceArray } = await graphInstance.databaseWrapper.getResource({ concreteDatabase: graphInstance.database, nodeID: processNode.identity })
+  if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`)
+  else if (resourceArray.length == 0) return
+  else resource = resourceArray[0]
+  let scriptReferenceKey = resource.source.properties.referenceKey
+  assert(scriptReferenceKey, `• resource File node (with key: ${resource.source.properties.key}) must have "referenceKey" property.`)
+
+  try {
+    console.log(message)
+    let scriptPath = referenceContext[scriptReferenceKey]
+    assert(scriptPath, `• referenceKey of File node (referenceKey = ${scriptReferenceKey}) was not found in the graphInstance context: ${referenceContext} `)
+    console.log(`\x1b[45m%s\x1b[0m`, `shellscript path: ${scriptPath}`)
+    execSync(`sh ${scriptPath}`, { cwd: path.dirname(scriptPath), shell: true, stdio: ['inherit', 'inherit', 'inherit'] })
+  } catch (error) {
+    throw error
+    process.exit(1)
+  }
+  // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
+  return null
+}
+
+/**
+  Run childprocess synchnolous spawn command: 
+  Required properties on process node: 
+  @param {String} command
+  @param {String[]} argument
+  @param {Json stringifies string} option
+*/
+export async function executeScriptSpawn({ stageNode, processNode, graphInstance, nextProcessData }, { additionalParameter, traverseCallContext }) {
+  let childProcess
+  try {
+    let command = processNode.properties.command,
+      argument = processNode.properties.argument.join(' '),
+      option = JSON.stringify(processNode.properties.option)
+    console.log(`\x1b[45m%s\x1b[0m`, `${command} ${argument}`)
+    childProcess = spawnSync(command, argument, option)
+    if (childProcess.status > 0) throw childProcess.error
+  } catch (error) {
+    process.exit(childProcess.status)
+  }
+}
 
 /*
     ____                _ _ _   _             
@@ -54,11 +126,10 @@ export const executeFunctionReference = executeReference('functionContext')
   | |__| (_) | | | | (_| | | |_| | (_) | | | |
    \____\___/|_| |_|\__,_|_|\__|_|\___/|_| |_|
 */
-export const checkConditionReference = executeReference('conditionContext')
 
-export async function switchCase({ node, graphInstance, nextProcessData }, { traverseCallContext }) {
-  const { caseArray, default: defaultRelationship } = await graphInstance.databaseWrapper.getSwitchElement({ concreteDatabase: graphInstance.database, nodeID: node.identity })
-  const value = await graphInstance.databaseWrapper.getTargetValue({ concreteDatabase: graphInstance.database, nodeID: node.identity })
+export async function switchCase({ stageNode, processNode, graphInstance, nextProcessData }, { additionalParameter, traverseCallContext }) {
+  const { caseArray, default: defaultRelationship } = await graphInstance.databaseWrapper.getSwitchElement({ concreteDatabase: graphInstance.database, nodeID: processNode.identity })
+  const value = await graphInstance.databaseWrapper.getTargetValue({ concreteDatabase: graphInstance.database, nodeID: processNode.identity })
 
   /* run condition check against comparison value. Hierarchy of comparison value calculation: 
     1. VALUE relationship data.
@@ -86,146 +157,54 @@ export async function switchCase({ node, graphInstance, nextProcessData }, { tra
   | |\/| | |/ _` |/ _` | |/ _ \ \ /\ / / _` | '__/ _ \
   | |  | | | (_| | (_| | |  __/\ V  V / (_| | | |  __/
   |_|  |_|_|\__,_|\__,_|_|\___| \_/\_/ \__,_|_|  \___|
-  Creates middleware array from graph-  The graph traversal @return {Array of Objects} where each object contains instruction settings to be used through an implementing module to add to a chain of middlewares.                                                   
-  or Immediately execute middleware
+  Immediately execute middleware
+  Note: Check graphInterception method "handleMiddlewareNextCall"
 */
-// a function that complies with graphTraversal processData implementation.
-export const immediatelyExecuteMiddleware = async ({ node, graphInstance, nextProcessData }, { additionalParameter }) => {
+export const immediatelyExecuteMiddleware = async ({ stageNode, processNode, graphInstance, nextProcessData }, { additionalParameter, traverseCallContext }) => {
   const { nextFunction } = additionalParameter
-  let functionContext = graphInstance.context.functionContext
-  assert(functionContext, `• Context "functionContext" variable is required to reference functions from graph database strings.`)
+  let contextPropertyName = 'functionReferenceContext',
+    referenceContext = graphInstance.context[contextPropertyName]
+  assert(referenceContext, `• Context "${contextPropertyName}" variable is required to reference functions from graph database strings.`)
   assert(graphInstance.middlewareParameter?.context, `• Middleware graph traversal relies on graphInstance.middlewareParameter.context`)
 
   let resource
-  const { resourceArray } = await graphInstance.databaseWrapper.getResource({ concreteDatabase: graphInstance.database, nodeID: node.identity })
+  const { resourceArray } = await graphInstance.databaseWrapper.getResource({ concreteDatabase: graphInstance.database, nodeID: processNode.identity })
   if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`)
   else if (resourceArray.length == 0) return
   else resource = resourceArray[0]
 
   assert(resource.source.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
   let functionName = resource.source.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.source.properties.functionName}`)
-  let middlewareFunction = functionContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
+  // a function that complies with graphTraversal processData implementation.
+  let functionCallback = referenceContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
   try {
-    await middlewareFunction(graphInstance.middlewareParameter.context, nextFunction) // execute middleware
-    return middlewareFunction // allow to aggregate middleware function for debugging purposes.
-  } catch (error) {
-    console.error(error) && process.exit()
-  }
-}
-
-export const returnMiddlewareFunction = async ({ node, graphInstance }) => {
-  let functionContext = graphInstance.context.functionContext
-  assert(functionContext, `• Context "functionContext" variable is required to reference functions from graph database strings.`)
-
-  let resource
-  const { resourceArray } = await graphInstance.databaseWrapper.getResource({ concreteDatabase: graphInstance.database, nodeID: node.identity })
-  if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`)
-  else if (resourceArray.length == 0) return
-  else resource = resourceArray[0]
-
-  assert(resource.source.labels.includes(nodeLabel.function), `• Unsupported Node type for resource connection.`)
-  let functionName = resource.source.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${resource.source.properties.functionName}`)
-  let middlewareFunction = functionContext[functionName] || throw new Error(`• reference function name doesn't exist.`)
-  try {
-    return middlewareFunction
+    let middleware = await functionCallback({ node: processNode }) // exprected to return a Koa middleware complying function.
+    let context = graphInstance.middlewareParameter.context,
+      next = nextFunction
+    await middleware(context, next) // execute middleware
+    return middleware // allow to aggregate middleware function for debugging purposes.
   } catch (error) {
     console.error(error) && process.exit()
   }
 }
 
 /*
-                          _      _____         _     ____            _       _   
-  _____  _____  ___ _   _| |_ __|_   _|_ _ ___| | __/ ___|  ___ _ __(_)_ __ | |_ 
- / _ \ \/ / _ \/ __| | | | __/ _ \| |/ _` / __| |/ /\___ \ / __| '__| | '_ \| __|
-|  __/>  <  __/ (__| |_| | ||  __/| | (_| \__ \   <  ___) | (__| |  | | |_) | |_ 
-\___/_/\_\___|\___|\__,_|\__\___||_|\__,_|___/_|\_\|____/ \___|_|  |_| .__/ \__|
-                                                                     |_|        
+   ____  _____ ____  ____  _____ ____    _  _____ _____ ____  
+  |  _ \| ____|  _ \|  _ \| ____/ ___|  / \|_   _| ____|  _ \ 
+  | | | |  _| | |_) | |_) |  _|| |     / _ \ | | |  _| | | | |
+  | |_| | |___|  __/|  _ <| |__| |___ / ___ \| | | |___| |_| |
+  |____/|_____|_|   |_| \_\_____\____/_/   \_\_| |_____|____/ 
+  Requires refactoring and migration 
 */
-let message = ` _____                          _        
-| ____|__  __ ___   ___  _   _ | |_  ___ 
-|  _|  \\ \\/ // _ \\ / __|| | | || __|/ _ \\
-| |___  >  <|  __/| (__ | |_| || |_|  __/    
-|_____|/_/\\_\\\\___| \\___| \\__,_| \\__|\\___|`
-const rootPath = path.normalize(path.join(__dirname, '../../../../'))
-
-export async function executeScriptSpawn({ node }) {
-  let childProcess
-  try {
-    console.log(message)
-    console.log(`\x1b[45m%s\x1b[0m`, `${node.command} ${node.argument.join(' ')}`)
-    childProcess = spawnSync(node.command, node.argument, JSON.stringify(node.option))
-    if (childProcess.status > 0) throw childProcess.error
-  } catch (error) {
-    process.exit(childProcess.status)
-  }
-  // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
-}
-
-export async function executeScriptSpawnIgnoreError({ node }) {
-  let childProcess
-  try {
-    console.log(message)
-    console.log(`\x1b[45m%s\x1b[0m`, `${node.command} ${node.argument.join(' ')}`)
-    childProcess = spawnSync(node.command, node.argument, JSON.stringify(node.option))
-    if (childProcess.status > 0) throw childProcess.error
-  } catch (error) {
-    console.log(childProcess.status)
-  }
-  // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
-}
-
-export async function executeScriptSpawnAsynchronous({ node }) {
-  let childProcess
-  try {
-    console.log(message)
-    console.log(`\x1b[45m%s\x1b[0m`, `${node.command} ${node.argument.join(' ')}`)
-    childProcess = spawn(node.command, node.argument, JSON.stringify(node.option))
-    if (childProcess.status > 0) throw childProcess.error
-  } catch (error) {
-    process.exit(childProcess.status)
-  }
-  // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
-}
-
-export async function executeShellscriptFile({ node, graphInstance }) {
-  let contextPropertyName = 'fileContext',
-    referenceContext = graphInstance.context[contextPropertyName]
-  assert(referenceContext, `• Context "${contextPropertyName}" variable is required to reference functions from graph database strings.`)
-
-  let resource
-  const { resourceArray } = await graphInstance.databaseWrapper.getResource({ concreteDatabase: graphInstance.database, nodeID: node.identity })
-  if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`)
-  else if (resourceArray.length == 0) return
-  else resource = resourceArray[0]
-  let scriptReferenceKey = resource.source.properties.referenceKey
-  assert(scriptReferenceKey, `• resource File node (with key: ${resource.source.properties.key}) must have "referenceKey" property.`)
-
-  try {
-    console.log(message)
-    let scriptPath = referenceContext[scriptReferenceKey]
-    assert(scriptPath, `• referenceKey of File node (referenceKey = ${scriptReferenceKey}) was not found in the graphInstance context: ${referenceContext} `)
-    console.log(`\x1b[45m%s\x1b[0m`, `shellscript path: ${scriptPath}`)
-    execSync(`sh ${scriptPath}`, { cwd: path.dirname(scriptPath), shell: true, stdio: ['inherit', 'inherit', 'inherit'] })
-  } catch (error) {
-    throw error
-    process.exit(1)
-  }
-  // await new Promise(resolve => setTimeout(resolve, 500)) // wait x seconds before next script execution // important to prevent 'unable to re-open stdin' error between shells.
-  return null
-}
-
 /*
- 
    _____                    _       _       
   |_   _|__ _ __ ___  _ __ | | __ _| |_ ___ 
     | |/ _ \ '_ ` _ \| '_ \| |/ _` | __/ _ \
     | |  __/ | | | | | |_) | | (_| | ||  __/
     |_|\___|_| |_| |_| .__/|_|\__,_|\__\___|
                      |_|                    
- 
 */
 
-// let underscore = require('underscore')
 /**
  *
  * @return {String} String of rendered HTML document content.
