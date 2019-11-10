@@ -5,7 +5,7 @@ import { mergeDefaultParameter } from '../../utility/mergeDefaultParameter.js'
 import { removeUndefinedFromObject } from '../../utility/removeUndefinedFromObject.js'
 import { Context } from '../Context.class.js'
 import { GraphTraversal } from '../GraphTraversal.class.js'
-import { nodeLabel, connectionType, connectionProperty, traversalOption, evaluationOption } from '../../graphModel/graphSchemeReference.js'
+import * as schemeReference from '../../graphModel/graphSchemeReference.js'
 import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
 
 // Each exported property ends up as the prototype property of the class.
@@ -15,6 +15,7 @@ export * from './method/handlePropagation.js'
 export * from './method/processData.js'
 export * from './method/recursiveIteration.js'
 export * as databaseWrapper from '../../graphModel/concreteDatabaseWrapper.js'
+export * as schemeReference from '../../graphModel/graphSchemeReference.js'
 
 // load graph into memory
 export async function load({ graphData, graphInstance = this } = {}) {
@@ -151,11 +152,11 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
      */
     shouldContinue() {
       switch (this.evaluation.propagation) {
-        case evaluationOption.propagation.continue:
+        case schemeReference.evaluationOption.propagation.continue:
           return true
           break
-        case evaluationOption.propagation.break:
-        case evaluationOption.propagation.hult:
+        case schemeReference.evaluationOption.propagation.break:
+        case schemeReference.evaluationOption.propagation.hult:
           return false
           break
         default:
@@ -165,11 +166,11 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     }
     shouldIncludeResult() {
       switch (this.evaluation.aggregation) {
-        case evaluationOption.aggregation.include:
+        case schemeReference.evaluationOption.aggregation.include:
           return true
           break
-        case evaluationOption.aggregation.exclude:
-        case evaluationOption.aggregation.skip:
+        case schemeReference.evaluationOption.aggregation.exclude:
+        case schemeReference.evaluationOption.aggregation.skip:
           return false
           break
         default:
@@ -179,11 +180,11 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     }
     shouldExecuteProcess() {
       switch (this.evaluation.aggregation) {
-        case evaluationOption.aggregation.include:
-        case evaluationOption.aggregation.exclude:
+        case schemeReference.evaluationOption.aggregation.include:
+        case schemeReference.evaluationOption.aggregation.exclude:
           return true
           break
-        case evaluationOption.aggregation.skip:
+        case schemeReference.evaluationOption.aggregation.skip:
           return false
           break
         default:
@@ -241,7 +242,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
         parent: parentTraversalArg ? parentTraversalArg[0].traversalConfig.getTraversalImplementationKey() || {} : {},
       },
       evaluationHierarchy: {
-        default: { propagation: evaluationOption.propagation.continue, aggregation: evaluationOption.aggregation.include },
+        default: { propagation: schemeReference.evaluationOption.propagation.continue, aggregation: schemeReference.evaluationOption.aggregation.include },
       },
     })
 
@@ -263,7 +264,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
     traversalConfig.setImplementationHierarchy('configuration', implementationConfiguration)
     traversalConfig.setEvaluationHierarchy('configuration', evaluationConfiguration)
 
-    if (nodeInstance.labels.includes(nodeLabel.subgraphTemplate)) {
+    if (nodeInstance.labels.includes(schemeReference.nodeLabel.subgraphTemplate)) {
       let subgraphTemplateResult = await graphInstance.traverseSubgraphTemplate({ nodeInstance, graphInstance })
       if (!subgraphTemplateResult) return // in case no root node was configured in the subgraph template node.
       let { rootNode, additionalChildNode } = subgraphTemplateResult
@@ -272,7 +273,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       arguments[0].nodeInstance = rootNode
       arguments[0].additionalChildNode = [...(arguments[0].additionalChildNode || []), ...additionalChildNode]
       return await graphInstance.traverse(...arguments)
-    } else if (nodeInstance.labels.includes(nodeLabel.stage))
+    } else if (nodeInstance.labels.includes(schemeReference.nodeLabel.stage))
       return await graphInstance.traverseStage(
         { graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator },
         { parentTraversalArg, traverseCallContext },

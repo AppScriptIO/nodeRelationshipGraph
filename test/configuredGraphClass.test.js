@@ -18,7 +18,7 @@ setup(async () => {})
 suite('Configure Graph class', () => {
   let concreteDatabaseBehavior = new Database.clientInterface({
     implementationList: {
-      boltCypher: implementation.database.boltCypherModelAdapterFunction({}),
+      boltCypher: implementation.database.boltCypherModelAdapterFunction({ schemeReference }),
     },
     defaultImplementation: 'boltCypher',
   })

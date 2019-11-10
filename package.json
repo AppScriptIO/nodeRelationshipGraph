@@ -13,6 +13,7 @@
 		"exportGraphData": "yarn run scriptManager shouldCompileScript=true graphDatabase/graphDataLoading \".exportAllGraphData({targetPath: './resource',fileName: 'graphData.json'})\""
 	},
 	"dependencies": {
+		"@dependency/graphTraversal-implementation": "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^1.x.x",
 		"@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^1.x.x",
 		"@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x"
 	},

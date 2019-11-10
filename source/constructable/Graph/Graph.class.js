@@ -8,6 +8,7 @@ import { Context } from '../Context.class.js'
 import { ImplementationManagement } from '../ImplementationManagement.class.js'
 import * as entityPrototype from './prototype.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
+import * as schemeReference from '../../graphModel/graphSchemeReference.js'
 
 /** Conceptual Graph
  * Graph Class holds and manages graph elements and traversal algorithm implementations:
@@ -79,7 +80,7 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
   }) {
     database ||= new Database.clientInterface({
       implementationList: {
-        boltCypher: implementation.database.boltCypherModelAdapterFunction({}),
+        boltCypher: implementation.database.boltCypherModelAdapterFunction({ schemeReference }),
       },
       defaultImplementation: 'boltCypher',
     })

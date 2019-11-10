@@ -8,6 +8,6 @@ export * as Graph from './constructable/Graph'
 export * as GraphElement from './constructable/GraphElement.class.js'
 export * as GraphTraversal from './constructable/GraphTraversal.class.js'
 export * as Node from './constructable/Node.class.js'
-export * as graphScheme from './graphModel/graphSchemeReference.js'
+export * as schemeReference from './graphModel/graphSchemeReference.js'
 
 export { Entity } from '@dependency/entity' // used for referencing the symbols that are used by graph traversal.
