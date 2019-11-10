@@ -9,23 +9,30 @@ import { GraphTraversal } from '../source/constructable/GraphTraversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
 import { Cache } from '../source/constructable/Cache.class.js'
 import { Context } from '../source/constructable/Context.class.js'
-import { boltCypherModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
-import { implementation as defaultImplementation } from '../source/implementationPlugin/graphTraversalImplementation/defaultImplementation.js'
+import * as schemeReference from '../source/graphModel/graphSchemeReference.js'
+
+import * as implementation from '@dependency/graphTraversal-implementation'
 
 setup(async () => {})
 
 suite('Configure Graph class', () => {
   let concreteDatabaseBehavior = new Database.clientInterface({
     implementationList: {
-      boltCypherModelAdapter: boltCypherModelAdapterFunction(),
+      boltCypher: implementation.database.boltCypherModelAdapterFunction({}),
     },
-    defaultImplementation: 'boltCypherModelAdapter',
+    defaultImplementation: 'boltCypher',
   })
   let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
     implementationList: {
-      defaultImplementation,
+      default: {
+        traverseNode: implementation.traversal.traverseNode,
+        handlePropagation: implementation.traversal.handlePropagation, // Port
+        traversalInterception: implementation.traversal.traversalInterception, // Stage
+        aggregator: implementation.traversal.aggregator,
+        processData: implementation.traversal.processData, // Process
+      },
     },
-    defaultImplementation: 'defaultImplementation',
+    defaultImplementation: 'default',
   })
   let contextInstance = new Context.clientInterface({
     implementationKey: {

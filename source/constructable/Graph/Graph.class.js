@@ -6,9 +6,8 @@ import { Database } from '../Database.class.js'
 import { Cache } from '../Cache.class.js'
 import { Context } from '../Context.class.js'
 import { ImplementationManagement } from '../ImplementationManagement.class.js'
-import { boltCypherModelAdapterFunction } from '../../implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
-import { implementation as defaultImplementation } from '../../implementationPlugin/graphTraversalImplementation/defaultImplementation.js'
 import * as entityPrototype from './prototype.js'
+import * as implementation from '@dependency/graphTraversal-implementation'
 
 /** Conceptual Graph
  * Graph Class holds and manages graph elements and traversal algorithm implementations:
@@ -79,12 +78,22 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     concereteBehavior: List,
   }) {
     database ||= new Database.clientInterface({
-      implementationList: { boltCypherModelAdapter: boltCypherModelAdapterFunction() },
-      defaultImplementation: 'boltCypherModelAdapter',
+      implementationList: {
+        boltCypher: implementation.database.boltCypherModelAdapterFunction({}),
+      },
+      defaultImplementation: 'boltCypher',
     })
     traversal ||= new GraphTraversal.clientInterface({
-      implementationList: { defaultImplementation },
-      defaultImplementation: 'defaultImplementation',
+      implementationList: {
+        default: {
+          traverseNode: implementation.traversal.traverseNode,
+          handlePropagation: implementation.traversal.handlePropagation, // Port
+          traversalInterception: implementation.traversal.traversalInterception, // Stage
+          aggregator: implementation.traversal.aggregator,
+          processData: implementation.traversal.processData, // Process
+        },
+      },
+      defaultImplementation: 'default',
     })
 
     // cache ||= new Cache.clientInterface({ groupKeyArray: ['node', 'connection'] })

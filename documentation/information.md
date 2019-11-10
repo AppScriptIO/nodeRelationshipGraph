@@ -49,6 +49,7 @@ Different applications may use this module:
 
 - **Graph type & features** - Usually the Graph that is used is Directed, Acyclic or cyclic, Weighed, Sparsed _(few edges in comparison to complexity analysis)_, & immediately-processed graph (created to be processed during traversal).  e.g. Trees/Herarchies/Nested Treemaps.
     - **Stage nodes**: are node traverser positions that guide the traverser to perform actions involding adverse effects or returning results.
+    - **Procss nodes**: are responsible for data process, performing actions and optionally returning a result. Each Process node uses it's own properties and traversal information to result in an action/effect, depending on the implementation being used.
     - **Multiedge/Parallel edges** - Multiple connections between 2 verticies/nodes.
     - **Self edges** - Loop allowed graph.
     - **ports**: group of connections that relate to each other or have specific configuration. (Related resources - [Stackoverflow - Terminology for a graph with ports on its nodes](https://cs.stackexchange.com/questions/41320/terminology-for-a-graph-with-ports-on-its-nodes?newreg=33ff713616b04cdcbdd3df94b1ed841c), [Multigraphs with Ports publication 1](https://hal.inria.fr/inria-00139363/en/), [Multigraphs with Ports publication 1](https://www.sciencedirect.com/science/article/pii/S1571066108004295).

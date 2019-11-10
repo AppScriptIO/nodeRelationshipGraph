@@ -365,7 +365,7 @@ export const { TraversalConfig, Evaluator, traverse, traverseStage, traverseSubg
       traversalConfig,
       additionalChildNode,
       parentTraversalArg: arguments,
-      traverseCallContext
+      traverseCallContext,
     })
 
     return result

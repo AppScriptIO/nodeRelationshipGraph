@@ -12,10 +12,9 @@ import { GraphTraversal } from '../source/constructable/GraphTraversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
 import { Cache } from '../source/constructable/Cache.class.js'
 import { Context } from '../source/constructable/Context.class.js'
+import * as schemeReference from '../source/graphModel/graphSchemeReference.js'
 
-import { simpleMemoryModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/simpleMemoryModelAdapter.js'
-import { boltCypherModelAdapterFunction } from '../source/implementationPlugin/databaseModelAdapter/boltCypherModelAdapter.js'
-import { implementation as defaultImplementation } from '../source/implementationPlugin/graphTraversalImplementation/defaultImplementation.js'
+import * as implementation from '@dependency/graphTraversal-implementation'
 import graphData from './asset/graphData.exported.json' // load sample data
 const fixture = { traversalResult: ['dataItem-key-1'] }
 
@@ -31,15 +30,25 @@ async function clearGraphData() {
 
 let concreteDatabaseBehavior = new Database.clientInterface({
   implementationList: {
-    simpleMemoryModelAdapter: simpleMemoryModelAdapterFunction(),
-    boltCypherModelAdapter: boltCypherModelAdapterFunction(),
+    redisModelAdapterFunction: implementation.database.redisModelAdapterFunction(),
+    simpleMemoryModelAdapter: implementation.database.simpleMemoryModelAdapterFunction(),
+    boltCypher: implementation.database.boltCypherModelAdapterFunction({}),
   },
-  defaultImplementation: 'boltCypherModelAdapter',
+  defaultImplementation: 'boltCypher',
 })
 let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
-  implementationList: { defaultImplementation },
-  defaultImplementation: 'defaultImplementation',
+  implementationList: {
+    default: {
+      traverseNode: implementation.traversal.traverseNode,
+      handlePropagation: implementation.traversal.handlePropagation, // Port
+      traversalInterception: implementation.traversal.traversalInterception, // Stage
+      aggregator: implementation.traversal.aggregator,
+      processData: implementation.traversal.processData, // Process
+    },
+  },
+  defaultImplementation: 'default',
 })
+
 let contextInstance = new Context.clientInterface({
   implementationKey: {
     // traverseNode: 'chronological',

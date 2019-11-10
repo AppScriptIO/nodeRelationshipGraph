@@ -1,6 +1,5 @@
 import assert from 'assert'
-import { nodeLabel, connectionType, connectionProperty } from '../../../graphModel/graphSchemeReference.js'
-import { evaluationOption, traversalOption } from '../../../graphModel/graphSchemeReference.js'
+import { nodeLabel, connectionType, connectionProperty, evaluationOption, traversalOption } from '../../../graphModel/graphSchemeReference.js'
 import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
 
 /**
