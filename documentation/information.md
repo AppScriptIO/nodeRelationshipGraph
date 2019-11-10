@@ -1,8 +1,9 @@
 # Graph Traversal
-A graph traversal & node processing module with customizable implementations. It hands back control to the client allowing to manipulate the control flow of traversals and data processing logic.
+An immediately executed graph traversal, where nodes instruct on performing actions in customizable implementations. It hands back control to the client allowing to manipulate the traversal propagation and node data processing logic.
 - On each traversal a node data can be processed/executed, taking into account precedence constraints.
 - The graph traversal module is callback & Proxy based, which hands overcontrol to concrete functions and returns an iterator of results that the proxy implementation can decide what to do with. Permitting highly configurable traversal behavior.
 - Created for graph where the node's data is the main subject, & traversal rules/configs of a relational graph, are used to decide on the way to deal with multiple processings of the nodes's data - i.e. processing logic & combination of results.
+- The core code of the module is separate from the plugin implementations and largely involved in the integration between the plugin implementations.
 
 ### Configerability of traverser:
 _Behaviors that should be configurable:_
@@ -42,11 +43,19 @@ Different applications may use this module:
         - AND logical operator
         - OR logical operator 
         (Both of the above can be represented as a propagation implementation in a port with several next stages traversed.)
+    - Nodes types concept: 
+        - Each node type has plugable implementations.
+        - Each node gives instructions to traverser and returns a specific return type that is used in the integration layer (core layer) of the graph traversal module.
 
 - **Graph type & features** - Usually the Graph that is used is Directed, Acyclic or cyclic, Weighed, Sparsed _(few edges in comparison to complexity analysis)_, & immediately-processed graph (created to be processed during traversal).  e.g. Trees/Herarchies/Nested Treemaps.
+    - **Stage nodes**: are node traverser positions that guide the traverser to perform actions involding adverse effects or returning results.
     - **Multiedge/Parallel edges** - Multiple connections between 2 verticies/nodes.
     - **Self edges** - Loop allowed graph.
     - **ports**: group of connections that relate to each other or have specific configuration. (Related resources - [Stackoverflow - Terminology for a graph with ports on its nodes](https://cs.stackexchange.com/questions/41320/terminology-for-a-graph-with-ports-on-its-nodes?newreg=33ff713616b04cdcbdd3df94b1ed841c), [Multigraphs with Ports publication 1](https://hal.inria.fr/inria-00139363/en/), [Multigraphs with Ports publication 1](https://www.sciencedirect.com/science/article/pii/S1571066108004295).
+    Ports control the traverser propagation order to the next Stage nodes (propagation control), in addition to grouping the Stages into meaningful groups that could be used in the aggregator implementations.
+        - Selective/restricted port concepts: a port that propages according to a set of rules or conditions. Ports can be chained to further filter the Stages in the returned iterator.
+            - Iteration limit: Each port returns an iteration of nodes. A property on the node called 'iterationLimit' could be used to limit the number of returned nodes during iteration next calls. `∞` (Infinity in javascript) value could be representing an unlimited number of iterations, while a number is used to specify the amount of iterations returning a node before finishing the iterator with marking it as done.
+            - Conditional progation / Switch case concept - Allows traversing the grpah selectively, picking the nodes required for the next traversal using conditions or logical decision making algorithms. e.g. Switch Case port where it checks if a condition is met, then picks a single matching node and returns it in the iterator.
     - **Path** - is a chain of edges that specifies a path from & to a pair of nodes. A sequence of edges/connections that connect a sequence of nodes.
     - **Lazy execution during traversal** - on each node reached the traversal could be halted or continued and a processing implementation could be executed before continuing traversing or have a side effect during execution.
     - **Node & edge filter** - some implementations can filter specific nodes through conditions.

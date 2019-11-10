@@ -1,4 +1,6 @@
 ### TODO:
+- Relay / Reroute nodes (_A conecpt that could be implemeneted_) - in most graph databases the concept of creating a relationships to other relationships doesn't exist. A Relay node type could be used to be able to reference a connection. A node is created with a relationship outgoing from it, and incoming relationships are used to reference that connection. In the application level the connections are treated as connections of another target node (relaying them to another node).
+- Plugins registration must be done through passing a object of arrays - where the object keys are the nodes types and implementations array are the value.
 - Concept of a specific context for each processData implemeantation or other implemenations, in addition to a general graph wide context. This will allow implementations to use an area of the context in large graphs, which makes them more organized and isolated.
 - Makr tests more concrete: testing specific concepts in depth and separately.
 - Change node name `File` and resource type context.
