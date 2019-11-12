@@ -13,17 +13,17 @@
 		"exportGraphData": "yarn run scriptManager shouldCompileScript=true graphDatabase/graphDataLoading \".exportAllGraphData({targetPath: './resource',fileName: 'graphData.json'})\""
 	},
 	"dependencies": {
-		"@dependency/graphTraversal-implementation": "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^1.x.x",
 		"@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^1.x.x",
+		"@dependency/graphTraversal-implementation": "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^1.x.x",
 		"@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x"
 	},
 	"devDependencies": {
-		"@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug#semver:^1.x.x",
-		"neo4j-driver": "^1.7.5",
 		"@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^1.x.x",
 		"@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis#semver:^1.x.x",
 		"@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
+		"@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug#semver:^1.x.x",
 		"@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager#semver:^1.x.x",
+		"neo4j-driver": "^1.7.5",
 		"typescript": "^3.3.3333"
 	}
 }
