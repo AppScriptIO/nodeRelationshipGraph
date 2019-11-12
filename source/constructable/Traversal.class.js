@@ -10,9 +10,9 @@ interface TraversalImplementation {
 }
 
 /**
- ** GraphTraversal system for supporting different graph implementation (concrete behavior of plugin that will be used in the client target).
+ ** Traversal system for supporting different graph implementation (concrete behavior of plugin that will be used in the client target).
  */
-export const { class: GraphTraversal, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new ImplementationManagement.clientInterface({ description: 'GraphTraversal' })
+export const { class: Traversal, reference: Reference, constructablePrototype: Prototype, entityPrototype } = new ImplementationManagement.clientInterface({ description: 'Traversal' })
 
 /*
    ____       __                                 ___     ____            _        _                    
@@ -54,7 +54,7 @@ Object.assign(entityPrototype, {
    | || | | | | |_| | (_| | | |/ /  __/
   |___|_| |_|_|\__|_|\__,_|_|_/___\___|
 */
-GraphTraversal::GraphTraversal[Constructable.reference.initialize.functionality].setter({})
+Traversal::Traversal[Constructable.reference.initialize.functionality].setter({})
 
 /*
     ____ _ _            _     _ _                    __                
@@ -63,7 +63,7 @@ GraphTraversal::GraphTraversal[Constructable.reference.initialize.functionality]
   | |___| | |  __/ | | | |_  | | |_| | | |  __/ |  |  _| (_| | (_|  __/
    \____|_|_|\___|_| |_|\__| |_|\__|_| |_|\___|_|  |_|  \__,_|\___\___|
 */
-GraphTraversal.clientInterface = GraphTraversal::Prototype[Constructable.reference.clientInterface.functionality].switch({
+Traversal.clientInterface = Traversal::Prototype[Constructable.reference.clientInterface.functionality].switch({
   implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype,
 })({
   constructorImplementation: Entity.reference.key.handleDataInstance,

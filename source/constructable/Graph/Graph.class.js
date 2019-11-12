@@ -1,14 +1,14 @@
 import { Entity, Constructable, symbol } from '@dependency/entity'
-import { Node } from './Node.class.js'
-import { GraphTraversal } from '../GraphTraversal.class.js'
-import { Connection } from '../Connection.class.js'
+import { Traversal } from '../Traversal.class.js'
 import { Database } from '../Database.class.js'
-import { Cache } from '../Cache.class.js'
 import { Context } from '../Context.class.js'
 import { ImplementationManagement } from '../ImplementationManagement.class.js'
 import * as entityPrototype from './prototype.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
 import * as schemeReference from '../../graphModel/graphSchemeReference.js'
+// import { Node } from './Node.class.js'
+// import { Connection } from '../Connection.class.js'
+// import { Cache } from '../Cache.class.js'
 
 /** Conceptual Graph
  * Graph Class holds and manages graph elements and traversal algorithm implementations:
@@ -75,7 +75,7 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
   }: {
     cache: Cache,
     database: Database,
-    traversal: GraphTraversal,
+    traversal: Traversal,
     concereteBehavior: List,
   }) {
     database ||= new Database.clientInterface({
@@ -84,7 +84,7 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
       },
       defaultImplementation: 'boltCypher',
     })
-    traversal ||= new GraphTraversal.clientInterface({
+    traversal ||= new Traversal.clientInterface({
       implementationList: {
         default: {
           traverseNode: implementation.traversal.traverseNode,
@@ -106,7 +106,7 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     // expose functionality for direct simplified access:
     let concereteDatabase = instance[Entity.reference.getInstanceOf](Database)
     instance.database = concereteDatabase[Database.reference.key.getter]()
-    let concreteTraversal = instance[Entity.reference.getInstanceOf](GraphTraversal)
+    let concreteTraversal = instance[Entity.reference.getInstanceOf](Traversal)
     instance.traversal = concreteTraversal[ImplementationManagement.reference.key.getter]()
     let context = instance[Entity.reference.getInstanceOf](Context)
     instance.context = context ? context[Context.reference.key.getter]() : {}

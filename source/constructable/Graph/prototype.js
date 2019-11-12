@@ -4,7 +4,7 @@ import { proxifyMethodDecorator } from '../../utility/proxifyMethodDecorator.js'
 import { mergeDefaultParameter } from '../../utility/mergeDefaultParameter.js'
 import { removeUndefinedFromObject } from '../../utility/removeUndefinedFromObject.js'
 import { Context } from '../Context.class.js'
-import { GraphTraversal } from '../GraphTraversal.class.js'
+import { Traversal } from '../Traversal.class.js'
 import * as schemeReference from '../../graphModel/graphSchemeReference.js'
 import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
 

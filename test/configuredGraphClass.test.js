@@ -5,12 +5,10 @@ import util from 'util'
 import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
 import { Entity } from '@dependency/entity'
 import { Graph } from '../source/constructable/Graph'
-import { GraphTraversal } from '../source/constructable/GraphTraversal.class.js'
+import { Traversal } from '../source/constructable/Traversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
-import { Cache } from '../source/constructable/Cache.class.js'
 import { Context } from '../source/constructable/Context.class.js'
 import * as schemeReference from '../source/graphModel/graphSchemeReference.js'
-
 import * as implementation from '@dependency/graphTraversal-implementation'
 
 setup(async () => {})
@@ -22,7 +20,7 @@ suite('Configure Graph class', () => {
     },
     defaultImplementation: 'boltCypher',
   })
-  let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
+  let concreteGraphTraversalBehavior = new Traversal.clientInterface({
     implementationList: {
       default: {
         traverseNode: implementation.traversal.traverseNode,

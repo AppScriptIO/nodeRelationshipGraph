@@ -1,3 +1,5 @@
+// Database models for creating Graph elements (multiple related nodes with their connections).
+
 function createStage() {
   ;`
     create (stage:Stage { key: '' })

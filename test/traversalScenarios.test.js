@@ -8,9 +8,8 @@ const boltProtocolDriver = require('neo4j-driver').v1
 
 import { Entity } from '@dependency/entity'
 import { Graph } from '../source/constructable/Graph'
-import { GraphTraversal } from '../source/constructable/GraphTraversal.class.js'
+import { Traversal } from '../source/constructable/Traversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
-import { Cache } from '../source/constructable/Cache.class.js'
 import { Context } from '../source/constructable/Context.class.js'
 import * as schemeReference from '../source/graphModel/graphSchemeReference.js'
 
@@ -36,7 +35,7 @@ let concreteDatabaseBehavior = new Database.clientInterface({
   },
   defaultImplementation: 'boltCypher',
 })
-let concreteGraphTraversalBehavior = new GraphTraversal.clientInterface({
+let concreteGraphTraversalBehavior = new Traversal.clientInterface({
   implementationList: {
     default: {
       traverseNode: implementation.traversal.traverseNode,
