@@ -232,7 +232,13 @@ export const { traverse } = {
         // Context instance parameter
         context: (graphInstance[Context.reference.key.getter] ? graphInstance[Context.reference.key.getter]()?.implementationKey : {}) || {} |> removeUndefinedFromObject,
         // implementation keys of node instance own config parameters and of default values set in function scope
-        default: {}, // hardcoded default implementation values.
+        // hardcoded default implementation values matching the implementations from the instance initialization of Graph class.
+        default: {
+          processNode: 'returnDataItemKey',
+          portNode: 'portNextImplementation',
+          aggregator: 'AggregatorArray',
+          traversalInterception: 'processThenTraverse',
+        },
         // parent arguments
         // TODO: deal with depth property configuration effect in nested nodes.
         parent: parentTraversalArg ? parentTraversalArg[0].traversalConfig.getTraversalImplementationKey() || {} : {},
