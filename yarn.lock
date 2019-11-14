@@ -1029,8 +1029,8 @@
   resolved "https://github.com/AppScriptIO/fragmentIndentationObjectStream#9cb1ff843e442c5eaf34477cf4c9907eb0e74f7d"
 
 "@dependency/graphTraversal-implementation@https://github.com/AppScriptIO/graphTraversal-implementation#semver:^1.x.x":
-  version "1.0.2"
-  resolved "https://github.com/AppScriptIO/graphTraversal-implementation#9ad0ad1d93f5b502d8750133f013970435981160"
+  version "1.0.3"
+  resolved "https://github.com/AppScriptIO/graphTraversal-implementation#47492aa27447c855ea65a4c379485578f3ff8309"
   dependencies:
     "@dependency/promiseProperRace" "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x"
     neo4j-driver "^1.7.5"
@@ -1038,8 +1038,8 @@
     uuid "*"
 
 "@dependency/graphTraversal@https://github.com/AppScriptIO/graphTraversal#semver:^1.x.x":
-  version "1.2.14"
-  resolved "https://github.com/AppScriptIO/graphTraversal#10a462a28ad1013f7d5d4a2bcb2caf110873e28a"
+  version "1.2.15"
+  resolved "https://github.com/AppScriptIO/graphTraversal#12ab1243a43cfcc33b1c353333cc1e228e0935be"
   dependencies:
     "@dependency/entity" "https://github.com/AppScriptIO/entity#semver:^1.x.x"
     "@dependency/graphTraversal-implementation" "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^1.x.x"
@@ -2792,9 +2792,9 @@ cancel-token@^0.1.1:
     "@types/node" "^4.0.30"
 
 caniuse-lite@^1.0.30001004, caniuse-lite@^1.0.30001006:
-  version "1.0.30001008"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001008.tgz#b8841b1df78a9f5ed9702537ef592f1f8772c0d9"
-  integrity sha512-b8DJyb+VVXZGRgJUa30cbk8gKHZ3LOZTBLaUEEVr2P4xpmFigOCc62CO4uzquW641Ouq1Rm9N+rWLWdSYDaDIw==
+  version "1.0.30001010"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001010.tgz#397a14034d384260453cc81994f494626d34b938"
+  integrity sha512-RA5GH9YjFNea4ZQszdWgh2SC+dpLiRAg4VDQS2b5JRI45OxmbGrYocYHTa9x0bKMQUE7uvHkNPNffUr+pCxSGw==
 
 capture-stack-trace@^1.0.0:
   version "1.0.1"
@@ -5213,9 +5213,9 @@ import-fresh@^2.0.0:
     resolve-from "^3.0.0"
 
 import-fresh@^3.0.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-3.1.0.tgz#6d33fa1dcef6df930fae003446f33415af905118"
-  integrity sha512-PpuksHKGt8rXfWEr9m9EHIpgyyaltBy8+eF6GJM0QCAxMgxCfucMF3mjecK2QsJr0amJW7gTqh5/wht0z2UhEQ==
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-3.2.1.tgz#633ff618506e793af5ac91bf48b72677e15cbe66"
+  integrity sha512-6e1q1cnWP2RXD9/keSkxHScg508CdXqXWgWBaETNhyuBFz+kUZlKboh+ISK+bU++DmbHimVBrOz/zzPe0sZ3sQ==
   dependencies:
     parent-module "^1.0.0"
     resolve-from "^4.0.0"
