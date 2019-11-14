@@ -87,10 +87,10 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     traversal ||= new Traversal.clientInterface({
       implementationList: {
         default: {
-          handlePropagation: implementation.traversal.handlePropagation, // Port
           traversalInterception: implementation.traversal.traversalInterception, // Stage
           aggregator: implementation.traversal.aggregator,
           processNode: implementation.traversal.processNode, // Process
+          portNode: implementation.traversal.portNode, // Port
         },
       },
       defaultImplementation: 'default',

@@ -37,7 +37,7 @@ let concreteDatabaseBehavior = new Database.clientInterface({
 let concreteGraphTraversalBehavior = new Traversal.clientInterface({
   implementationList: {
     default: {
-      handlePropagation: implementation.traversal.handlePropagation, // Port
+      portNode: implementation.traversal.portNode, // Port
       traversalInterception: implementation.traversal.traversalInterception, // Stage
       aggregator: implementation.traversal.aggregator,
       processNode: implementation.traversal.processNode, // Process
@@ -49,7 +49,7 @@ let concreteGraphTraversalBehavior = new Traversal.clientInterface({
 let contextInstance = new Context.clientInterface({
   implementationKey: {
     processNode: 'returnDataItemKey',
-    handlePropagation: 'chronological',
+    portNode: 'portNextImplementation',
     aggregator: 'AggregatorArray',
     traversalInterception: 'processThenTraverse',
   },

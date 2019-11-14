@@ -2,6 +2,7 @@ import EventEmitter from 'events'
 
 /**
  * Stage node is an entrypoint node that the graph traversal can be started from.
+ *
  */
 // Note: wrapping in object allows the usage of decorators as they couldn't be used on separate functions.
 export const { stageNode } = {
@@ -40,13 +41,13 @@ export const { stageNode } = {
 
     aggregator ||= new (nodeInstance::implementation.aggregator)()
 
-    // FORK - traverse stage node to other next nodes through the port nodes.
     /** Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
+     * FORK - traverse stage node to other next nodes through the port nodes.
      * @return {iterator} providing node parameters for recursive traversal calls.
      */
     let traversalIteratorFeed = graphInstance::graphInstance.forkEdge({
       node: nodeInstance,
-      getImplementation: traversalConfig.getImplementationCallback({ key: 'handlePropagation', graphInstance }),
+      implementation: implementation.portNode,
       additionalChildNode,
     })
 
@@ -58,6 +59,7 @@ export const { stageNode } = {
       )
 
     // intercept and return result
+    // TODO: change name to Stage Interception or similar ?
     let traversalInterceptionImplementation = implementation.traversalInterception || (({ targetFunction }) => new Proxy(targetFunction, {})) // in case no implementation exists for intercepting traversal, use an empty proxy.
     let proxyify = target => graphInstance::traversalInterceptionImplementation({ targetFunction: target, aggregator, dataProcessCallback })
     let result = await (graphInstance::graphInstance.recursiveIteration |> proxyify)({

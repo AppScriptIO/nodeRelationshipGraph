@@ -12,7 +12,6 @@ export * from './method/evaluatePosition.js'
 export * from './method/recursiveIteration.js'
 export * from './method/stageNode.js'
 export * from './method/subgraphTemplateNode.js'
-export * from './method/portNode.js'
 export * from './method/forkEdge.js'
 export * from './method/executeEdge.js'
 export * as databaseWrapper from '../../dataModel/concreteDatabaseWrapper.js'
@@ -87,7 +86,7 @@ export class TraversalConfig {
     let implementationKey = this.getTraversalImplementationKey()
     let implementation = {
       processNode: graphInstance.traversal.processNode[implementationKey.processNode],
-      handlePropagation: graphInstance.traversal.handlePropagation[implementationKey.handlePropagation],
+      portNode: graphInstance.traversal.portNode[implementationKey.portNode],
       traversalInterception: graphInstance.traversal.traversalInterception[implementationKey.traversalInterception],
       aggregator: graphInstance.traversal.aggregator[implementationKey.aggregator],
     }
@@ -193,6 +192,7 @@ export class TraversalConfig {
 
 /** Graph traversal integration layer (core) - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
  * Dynamic implementation - not restricted to specific initialization algorithm, rather choosen from setting of each node in the traversed graph.
+ * Edge functions are part of the integration layer where node implementations are called.
  */
 // Note: wrapping in object allows the usage of decorators as they couldn't be used on separate functions.
 export const { traverse } = {

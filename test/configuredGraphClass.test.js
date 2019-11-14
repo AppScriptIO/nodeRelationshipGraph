@@ -23,7 +23,7 @@ suite('Configure Graph class', () => {
   let concreteGraphTraversalBehavior = new Traversal.clientInterface({
     implementationList: {
       default: {
-        handlePropagation: implementation.traversal.handlePropagation, // Port
+        portNode: implementation.traversal.portNode, // Port
         traversalInterception: implementation.traversal.traversalInterception, // Stage
         aggregator: implementation.traversal.aggregator,
         processNode: implementation.traversal.processNode, // Process
