@@ -1,4 +1,5 @@
 ### TODO:
+- Define the expected output of each node/edge implementation functions and of the core/integration methods. Which will allow better design & refactoring of the code.
 - Relay / Reroute nodes (_A conecpt that could be implemeneted_) - in most graph databases the concept of creating a relationships to other relationships doesn't exist. A Relay node type could be used to be able to reference a connection. A node is created with a relationship outgoing from it, and incoming relationships are used to reference that connection. In the application level the connections are treated as connections of another target node (relaying them to another node).
 - Plugins registration must be done through passing a object of arrays - where the object keys are the nodes types and implementations array are the value.
 - Concept of a specific context for each processNode implemeantation or other implemenations, in addition to a general graph wide context. This will allow implementations to use an area of the context in large graphs, which makes them more organized and isolated.
@@ -7,11 +8,7 @@
 - Consider merging Database class & Traversal class into a Plugin class that can distinguish between the plugin groups. Because these classes do that same job and don't currently have unique methods.
 - Make nested unit implemenations pluggable. i.e. added as needed to the main nested unit classes. Maybe create a separate module for each implementation.
 - Use RedisGraph or Memgraph for in-memory graph database.
-- 
-
-Things to consider:
-- Should look at integration between nested unit implementations, what to return when they are mixed together, etc.
-
+- Things to consider: Should look at integration between nested unit implementations, what to return when they are mixed together, etc.
 e.g.
 ```
     let ShellscriptController = await createStaticInstanceClasses({
