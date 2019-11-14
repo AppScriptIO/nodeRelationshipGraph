@@ -9,7 +9,6 @@ import { extractConfigProperty } from '../../../utility/extractPropertyFromObjec
 
 // Each exported property ends up as the prototype property of the class.
 export * from './method/evaluatePosition.js'
-export * from './method/recursiveIteration.js'
 export * from './method/stageNode.js'
 export * from './method/subgraphTemplateNode.js'
 export * from './method/forkEdge.js'
