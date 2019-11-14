@@ -1,6 +1,7 @@
 import assert from 'assert'
 
-export async function processData({ node, nextProcessData, aggregator, traversalConfig, getImplementation, graphInstance }, { additionalParameter, traverseCallContext }) {
+// Responsible for processing data.
+export async function executeEdge({ node, nextProcessData, aggregator, traversalConfig, getImplementation, graphInstance }, { additionalParameter, traverseCallContext }) {
   if (!traversalConfig.shouldExecuteProcess()) return null
 
   let execute
@@ -12,7 +13,7 @@ export async function processData({ node, nextProcessData, aggregator, traversal
 
   // node/edge properties implementation hierarchy
   let nodeImplementationKey // traversal implementatio key
-  if (execute.connection.properties.processDataImplementation) nodeImplementationKey = { processData: execute.connection.properties.processDataImplementation }
+  if (execute.connection.properties.processNodeImplementation) nodeImplementationKey = { processNode: execute.connection.properties.processNodeImplementation }
   let implementation = getImplementation({ nodeImplementationKey }) // calculate and pick correct implementation according to parameter hierarchy.
 
   // Execute node dataItem

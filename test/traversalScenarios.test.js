@@ -11,8 +11,7 @@ import { Graph } from '../source/constructable/Graph'
 import { Traversal } from '../source/constructable/Traversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
 import { Context } from '../source/constructable/Context.class.js'
-import * as schemeReference from '../source/graphModel/graphSchemeReference.js'
-
+import * as schemeReference from '../source/dataModel/graphSchemeReference.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
 import graphData from './asset/graphData.exported.json' // load sample data
 const fixture = { traversalResult: ['dataItem-key-1'] }
@@ -38,11 +37,10 @@ let concreteDatabaseBehavior = new Database.clientInterface({
 let concreteGraphTraversalBehavior = new Traversal.clientInterface({
   implementationList: {
     default: {
-      traverseNode: implementation.traversal.traverseNode,
       handlePropagation: implementation.traversal.handlePropagation, // Port
       traversalInterception: implementation.traversal.traversalInterception, // Stage
       aggregator: implementation.traversal.aggregator,
-      processData: implementation.traversal.processData, // Process
+      processNode: implementation.traversal.processNode, // Process
     },
   },
   defaultImplementation: 'default',
@@ -50,7 +48,10 @@ let concreteGraphTraversalBehavior = new Traversal.clientInterface({
 
 let contextInstance = new Context.clientInterface({
   implementationKey: {
-    // traverseNode: 'chronological',
+    processNode: 'returnDataItemKey',
+    handlePropagation: 'chronological',
+    aggregator: 'AggregatorArray',
+    traversalInterception: 'processThenTraverse',
   },
 })
 
@@ -68,7 +69,7 @@ let configuredGraph = Graph.clientInterface({
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
   setup(async () => await clearGraphData())
 
-  suite('nodeConnection subgraph template:', () => {
+  suite.only('nodeConnection subgraph template:', () => {
     const fixture = [
       'dataItem-key-1',
       'dataItem-key-2',
@@ -127,7 +128,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: 'aadfac41-66bf-4b78-a039-1e25480a2f50', implementationKey: { processData: 'returnDataItemKey' } })
+      let result = await graph.traverse({ nodeKey: 'aadfac41-66bf-4b78-a039-1e25480a2f50', implementationKey: { processNode: 'returnDataItemKey' } })
       chaiAssertion.deepEqual(result, fixture)
     })
   })

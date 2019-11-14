@@ -8,7 +8,7 @@ import { Graph } from '../source/constructable/Graph'
 import { Traversal } from '../source/constructable/Traversal.class.js'
 import { Database } from '../source/constructable/Database.class.js'
 import { Context } from '../source/constructable/Context.class.js'
-import * as schemeReference from '../source/graphModel/graphSchemeReference.js'
+import * as schemeReference from '../source/dataModel/graphSchemeReference.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
 
 setup(async () => {})
@@ -23,19 +23,16 @@ suite('Configure Graph class', () => {
   let concreteGraphTraversalBehavior = new Traversal.clientInterface({
     implementationList: {
       default: {
-        traverseNode: implementation.traversal.traverseNode,
         handlePropagation: implementation.traversal.handlePropagation, // Port
         traversalInterception: implementation.traversal.traversalInterception, // Stage
         aggregator: implementation.traversal.aggregator,
-        processData: implementation.traversal.processData, // Process
+        processNode: implementation.traversal.processNode, // Process
       },
     },
     defaultImplementation: 'default',
   })
   let contextInstance = new Context.clientInterface({
-    implementationKey: {
-      // traverseNode: 'chronological',
-    },
+    implementationKey: {},
   })
 
   suite('Configured graph with loading plugins and database adapter', async () => {

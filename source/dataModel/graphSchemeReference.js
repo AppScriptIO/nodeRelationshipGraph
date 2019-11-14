@@ -53,4 +53,4 @@ export const evaluationOption = {
   },
 }
 
-export const traversalOption = ['processData', 'handlePropagation', 'traverseNode', 'aggregator', 'traversalInterception']
+export const traversalOption = ['processNode', 'handlePropagation', 'aggregator', 'traversalInterception']

@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { nodeLabel, connectionType, connectionProperty, evaluationOption, traversalOption } from '../../../graphModel/graphSchemeReference.js'
+import { nodeLabel, connectionType, connectionProperty, evaluationOption, traversalOption } from '../../../dataModel/graphSchemeReference.js'
 import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
 
 /**
@@ -22,7 +22,7 @@ export async function evaluatePosition({ node, graphInstance = this }) {
         {
           nodeInstance: configure.source,
           implementationKey: {
-            processData: 'switchCase',
+            processNode: 'switchCase',
             traversalInterception: 'traverseThenProcessWithLogicalOperator',
             aggregator: 'ConditionAggregator',
           },

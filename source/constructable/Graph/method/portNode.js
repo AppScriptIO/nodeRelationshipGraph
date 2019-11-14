@@ -1,9 +1,9 @@
 /**
- * Handles the graph traversal propagation order
+ * Propagation Control - Handles the graph traversal propagation order
  * @yields a traversal configuration feed/iterator
  * @return results array
  **/
-export async function* handlePropagation({ nodeIteratorFeed, implementation /** Controls the iteration over nodes and execution arrangement. */, graphInstance = this }) {
+export async function* portNode({ nodeIteratorFeed, implementation /** Controls the iteration over nodes and execution arrangement. */, graphInstance = this }) {
   let { eventEmitterCallback: emit } = function.sent
   let traversalIteratorFeed = implementation({ nodeIteratorFeed, emit }) // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
   async function* trapAsyncIterator(iterator) {

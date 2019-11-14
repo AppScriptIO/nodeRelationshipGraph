@@ -5,7 +5,7 @@ import { Context } from '../Context.class.js'
 import { ImplementationManagement } from '../ImplementationManagement.class.js'
 import * as entityPrototype from './prototype.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
-import * as schemeReference from '../../graphModel/graphSchemeReference.js'
+import * as schemeReference from '../../dataModel/graphSchemeReference.js'
 // import { Node } from './Node.class.js'
 // import { Connection } from '../Connection.class.js'
 // import { Cache } from '../Cache.class.js'
@@ -87,11 +87,10 @@ Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
     traversal ||= new Traversal.clientInterface({
       implementationList: {
         default: {
-          traverseNode: implementation.traversal.traverseNode,
           handlePropagation: implementation.traversal.handlePropagation, // Port
           traversalInterception: implementation.traversal.traversalInterception, // Stage
           aggregator: implementation.traversal.aggregator,
-          processData: implementation.traversal.processData, // Process
+          processNode: implementation.traversal.processNode, // Process
         },
       },
       defaultImplementation: 'default',
