@@ -924,8 +924,8 @@
   resolved "https://github.com/AppScriptIO/addModuleResolutionPath#fa351d3da0d496bf34831d840c5e30be2ab8defe"
 
 "@dependency/buildTool@https://github.com/AppScriptIO/buildTool#semver:^1.x.x":
-  version "1.0.19"
-  resolved "https://github.com/AppScriptIO/buildTool#4fd18ca6ca905235f0c1e41c3d63830d03c9976d"
+  version "1.0.20"
+  resolved "https://github.com/AppScriptIO/buildTool#1ccfadcfcd60a4564358ff2a133266b031d5b27a"
   dependencies:
     "@dependency/deploymentProvisioning" "https://github.com/AppScriptIO/deploymentProvisioning#semver:^1.x.x"
     "@dependency/fragmentIndentationObjectStream" "https://github.com/AppScriptIO/fragmentIndentationObjectStream#semver:^1.x.x"
@@ -1038,8 +1038,8 @@
     uuid "*"
 
 "@dependency/graphTraversal@https://github.com/AppScriptIO/graphTraversal#semver:^1.x.x":
-  version "1.2.15"
-  resolved "https://github.com/AppScriptIO/graphTraversal#12ab1243a43cfcc33b1c353333cc1e228e0935be"
+  version "1.2.17"
+  resolved "https://github.com/AppScriptIO/graphTraversal#d3e9509e7687de58b55d39c2da7da20e74484ce2"
   dependencies:
     "@dependency/entity" "https://github.com/AppScriptIO/entity#semver:^1.x.x"
     "@dependency/graphTraversal-implementation" "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^1.x.x"
