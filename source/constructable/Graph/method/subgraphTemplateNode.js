@@ -2,9 +2,9 @@
  * SubgraphTemplate node is an entrypoint node that the graph traversal can be started from.
  * load `subgraph template` node parameters for traversal call usage.
  */
-export async function traverseSubgraphTemplate({ nodeInstance, graphInstance = this }) {
+export async function traverseSubgraphTemplate({ nodeInstance, graphInstance = this, traversalConfig }) {
   const { root, extend, insertArray } = await graphInstance.databaseWrapper.getSubgraphTemplateElement({ concreteDatabase: graphInstance.database, nodeID: nodeInstance.identity })
-  if (!root && !extend) return false // in case no `ROOT` relation or `EXTEND` are present
+  if (!root && !extend) return // in case no `ROOT` relation or `EXTEND` are present
 
   // get additional nodes
   let additionalChildNode = insertArray
@@ -22,6 +22,11 @@ export async function traverseSubgraphTemplate({ nodeInstance, graphInstance = t
   let rootNode
   if (root) rootNode = root.destination
   else if (extend) rootNode = extend.destination
+  else return // in case no root node was configured in the subgraph template node.
 
-  return { rootNode, additionalChildNode }
+  // set additional parameters
+  arguments[0].traversalConfig = traversalConfig
+  arguments[0].nodeInstance = rootNode
+  arguments[0].additionalChildNode = [...(arguments[0].additionalChildNode || []), ...additionalChildNode]
+  return await graphInstance.traverse(...arguments)
 }

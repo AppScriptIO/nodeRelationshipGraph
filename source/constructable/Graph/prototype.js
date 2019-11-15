@@ -15,6 +15,8 @@ export * from './method/forkEdge.js'
 export * from './method/executeEdge.js'
 export * as databaseWrapper from '../../dataModel/concreteDatabaseWrapper.js'
 export * as schemeReference from '../../dataModel/graphSchemeReference.js'
+import { stageNode } from './method/stageNode.js'
+import { traverseSubgraphTemplate } from './method/subgraphTemplateNode.js'
 
 // load graph into memory
 export async function load({ graphData, graphInstance = this } = {}) {
@@ -187,6 +189,15 @@ export class TraversalConfig {
         break
     }
   }
+
+  /** Set entrypoint nodes implementations (Note: quickly coded method for temporary solution) - TODO: integrate into traversal config implementation hierarchy and expose client allowing to add implementations or intercept them. */
+  static entrypointNodeImplementation = {
+    [schemeReference.nodeLabel.subgraphTemplate]: traverseSubgraphTemplate,
+    [schemeReference.nodeLabel.stage]: stageNode,
+  }
+  getEntrypointNodeImplementation({ nodeLabelArray }) {
+    for (let nodeLabel in TraversalConfig.entrypointNodeImplementation) if (nodeLabelArray.includes(nodeLabel)) return TraversalConfig.entrypointNodeImplementation[nodeLabel]
+  }
 }
 
 /** Graph traversal integration layer (core) - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
@@ -264,17 +275,9 @@ export const { traverse } = {
     traversalConfig.setImplementationHierarchy('configuration', implementationConfiguration)
     traversalConfig.setEvaluationHierarchy('configuration', evaluationConfiguration)
 
-    if (nodeInstance.labels.includes(schemeReference.nodeLabel.subgraphTemplate)) {
-      let subgraphTemplateResult = await graphInstance.traverseSubgraphTemplate({ nodeInstance, graphInstance })
-      if (!subgraphTemplateResult) return // in case no root node was configured in the subgraph template node.
-      let { rootNode, additionalChildNode } = subgraphTemplateResult
-      // set additional parameters
-      arguments[0].traversalConfig = traversalConfig
-      arguments[0].nodeInstance = rootNode
-      arguments[0].additionalChildNode = [...(arguments[0].additionalChildNode || []), ...additionalChildNode]
-      return await graphInstance.traverse(...arguments)
-    } else if (nodeInstance.labels.includes(schemeReference.nodeLabel.stage))
-      return await graphInstance.stageNode(
+    let entrypointImplementation = traversalConfig.getEntrypointNodeImplementation({ nodeLabelArray: nodeInstance.labels })
+    if (entrypointImplementation)
+      return await entrypointImplementation(
         { graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator },
         { parentTraversalArg, traverseCallContext },
       )

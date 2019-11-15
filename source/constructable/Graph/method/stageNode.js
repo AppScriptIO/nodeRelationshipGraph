@@ -6,7 +6,8 @@ import EventEmitter from 'events'
  */
 // Note: wrapping in object allows the usage of decorators as they couldn't be used on separate functions.
 export const { stageNode } = {
-  /** An approach to set default parameters for the function.
+  /** 
+   * An approach to set default parameters for the function.
    * @proxifyMethodDecorator((target, thisArg, argumentsList, targetClass, methodName) => {
     // set default parameters and expose them to subsequent method decorators. - deep merge of nested parameter
     argumentsList = mergeDefaultParameter({
@@ -22,7 +23,8 @@ export const { stageNode } = {
       ],
     })
     return Reflect.apply(target, thisArg, argumentsList)
-  }) */
+  }) 
+  */
   async stageNode(
     {
       graphInstance = this, // <type Graph>
