@@ -104,7 +104,7 @@
     "labels": ["Configuration"],
     "properties": {
       "aggregator": "AggregatorArray",
-      "portNode": "portNextImplementation",
+      "portNode": "propagationControl",
       "key": "62816331-7a36-48cc-be93-96bf465a443a",
       "name": "Test traversal configuration",
       "processNode": "returnDataItemKey",

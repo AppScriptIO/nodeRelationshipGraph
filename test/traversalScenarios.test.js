@@ -49,7 +49,7 @@ let concreteGraphTraversalBehavior = new Traversal.clientInterface({
 let contextInstance = new Context.clientInterface({
   implementationKey: {
     processNode: 'returnDataItemKey',
-    portNode: 'portNextImplementation',
+    portNode: 'propagationControl',
     aggregator: 'AggregatorArray',
     traversalInterception: 'processThenTraverse',
   },

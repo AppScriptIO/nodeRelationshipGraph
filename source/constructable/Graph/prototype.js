@@ -235,7 +235,7 @@ export const { traverse } = {
         // hardcoded default implementation values matching the implementations from the instance initialization of Graph class.
         default: {
           processNode: 'returnDataItemKey',
-          portNode: 'portNextImplementation',
+          portNode: 'propagationControl',
           aggregator: 'AggregatorArray',
           traversalInterception: 'processThenTraverse',
         },
