@@ -46,7 +46,17 @@ export const { stageNode } = {
     // EXECUTE edge
     const processDataCallback = ({ nextProcessData, additionalParameter }) =>
       graphInstance::graphInstance.executeEdge(
-        { stageNode: nodeInstance, nextProcessData, traversalConfig, aggregator, getImplementation: traversalConfig.getImplementationCallback({ key: 'processNode', graphInstance }), graphInstance },
+        {
+          stageNode: nodeInstance,
+          nextProcessData,
+          traversalConfig,
+          aggregator,
+          getImplementation: implementationKey =>
+            traversalConfig.getImplementationCallback({ key: 'processNode', graphInstance })({
+              nodeImplementationKey: { processNode: implementationKey } || undefined,
+            }),
+          graphInstance,
+        },
         { additionalParameter, traverseCallContext },
       )
 
@@ -56,7 +66,7 @@ export const { stageNode } = {
      */
     let groupIterator = graphInstance::graphInstance.forkEdge({
       stageNode: nodeInstance,
-      getImplementation: traversalConfig.getImplementationCallback({ key: 'portNode', graphInstance }),
+      getImplementation: implementationKey => traversalConfig.getImplementationCallback({ key: 'portNode', graphInstance })({ nodeImplementationKey: { portNode: implementationKey } || undefined }),
       additionalChildNode,
     })
 

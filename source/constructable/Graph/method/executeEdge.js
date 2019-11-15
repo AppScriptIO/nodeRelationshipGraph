@@ -11,12 +11,8 @@ export async function executeEdge({ stageNode, nextProcessData, aggregator, trav
   else if (executeArray.length == 0) return null
   else execute = executeArray[0]
 
-  // node/edge properties implementation hierarchy
-  let nodeImplementationKey // traversal implementatio key
-  if (execute.connection.properties.implementation) nodeImplementationKey = { processNode: execute.connection.properties.implementation }
-  let implementation = getImplementation({ nodeImplementationKey }) // calculate and pick correct implementation according to parameter hierarchy.
-
   // Execute node dataItem
+  let implementation = getImplementation(execute.connection.properties.implementation) // node/edge properties implementation hierarchy - calculate and pick correct implementation according to parameter hierarchy.
   let result = await stageNode::implementation({ processNode: execute.destination, stageNode, graphInstance, nextProcessData }, { additionalParameter, traverseCallContext })
 
   if (traversalConfig.shouldIncludeResult()) aggregator.add(result)

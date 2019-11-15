@@ -69,7 +69,7 @@ let configuredGraph = Graph.clientInterface({
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
   setup(async () => await clearGraphData())
 
-  suite.only('nodeConnection subgraph template:', () => {
+  suite('nodeConnection subgraph template:', () => {
     const fixture = [
       'dataItem-key-1',
       'dataItem-key-2',
@@ -99,7 +99,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite('nodePort subgraph template', () => {
+  suite.only('nodePort subgraph template', () => {
     const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
     contextInstance[Context.reference.key.setter]({
       // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.

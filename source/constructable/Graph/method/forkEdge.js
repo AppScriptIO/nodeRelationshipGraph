@@ -16,12 +16,8 @@ export async function* forkEdge({ stageNode, additionalChildNode, getImplementat
   for (let forkEdge of forkArray) {
     assert(forkEdge.destination.labels.includes(graphInstance.schemeReference.nodeLabel.port), `• "${forkEdge.destination.labels}" Unsupported node type for a FORK connection.`) // verify node type
 
-    // node/edge properties implementation hierarchy
-    let nodeImplementationKey // traversal implementatio key
-    if (forkEdge.connection.properties.implementation) nodeImplementationKey = { portNode: forkEdge.connection.properties.implementation }
-    let implementation = getImplementation({ nodeImplementationKey }) // calculate and pick correct implementation according to parameter hierarchy.
-
     // the first iterator object call is used to initialize the function, in addition to the iterator function call.
+    let implementation = getImplementation(forkEdge.destination.properties.implementation) // Traversal implementation - node/edge properties implementation hierarchy - calculate and pick correct implementation according to parameter hierarchy.
     let nodeIteratorFeed = graphInstance::implementation({ forkEdge, additionalChildNode, graphInstance })
 
     let traversalIterator = traversalIterator2WayCommunication({
