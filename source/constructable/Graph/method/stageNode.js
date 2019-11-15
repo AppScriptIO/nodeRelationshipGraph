@@ -96,24 +96,27 @@ export async function* recursiveIteration({
   eventEmitter: Event,
 }) {
   if (!traversalConfig.shouldContinue()) return // skip traversal
-  let traversalIteratorFeed = forkIteratorCallback() /**Feeding iterator that will accept node parameters for traversals*/
-  let eventEmitterCallback = (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args)
+  /** Feeding iterator that will accept node parameters for traversals - e.g. { nextIterator, fork } */
+  let forkIterator = forkIteratorCallback()
   traversalDepth += 1 // increase traversal depth
-  for await (let traversalIteration of traversalIteratorFeed) {
-    let n = { iterator: traversalIteration.nextIterator, result: await traversalIteration.nextIterator.next({ eventEmitterCallback: eventEmitterCallback }) }
-    while (!n.result.done) {
-      let nextNode = n.result.value.node
-      // 🔁 recursion call
-      let nextCallArgument = [Object.assign({ nodeInstance: nextNode, traversalDepth, additionalChildNode }), { parentTraversalArg, traverseCallContext }]
-      let promise = recursiveCallback(...nextCallArgument)
-      n.result = await n.iterator.next({ promise })
-    }
+  for await (let forkObject of forkIterator) {
+    let nextIterator = forkObject.nextIterator // NEXT connection iterator
+
+    // first call is used to initialize the function (using non-standard function.sent)
+    let nextYielded = await nextIterator.next({ eventEmitterCallback: (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args) })
+    while (!nextYielded.done)
+      // 🔁 recursion traversal call (with next node)
+      nextYielded = await nextIterator.next({
+        promise: recursiveCallback({ nodeInstance: nextYielded.value.node /* next node */, traversalDepth, additionalChildNode }, { parentTraversalArg, traverseCallContext }),
+      })
+
     // port traversal result - last node iterator feed should be an array of resolved node promises that will be forwarded through this function
+    // forward array of resolved results
     yield {
       config: {
-        port: traversalIteration.fork.destination, // the related port which the stage originated from.
+        port: forkObject.fork.destination, // the related port which the stage originated from.
       },
-      result: n.result.value,
-    } // forward array of resolved results
+      result: nextYielded.value, // last yielded value is the result array.
+    }
   }
 }

@@ -3,7 +3,9 @@ import assert from 'assert'
 /**
  * The purpose of this function is to find & yield next nodes.
  * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
- * @return {Object} node feed - nested object containing Fork/Port iterator with nested Next/Stage iterator for each.
+ * @return {undefined}
+ * OR
+ * @yield  {iterator feed of object} - nested object containing Fork/Port iterator with nested Next/Stage iterator for each.
  * TODO: add ability to pass traversal configuration to a group of connections. Each port holds traversal cofigs that should affect all connection connected to this port.
  **/
 export async function* forkEdge({ stageNode, additionalChildNode, getImplementation, graphInstance = this }) {
@@ -20,6 +22,7 @@ export async function* forkEdge({ stageNode, additionalChildNode, getImplementat
     if (fork.connection.properties.implementation) nodeImplementationKey = { portNode: fork.connection.properties.implementation }
     let implementation = getImplementation({ nodeImplementationKey }) // calculate and pick correct implementation according to parameter hierarchy.
 
+    // the first iterator object call is used to initialize the function, in addition to the iterator function call.
     let nextIterator = graphInstance::implementation({ forkEdge: fork, additionalChildNode, graphInstance })
 
     // iterator of Next nodes
