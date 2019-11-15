@@ -28,7 +28,6 @@ yarn-error\.log
 *.vagrant
 Thumbs.db
 .\~vsdx
-*vsdx
 pids
 *.pid
 *.seed
