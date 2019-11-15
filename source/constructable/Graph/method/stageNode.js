@@ -38,15 +38,8 @@ export const { stageNode } = {
     { parentTraversalArg = null, traverseCallContext = {} } = {},
   ) {
     let { implementation } = traversalConfig.calculateConfig({ graphInstance })
-
+    let traversalInterceptionImplementation = implementation.traversalInterception || (targetFunction => new Proxy(targetFunction, {})) // in case no implementation exists for intercepting traversal, use an empty proxy.
     aggregator ||= new (nodeInstance::implementation.aggregator)()
-
-    /** Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
-     * FORK edge - traverse stage node to other next nodes through the port nodes.
-     * @return {iterator} providing node parameters for recursive traversal calls.
-     */
-    const forkIteratorCallback = () =>
-      graphInstance::graphInstance.forkEdge({ stageNode: nodeInstance, getImplementation: traversalConfig.getImplementationCallback({ key: 'portNode', graphInstance }), additionalChildNode })
 
     // EXECUTE edge
     const processDataCallback = ({ nextProcessData, additionalParameter }) =>
@@ -55,11 +48,20 @@ export const { stageNode } = {
         { additionalParameter, traverseCallContext },
       )
 
+    /** Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
+     * FORK edge - traverse stage node to other next nodes through the port nodes.
+     * @return {iterator} providing node parameters for recursive traversal calls.
+     */
+    let groupIterator = graphInstance::graphInstance.forkEdge({
+      stageNode: nodeInstance,
+      getImplementation: traversalConfig.getImplementationCallback({ key: 'portNode', graphInstance }),
+      additionalChildNode,
+    })
+
     // intercept and return result (Stage interception)
-    let traversalInterceptionImplementation = implementation.traversalInterception || (targetFunction => new Proxy(targetFunction, {})) // in case no implementation exists for intercepting traversal, use an empty proxy.
-    let proxifiedRecursiveIteration = graphInstance::graphInstance.recursiveIteration |> graphInstance::traversalInterceptionImplementation
+    let proxifiedRecursiveIteration = graphInstance::graphInstance.traverseGroupIterationRecursiveCall |> graphInstance::traversalInterceptionImplementation
     let result = await proxifiedRecursiveIteration({
-      forkIteratorCallback,
+      groupIterator,
       processDataCallback,
       aggregator,
       nodeInstance,
@@ -73,50 +75,4 @@ export const { stageNode } = {
 
     return result
   },
-}
-
-/**
- * Controls execution of node traversals & Hands over control to implementation:
- *  1. Accepts new nodes from implementing function.
- *  2. returns back to the implementing function a promise, handing control of flow and arragement of running traversals.
- */
-export async function* recursiveIteration({
-  forkIteratorCallback,
-  processDataCallback,
-  aggregator,
-  graphInstance = this,
-  recursiveCallback = graphInstance::graphInstance.traverse,
-  traversalDepth,
-  eventEmitter,
-  traversalConfig,
-  additionalChildNode,
-  parentTraversalArg,
-  traverseCallContext,
-}: {
-  eventEmitter: Event,
-}) {
-  if (!traversalConfig.shouldContinue()) return // skip traversal
-  /** Feeding iterator that will accept node parameters for traversals - e.g. { nextIterator, fork } */
-  let forkIterator = forkIteratorCallback()
-  traversalDepth += 1 // increase traversal depth
-  for await (let forkObject of forkIterator) {
-    let nextIterator = forkObject.nextIterator // NEXT connection iterator
-
-    // first call is used to initialize the function (using non-standard function.sent)
-    let nextYielded = await nextIterator.next({ eventEmitterCallback: (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args) })
-    while (!nextYielded.done)
-      // 🔁 recursion traversal call (with next node)
-      nextYielded = await nextIterator.next({
-        promise: recursiveCallback({ nodeInstance: nextYielded.value.node /* next node */, traversalDepth, additionalChildNode }, { parentTraversalArg, traverseCallContext }),
-      })
-
-    // port traversal result - last node iterator feed should be an array of resolved node promises that will be forwarded through this function
-    // forward array of resolved results
-    yield {
-      config: {
-        port: forkObject.fork.destination, // the related port which the stage originated from.
-      },
-      result: nextYielded.value, // last yielded value is the result array.
-    }
-  }
 }

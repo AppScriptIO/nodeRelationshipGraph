@@ -129,7 +129,6 @@
     "labels": ["Port"],
     "properties": {
       "direction": "output",
-      "handlePropagationImplementation": "chronological",
       "key": "6d9a6745-2abe-451c-9dd2-bba28890a995"
     }
   }, {
@@ -241,7 +240,6 @@
     "identity": 9738,
     "labels": ["Stage", "Process", "Port"],
     "properties": {
-      "handlePropagationImplementation": "allPromise",
       "key": "9905ddbf-e57e-4f74-9f0b-74fd725321f6",
       "name": "dataItem-key-0",
       "timerDelay": 0
@@ -320,7 +318,6 @@
     "labels": ["Port"],
     "properties": {
       "direction": "output",
-      "handlePropagationImplementation": "chronological",
       "key": "cba8a6fe-b626-4d4c-8720-fdd11297b535"
     }
   }, {
@@ -780,6 +777,7 @@
     "end": 9738,
     "type": "FORK",
     "properties": {
+      "handlePropagationImplementation": "allPromise",
       "key": "e5d93629-974c-4428-8f2a-e889574b408f"
     }
   }, {
@@ -946,6 +944,7 @@
     "type": "FORK",
     "properties": {
       "key": "3086d2b6-d3ca-4873-9136-d9bd3b5e2d26",
+      "handlePropagationImplementation": "chronological",
       "order": "1"
     }
   }, {

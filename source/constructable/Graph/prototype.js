@@ -281,3 +281,63 @@ export const { traverse } = {
     else throw new Error(`• Unsupported node type for traversal function - ${nodeInstance.labels}`)
   },
 }
+
+/** next iterator returns entrypoint nodes (Stage or SubgraphTemplate nodes)
+ * @param nodeIterator - iterator of object { node: <node data> }
+ */
+export async function traverseIterationRecursiveCallback({ traversalIterator, graphInstance, traversalDepth, eventEmitter, additionalChildNode, parentTraversalArg, traverseCallContext }) {
+  // first call is used to initialize the function (using non-standard function.sent)
+  let nextYielded = await traversalIterator.next({ eventEmitterCallback: (...args) => eventEmitter.emit('nodeTraversalCompleted', ...args) })
+  while (!nextYielded.done)
+    // 🔁 recursion traversal call (with next node)
+    nextYielded = await traversalIterator.next({
+      traversalPromise: graphInstance::graphInstance.traverse(
+        { nodeInstance: nextYielded.value.node /* next node */, traversalDepth, additionalChildNode },
+        { parentTraversalArg, traverseCallContext },
+      ),
+    })
+  return nextYielded.value // last yielded value is the result array.
+}
+
+/**
+ * Controls execution of node traversals & Hands over control to implementation:
+ *  1. Accepts new nodes from implementing function.
+ *  2. returns back to the implementing function a promise, handing control of flow and arragement of running traversals.
+ * @return {iterator feed of object} - {config: { port: <port node> }, result: <array of next nodes>}
+ */
+export async function* traverseGroupIterationRecursiveCall({
+  groupIterator /** Feeding iterator that will accept node parameters for traversals */,
+  processDataCallback,
+  aggregator,
+  graphInstance = this,
+  traversalDepth,
+  eventEmitter,
+  traversalConfig,
+  additionalChildNode,
+  parentTraversalArg,
+  traverseCallContext,
+}: {
+  eventEmitter: Event,
+}) {
+  if (!traversalConfig.shouldContinue()) return // skip traversal
+  traversalDepth += 1 // increase traversal depth
+  // port traversal result - last node iterator feed should be an array of resolved node promises that will be forwarded through this function
+  // forward array of resolved results
+  for await (let { group } of groupIterator)
+    yield {
+      group: {
+        result: await graphInstance::graphInstance.traverseIterationRecursiveCallback({
+          traversalIterator: group.traversalIterator,
+          graphInstance,
+          traversalDepth,
+          eventEmitter,
+          additionalChildNode,
+          parentTraversalArg,
+          traverseCallContext,
+        }),
+        config: {
+          portNode: group.config.forkEdge.destination, // the related port which the stage originated from.
+        },
+      },
+    }
+}
