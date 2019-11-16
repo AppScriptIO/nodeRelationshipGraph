@@ -10,6 +10,7 @@ export const nodeLabel = {
   file: 'File',
   function: 'Function',
   nodeReference: 'NodeReference', // holding reference information to a node that exist in another location, when imported to an existing graph database, a connection will be created to the referenced graph
+  reroute: 'Reroute', // reroute/relay
 }
 
 export const connectionType = {

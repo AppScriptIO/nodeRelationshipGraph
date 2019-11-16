@@ -1,6 +1,7 @@
 /**
  * SubgraphTemplate node is an entrypoint node that the graph traversal can be started from.
  * load `subgraph template` node parameters for traversal call usage.
+ * @return {Any} a result which could be an array or a string, etc. According to the Aggregation & traversal interception implementation used.
  */
 export async function traverseSubgraphTemplate({ nodeInstance, graphInstance = this, traversalConfig }) {
   const { root, extend, insertArray } = await graphInstance.databaseWrapper.getSubgraphTemplateElement({ concreteDatabase: graphInstance.database, nodeID: nodeInstance.identity })

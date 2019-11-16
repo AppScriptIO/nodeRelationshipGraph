@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 
 /**
  * Stage node is an entrypoint node that the graph traversal can be started from.
- *
+ * @return {Any} a result which could be an array or a string, etc. According to the Aggregation & traversal interception implementation used.
  */
 // Note: wrapping in object allows the usage of decorators as they couldn't be used on separate functions.
 export const { stageNode } = {

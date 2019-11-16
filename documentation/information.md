@@ -46,6 +46,11 @@ Different applications may use this module:
     - Nodes types concept: 
         - Each node type has plugable implementations.
         - Each node gives instructions to traverser and returns a specific return type that is used in the integration layer (core layer) of the graph traversal module.
+- Classification of node types/labels: 
+    - Entrypoint/Root nodes: are nodes that can be traversed, and provided as an entrypoint to the graph.
+        - e.g. Stage, SubgraphTemplate.
+    - Nested/Supplement nodes: are nodes which are nested to other nodes and provide features for the traversal. The traversion could not start from these nodes.
+        - e.g. Port, Configuration, Process.
 
 - **Graph type & features** - Usually the Graph that is used is Directed, Acyclic or cyclic, Weighed, Sparsed _(few edges in comparison to complexity analysis)_, & immediately-processed graph (created to be processed during traversal).  e.g. Trees/Herarchies/Nested Treemaps.
     - **Stage nodes**: are node traverser positions that guide the traverser to perform actions involding adverse effects or returning results.
