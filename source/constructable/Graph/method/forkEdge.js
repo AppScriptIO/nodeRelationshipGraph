@@ -1,4 +1,5 @@
 import assert from 'assert'
+import promiseProperRace from '@dependency/promiseProperRace'
 
 /**
  * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
@@ -107,8 +108,9 @@ const handlePropagation = {
 
     let iteratorObject = await nodeIteratorFeed.next() // initialize generator function execution and pass execution configurations.
     while (!iteratorObject.done) {
-      yield { node: iteratorObject.value.nade }
-      nodePromiseArray.push(function.sent.traversalPromise)
+      yield { node: iteratorObject.value.node }
+      let traversalPromise = function.sent.traversalPromise
+      nodePromiseArray.push(traversalPromise)
       iteratorObject = await nodeIteratorFeed.next()
     }
 
@@ -117,14 +119,14 @@ const handlePropagation = {
         return resolvedPromiseArray[0] // as only one promise is return in the array - the first promise to be resolved.
       })
       .catch(error => {
-        if (process.env.SZN_DEBUG == 'true') console.error(`🔀⚠️ promiseProperRace rejected because: ${error}`)
-        else console.log(`🔀⚠️ promiseProperRace rejected because: ${error}`)
+        // TODO: catch all error and output them for each rejected promise. (edit promiseProperRace module)
+        console.error(`🔀⚠️ promiseProperRace rejected because: ${error}`)
       })
 
     if (nodeResolvedResult) {
       emit(nodeResolvedResult) // emitting result is not immediate in this case, because the objective is to get a single resolved promise, and "promiseProperRace" maybe doesn't have the ability to stop uncompleted promises.
       return [nodeResolvedResult] // returned results must be wrapped in array so it could be forwarded through yeild* generator.
-    }
+    } else return []
   },
 
   /**
