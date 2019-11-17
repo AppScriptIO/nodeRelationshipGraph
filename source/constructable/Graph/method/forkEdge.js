@@ -83,6 +83,21 @@ const handlePropagation = {
     }
     return nodeResultList
   },
+  // Note: kept for future reference. Implementation using while loop instead of `for await`, as it allows for passing initial config value for the generator function (that will use function.sent to catch it.)
+  chronological_implementationUsingWhileLoop: async function*({ nodeIteratorFeed, emit }) {
+    let nodeResultList = []
+
+    let iteratorObject = await nodeIteratorFeed.next() // initialize generator function execution and pass execution configurations.
+    while (!iteratorObject.done) {
+      yield { node: iteratorObject.value.node }
+      let nextResult = await function.sent.traversalPromise
+      emit(nextResult) // emit for immediate consumption
+      nodeResultList.push(nextResult)
+      iteratorObject = await nodeIteratorFeed.next()
+    }
+
+    return nodeResultList
+  },
 
   /**
    * Race promise of nodes - first to resolve is the one to be returned
@@ -90,7 +105,7 @@ const handlePropagation = {
   raceFirstPromise: async function*({ nodeIteratorFeed, emit }) {
     let nodePromiseArray = []
 
-    iteratorObject = await nodeIteratorFeed.next() // initialize generator function execution and pass execution configurations.
+    let iteratorObject = await nodeIteratorFeed.next() // initialize generator function execution and pass execution configurations.
     while (!iteratorObject.done) {
       yield { node: iteratorObject.value.nade }
       nodePromiseArray.push(function.sent.traversalPromise)
@@ -119,12 +134,13 @@ const handlePropagation = {
     let nodePromiseArray = [] // order of call initialization
     let resolvedOrderedNodeResolvedResult = [] // order of completion
 
-    iteratorObject = await nodeIteratorFeed.next() // initialize generator function execution and pass execution configurations.
+    let iteratorObject = await nodeIteratorFeed.next() // initialize generator function execution and pass execution configurations.
     while (!iteratorObject.done) {
       yield { node: iteratorObject.value.node }
-      let traversalPromise = function.sent.traversalPromise
-        .then(result => emit(result)) // emit result for immediate usage by lisnters
-        .then(result => resolvedOrderedNodeResolvedResult.push(result)) // arrange promises according to resolution order.
+      let traversalPromise = function.sent.traversalPromise.then(result => {
+        emit(result) // emit result for immediate usage by lisnters
+        resolvedOrderedNodeResolvedResult.push(result) // array of node process results.
+      }) // arrange promises according to resolution order.
       nodePromiseArray.push(traversalPromise) // promises are in the same arrangment of connection iteration.
       iteratorObject = await nodeIteratorFeed.next()
     }
@@ -142,21 +158,5 @@ const handlePropagation = {
     // for (let nextResult of nodeResolvedResultArray) {
     //   emit(nextResult)
     // }
-  },
-
-  // implementation using while loop instead of `for await`, as it allows for passing initial config value for the generator function (that will use function.sent to catch it.)
-  chronological_implementationUsingWhileLoop: async function*({ nodeIteratorFeed, emit }) {
-    let nodeResultList = []
-
-    iteratorObject = await nodeIteratorFeed.next() // initialize generator function execution and pass execution configurations.
-    while (!iteratorObject.done) {
-      yield { node: iteratorObject.value.node }
-      let nextResult = await function.sent.traversalPromise
-      emit(nextResult) // emit for immediate consumption
-      nodeResultList.push(nextResult)
-      iteratorObject = await nodeIteratorFeed.next()
-    }
-
-    return nodeResultList
   },
 }
