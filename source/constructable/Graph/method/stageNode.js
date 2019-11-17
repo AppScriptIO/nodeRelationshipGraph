@@ -53,7 +53,7 @@ export const { stageNode } = {
           aggregator,
           getImplementation: implementationKey =>
             traversalConfig.getImplementationCallback({ key: 'processNode', graphInstance })({
-              nodeImplementationKey: { processNode: implementationKey } || undefined,
+              nodeImplementationKey: implementationKey ? { processNode: implementationKey } : undefined,
             }),
           graphInstance,
         },
@@ -66,7 +66,8 @@ export const { stageNode } = {
      */
     let groupIterator = graphInstance::graphInstance.forkEdge({
       stageNode: nodeInstance,
-      getImplementation: implementationKey => traversalConfig.getImplementationCallback({ key: 'portNode', graphInstance })({ nodeImplementationKey: { portNode: implementationKey } || undefined }),
+      getImplementation: implementationKey =>
+        traversalConfig.getImplementationCallback({ key: 'portNode', graphInstance })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
       additionalChildNode,
     })
 

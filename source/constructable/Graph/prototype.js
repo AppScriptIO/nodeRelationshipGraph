@@ -105,7 +105,7 @@ export class TraversalConfig {
     return ({ nodeImplementationKey }) => {
       let implementationKey = this.getTraversalImplementationKey({ key: key, nodeImplementationKey })
       let implementation = graphInstance.traversal[key][implementationKey]
-      assert(implementation, '• `implementation` concerete function must be registered, the implementationKey provided doesn`t match any of the registered implementaions.')
+      assert(implementation, `• 'implementation' concerete function must be registered, the implementationKey "${implementationKey}" provided doesn't match any of the registered implementaions.`)
       return implementation
     }
   }
@@ -119,21 +119,20 @@ export class TraversalConfig {
   calculateImplementationHierarchy({ nodeImplementationKey = {} } = {}) {
     // overwrite (for all subtraversals) implementation through directly passed parameters - overwritable traversal implementation ignoring each nodes configuration, i.e. overwritable over nodeInstance own property implementation keys
     /** Pick implementation function from implemntation keys
-     * Parameter hirerchy for graph traversal implementations: (1 as first priority)
-     * 1. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
-     * 2. call parameters that are passed directly
-     * 3. node instance and edge properties
-     * 4. node configurations
-     * 5. default values specified in the function scope.
-     * 6. parent parameters
-     */
+     ** Parameter hirerchy for graph traversal implementations: (1 as first priority):*/
     let implementationKey = Object.assign(
       {},
+      // * 6. default values specified in the function scope.
       this.traversalImplementationHierarchy.default,
-      this.traversalImplementationHierarchy.parent,
-      this.traversalImplementationHierarchy.configuration,
-      nodeImplementationKey,
+      // * 5. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
       this.traversalImplementationHierarchy.context,
+      // * 4. parent parameters
+      this.traversalImplementationHierarchy.parent,
+      // * 3. node configurations
+      this.traversalImplementationHierarchy.configuration,
+      // * 2. node instance and edge properties
+      nodeImplementationKey,
+      // * 1. call parameters that are passed directly
       this.traversalImplementationHierarchy.parameter,
     )
     return implementationKey
