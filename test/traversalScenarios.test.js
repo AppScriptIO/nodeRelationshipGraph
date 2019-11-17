@@ -13,7 +13,7 @@ import { Database } from '../source/constructable/Database.class.js'
 import { Context } from '../source/constructable/Context.class.js'
 import * as schemeReference from '../source/dataModel/graphSchemeReference.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
-import graphData from './asset/graphData.exported.json' // load sample data
+import graphData from './asset/graph.json' // load sample data
 const fixture = { traversalResult: ['dataItem-key-1'] }
 
 async function clearGraphData() {
@@ -69,37 +69,28 @@ let configuredGraph = Graph.clientInterface({
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
   setup(async () => await clearGraphData())
 
-  suite('nodeConnection subgraph:', () => {
-    const fixture = [
-      'dataItem-key-1',
-      'dataItem-key-2',
-      /*skipped* 'dataItem-key-3',*/
-      'dataItem-key-4',
-      'dataItem-key-5',
-      'dataItem-key-6',
-      'dataItem-key-7',
-      /*skipped* 'dataItem-key-8',*/
-      'dataItem-key-9',
-    ]
-    let graph = new configuredGraph({})
-    test('Should traverse graph successfully ', async () => {
-      await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: '9160338f-6990-4957-9506-deebafdb6e29', implementationKey: {} })
-      chaiAssertion.deepEqual(result, fixture)
-    })
-  })
-
-  suite('nodeConnectionParallelTraversal subgraph:', () => {
-    const fixture = ['dataItem-key-0', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4', 'dataItem-key-1']
+  suite.only('Reroute node with Extend, Insert, Reference edges:', () => {
+    const fixture = ['dataItem-key-1', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: 'd07188cb-d0d3-4d64-9308-3f38d817411b', implementationKey: {} })
+      let result = await graph.traverse({ nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
   })
 
-  suite.only('nodePort subgraph', () => {
+  suite('Fork edge & Port node - propgation implementations: parallel, chronological, etc.', () => {
+    //
+    const fixture = ['dataItem-0', 'parallel-1', 'parallel-2', 'parallel-3', 'parallel-4', 'chronological-1', 'chronological-2', 'chronological-3', 'race-firstSetteled']
+    let graph = new configuredGraph({})
+    test('Should traverse graph successfully ', async () => {
+      await graph.load({ graphData })
+      let result = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
+      chaiAssertion.deepEqual(result, fixture)
+    })
+  })
+
+  suite('shellscript subgraph', () => {
     const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
     contextInstance[Context.reference.key.setter]({
       // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
@@ -113,17 +104,16 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite('Extending nodePlacement subgraph data:', () => {
-    const fixture = ['dataItem-key-1', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4']
-    let graph = new configuredGraph({})
-    test('Should traverse graph successfully', async () => {
-      await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4', implementationKey: {} })
-      chaiAssertion.deepEqual(result, fixture)
-    })
-  })
-
   suite('CONFIGURE relationship:', () => {
+    // 'dataItem-key-1',
+    // 'dataItem-key-2',
+    // /*skipped* 'dataItem-key-3',*/
+    // 'dataItem-key-4',
+    // 'dataItem-key-5',
+    // 'dataItem-key-6',
+    // 'dataItem-key-7',
+    // /*skipped* 'dataItem-key-8',*/
+    // 'dataItem-key-9',
     const fixture = ['stage-1'] // traverses graph and skips "stage-0"
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
@@ -132,7 +122,4 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
       chaiAssertion.deepEqual(result, fixture)
     })
   })
-
-  // TODO: Define node inheritance concept and implement it.
-  // suite('nodeInheritance subgraph data:', () => {})
 })
