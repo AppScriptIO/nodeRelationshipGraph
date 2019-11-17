@@ -63,6 +63,6 @@ export async function rerouteNode({ graphInstance, nodeInstance, traversalConfig
   // set additional parameters
   arguments[0].traversalConfig = traversalConfig
   arguments[0].nodeInstance = referencedNode
-  arguments[0].additionalChildNode = [...(arguments[0].additionalChildNode || []), ...additionalChildNode]
+  arguments[0].additionalChildNode = additionalChildNode
   return await graphInstance.traverse(...arguments)
 }

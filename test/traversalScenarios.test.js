@@ -69,37 +69,12 @@ let configuredGraph = Graph.clientInterface({
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
   setup(async () => await clearGraphData())
 
-  suite.only('Reroute node with Extend, Insert, Reference edges:', () => {
-    const fixture = ['dataItem-key-1', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4']
+  suite('Reroute node with Extend, Insert, Reference edges:', () => {
+    const fixture = ['referencedTarget-0', 'insert-before', 'dataItem-1', 'insert-after']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4', implementationKey: {} })
-      chaiAssertion.deepEqual(result, fixture)
-    })
-  })
-
-  suite('Fork edge & Port node - propgation implementations: parallel, chronological, etc.', () => {
-    //
-    const fixture = ['dataItem-0', 'parallel-1', 'parallel-2', 'parallel-3', 'parallel-4', 'chronological-1', 'chronological-2', 'chronological-3', 'race-firstSetteled']
-    let graph = new configuredGraph({})
-    test('Should traverse graph successfully ', async () => {
-      await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
-      chaiAssertion.deepEqual(result, fixture)
-    })
-  })
-
-  suite('shellscript subgraph', () => {
-    const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
-    contextInstance[Context.reference.key.setter]({
-      // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
-      fileContext: { shellscript: path.join(__dirname, './asset/shellscript.sh') },
-    })
-    let graph = new configuredGraph({})
-    test('Should traverse graph successfully', async () => {
-      await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
   })
@@ -119,6 +94,31 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: 'aadfac41-66bf-4b78-a039-1e25480a2f50', implementationKey: { processNode: 'returnDataItemKey' } })
+      chaiAssertion.deepEqual(result, fixture)
+    })
+  })
+
+  suite('Fork edge & Port node - propgation implementations: parallel, chronological, etc.', () => {
+    //
+    const fixture = ['dataItem-0', 'parallel-1', 'parallel-2', 'parallel-3', 'parallel-4', 'chronological-1', 'chronological-2', 'chronological-3', 'race-firstSetteled']
+    let graph = new configuredGraph({})
+    test('Should traverse graph successfully ', async () => {
+      await graph.load({ graphData })
+      let result = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
+      chaiAssertion.deepEqual(result, fixture)
+    })
+  })
+
+  suite('Execute edge with Process node & related connections', () => {
+    const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
+    contextInstance[Context.reference.key.setter]({
+      // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
+      fileContext: { shellscript: path.join(__dirname, './asset/shellscript.sh') },
+    })
+    let graph = new configuredGraph({})
+    test('Should traverse graph successfully', async () => {
+      await graph.load({ graphData })
+      let result = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
   })
