@@ -69,7 +69,7 @@ let configuredGraph = Graph.clientInterface({
 suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
   setup(async () => await clearGraphData())
 
-  suite('nodeConnection subgraph template:', () => {
+  suite('nodeConnection subgraph:', () => {
     const fixture = [
       'dataItem-key-1',
       'dataItem-key-2',
@@ -89,7 +89,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite('nodeConnectionParallelTraversal subgraph template:', () => {
+  suite('nodeConnectionParallelTraversal subgraph:', () => {
     const fixture = ['dataItem-key-0', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4', 'dataItem-key-1']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
@@ -99,7 +99,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite.only('nodePort subgraph template', () => {
+  suite.only('nodePort subgraph', () => {
     const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
     contextInstance[Context.reference.key.setter]({
       // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
@@ -113,7 +113,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite('Extending nodePlacement subgraph template data:', () => {
+  suite('Extending nodePlacement subgraph data:', () => {
     const fixture = ['dataItem-key-1', 'dataItem-key-3', 'dataItem-key-2', 'dataItem-key-4']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
@@ -134,5 +134,5 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
   })
 
   // TODO: Define node inheritance concept and implement it.
-  // suite('nodeInheritance subgraph template data:', () => {})
+  // suite('nodeInheritance subgraph data:', () => {})
 })

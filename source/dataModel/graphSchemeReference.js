@@ -61,5 +61,5 @@ export const rerouteProperty = {
 }
 
 export const referenceProperty = {
-  type: ['node', 'returnedValue'],
+  implementation: ['node', 'returnedValue'],
 }

@@ -94,7 +94,7 @@
     }
   }, {
     "identity": 9718,
-    "labels": ["SubgraphTemplate"],
+    "labels": ["Reroute"],
     "properties": {
       "key": "5ab7f475-f5a1-4a23-bd9d-161e26e1aef6",
       "name": "nodePort"
@@ -197,7 +197,7 @@
     }
   }, {
     "identity": 9732,
-    "labels": ["SubgraphTemplate"],
+    "labels": ["Reroute"],
     "properties": {
       "key": "8c91bb3c-19fe-49fd-8c33-391d53033af4",
       "name": "nodeInheritance"
@@ -210,7 +210,7 @@
     }
   }, {
     "identity": 9734,
-    "labels": ["SubgraphTemplate"],
+    "labels": ["Reroute"],
     "properties": {
       "key": "9160338f-6990-4957-9506-deebafdb6e29",
       "name": "nodeConnection"
@@ -225,7 +225,7 @@
     }
   }, {
     "identity": 9736,
-    "labels": ["SubgraphTemplate"],
+    "labels": ["Reroute"],
     "properties": {
       "key": "968f644a-ac89-11e9-a2a3-2a2ae2dbcce4",
       "name": "Extending nodePlacement"
@@ -253,7 +253,7 @@
     }
   }, {
     "identity": 9740,
-    "labels": ["SubgraphTemplate"],
+    "labels": ["Reroute"],
     "properties": {
       "key": "aadfac41-66bf-4b78-a039-1e25480a2f50",
       "name": "Configure relationship"
@@ -342,7 +342,7 @@
     }
   }, {
     "identity": 9753,
-    "labels": ["SubgraphTemplate"],
+    "labels": ["Reroute"],
     "properties": {
       "key": "d07188cb-d0d3-4d64-9308-3f38d817411b",
       "name": "nodeConnectionParallelTraversal"
@@ -407,7 +407,7 @@
     }
   }, {
     "identity": 9762,
-    "labels": ["SubgraphTemplate"],
+    "labels": ["Reroute"],
     "properties": {
       "key": "f463dc81-c871-4293-8a67-0a85e6d82473",
       "name": "nodePlacement"
@@ -478,9 +478,10 @@
     "identity": 13596,
     "start": 9740,
     "end": 9710,
-    "type": "ROOT",
+    "type": "REFERENCE",
     "properties": {
-      "key": "73d13f3f-a4a3-469d-a78b-c6b0626fce56"
+      "key": "73d13f3f-a4a3-469d-a78b-c6b0626fce56",
+      "implementation": "node"
     }
   }, {
     "identity": 13597,
@@ -537,9 +538,10 @@
     "identity": 13601,
     "start": 9734,
     "end": 9713,
-    "type": "ROOT",
+    "type": "REFERENCE",
     "properties": {
-      "key": "6a8c13f9-b3b7-4bfa-9e97-a555aa007aea"
+      "key": "6a8c13f9-b3b7-4bfa-9e97-a555aa007aea",
+      "implementation": "node"
     }
   }, {
     "identity": 13604,
@@ -670,9 +672,10 @@
     "identity": 13618,
     "start": 9732,
     "end": 9726,
-    "type": "ROOT",
+    "type": "REFERENCE",
     "properties": {
-      "key": "2396bb4a-2a94-4885-8fdc-f852f491d616"
+      "key": "2396bb4a-2a94-4885-8fdc-f852f491d616",
+      "implementation": "node"
     }
   }, {
     "identity": 13619,
@@ -784,9 +787,10 @@
     "identity": 13629,
     "start": 9753,
     "end": 9738,
-    "type": "ROOT",
+    "type": "REFERENCE",
     "properties": {
-      "key": "002a24e5-1071-4aac-8ac7-fcfdea4843c9"
+      "key": "002a24e5-1071-4aac-8ac7-fcfdea4843c9",
+      "implementation": "node"
     }
   }, {
     "identity": 13632,
@@ -993,9 +997,10 @@
     "identity": 13655,
     "start": 9718,
     "end": 9755,
-    "type": "ROOT",
+    "type": "REFERENCE",
     "properties": {
-      "key": "450170e6-dea7-49d9-9d6a-9468ed89fba7"
+      "key": "450170e6-dea7-49d9-9d6a-9468ed89fba7",
+      "implementation": "node"
     }
   }, {
     "identity": 13656,
@@ -1029,9 +1034,10 @@
     "identity": 13659,
     "start": 9762,
     "end": 9757,
-    "type": "ROOT",
+    "type": "REFERENCE",
     "properties": {
-      "key": "16e6f071-4993-4398-928e-f6399acb575d"
+      "key": "16e6f071-4993-4398-928e-f6399acb575d",
+      "implementation": "node"
     }
   }, {
     "identity": 13660,

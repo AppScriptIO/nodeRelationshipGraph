@@ -24,7 +24,7 @@ export async function rerouteNode({ graphInstance, nodeInstance, traversalConfig
   // get referencedNode and handle extended node. referencedNode will be used as entrypoint to traversal call
   let referencedNode
   if (reference)
-    switch (reference.properties.type) {
+    switch (reference.connection.properties.implementation) {
       case 'returnedValue':
         // traverse the destination and extract node from the result value.
         let resultNodeArray = await graphInstance.traverse(
