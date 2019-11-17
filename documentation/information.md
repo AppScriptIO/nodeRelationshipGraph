@@ -48,9 +48,14 @@ Different applications may use this module:
         - Each node gives instructions to traverser and returns a specific return type that is used in the integration layer (core layer) of the graph traversal module.
 - Classification of node types/labels: 
     - Entrypoint/Root nodes: are nodes that can be traversed, and provided as an entrypoint to the graph.
-        - e.g. Stage, SubgraphTemplate.
+        - e.g. Stage, Reroute/SubgraphTemplate.
     - Nested/Supplement nodes: are nodes which are nested to other nodes and provide features for the traversal. The traversion could not start from these nodes.
         - e.g. Port, Configuration, Process.
+    - Reference/Reroute nodes: Nodes that are treated as a placement for other nodes (referencing other nodes).
+        Reference nodes could be used as: (Maybe check https://www.worldscientific.com/doi/abs/10.1142/9789812384720_0001)
+            - Node replacement positions: Where the position node is ment to be replaced with the target node (referenced node).
+            - Node placement in subgraph: Where the reference nodes are ment to be placed into a target subgraph (e.g. added into the next relatioship of a stage).
+        - e.g. Reroute, Switch nodes, and maybe Reroute/SubgraphTemplate could be considered a reference node.
 
 - **Graph type & features** - Usually the Graph that is used is Directed, Acyclic or cyclic, Weighed, Sparsed _(few edges in comparison to complexity analysis)_, & immediately-processed graph (created to be processed during traversal).  e.g. Trees/Herarchies/Nested Treemaps.
     - **Stage nodes**: are node traverser positions that guide the traverser to perform actions involding adverse effects or returning results.
@@ -65,6 +70,10 @@ Different applications may use this module:
     - **Path** - is a chain of edges that specifies a path from & to a pair of nodes. A sequence of edges/connections that connect a sequence of nodes.
     - **Lazy execution during traversal** - on each node reached the traversal could be halted or continued and a processing implementation could be executed before continuing traversing or have a side effect during execution.
     - **Node & edge filter** - some implementations can filter specific nodes through conditions.
+    - Node Reference:
+        - External reference: holding reference information to a node that exist in another location, when imported to an existing graph database, a connection will be created to the referenced graph.
+        - Placement references: a way to insert nodes into a subgraph.
+        - Replacement reference: replaces the current position with another node.
     - **node inheritance** _(subnode-supernode / node extension/inheritance)_ - node that extends another node, in a way that any changes of the parent node is retained by the child node. 
     This is a better implementaiton for tree templates (extending an existing node tree without changing it) that used pathPointer or connectionPathSequence to reach the desired position for adding nodes inthe nested subtree/subnodes.
         - override connection - node that extends/inherit from another node and overrides a specific connection of the supernode, if the supernode connectionKey is removed then the overriding connection of the subclass will be ignored.

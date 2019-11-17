@@ -12,34 +12,21 @@ export async function evaluatePosition({ node, graphInstance = this }) {
   // evaluate configuration by traversing subgraph nodes (traverse switch stage node) & replace destination node with a configuration node:
   let configurationMap = new Map() // maps evaluated configuration to the CONFIGURE relationships.
   for (let configure of configureArray)
-    if (configure.source.labels.includes(nodeLabel.stage)) {
-      // TODO: create an instance graph from the current graphInstance, to allow passing additional context parametrs.
-      let configurationNodeArray = await graphInstance.traverse(
-        /* TODO: Note: this is a quick implementation because digging into the core code is time consuming, the different concepts used in here could be improved and built upon other already existing concepts: 
-          • 'traversalCallContext' - the 2nd provided argument could be instead applied as a regular Context specific for the call, by creating a new graphInstance chain with it's unique context, in addition to the already existing context instance.
-          was this done ? ~~• ConditionAggregator & traverseThenProcessWithLogicalOperator implementations could be integratted into the other implementations.~~
-        */
+    if (configure.source.labels.includes(nodeLabel.reroute)) {
+      // if reroute node, then request resolution to the reference node
+      let configurationNode = await graphInstance.traverse(
         {
           nodeInstance: configure.source,
-          implementationKey: {
-            processNode: 'switchCase',
-            traversalInterception: 'traverseThenProcessWithLogicalOperator',
-            aggregator: 'ConditionAggregator',
-          },
         },
         {
           traverseCallContext: {
-            targetNode: configure.destination,
+            targetNode: configure.destination, // provide access in the reroute for the target node caller requesting the resolution of the reference.
           },
         },
-      ) // traverse subgraph to retrieve a configuration node.
-      if (configurationNodeArray.length > 1) throw new Error('• CONFIGURE relationship that returns multiple configurations is not supported.')
-      else if (configurationNodeArray.length != 0) {
-        let configurationNode = configurationNodeArray[0]
-        assert(configurationNode.labels.includes(nodeLabel.configuration), `• CONFIGURE sub-graph traversal must return a Configuration node.`)
-        // replace destination node with appropriate evaluated configuration:
-        configurationMap.set(configure, configurationNode)
-      }
+      )
+      assert(configurationNode.labels.includes(nodeLabel.configuration), `• CONFIGURE sub-graph traversal must return a Configuration node.`)
+      // replace destination node with appropriate evaluated configuration:
+      configurationMap.set(configure, configurationNode)
     }
 
   // extract configuration parameters from configure relationship:

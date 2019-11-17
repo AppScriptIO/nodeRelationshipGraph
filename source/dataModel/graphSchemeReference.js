@@ -1,36 +1,36 @@
 export const nodeLabel = {
-  subgraphTemplate: 'SubgraphTemplate',
-  port: 'Port',
   stage: 'Stage',
-  switch: 'Switch',
-  // switchBoolean: 'SwitchBoolean',
+  port: 'Port',
   process: 'Process',
   configuration: 'Configuration',
   evaluation: 'Evaluation',
   file: 'File',
   function: 'Function',
-  nodeReference: 'NodeReference', // holding reference information to a node that exist in another location, when imported to an existing graph database, a connection will be created to the referenced graph
-  reroute: 'Reroute', // reroute/relay
+  reroute: 'Reroute',
+  // subgraphTemplate: 'SubgraphTemplate',
+  // nodeReference: 'NodeReference',
+  // switch: 'Switch',
+  // switchBoolean: 'SwitchBoolean',
 }
 
 export const connectionType = {
+  // Reroute
+  reference: 'REFERENCE',
+  insert: 'INSERT',
+  extend: 'EXTEND',
   // Stage
   next: 'NEXT',
   fork: 'FORK',
   configure: 'CONFIGURE',
-  // run: 'RUN', // run as subgraph where the result of the subgraph traversal is to be used in the stage node calling it.
-  // SubgraphTemplate
-  insert: 'INSERT',
-  extend: 'EXTEND',
-  root: 'ROOT',
   // Process
   execute: 'EXECUTE',
   resource: 'RESOURCE',
   value: 'VALUE', // {type: 'node' || 'properties'} i.e. return the node reference or return its properties.
-  // Evaluation
+  // evaluation
   case: 'CASE',
   default: 'DEFAULT',
-
+  // root: 'ROOT',
+  // run: 'RUN', // run as subgraph where the result of the subgraph traversal is to be used in the stage node calling it.
   // inherit: 'INHERIT',
 }
 
@@ -55,3 +55,11 @@ export const evaluationOption = {
 }
 
 export const traversalOption = ['processNode', 'portNode', 'aggregator', 'traversalInterception']
+
+export const rerouteProperty = {
+  externalReferenceNodeKey: 'externalReferenceNodeKey',
+}
+
+export const referenceProperty = {
+  type: ['node', 'returnedValue'],
+}

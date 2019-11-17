@@ -10,13 +10,13 @@ import { extractConfigProperty } from '../../../utility/extractPropertyFromObjec
 // Each exported property ends up as the prototype property of the class.
 export * from './method/evaluatePosition.js'
 export * from './method/stageNode.js'
-export * from './method/subgraphTemplateNode.js'
+export * from './method/rerouteNode.js'
 export * from './method/forkEdge.js'
 export * from './method/executeEdge.js'
 export * as databaseWrapper from '../../dataModel/concreteDatabaseWrapper.js'
 export * as schemeReference from '../../dataModel/graphSchemeReference.js'
 import { stageNode } from './method/stageNode.js'
-import { traverseSubgraphTemplate } from './method/subgraphTemplateNode.js'
+import { rerouteNode } from './method/rerouteNode.js'
 
 // load graph into memory
 export async function load({ graphData, graphInstance = this } = {}) {
@@ -192,7 +192,7 @@ export class TraversalConfig {
 
   /** Set entrypoint nodes implementations (Note: quickly coded method for temporary solution) - TODO: integrate into traversal config implementation hierarchy and expose client allowing to add implementations or intercept them. */
   static entrypointNodeImplementation = {
-    [schemeReference.nodeLabel.subgraphTemplate]: traverseSubgraphTemplate,
+    [schemeReference.nodeLabel.reroute]: rerouteNode,
     [schemeReference.nodeLabel.stage]: stageNode,
   }
   getEntrypointNodeImplementation({ nodeLabelArray }) {
@@ -206,7 +206,7 @@ export class TraversalConfig {
  */
 // Note: wrapping in object allows the usage of decorators as they couldn't be used on separate functions.
 export const { traverse } = {
-  /** The `traverse` method is used to traverse entrypoint nodes only (Stage & SubgraphTemplate). */
+  /** The `traverse` method is used to traverse entrypoint nodes only (Stage & Reroute/SubgraphTemplate). */
   @proxifyMethodDecorator(async (target, thisArg, argumentsList, targetClass, methodName) => {
     // create node instance, in case string key is passed as parameter.
     let { nodeInstance /* type Node */, nodeKey, nodeID, graphInstance = thisArg } = argumentsList[0]
@@ -285,7 +285,7 @@ export const { traverse } = {
   },
 }
 
-/** next iterator returns entrypoint nodes (Stage or SubgraphTemplate nodes)
+/** next iterator returns entrypoint nodes (Stage or Reroute/SubgraphTemplate nodes)
  * @param nodeIterator - iterator of object { node: <node data> }
  */
 export async function traverseIterationRecursiveCallback({ traversalIterator, graphInstance, traversalDepth, eventEmitter, additionalChildNode, parentTraversalArg, traverseCallContext }) {
