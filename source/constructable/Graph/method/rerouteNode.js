@@ -1,3 +1,6 @@
+import * as schemeReference from '../../../dataModel/graphSchemeReference.js'
+import { isSelfEdge } from '../../../dataModel/concreteDatabaseWrapper.js'
+
 /**
  * Reroute/SubgraphTemplate node is an entrypoint node that the graph traversal can be started from.
  * load `subgraph template` node parameters for traversal call usage.
@@ -25,7 +28,14 @@ export async function rerouteNode({ graphInstance, nodeInstance, traversalConfig
   let referencedNode
   if (reference)
     switch (reference.connection.properties.implementation) {
-      case 'returnedValue':
+      // Run reference node in a separate traversal recursive scopes, and return result.
+      case 'returnNode':
+        // prevent circular traversal, in case multiple types are used for the same node and the reference edge is self edge:
+        if (isSelfEdge(reference)) {
+          // workaround is to remove the Reroute type from the labels array. TODO: consider allowing a parameter that controls which entrypoint node implementations are ignored.
+          let labelIndex = reference.destination.labels.indexOf(schemeReference.nodeLabel.reroute)
+          reference.destination.labels[labelIndex] += `-ignore` // keep the entry for debugging purposes.
+        }
         // traverse the destination and extract node from the result value.
         let resultNodeArray = await graphInstance.traverse(
           /* TODO: Note: this is a quick implementation because digging into the core code is time consuming, the different concepts used in here could be improved and built upon other already existing concepts: 
@@ -50,9 +60,10 @@ export async function rerouteNode({ graphInstance, nodeInstance, traversalConfig
 
         if (resultNodeArray.length > 1) throw new Error('• REFERENCE relationship that returns multiple nodes is not supported.')
         else if (resultNodeArray.length != 0) referencedNode = resultNodeArray[0]
-
+        return referencedNode
         break
-      case 'node':
+      // traverse reference node in the same traversal recursive scopes.
+      case 'traverseNode':
       default:
         referencedNode = reference.destination
         break

@@ -79,21 +79,12 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite('CONFIGURE relationship:', () => {
-    // 'dataItem-key-1',
-    // 'dataItem-key-2',
-    // /*skipped* 'dataItem-key-3',*/
-    // 'dataItem-key-4',
-    // 'dataItem-key-5',
-    // 'dataItem-key-6',
-    // 'dataItem-key-7',
-    // /*skipped* 'dataItem-key-8',*/
-    // 'dataItem-key-9',
-    const fixture = ['stage-1'] // traverses graph and skips "stage-0"
+  suite('Configure edge with Configuration node - evaluation & traversal implementations', () => {
+    const fixture = ['include-0', 'include-1']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: 'aadfac41-66bf-4b78-a039-1e25480a2f50', implementationKey: { processNode: 'returnDataItemKey' } })
+      let result = await graph.traverse({ nodeKey: '9160338f-6990-4957-9506-deebafdb6e29', implementationKey: { processNode: 'returnDataItemKey' } })
       chaiAssertion.deepEqual(result, fixture)
     })
   })
@@ -109,16 +100,16 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite('Execute edge with Process node & related connections', () => {
-    const fixture = ['dataItem-key-0', 'dataItem-key-2', 'dataItem-key-5', 'dataItem-key-1', 'dataItem-key-3']
+  suite('Execute edge with Process node & reference context.', () => {
+    const fixture = []
     contextInstance[Context.reference.key.setter]({
       // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
       fileContext: { shellscript: path.join(__dirname, './asset/shellscript.sh') },
     })
     let graph = new configuredGraph({})
-    test('Should traverse graph successfully', async () => {
+    test('Should traverse graph successfully - during which a shell script executed', async () => {
       await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
+      let result = await graph.traverse({ nodeKey: '28a486af-1c27-4183-8953-c40742a68ab0', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
   })

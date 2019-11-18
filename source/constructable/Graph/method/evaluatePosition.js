@@ -13,7 +13,7 @@ export async function evaluatePosition({ node, graphInstance = this }) {
   let configurationMap = new Map() // maps evaluated configuration to the CONFIGURE relationships.
   for (let configure of configureArray)
     if (configure.source.labels.includes(nodeLabel.reroute)) {
-      // if reroute node, then request resolution to the reference node
+      // if reroute node, then request resolution to the reference node (run in a separate traversal recursive scopes)
       let configurationNode = await graphInstance.traverse(
         {
           nodeInstance: configure.source,
