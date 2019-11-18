@@ -3,6 +3,10 @@
 import assert from 'assert'
 import * as schemeReference from '../dataModel/graphSchemeReference.js'
 
+export function isSelfEdge(edge) {
+  return edge.source.identity == edge.destination.identity
+}
+
 export async function getResource({ concreteDatabase, nodeID }) {
   let resourceArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.resource })
   assert(
@@ -51,7 +55,7 @@ export async function getNext({ concreteDatabase, nodeID }) {
 export async function getConfigure({ concreteDatabase, nodeID }) {
   let configureArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.configure })
   assert(
-    configureArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.configuration) || n.source.labels.includes(schemeReference.nodeLabel.stage)),
+    configureArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.configuration) || n.source.labels.includes(schemeReference.nodeLabel.reroute)),
     `• Unsupported node type for a CONFIGURE connection.`,
   ) // verify node type
   assert(
