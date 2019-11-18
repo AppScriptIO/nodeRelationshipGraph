@@ -3,10 +3,10 @@ export const nodeLabel = {
   port: 'Port',
   process: 'Process',
   configuration: 'Configuration',
-  evaluation: 'Evaluation',
   file: 'File',
   function: 'Function',
   reroute: 'Reroute',
+  // evaluation: 'Evaluation',
   // subgraphTemplate: 'SubgraphTemplate',
   // nodeReference: 'NodeReference',
   // switch: 'Switch',
@@ -22,11 +22,10 @@ export const connectionType = {
   next: 'NEXT',
   fork: 'FORK',
   configure: 'CONFIGURE',
-  // Process
+  // Process & Evaluation
   execute: 'EXECUTE',
   resource: 'RESOURCE',
   value: 'VALUE', // {type: 'node' || 'properties'} i.e. return the node reference or return its properties.
-  // evaluation
   case: 'CASE',
   default: 'DEFAULT',
   // root: 'ROOT',
