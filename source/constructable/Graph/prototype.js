@@ -15,8 +15,8 @@ export * from './method/forkEdge.js'
 export * from './method/executeEdge.js'
 export * as databaseWrapper from '../../dataModel/concreteDatabaseWrapper.js'
 export * as schemeReference from '../../dataModel/graphSchemeReference.js'
-import { stageNode } from './method/stageNode.js'
-import { rerouteNode } from './method/rerouteNode.js'
+import * as stageNode from './method/stageNode.js'
+import * as rerouteNode from './method/rerouteNode.js'
 
 // load graph into memory
 export async function load({ graphData, graphInstance = this } = {}) {
@@ -50,7 +50,7 @@ export async function count({ graphInstance = this } = {}) {
 }
 
 /** 
-* TODO:  REFACTOR adding Traversal description class - ability to pick a defined set of implementation keys to be used to gether - e.g. implementation type: Condition, Middleware, Template, Schema, Shellscript.
+ * TODO:  REFACTOR adding Traversal description class - ability to pick a defined set of implementation keys to be used to gether - e.g. implementation type: Condition, Middleware, Template, Schema, Shellscript.
  - https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/graphdb/traversal/TraversalConfig.html
  - Implement 'depthAffected' for the affected depth of the configure connections on a stage and its child nodes.
  */
@@ -60,6 +60,27 @@ export class TraversalConfig {
   evaluationHierarchy = {} // evaluation object that contains configuration relating to traverser action on the current position
   evaluation
   implementation
+  static defaultEvaluationHierarchyKey = {
+    propagation: schemeReference.evaluationOption.propagation.continue,
+    aggregation: schemeReference.evaluationOption.aggregation.include,
+  }
+  // implementation keys of node instance own config parameters and of default values set in function scope
+  // hardcoded default implementation values matching the implementations from the instance initialization of Graph class.
+  static defaultTraversalImplementationKey = {
+    processNode: 'returnDataItemKey',
+    portNode: 'propagationControl',
+    aggregator: 'AggregatorArray',
+    traversalInterception: 'processThenTraverse',
+    // entrypoint node implementations - in the core code
+    [schemeReference.nodeLabel.reroute]: 'traverseReference',
+    [schemeReference.nodeLabel.stage]: 'stageNode',
+  }
+
+  static entrypointNodeArray = [schemeReference.nodeLabel.reroute, schemeReference.nodeLabel.stage]
+  static entrypointNodeImplementation = {
+    [schemeReference.nodeLabel.reroute]: rerouteNode,
+    [schemeReference.nodeLabel.stage]: stageNode,
+  }
 
   constructor({ traversalImplementationHierarchy, evaluationHierarchy }) {
     this.traversalImplementationHierarchy = traversalImplementationHierarchy
@@ -81,6 +102,10 @@ export class TraversalConfig {
       evaluation: this.calculateEvaluationHierarchy(),
       implementation: this.getAllImplementation({ graphInstance }),
     }
+  }
+
+  getEntrypointNodeImplementation({ nodeLabel }) {
+    return TraversalConfig.entrypointNodeImplementation[nodeLabel][this.getTraversalImplementationKey({ key: nodeLabel })]
   }
 
   getAllImplementation({ graphInstance }) {
@@ -109,6 +134,7 @@ export class TraversalConfig {
       return implementation
     }
   }
+
   // get implementation functions
   getTraversalImplementationKey({ key, nodeImplementationKey } = {}) {
     let implementationKey = this.calculateImplementationHierarchy({ nodeImplementationKey })
@@ -123,7 +149,7 @@ export class TraversalConfig {
     let implementationKey = Object.assign(
       {},
       // * 6. default values specified in the function scope.
-      this.traversalImplementationHierarchy.default,
+      TraversalConfig.defaultTraversalImplementationKey,
       // * 5. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
       this.traversalImplementationHierarchy.context,
       // * 4. parent parameters
@@ -139,10 +165,9 @@ export class TraversalConfig {
   }
 
   calculateEvaluationHierarchy() {
-    this.evaluation = Object.assign({}, this.evaluationHierarchy.default, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
+    this.evaluation = Object.assign({}, TraversalConfig.defaultEvaluationHierarchyKey, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
     return this.evaluation
   }
-
   /**
    * Responsible for creating evaluator configuration for each traverser and deciding whether traversal and actions should be performed on each position accordingly.
    */
@@ -188,15 +213,13 @@ export class TraversalConfig {
         break
     }
   }
+}
 
-  /** Set entrypoint nodes implementations (Note: quickly coded method for temporary solution) - TODO: integrate into traversal config implementation hierarchy and expose client allowing to add implementations or intercept them. */
-  static entrypointNodeImplementation = {
-    [schemeReference.nodeLabel.reroute]: rerouteNode,
-    [schemeReference.nodeLabel.stage]: stageNode,
-  }
-  getEntrypointNodeImplementation({ nodeLabelArray }) {
-    for (let nodeLabel in TraversalConfig.entrypointNodeImplementation) if (nodeLabelArray.includes(nodeLabel)) return TraversalConfig.entrypointNodeImplementation[nodeLabel]
-  }
+// get the type of current node labels which is considered an entrypoint
+function getEntrypointNodeType({ node }) {
+  for (let nodeLabel of TraversalConfig.entrypointNodeArray) if (node.labels.includes(nodeLabel)) return nodeLabel
+  // if no label is permitted as an entrypoint type:
+  throw new Error(`• Unsupported entrypoint node type for traversal function - ${nodeInstance.labels}`)
 }
 
 /** Graph traversal integration layer (core) - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
@@ -241,21 +264,11 @@ export const { traverse } = {
       traversalImplementationHierarchy: {
         // Context instance parameter
         context: (graphInstance[Context.reference.key.getter] ? graphInstance[Context.reference.key.getter]()?.implementationKey : {}) || {} |> removeUndefinedFromObject,
-        // implementation keys of node instance own config parameters and of default values set in function scope
-        // hardcoded default implementation values matching the implementations from the instance initialization of Graph class.
-        default: {
-          processNode: 'returnDataItemKey',
-          portNode: 'propagationControl',
-          aggregator: 'AggregatorArray',
-          traversalInterception: 'processThenTraverse',
-        },
         // parent arguments
         // TODO: deal with depth property configuration effect in nested nodes.
         parent: parentTraversalArg ? parentTraversalArg[0].traversalConfig.getTraversalImplementationKey() || {} : {},
       },
-      evaluationHierarchy: {
-        default: { propagation: schemeReference.evaluationOption.propagation.continue, aggregation: schemeReference.evaluationOption.aggregation.include },
-      },
+      evaluationHierarchy: {},
     })
     if (implementationKey) {
       traversalConfig.setImplementationHierarchy('parameter', implementationKey |> removeUndefinedFromObject)
@@ -274,13 +287,12 @@ export const { traverse } = {
     traversalConfig.setImplementationHierarchy('configuration', implementationConfiguration)
     traversalConfig.setEvaluationHierarchy('configuration', evaluationConfiguration)
 
-    let entrypointImplementation = traversalConfig.getEntrypointNodeImplementation({ nodeLabelArray: nodeInstance.labels })
-    if (entrypointImplementation)
-      return await entrypointImplementation(
-        { graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator },
-        { parentTraversalArg, traverseCallContext },
-      )
-    else throw new Error(`• Unsupported node type for traversal function - ${nodeInstance.labels}`)
+    let entrypointNodeType = getEntrypointNodeType({ node: nodeInstance })
+    let implementaion = traversalConfig.getEntrypointNodeImplementation({
+      nodeLabel: entrypointNodeType,
+      nodeImplementationKey: nodeInstance.properties.implementaion ? { entrypointNodeType: nodeInstance.properties.implementaion } : undefined, // node implementatio property that will affect the hierarchy implementation calculation.
+    })
+    return await implementaion({ graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator }, { parentTraversalArg, traverseCallContext })
   },
 }
 
