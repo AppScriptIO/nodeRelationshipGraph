@@ -1,4 +1,5 @@
-export const removeUndefinedFromObject = object => {
-  Object.keys(object).forEach(key => object[key] === undefined && delete object[key])
-  return object
-}
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.removeUndefinedFromObject = void 0;const removeUndefinedFromObject = object => {
+  Object.keys(object).forEach(key => object[key] === undefined && delete object[key]);
+  return object;
+};exports.removeUndefinedFromObject = removeUndefinedFromObject;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS91dGlsaXR5L3JlbW92ZVVuZGVmaW5lZEZyb21PYmplY3QuanMiXSwibmFtZXMiOlsicmVtb3ZlVW5kZWZpbmVkRnJvbU9iamVjdCIsIm9iamVjdCIsIk9iamVjdCIsImtleXMiLCJmb3JFYWNoIiwia2V5IiwidW5kZWZpbmVkIl0sIm1hcHBpbmdzIjoic0hBQU8sTUFBTUEseUJBQXlCLEdBQUdDLE1BQU0sSUFBSTtBQUNqREMsRUFBQUEsTUFBTSxDQUFDQyxJQUFQLENBQVlGLE1BQVosRUFBb0JHLE9BQXBCLENBQTRCQyxHQUFHLElBQUlKLE1BQU0sQ0FBQ0ksR0FBRCxDQUFOLEtBQWdCQyxTQUFoQixJQUE2QixPQUFPTCxNQUFNLENBQUNJLEdBQUQsQ0FBN0U7QUFDQSxTQUFPSixNQUFQO0FBQ0QsQ0FITSxDIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGNvbnN0IHJlbW92ZVVuZGVmaW5lZEZyb21PYmplY3QgPSBvYmplY3QgPT4ge1xuICBPYmplY3Qua2V5cyhvYmplY3QpLmZvckVhY2goa2V5ID0+IG9iamVjdFtrZXldID09PSB1bmRlZmluZWQgJiYgZGVsZXRlIG9iamVjdFtrZXldKVxuICByZXR1cm4gb2JqZWN0XG59XG4iXX0=

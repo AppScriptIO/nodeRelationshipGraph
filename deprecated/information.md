@@ -1,1 +1,0 @@
-These files require refactoring or reconsideration on their role in the program, or are kept for reference
