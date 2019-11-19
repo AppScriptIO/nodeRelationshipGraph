@@ -13,10 +13,10 @@
 		"exportGraphData": "yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".graphDataLoading.exportAllGraphData({targetPath: './test/asset',fileName: 'graph.json'})\""
 	},
 	"dependencies": {
-		"@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x",
 		"@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^1.x.x",
 		"@dependency/graphTraversal-implementation": "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^1.x.x",
-		"@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x"
+		"@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x",
+		"@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x"
 	},
 	"devDependencies": {
 		"@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^1.x.x",

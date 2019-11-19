@@ -1029,21 +1029,21 @@
   resolved "https://github.com/AppScriptIO/fragmentIndentationObjectStream#9cb1ff843e442c5eaf34477cf4c9907eb0e74f7d"
 
 "@dependency/graphTraversal-implementation@https://github.com/AppScriptIO/graphTraversal-implementation#semver:^1.x.x":
-  version "1.0.3"
-  resolved "https://github.com/AppScriptIO/graphTraversal-implementation#47492aa27447c855ea65a4c379485578f3ff8309"
+  version "1.0.4"
+  resolved "https://github.com/AppScriptIO/graphTraversal-implementation#ce9a4d39001963c28394c5d6ec383986c6cc162c"
   dependencies:
-    "@dependency/promiseProperRace" "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x"
     neo4j-driver "^1.7.5"
     redisgraph.js "^1.1.4"
     uuid "*"
 
 "@dependency/graphTraversal@https://github.com/AppScriptIO/graphTraversal#semver:^1.x.x":
-  version "1.2.18"
-  resolved "https://github.com/AppScriptIO/graphTraversal#175e36b823eb428dd202d02f7c1bb4639af9673b"
+  version "1.2.19"
+  resolved "https://github.com/AppScriptIO/graphTraversal#8ef647eaf907a8e0a4b16a22ca113d958f0677cc"
   dependencies:
     "@dependency/entity" "https://github.com/AppScriptIO/entity#semver:^1.x.x"
     "@dependency/graphTraversal-implementation" "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^1.x.x"
     "@dependency/multiplePrototypeDelegation" "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x"
+    "@dependency/promiseProperRace" "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x"
 
 "@dependency/installNodeJSModule@http://github.com/AppScriptIO/installNodeJSModule#semver:^1.x.x":
   version "1.0.2"
