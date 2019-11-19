@@ -10,8 +10,20 @@ export async function returnReference(
 ) {
   const { reference } = await graphInstance.databaseWrapper.getRerouteReturnReferenceElement({ concreteDatabase: graphInstance.database, nodeID: nodeInstance.identity })
   let resolvedNode = await resolveReference({ reference, graphInstance, traverseCallContext })
-
-  // TODO: add while loop to verify that the resolved reference is non-route
+  if (resolvedNode)
+    // if the reference node is a reroute itself, traverse it recursively
+    while (resolvedNode && resolvedNode.labels.includes(schemeReference.nodeLabel.reroute))
+      resolvedNode = await graphInstance.traverse(
+        {
+          nodeInstance: resolvedNode,
+          implementationKey: {
+            [schemeReference.nodeLabel.reroute]: 'returnReference',
+          },
+        },
+        {
+          traverseCallContext,
+        },
+      )
 
   return resolvedNode
 }

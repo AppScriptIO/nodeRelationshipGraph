@@ -79,7 +79,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     })
   })
 
-  suite.only('Configure edge with Configuration node - evaluation & traversal implementations', () => {
+  suite('Configure edge with Configuration node - evaluation & traversal implementations', () => {
     const fixture = ['include-0', 'include-1', 'include-2']
     let graph = new configuredGraph({})
     test('Should traverse graph successfully', async () => {

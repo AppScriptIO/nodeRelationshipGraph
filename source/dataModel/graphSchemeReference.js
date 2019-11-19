@@ -21,6 +21,7 @@ export const connectionType = {
   // Stage
   next: 'NEXT',
   fork: 'FORK',
+  //TODO: implement `depthAffected` property for CONFIGURE connection
   configure: 'CONFIGURE',
   // Process & Evaluation
   execute: 'EXECUTE',

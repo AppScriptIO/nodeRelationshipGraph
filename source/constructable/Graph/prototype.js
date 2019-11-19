@@ -104,8 +104,9 @@ export class TraversalConfig {
     }
   }
 
-  getEntrypointNodeImplementation({ nodeLabel }) {
-    return TraversalConfig.entrypointNodeImplementation[nodeLabel][this.getTraversalImplementationKey({ key: nodeLabel })]
+  getEntrypointNodeImplementation({ nodeLabel, implementationKey }) {
+    let nodeImplementationKey = implementationKey ? { [nodeLabel]: implementationKey } : undefined
+    return TraversalConfig.entrypointNodeImplementation[nodeLabel][this.getTraversalImplementationKey({ key: nodeLabel, nodeImplementationKey })]
   }
 
   getAllImplementation({ graphInstance }) {
@@ -219,7 +220,7 @@ export class TraversalConfig {
 function getEntrypointNodeType({ node }) {
   for (let nodeLabel of TraversalConfig.entrypointNodeArray) if (node.labels.includes(nodeLabel)) return nodeLabel
   // if no label is permitted as an entrypoint type:
-  throw new Error(`• Unsupported entrypoint node type for traversal function - ${nodeInstance.labels}`)
+  throw new Error(`• Unsupported entrypoint node type for traversal function - ${node.labels}`)
 }
 
 /** Graph traversal integration layer (core) - Controls the traversing the nodes in the graph. Which includes processing of data items and aggregation of results.
@@ -288,9 +289,11 @@ export const { traverse } = {
     traversalConfig.setEvaluationHierarchy('configuration', evaluationConfiguration)
 
     let entrypointNodeType = getEntrypointNodeType({ node: nodeInstance })
+    // TODO: use the same rule for node implementation properies for non entrypoints as well (e.g. Process, Port, etc.), when multiple types are used for the current node. OR reconsider and use a different way to configure type of a node with multiple labels.
+    let implementationPropertyName = `${entrypointNodeType}_implementation` // associate an implementation to a node type incase multiple types present.
     let implementaion = traversalConfig.getEntrypointNodeImplementation({
       nodeLabel: entrypointNodeType,
-      nodeImplementationKey: nodeInstance.properties.implementaion ? { entrypointNodeType: nodeInstance.properties.implementaion } : undefined, // node implementatio property that will affect the hierarchy implementation calculation.
+      implementationKey: nodeInstance.properties[implementationPropertyName] ? nodeInstance.properties[implementationPropertyName] : undefined, // node implementatio property that will affect the hierarchy implementation calculation.
     })
     return await implementaion({ graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator }, { parentTraversalArg, traverseCallContext })
   },
