@@ -60,5 +60,5 @@ export const rerouteProperty = {
 }
 
 export const referenceProperty = {
-  implementation: ['traverseNode', 'returnNode'],
+  resolutionImplementation: ['caseSwitch', 'node'],
 }

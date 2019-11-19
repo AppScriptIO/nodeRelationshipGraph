@@ -17,6 +17,9 @@ export async function evaluatePosition({ node, graphInstance = this }) {
       let configurationNode = await graphInstance.traverse(
         {
           nodeInstance: configure.source,
+          implementationKey: {
+            [nodeLabel.reroute]: 'returnReference',
+          },
         },
         {
           traverseCallContext: {

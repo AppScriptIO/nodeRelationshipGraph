@@ -120,7 +120,7 @@ export async function getInsert({ concreteDatabase, nodeID }) {
           |___/ |___/          |___/                          |_|                            
 */
 
-export async function getRerouteElement({ concreteDatabase, nodeID }) {
+export async function getRerouteTraverseReferenceElement({ concreteDatabase, nodeID }) {
   const { referenceArray } = await getReference({ concreteDatabase, nodeID })
   const { extendArray } = await getExtend({ concreteDatabase, nodeID })
   const { insertArray } = await getInsert({ concreteDatabase, nodeID })
@@ -129,6 +129,14 @@ export async function getRerouteElement({ concreteDatabase, nodeID }) {
   if (referenceArray.length > 1) throw new Error(`• Multiple reference relationships are not supported for Reroute node.`)
 
   return { extend: extendArray.length > 0 ? extendArray[0] : null, reference: referenceArray.length > 0 ? referenceArray[0] : null, insertArray }
+}
+
+export async function getRerouteReturnReferenceElement({ concreteDatabase, nodeID }) {
+  const { referenceArray } = await getReference({ concreteDatabase, nodeID })
+
+  if (referenceArray.length > 1) throw new Error(`• Multiple reference relationships are not supported for Reroute node.`)
+
+  return { reference: referenceArray.length > 0 ? referenceArray[0] : null }
 }
 
 export async function getSwitchElement({ concreteDatabase, nodeID }) {
