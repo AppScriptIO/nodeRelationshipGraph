@@ -6,7 +6,7 @@ export async function resolveValue({ targetNode, graphInstance, traverseCallCont
   /* run condition check against comparison value. Hierarchy of comparison value calculation:   */
   switch (value.connection.properties.implementation) {
     case 'conditionSubgraph':
-      resolvedValue = await switchValueResolution({ value, graphInstance, traverseCallContext })
+      resolvedValue = await conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext })
       break
     case 'properties':   
       resolvedValue = value.destination.properties
@@ -33,11 +33,11 @@ export async function resolveValue({ targetNode, graphInstance, traverseCallCont
 /**
  * @return {Node Object} - a node object containing data.
  */
-export async function switchValueResolution({ value, graphInstance, traverseCallContext }) {
+export async function conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext }) {
   let resolvedValue
   // Run reference node in a separate traversal recursive scopes, and return result.
   // traverse the destination and extract node from the result value.
-  let resultNodeArray = await graphInstance.traverse(
+  let resultValueArray = await graphInstance.traverse(
     /* TODO: Note: this is a quick implementation because digging into the core code is time consuming, the different concepts used in here could be improved and built upon other already existing concepts: 
            TODO: create an instance graph from the current graphInstance, to allow passing additional context parametrs.
                • 'traversalCallContext' - the 2nd provided argument could be instead applied as a regular Context specific for the call, by creating a new graphInstance chain with it's unique context, in addition to the already existing context instance.
@@ -58,7 +58,7 @@ export async function switchValueResolution({ value, graphInstance, traverseCall
     },
   ) // traverse subgraph to retrieve a referenced node.
 
-  if (resultNodeArray.length > 1) throw new Error('• REFERENCE relationship that returns multiple nodes is not supported.')
-  else if (resultNodeArray.length != 0) resolvedValue = resultNodeArray[0]
+  if (resultValueArray.length > 1) resolvedValue = resultValueArray.every(item => Boolean(item))
+  else if (resultValueArray.length != 0) resolvedValue = resultValueArray[0]
   return resolvedValue
 }
