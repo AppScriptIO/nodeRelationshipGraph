@@ -1036,6 +1036,14 @@
     redisgraph.js "^1.1.4"
     uuid "*"
 
+"@dependency/graphTraversal-implementation@https://github.com/AppScriptIO/graphTraversal-implementation#semver:^2.x.x":
+  version "2.0.1"
+  resolved "https://github.com/AppScriptIO/graphTraversal-implementation#dffabfbe55c9912970f111f563356e4d06f82a19"
+  dependencies:
+    neo4j-driver "^1.7.5"
+    redisgraph.js "^1.1.4"
+    uuid "*"
+
 "@dependency/graphTraversal@https://github.com/AppScriptIO/graphTraversal#semver:^1.x.x":
   version "1.2.20"
   resolved "https://github.com/AppScriptIO/graphTraversal#b3313219141a6b49bf7ab51b36f485a122ce3f0e"
