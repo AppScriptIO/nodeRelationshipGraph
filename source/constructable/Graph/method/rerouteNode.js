@@ -37,12 +37,11 @@ export async function traverseReference(
   let referencedNode
   const { extend, insertArray } = await graphInstance.databaseWrapper.getRerouteTraverseReferenceElement({ concreteDatabase: graphInstance.database, nodeID: nodeInstance.identity })
 
-  referencedNode = await resolveReference({ targetNode: nodeInstance, graphInstance, traverseCallContext })
-  if (!referencedNode) {
+  referencedNode =
+    (await resolveReference({ targetNode: nodeInstance, graphInstance, traverseCallContext })) ||
     // TODO: rethink the implementation of extend and how the overriding works.
-    if (referencedNode) referencedNode = extend.destination
-    else return // in case no reference node was resolved
-  }
+    (extend && extend.destination)
+  if (!referencedNode) return // in case no reference node was resolved
 
   // get additional nodes from insert array and add them to the passed array.
   let insertAdditionalNode = insertArray

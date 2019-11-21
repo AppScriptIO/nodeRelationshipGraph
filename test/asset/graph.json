@@ -119,13 +119,6 @@
       "traversalInterception": "processThenTraverse"
     }
   }, {
-    "identity": 37214,
-    "labels": ["Process"],
-    "properties": {
-      "key": "69c846f0-71a7-4627-868d-dbd9f9b26c03",
-      "value": true
-    }
-  }, {
     "identity": 37215,
     "labels": ["Stage", "Process"],
     "properties": {
@@ -173,8 +166,9 @@
     }
   }, {
     "identity": 37221,
-    "labels": ["Stage", "Reroute"],
+    "labels": ["Reroute"],
     "properties": {
+      "value": true,
       "Reroute_implementation": "returnReference",
       "key": "900df1c7-3188-4150-b458-f6bf5d78f046"
     }
@@ -260,7 +254,7 @@
     }
   }, {
     "identity": 37233,
-    "labels": ["Stage", "Process", "Reroute"],
+    "labels": ["Reroute"],
     "properties": {
       "Reroute_implementation": "returnReference",
       "key": "ce255134-59ee-4a24-a74c-e604cf49b1c1"
@@ -355,7 +349,7 @@
     }
   }, {
     "identity": 55828,
-    "start": 37214,
+    "start": 37221,
     "end": 37199,
     "type": "CASE",
     "properties": {
@@ -545,17 +539,9 @@
       "resolutionImplementation": "node"
     }
   }, {
-    "identity": 55850,
-    "start": 37221,
-    "end": 37214,
-    "type": "EXECUTE",
-    "properties": {
-      "key": "e328ea14-aa24-4520-bb96-1e8586cd31b3"
-    }
-  }, {
     "identity": 55851,
-    "start": 37214,
-    "end": 37214,
+    "start": 37221,
+    "end": 37221,
     "type": "VALUE",
     "properties": {
       "key": "06688013-22c3-4920-9e45-2f5517311f22",
@@ -779,7 +765,7 @@
     }
   }, {
     "identity": 55877,
-    "start": 37214,
+    "start": 37221,
     "end": 37230,
     "type": "CASE",
     "properties": {
@@ -788,7 +774,7 @@
     }
   }, {
     "identity": 55878,
-    "start": 37214,
+    "start": 37221,
     "end": 37230,
     "type": "DEFAULT",
     "properties": {
@@ -830,14 +816,6 @@
       "handlePropagationImplementation": "chronological",
       "key": "3086d2b6-d3ca-4873-9136-d9bd3b5e2d26",
       "order": "1"
-    }
-  }, {
-    "identity": 55883,
-    "start": 37233,
-    "end": 37233,
-    "type": "EXECUTE",
-    "properties": {
-      "key": "0960bb9d-a76a-4c36-9d11-147c870ea3b3"
     }
   }, {
     "identity": 55884,

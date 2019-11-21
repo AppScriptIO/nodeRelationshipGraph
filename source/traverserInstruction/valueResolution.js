@@ -1,5 +1,5 @@
 export async function resolveValue({ targetNode, graphInstance, traverseCallContext }) {
-  const value = await graphInstance.databaseWrapper.getTargetValue({ concreteDatabase: graphInstance.database, nodeID: targetNode.identity })
+  const value = await graphInstance.databaseWrapper.getValueElement({ concreteDatabase: graphInstance.database, nodeID: targetNode.identity })
   if (!value) return
 
   let resolvedValue
@@ -8,10 +8,16 @@ export async function resolveValue({ targetNode, graphInstance, traverseCallCont
     case 'conditionSubgraph':
       resolvedValue = await switchValueResolution({ value, graphInstance, traverseCallContext })
       break
-    case 'valueProperty':
-      resolvedValue = value.destination.properties.value
-    default:
+    case 'properties':   
+      resolvedValue = value.destination.properties
       break
+    case 'node':
+      resolvedValue = value.destination
+      break
+    case 'valueProperty':
+    default:
+      resolvedValue = value.destination.properties.value
+    break
   }
   return resolvedValue
 }

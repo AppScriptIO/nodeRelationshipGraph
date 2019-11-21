@@ -147,25 +147,10 @@ export async function getSwitchElement({ concreteDatabase, nodeID }) {
 }
 
 // Value connection concept implementation
-export async function getTargetValue({ concreteDatabase, nodeID }) {
+export async function getValueElement({ concreteDatabase, nodeID }) {
   // get VALUE connection
   let value
   const { valueArray } = await getValue({ concreteDatabase, nodeID })
   if (valueArray.length > 1) throw new Error(`• Multiple VALUE relationships are not supported for Process node.`)
-  else if (valueArray.length != 0 && valueArray[0])
-    switch (valueArray[0].connection.properties.type) {
-      case 'properties':
-        value = valueArray[0].destination.properties
-        break
-      case 'node':
-        value = valueArray[0].destination
-        break
-      case 'valueProperty':
-        value = valueArray[0].destination.properties.value
-        break
-      default:
-        throw new Error(`• VALUE edge "type" property value is not supported.`)
-        break
-    }
-  return value
+  else if (valueArray.length != 0 && valueArray[0]) return valueArray[0]
 }
