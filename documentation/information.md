@@ -5,6 +5,9 @@ An immediately executed graph traversal, where nodes instruct on performing acti
 - Created for graph where the node's data is the main subject, & traversal rules/configs of a relational graph, are used to decide on the way to deal with multiple processings of the nodes's data - i.e. processing logic & combination of results.
 - The core code of the module is separate from the plugin implementations and largely involved in the integration between the plugin implementations.
 
+# The role of Immediately Executed Graphs in program design:
+Separates the program units or logic or functions from the control flow of program execution. Allowing to focus on developing needed functionality in separate modules, and then placing them in a graph to architect the interactions between them. Immediately Executed Graphs are like an integration layer and control flow for applications, where the program functions are considered abstract units that are referenced in the graph. Therefore it could be called Abstact Visual Programming, because it allows for coding the program with all language features, and integrating it in a visual manner.
+
 ### Configerability of traverser:
 _Behaviors that should be configurable:_
 - Data processing algorithm of each node. e.g. create template.

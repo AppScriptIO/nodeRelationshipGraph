@@ -447,7 +447,7 @@
     "type": "REFERENCE",
     "properties": {
       "key": "6a8c13f9-b3b7-4bfa-9e97-a555aa007aea",
-      "resolutionImplementation": "switchCase"
+      "resolutionImplementation": "node"
     }
   }, {
     "identity": 55841,
@@ -491,7 +491,7 @@
     "type": "REFERENCE",
     "properties": {
       "key": "edeac711-2357-4430-b18d-66f732d28701",
-      "resolutionImplementation": "switchCase"
+      "resolutionImplementation": "node"
     }
   }, {
     "identity": 55844,
@@ -882,7 +882,7 @@
     "type": "REFERENCE",
     "properties": {
       "key": "450170e6-dea7-49d9-9d6a-9468ed89fba7",
-      "resolutionImplementation": "switchCase"
+      "resolutionImplementation": "node"
     }
   }, {
     "identity": 55889,
@@ -945,7 +945,7 @@
     "type": "REFERENCE",
     "properties": {
       "key": "16e6f071-4993-4398-928e-f6399acb575d",
-      "resolutionImplementation": "switchCase"
+      "resolutionImplementation": "node"
     }
   }, {
     "identity": 55896,

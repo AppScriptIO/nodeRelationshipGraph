@@ -27,9 +27,11 @@ export async function evaluatePosition({ node, graphInstance = this }) {
           },
         },
       )
-      assert(configurationNode.labels.includes(nodeLabel.configuration), `• CONFIGURE sub-graph traversal must return a Configuration node.`)
+      if(!configurationNode) continue // if no Configuration was resolved skip.
+      assert(configurationNode && configurationNode.labels.includes(nodeLabel.configuration), `• CONFIGURE sub-graph traversal must return a Configuration node.`)
       // replace destination node with appropriate evaluated configuration:
       configurationMap.set(configure, configurationNode)
+    
     }
 
   // extract configuration parameters from configure relationship:

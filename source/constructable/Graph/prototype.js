@@ -233,7 +233,6 @@ export const { traverse } = {
   @proxifyMethodDecorator(async (target, thisArg, argumentsList, targetClass, methodName) => {
     // create node instance, in case string key is passed as parameter.
     let { nodeInstance /* type Node */, nodeKey, nodeID, graphInstance = thisArg } = argumentsList[0]
-
     if (!nodeInstance) {
       if (nodeKey) nodeInstance = await graphInstance.database.getNodeByKey({ key: nodeKey })
       // retrieve node data on-demand
@@ -241,8 +240,11 @@ export const { traverse } = {
       // retrieve node data on-demand
       else throw new Error('• node identifier or object must be passed in.')
       ;['nodeKey', 'nodeID'].forEach(property => delete argumentsList[0][property]) // remove node related identifiers.
-      argumentsList[0].nodeInstance = nodeInstance // set node data
     }
+    // Verify entrypoint, and mark the label being used as entrypoint node type (as multiple entrypoint node types could be registered on the same node)
+    nodeInstance.entrypointNodeType = getEntrypointNodeType({ node: nodeInstance })
+
+    argumentsList[0].nodeInstance ||= nodeInstance // set node data
     return Reflect.apply(target, thisArg, argumentsList)
   })
   async traverse(
@@ -288,11 +290,10 @@ export const { traverse } = {
     traversalConfig.setImplementationHierarchy('configuration', implementationConfiguration)
     traversalConfig.setEvaluationHierarchy('configuration', evaluationConfiguration)
 
-    let entrypointNodeType = getEntrypointNodeType({ node: nodeInstance })
     // TODO: use the same rule for node implementation properies for non entrypoints as well (e.g. Process, Port, etc.), when multiple types are used for the current node. OR reconsider and use a different way to configure type of a node with multiple labels.
-    let implementationPropertyName = `${entrypointNodeType}_implementation` // associate an implementation to a node type incase multiple types present.
+    let implementationPropertyName = `${nodeInstance.entrypointNodeType}_implementation` // associate an implementation to a node type incase multiple types present.
     let implementaion = traversalConfig.getEntrypointNodeImplementation({
-      nodeLabel: entrypointNodeType,
+      nodeLabel: nodeInstance.entrypointNodeType,
       implementationKey: nodeInstance.properties[implementationPropertyName] ? nodeInstance.properties[implementationPropertyName] : undefined, // node implementatio property that will affect the hierarchy implementation calculation.
     })
     return await implementaion({ graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator }, { parentTraversalArg, traverseCallContext })
