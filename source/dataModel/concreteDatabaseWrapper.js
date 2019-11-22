@@ -18,10 +18,6 @@ export async function getResource({ concreteDatabase, nodeID }) {
 
 export async function getValue({ concreteDatabase, nodeID }) {
   let valueArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.value })
-  assert(
-    valueArray.every(n => schemeReference.connectionProperty.type.includes(n.connection.properties.type)),
-    `• Unsupported "type" property value for a VALUE connection.`,
-  ) // verify node type
   return { valueArray: valueArray }
 }
 
@@ -80,6 +76,7 @@ export async function getDefault({ concreteDatabase, nodeID }) {
 
 export async function getReference({ concreteDatabase, nodeID }) {
   let referenceArray = await concreteDatabase.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.reference })
+  // TODO: use entrypoint array from TraversalConfig class.
   assert(
     referenceArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.stage) || n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
     `• Unsupported node type for a ${schemeReference.connectionType.reference} connection.`,
