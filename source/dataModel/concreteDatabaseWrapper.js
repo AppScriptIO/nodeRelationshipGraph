@@ -68,19 +68,13 @@ export async function getConfigure({ concreteDatabase, nodeID }) {
 
 export async function getCase({ concreteDatabase, nodeID }) {
   let caseArray = await concreteDatabase.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.case })
-  assert(
-    caseArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.configuration)),
-    `• Unsupported property value for a CASE connection.`,
-  ) // verify node type
+  // Note: node type could be any node
   return { caseArray }
 }
 
 export async function getDefault({ concreteDatabase, nodeID }) {
   let defaultArray = await concreteDatabase.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.default })
-  assert(
-    defaultArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.configuration)),
-    `• Unsupported property value for a DEFAULT connection.`,
-  ) // verify node type
+  // Note: node type could be any node
   return { defaultArray }
 }
 
