@@ -1,3 +1,5 @@
+// TODO: Move other node instruction outside of node type functions, to make a more modular instruction functions.
+
 export async function resolveValue({ targetNode, graphInstance, traverseCallContext }) {
   const value = await graphInstance.databaseWrapper.getValueElement({ concreteDatabase: graphInstance.database, nodeID: targetNode.identity })
   if (!value) return
@@ -8,7 +10,7 @@ export async function resolveValue({ targetNode, graphInstance, traverseCallCont
     case 'conditionSubgraph':
       resolvedValue = await conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext })
       break
-    case 'properties':   
+    case 'properties':
       resolvedValue = value.destination.properties
       break
     case 'node':
@@ -17,7 +19,7 @@ export async function resolveValue({ targetNode, graphInstance, traverseCallCont
     case 'valueProperty':
     default:
       resolvedValue = value.destination.properties.value
-    break
+      break
   }
   return resolvedValue
 }
