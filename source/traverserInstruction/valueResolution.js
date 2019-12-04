@@ -11,14 +11,14 @@ export async function resolveValue({ targetNode, graphInstance, traverseCallCont
       resolvedValue = await conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext })
       break
     case 'properties':
-      resolvedValue = value.destination.properties
+      resolvedValue = value.source.properties
       break
     case 'node':
-      resolvedValue = value.destination
+      resolvedValue = value.source
       break
     case 'valueProperty':
     default:
-      resolvedValue = value.destination.properties.value
+      resolvedValue = value.source.properties.value
       break
   }
   return resolvedValue
@@ -46,7 +46,7 @@ export async function conditionSubgraphValueResolution({ value, graphInstance, t
            was this done ? ~~• ConditionAggregator & traverseThenProcessWithLogicalOperator implementations could be integratted into the other implementations.~~
          */
     {
-      nodeInstance: value.destination,
+      nodeInstance: value.source,
       implementationKey: {
         processNode: 'executeFunctionReference', // default implementation for processing stages in condition graph.
         traversalInterception: 'traverseThenProcessWithLogicalOperator',
@@ -55,7 +55,7 @@ export async function conditionSubgraphValueResolution({ value, graphInstance, t
     },
     {
       traverseCallContext: {
-        targetNode: traverseCallContext.targetNode || value.source, // pass the node requesting the resolution of the reroute node if it exists, or the reroute itself in case called as root level in the traversal.
+        targetNode: (traverseCallContext && traverseCallContext.targetNode) || value.destination, // pass the node requesting the resolution of the reroute node if it exists, or the reroute itself in case called as root level in the traversal.
       },
     },
   ) // traverse subgraph to retrieve a referenced node.

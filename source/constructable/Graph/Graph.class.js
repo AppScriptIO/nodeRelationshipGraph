@@ -1,14 +1,11 @@
-import { Entity, Constructable, symbol } from '@dependency/entity'
-import { Traversal } from '../Traversal.class.js'
-import { Database } from '../Database.class.js'
-import { Context } from '../Context.class.js'
-import { ImplementationManagement } from '../ImplementationManagement.class.js'
-import * as entityPrototype from './prototype.js'
+import { Entity, Constructable } from '@dependency/entity'
+import * as Traversal from '../Traversal.class.js'
+import * as Database from '../Database.class.js'
+import * as Context from '../Context.class.js'
+import * as ImplementationManagement from '../ImplementationManagement.class.js'
+
 import * as implementation from '@dependency/graphTraversal-implementation'
 import * as schemeReference from '../../dataModel/graphSchemeReference.js'
-// import { Node } from './Node.class.js'
-// import { Connection } from '../Connection.class.js'
-// import { Cache } from '../Cache.class.js'
 
 /** Conceptual Graph
  * Graph Class holds and manages graph elements and traversal algorithm implementations:
@@ -18,116 +15,94 @@ import * as schemeReference from '../../dataModel/graphSchemeReference.js'
  *  - Context: shared data accessible between traversals.
  * The Graph instance should have an ability to set/change strategies/implementations on runtime and ability to use multiple registered implementations.
  */
-export const { class: Graph, reference: Reference, constructablePrototype: Prototype, entityPrototype: initialEntityPrototype } = new Entity.clientInterface({ description: 'Graph' })
+const { class: Class, reference: $ } = new Entity.clientInterface.constructableInstance({ label: 'Graph' })
 
-Object.assign(Reference, {
-  key: {
-    constructor: Symbol('Graph:key.constructor'),
-  },
+Object.assign($, {
+  key: {},
 })
 
-/*
-                   _        _                    ____       _                  _   _             
-   _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___|  _ \  ___| | ___  __ _  __ _| |_(_) ___  _ __  
-  | '_ \| '__/ _ \| __/ _ \| __| | | | '_ \ / _ \ | | |/ _ \ |/ _ \/ _` |/ _` | __| |/ _ \| '_ \ 
-  | |_) | | | (_) | || (_) | |_| |_| | |_) |  __/ |_| |  __/ |  __/ (_| | (_| | |_| | (_) | | | |
-  | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___|____/ \___|_|\___|\__, |\__,_|\__|_|\___/|_| |_|
-  |_|                           |___/|_|                           |___/                         
-*/
-Object.assign(initialEntityPrototype, entityPrototype)
+Class::Class[$.prototypeDelegation.getter](Entity.$.key.stateInstance).instancePrototype |> (prototype => Object.assign(prototype, require('./prototype.js')))
 
-/*
-   _       _ _   _       _ _         
-  (_)_ __ (_) |_(_) __ _| (_)_______ 
-  | | '_ \| | __| |/ _` | | |_  / _ \
-  | | | | | | |_| | (_| | | |/ /  __/
-  |_|_| |_|_|\__|_|\__,_|_|_/___\___|
-*/
-Prototype::Prototype[Constructable.reference.initialize.functionality].setter({
-  [Entity.reference.key.concereteBehavior]({ targetInstance, concereteBehaviorList } = {}, previousResult) {},
-})
+Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInstance).instancePrototype
+  |> (prototype => {
+    prototype::prototype[Entity.$.initialize.setter]({
+      [Entity.$.key.concereteBehavior]({ targetInstance }, { concereteBehaviorList } = {}) {},
+    })
 
-/*
-                       _                   _             
-    ___ ___  _ __  ___| |_ _ __ _   _  ___| |_ ___  _ __ 
-   / __/ _ \| '_ \/ __| __| '__| | | |/ __| __/ _ \| '__|
-  | (_| (_) | | | \__ \ |_| |  | |_| | (__| || (_) | |   
-   \___\___/|_| |_|___/\__|_|   \__,_|\___|\__\___/|_|   
-*/
-Prototype::Prototype[Constructable.reference.constructor.functionality].setter({
-  /**
-   * Graph will contain the prototype chain to install on the instances (previously 'classes hierarchy connections`)
-   * 1. configuredConstructable1 = Graph(<plugins>)
-   * 2. configuredConstructable2 = configuredConstructable1(<context>)
-   * 3. new configuredConstructable2(<instance data>) // creates instance
-   * 4. traverse graph: e.g. instance.traverseGraph()
-   */
-  [Reference.key.constructor]({
-    // Concerete behaviors / implementaions
-    // cache,
-    database, // database concrete behavior
-    traversal, // traversal concrete behavior
-    // additional behaviors
-    concreteBehaviorList = [],
-    data, // data to be merged into the instance
-    callerClass = this,
-    mode = 'applicationInMemory' || 'databaseInMemory',
-  }: {
-    cache: Cache,
-    database: Database,
-    traversal: Traversal,
-    concereteBehavior: List,
-  }) {
-    database ||= new Database.clientInterface({
-      implementationList: {
-        boltCypher: implementation.database.boltCypherModelAdapterFunction({ schemeReference }),
+    prototype::prototype[Entity.$.constructor.setter]({
+      /**
+     * Graph will contain the prototype chain to install on the instances (previously 'classes hierarchy connections`)
+     * 1. configuredConstructable1 = Graph(<plugins>)
+     * 2. configuredConstructable2 = configuredConstructable1(<context>)
+     * 3. new configuredConstructable2(<instance data>) // creates instance
+     * 4. traverse graph: e.g. instance.traverseGraph()
+     * 
+     * Usage: 
+     * - way to pass properties to the graphInstance itself, instead of the context instance:
+         let graph = new configuredGraph({ data: { propertyOnGraphInstance: 'value' } })
+         console.log(graph.propertyOnGraphInstance)
+    */
+      /* TODO: document the way to combine contexts and add additional data to the context during graph instance creation, and how multiple inherted conetxts are resolved or modified.
+        i.e. define a better way to extend an existing configuredGraph with another contextes that extend existing - `configuredGraph = configuredGraph({ concreteBehaviorList: [additionalContext] })  
+      */
+      [Entity.$.key.stateInstance](
+        {},
+        {
+          // Concerete behaviors / implementaions
+          // cache,
+          database, // database concrete behavior
+          traversal, // traversal concrete behavior
+          // additional behaviors
+          concreteBehaviorList = [],
+          data, // data to be merged into the instance (i.e. graphInstance.propety)
+          callerClass = this,
+          mode = 'applicationInMemory' || 'databaseInMemory',
+        }: {
+          cache: Cache,
+          database: Database,
+          traversal: Traversal,
+          concreteBehaviorList: List,
+        } = {},
+      ) {
+        database ||= new Database.clientInterface({
+          implementationList: {
+            boltCypher: implementation.database.boltCypherModelAdapterFunction({ schemeReference }),
+          },
+          defaultImplementation: 'boltCypher',
+        })
+
+        traversal ||= new Traversal.clientInterface({
+          implementationList: {
+            default: {
+              traversalInterception: implementation.traversal.traversalInterception, // Stage
+              aggregator: implementation.traversal.aggregator,
+              processNode: implementation.traversal.processNode, // Process
+              portNode: implementation.traversal.portNode, // Port
+            },
+          },
+          defaultImplementation: 'default',
+        })
+
+        let instance = callerClass::callerClass[Entity.$.constructor.switch](Entity.$.key.concereteBehavior)(
+          {}, // options
+          {
+            concreteBehaviorList: [...concreteBehaviorList, database, traversal],
+          },
+        )
+
+        // expose functionality for direct simplified access:
+        let concereteDatabase = instance[Entity.$.getInstanceOf](Database.class)
+        instance.database = concereteDatabase[Database.$.key.getter]()
+        let concreteTraversal = instance[Entity.$.getInstanceOf](Traversal.class)
+        instance.traversal = concreteTraversal[ImplementationManagement.$.key.getter]()
+        let context = instance[Entity.$.getInstanceOf](Context.class)
+        instance.context = context ? context[Context.$.key.getter]() : {}
+
+        return instance
       },
-      defaultImplementation: 'boltCypher',
     })
-    traversal ||= new Traversal.clientInterface({
-      implementationList: {
-        default: {
-          traversalInterception: implementation.traversal.traversalInterception, // Stage
-          aggregator: implementation.traversal.aggregator,
-          processNode: implementation.traversal.processNode, // Process
-          portNode: implementation.traversal.portNode, // Port
-        },
-      },
-      defaultImplementation: 'default',
-    })
+  })
 
-    // cache ||= new Cache.clientInterface({ groupKeyArray: ['node', 'connection'] })
+const clientInterface = Class::Class[Entity.$.clientInterface.switch](Entity.$.key.stateInstance)({ constructorImplementation: Entity.$.key.stateInstance })
 
-    let instance = callerClass::Constructable[Constructable.reference.constructor.functionality].switch({ implementationKey: Entity.reference.key.concereteBehavior })({
-      concreteBehaviorList: [...concreteBehaviorList, /*cache,*/ database, traversal],
-      data,
-    })
-    // expose functionality for direct simplified access:
-    let concereteDatabase = instance[Entity.reference.getInstanceOf](Database)
-    instance.database = concereteDatabase[Database.reference.key.getter]()
-    let concreteTraversal = instance[Entity.reference.getInstanceOf](Traversal)
-    instance.traversal = concreteTraversal[ImplementationManagement.reference.key.getter]()
-    let context = instance[Entity.reference.getInstanceOf](Context)
-    instance.context = context ? context[Context.reference.key.getter]() : {}
-
-    // configure Graph element classes
-    // instance.configuredNode = Node.clientInterface({ parameter: [{ concreteBehaviorList: [] }] })
-    // instance.configuredConnection = Connection.clientInterface({ parameter: [{ concereteBehavior: [] }] })
-
-    return instance
-  },
-})
-
-/*
-        _ _            _   ___       _             __                
-    ___| (_) ___ _ __ | |_|_ _|_ __ | |_ ___ _ __ / _| __ _  ___ ___ 
-   / __| | |/ _ \ '_ \| __|| || '_ \| __/ _ \ '__| |_ / _` |/ __/ _ \
-  | (__| | |  __/ | | | |_ | || | | | ||  __/ |  |  _| (_| | (_|  __/
-   \___|_|_|\___|_| |_|\__|___|_| |_|\__\___|_|  |_|  \__,_|\___\___|
-*/
-Graph.clientInterface = Graph::Prototype[Constructable.reference.clientInterface.functionality].switch({
-  implementationKey: Entity.reference.key.instanceDelegatingToEntityInstancePrototype,
-})({
-  constructorImplementation: Reference.key.constructor,
-  clientInterfaceInterceptCallback: false,
-})
+export { Class as class, $, clientInterface }

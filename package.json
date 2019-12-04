@@ -5,7 +5,7 @@
 	"scripts": {
 		"setup": "yarn install --production=false",
 		"test": "yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".test.default({ testPath: ['./test'], shouldDebugger: false, shouldCompileTest: true })\"",
-		"test-break": "export NODE_OPTIONS='--inspect-brk' && yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".test.default({ testPath: ['./test'], shouldDebugger: false, shouldCompileTest: true })\"",
+		"test-break": "yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".test.default({ testPath: ['./test'], shouldDebugger: true, shouldCompileTest: true })\"",
 		"bumpVersion": "yarn run scriptManager shouldCompileScript=true JSProject/packageVersion \".bumpVersion({})\"",
 		"buildAndRelease": "yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".buildAndRelease.moduleProject({})\"",
 		"build": "yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".buildSourceCode.moduleProject({}, {compile:[/**'./test'*/]})\"",

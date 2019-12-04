@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+// import { proxifyMethodDecorator } from '../utility/proxifyMethodDecorator.js'
 
 /**
  * Stage node is an entrypoint node that the graph traversal can be started from.

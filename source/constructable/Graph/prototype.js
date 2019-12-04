@@ -2,8 +2,8 @@ import assert from 'assert'
 import { proxifyMethodDecorator } from '../../utility/proxifyMethodDecorator.js'
 import { mergeDefaultParameter } from '../../utility/mergeDefaultParameter.js'
 import { removeUndefinedFromObject } from '../../utility/removeUndefinedFromObject.js'
-import { Context } from '../Context.class.js'
-import { Traversal } from '../Traversal.class.js'
+import * as Context from '../Context.class.js'
+import * as Traversal from '../Traversal.class.js'
 import * as schemeReference from '../../dataModel/graphSchemeReference.js'
 import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
 
@@ -266,7 +266,7 @@ export const { traverse } = {
     traversalConfig ||= new graphInstance.TraversalConfig({
       traversalImplementationHierarchy: {
         // Context instance parameter
-        context: (graphInstance[Context.reference.key.getter] ? graphInstance[Context.reference.key.getter]()?.implementationKey : {}) || {} |> removeUndefinedFromObject,
+        context: (graphInstance[Context.$.key.getter] ? graphInstance[Context.$.key.getter]()?.implementationKey : {}) || {} |> removeUndefinedFromObject,
         // parent arguments
         // TODO: deal with depth property configuration effect in nested nodes.
         parent: parentTraversalArg ? parentTraversalArg[0].traversalConfig.getTraversalImplementationKey() || {} : {},

@@ -2,12 +2,12 @@ process.env['SZN_DEBUG'] = true
 import assert from 'assert'
 import { assert as chaiAssertion } from 'chai'
 import util from 'util'
-import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
+import * as multiplePrototypeDelegation from '@dependency/multiplePrototypeDelegation'
 import { Entity } from '@dependency/entity'
-import { Graph } from '../source/constructable/Graph'
-import { Traversal } from '../source/constructable/Traversal.class.js'
-import { Database } from '../source/constructable/Database.class.js'
-import { Context } from '../source/constructable/Context.class.js'
+import * as Graph from '../source/constructable/Graph'
+import * as Traversal from '../source/constructable/Traversal.class.js'
+import * as Database from '../source/constructable/Database.class.js'
+import * as Context from '../source/constructable/Context.class.js'
 import * as schemeReference from '../source/dataModel/graphSchemeReference.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
 
@@ -20,6 +20,7 @@ suite('Configure Graph class', () => {
     },
     defaultImplementation: 'boltCypher',
   })
+
   let concreteGraphTraversalBehavior = new Traversal.clientInterface({
     implementationList: {
       default: {
@@ -31,6 +32,7 @@ suite('Configure Graph class', () => {
     },
     defaultImplementation: 'default',
   })
+
   let contextInstance = new Context.clientInterface({
     implementationKey: {},
   })
@@ -48,9 +50,9 @@ suite('Configure Graph class', () => {
     })
 
     test('Should inherit implementation classes', async () => {
-      let graph = new configuredGraph({})
+      let graph = new configuredGraph.clientInterface({})
       let multiplePrototypeProxy = Object.getPrototypeOf(graph)
-      let multiplePrototypeArray = multiplePrototypeProxy[MultipleDelegation.Reference.list]
+      let multiplePrototypeArray = multiplePrototypeProxy[multiplePrototypeDelegation.$.list]
       chaiAssertion.isTrue([contextInstance, concreteGraphTraversalBehavior, concreteDatabaseBehavior].every(behavior => multiplePrototypeArray.includes(behavior)))
     })
   })

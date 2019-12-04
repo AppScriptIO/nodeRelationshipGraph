@@ -54,7 +54,7 @@ Different applications may use this module:
         - e.g. Stage, Reroute/SubgraphTemplate.
     - Nested/Supplement nodes: are nodes which are nested to other nodes and provide features for the traversal. The traversion could not start from these nodes.
         - e.g. Port, Configuration, Process.
-    - Reference/Reroute nodes: Nodes that are treated as a placement for other nodes (referencing other nodes). Reroute node also allows to divide a graph into subgraphs by pointing to a root node as reference and storing information about the subgraph.
+    - Reference/Reroute nodes: Nodes that are treated as a placement for other nodes (referencing other nodes). Reroute node also allows to divide a graph into subgraphs by pointing to a root node  and storing information about the subgraph.
         Reference nodes could be used as: (Maybe check https://www.worldscientific.com/doi/abs/10.1142/9789812384720_0001)
             - Node replacement positions: Where the position node is ment to be replaced with the target node (referenced node).
             - Node placement in subgraph: Where the reference nodes are ment to be placed into a target subgraph (e.g. added into the next relatioship of a stage).
