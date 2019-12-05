@@ -7,10 +7,10 @@ import filesystem from 'fs'
 const boltProtocolDriver = require('neo4j-driver').v1
 
 import { Entity } from '@dependency/entity'
-import { Graph } from '../source/constructable/Graph'
-import { Traversal } from '../source/constructable/Traversal.class.js'
-import { Database } from '../source/constructable/Database.class.js'
-import { Context } from '../source/constructable/Context.class.js'
+import * as Graph from '../source/constructable/Graph'
+import * as Traversal from '../source/constructable/Traversal.class.js'
+import * as Database from '../source/constructable/Database.class.js'
+import * as Context from '../source/constructable/Context.class.js'
 import * as schemeReference from '../source/dataModel/graphSchemeReference.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
 import graphData from './asset/graph.json' // load sample data
@@ -34,6 +34,7 @@ let concreteDatabaseBehavior = new Database.clientInterface({
   },
   defaultImplementation: 'boltCypher',
 })
+
 let concreteGraphTraversalBehavior = new Traversal.clientInterface({
   implementationList: {
     default: {
@@ -71,7 +72,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
 
   suite('Reroute node with Extend, Insert, Reference edges:', () => {
     const fixture = ['referencedTarget-0', 'insert-before', 'dataItem-1', 'insert-after']
-    let graph = new configuredGraph({})
+    let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4', implementationKey: {} })
@@ -81,7 +82,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
 
   suite('Configure edge with Configuration node - evaluation & traversal implementations', () => {
     const fixture = ['include-0', 'include-1', 'include-2']
-    let graph = new configuredGraph({})
+    let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully', async () => {
       await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '9160338f-6990-4957-9506-deebafdb6e29', implementationKey: { processNode: 'returnDataItemKey' } })
@@ -92,7 +93,7 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
   suite('Fork edge & Port node - propgation implementations: parallel, chronological, etc.', () => {
     //
     const fixture = ['dataItem-0', 'parallel-1', 'parallel-2', 'parallel-3', 'parallel-4', 'chronological-1', 'chronological-2', 'chronological-3', 'race-firstSetteled']
-    let graph = new configuredGraph({})
+    let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully ', async () => {
       await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
@@ -102,11 +103,11 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
 
   suite('Execute edge with Process node & reference context.', () => {
     const fixture = []
-    contextInstance[Context.reference.key.setter]({
+    contextInstance[Context.$.key.setter]({
       // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
       fileContext: { shellscript: path.join(__dirname, './asset/shellscript.sh') },
     })
-    let graph = new configuredGraph({})
+    let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully - during which a shell script executed', async () => {
       await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '28a486af-1c27-4183-8953-c40742a68ab0', implementationKey: {} })
