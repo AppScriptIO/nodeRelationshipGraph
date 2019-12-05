@@ -1,51 +1,50 @@
-import assert from 'assert'
-import { Entity, Constructable } from '@dependency/entity'
-import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
+"use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.clientInterface = exports.$ = exports.class = void 0;var _assert = _interopRequireDefault(require("assert"));
+var _entity = require("@dependency/entity");
+var _multiplePrototypeDelegation = require("@dependency/multiplePrototypeDelegation");var _instancePrototype, _instancePrototype2;
 
-/**
- * Context is responsible for creating a grouping context - where information could be shared between instances of some class that belong/inherit the context.
- */
-const { class: Class, reference: $ } = new Entity.clientInterface.constructableInstance({ label: 'Context' })
+
+
+
+const { class: Class, reference: $ } = new _entity.Entity.clientInterface.constructableInstance({ label: 'Context' });exports.$ = $;exports.class = Class;
 
 Object.assign($, {
   key: {
-    // usage on instance `nodeInstance[Context.$.key.sharedContext]`
+
     sharedContext: Symbol('Context.sharedContext'),
     getter: Symbol('Context.getter'),
-    setter: Symbol('Context.setter'),
+    setter: Symbol('Context.setter') } });
+
+
+
+_instancePrototype = Class[$.prototypeDelegation.getter].call(Class, _entity.Entity.$.key.stateInstance).instancePrototype,
+
+Object.assign(_instancePrototype, {
+
+  [_entity.Entity.$.key.concereteBehavior]({ targetInstance }, { concereteBehavior }) {
+
+    _multiplePrototypeDelegation.MultipleDelegation.addDelegation({ targetObject: targetInstance, delegationList: [concereteBehavior] });
+    return targetInstance;
   },
-})
 
-Class::Class[$.prototypeDelegation.getter](Entity.$.key.stateInstance).instancePrototype
-  |> (prototype =>
-    Object.assign(prototype, {
-      //  concerete behavior initialization on the target instance.
-      [Entity.$.key.concereteBehavior]({ targetInstance }, { concereteBehavior }) {
-        // add to prototype delegation
-        MultipleDelegation.addDelegation({ targetObject: targetInstance, delegationList: [concereteBehavior] })
-        return targetInstance
-      },
+  [$.key.setter](contextObject = {}) {var _$$key$sharedContext;
+    (0, _assert.default)(typeof contextObject == 'object', '• contextObject must be an object.');
+    this[_$$key$sharedContext = $.key.sharedContext] || (this[_$$key$sharedContext] = {});
+    Object.assign(this[$.key.sharedContext], contextObject);
+  },
+  [$.key.getter]() {
+    return this[$.key.sharedContext];
+  } });
 
-      [$.key.setter](contextObject = {}) {
-        assert(typeof contextObject == 'object', '• contextObject must be an object.')
-        this[$.key.sharedContext] ||= {}
-        Object.assign(this[$.key.sharedContext], contextObject)
-      },
-      [$.key.getter]() {
-        return this[$.key.sharedContext]
-      },
-    }))
 
-Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInstance).instancePrototype
-  |> (prototype => {
-    Class::prototype[Entity.$.initialize.setter]({
-      [Entity.$.key.handleDataInstance]({ targetInstance }, { data }) {
-        targetInstance[$.key.setter](data)
-        return targetInstance
-      },
-    })
-  })
+_instancePrototype2 = Class[$.prototypeDelegation.getter].call(Class, _entity.Constructable.$.key.constructableInstance).instancePrototype, (
+prototype => {
+  prototype[_entity.Entity.$.initialize.setter].call(Class, {
+    [_entity.Entity.$.key.handleDataInstance]({ targetInstance }, { data }) {
+      targetInstance[$.key.setter](data);
+      return targetInstance;
+    } });
 
-const clientInterface = Class::Class[Entity.$.clientInterface.switch](Entity.$.key.stateInstance)({ constructorImplementation: Entity.$.key.handleDataInstance })
+})(_instancePrototype2);
 
-export { Class as class, $, clientInterface }
+const clientInterface = Class[_entity.Entity.$.clientInterface.switch].call(Class, _entity.Entity.$.key.stateInstance)({ constructorImplementation: _entity.Entity.$.key.handleDataInstance });exports.clientInterface = clientInterface;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL0NvbnRleHQuY2xhc3MuanMiXSwibmFtZXMiOlsiY2xhc3MiLCJDbGFzcyIsInJlZmVyZW5jZSIsIiQiLCJFbnRpdHkiLCJjbGllbnRJbnRlcmZhY2UiLCJjb25zdHJ1Y3RhYmxlSW5zdGFuY2UiLCJsYWJlbCIsIk9iamVjdCIsImFzc2lnbiIsImtleSIsInNoYXJlZENvbnRleHQiLCJTeW1ib2wiLCJnZXR0ZXIiLCJzZXR0ZXIiLCJwcm90b3R5cGVEZWxlZ2F0aW9uIiwic3RhdGVJbnN0YW5jZSIsImluc3RhbmNlUHJvdG90eXBlIiwicHJvdG90eXBlIiwiY29uY2VyZXRlQmVoYXZpb3IiLCJ0YXJnZXRJbnN0YW5jZSIsIk11bHRpcGxlRGVsZWdhdGlvbiIsImFkZERlbGVnYXRpb24iLCJ0YXJnZXRPYmplY3QiLCJkZWxlZ2F0aW9uTGlzdCIsImNvbnRleHRPYmplY3QiLCJDb25zdHJ1Y3RhYmxlIiwiaW5pdGlhbGl6ZSIsImhhbmRsZURhdGFJbnN0YW5jZSIsImRhdGEiLCJzd2l0Y2giLCJjb25zdHJ1Y3RvckltcGxlbWVudGF0aW9uIl0sIm1hcHBpbmdzIjoiNk5BQUE7QUFDQTtBQUNBLHNGOzs7OztBQUtBLE1BQU0sRUFBRUEsS0FBSyxFQUFFQyxLQUFULEVBQWdCQyxTQUFTLEVBQUVDLENBQTNCLEtBQWlDLElBQUlDLGVBQU9DLGVBQVAsQ0FBdUJDLHFCQUEzQixDQUFpRCxFQUFFQyxLQUFLLEVBQUUsU0FBVCxFQUFqRCxDQUF2QyxDOztBQUVBQyxNQUFNLENBQUNDLE1BQVAsQ0FBY04sQ0FBZCxFQUFpQjtBQUNmTyxFQUFBQSxHQUFHLEVBQUU7O0FBRUhDLElBQUFBLGFBQWEsRUFBRUMsTUFBTSxDQUFDLHVCQUFELENBRmxCO0FBR0hDLElBQUFBLE1BQU0sRUFBRUQsTUFBTSxDQUFDLGdCQUFELENBSFg7QUFJSEUsSUFBQUEsTUFBTSxFQUFFRixNQUFNLENBQUMsZ0JBQUQsQ0FKWCxFQURVLEVBQWpCOzs7O0FBU0EscUJBQU9YLEtBQUssQ0FBQ0UsQ0FBQyxDQUFDWSxtQkFBRixDQUFzQkYsTUFBdkIsQ0FBWixNQUFBWixLQUFLLEVBQXNDRyxlQUFPRCxDQUFQLENBQVNPLEdBQVQsQ0FBYU0sYUFBbkQsQ0FBTCxDQUF1RUMsaUJBQXZFOztBQUVJVCxNQUFNLENBQUNDLE1BQVAsQ0FBY1Msa0JBQWQsRUFBeUI7O0FBRXZCLEdBQUNkLGVBQU9ELENBQVAsQ0FBU08sR0FBVCxDQUFhUyxpQkFBZCxFQUFpQyxFQUFFQyxjQUFGLEVBQWpDLEVBQXFELEVBQUVELGlCQUFGLEVBQXJELEVBQTRFOztBQUUxRUUsb0RBQW1CQyxhQUFuQixDQUFpQyxFQUFFQyxZQUFZLEVBQUVILGNBQWhCLEVBQWdDSSxjQUFjLEVBQUUsQ0FBQ0wsaUJBQUQsQ0FBaEQsRUFBakM7QUFDQSxXQUFPQyxjQUFQO0FBQ0QsR0FOc0I7O0FBUXZCLEdBQUNqQixDQUFDLENBQUNPLEdBQUYsQ0FBTUksTUFBUCxFQUFlVyxhQUFhLEdBQUcsRUFBL0IsRUFBbUM7QUFDakMseUJBQU8sT0FBT0EsYUFBUCxJQUF3QixRQUEvQixFQUF5QyxvQ0FBekM7QUFDQSxnQ0FBS3RCLENBQUMsQ0FBQ08sR0FBRixDQUFNQyxhQUFYLG1DQUE4QixFQUE5QjtBQUNBSCxJQUFBQSxNQUFNLENBQUNDLE1BQVAsQ0FBYyxLQUFLTixDQUFDLENBQUNPLEdBQUYsQ0FBTUMsYUFBWCxDQUFkLEVBQXlDYyxhQUF6QztBQUNELEdBWnNCO0FBYXZCLEdBQUN0QixDQUFDLENBQUNPLEdBQUYsQ0FBTUcsTUFBUCxJQUFpQjtBQUNmLFdBQU8sS0FBS1YsQ0FBQyxDQUFDTyxHQUFGLENBQU1DLGFBQVgsQ0FBUDtBQUNELEdBZnNCLEVBQXpCLENBRko7OztBQW9CQSxzQkFBT1YsS0FBSyxDQUFDRSxDQUFDLENBQUNZLG1CQUFGLENBQXNCRixNQUF2QixDQUFaLE1BQUFaLEtBQUssRUFBc0N5QixzQkFBY3ZCLENBQWQsQ0FBZ0JPLEdBQWhCLENBQW9CSixxQkFBMUQsQ0FBTCxDQUFzRlcsaUJBQXRGO0FBQ01DLFNBQVMsSUFBSTtBQUNSQSxFQUFBQSxTQUFTLENBQUNkLGVBQU9ELENBQVAsQ0FBU3dCLFVBQVQsQ0FBb0JiLE1BQXJCLENBQWhCLE1BQUFiLEtBQUssRUFBd0M7QUFDM0MsS0FBQ0csZUFBT0QsQ0FBUCxDQUFTTyxHQUFULENBQWFrQixrQkFBZCxFQUFrQyxFQUFFUixjQUFGLEVBQWxDLEVBQXNELEVBQUVTLElBQUYsRUFBdEQsRUFBZ0U7QUFDOURULE1BQUFBLGNBQWMsQ0FBQ2pCLENBQUMsQ0FBQ08sR0FBRixDQUFNSSxNQUFQLENBQWQsQ0FBNkJlLElBQTdCO0FBQ0EsYUFBT1QsY0FBUDtBQUNELEtBSjBDLEVBQXhDLENBQUw7O0FBTUQsQ0FSSDs7QUFVQSxNQUFNZixlQUFlLEdBQVVKLEtBQUssQ0FBQ0csZUFBT0QsQ0FBUCxDQUFTRSxlQUFULENBQXlCeUIsTUFBMUIsQ0FBWixNQUFBN0IsS0FBSyxFQUF5Q0csZUFBT0QsQ0FBUCxDQUFTTyxHQUFULENBQWFNLGFBQXRELENBQUwsQ0FBMEUsRUFBRWUseUJBQXlCLEVBQUUzQixlQUFPRCxDQUFQLENBQVNPLEdBQVQsQ0FBYWtCLGtCQUExQyxFQUExRSxDQUF4QixDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGFzc2VydCBmcm9tICdhc3NlcnQnXG5pbXBvcnQgeyBFbnRpdHksIENvbnN0cnVjdGFibGUgfSBmcm9tICdAZGVwZW5kZW5jeS9lbnRpdHknXG5pbXBvcnQgeyBNdWx0aXBsZURlbGVnYXRpb24gfSBmcm9tICdAZGVwZW5kZW5jeS9tdWx0aXBsZVByb3RvdHlwZURlbGVnYXRpb24nXG5cbi8qKlxuICogQ29udGV4dCBpcyByZXNwb25zaWJsZSBmb3IgY3JlYXRpbmcgYSBncm91cGluZyBjb250ZXh0IC0gd2hlcmUgaW5mb3JtYXRpb24gY291bGQgYmUgc2hhcmVkIGJldHdlZW4gaW5zdGFuY2VzIG9mIHNvbWUgY2xhc3MgdGhhdCBiZWxvbmcvaW5oZXJpdCB0aGUgY29udGV4dC5cbiAqL1xuY29uc3QgeyBjbGFzczogQ2xhc3MsIHJlZmVyZW5jZTogJCB9ID0gbmV3IEVudGl0eS5jbGllbnRJbnRlcmZhY2UuY29uc3RydWN0YWJsZUluc3RhbmNlKHsgbGFiZWw6ICdDb250ZXh0JyB9KVxuXG5PYmplY3QuYXNzaWduKCQsIHtcbiAga2V5OiB7XG4gICAgLy8gdXNhZ2Ugb24gaW5zdGFuY2UgYG5vZGVJbnN0YW5jZVtDb250ZXh0LiQua2V5LnNoYXJlZENvbnRleHRdYFxuICAgIHNoYXJlZENvbnRleHQ6IFN5bWJvbCgnQ29udGV4dC5zaGFyZWRDb250ZXh0JyksXG4gICAgZ2V0dGVyOiBTeW1ib2woJ0NvbnRleHQuZ2V0dGVyJyksXG4gICAgc2V0dGVyOiBTeW1ib2woJ0NvbnRleHQuc2V0dGVyJyksXG4gIH0sXG59KVxuXG5DbGFzczo6Q2xhc3NbJC5wcm90b3R5cGVEZWxlZ2F0aW9uLmdldHRlcl0oRW50aXR5LiQua2V5LnN0YXRlSW5zdGFuY2UpLmluc3RhbmNlUHJvdG90eXBlXG4gIHw+IChwcm90b3R5cGUgPT5cbiAgICBPYmplY3QuYXNzaWduKHByb3RvdHlwZSwge1xuICAgICAgLy8gIGNvbmNlcmV0ZSBiZWhhdmlvciBpbml0aWFsaXphdGlvbiBvbiB0aGUgdGFyZ2V0IGluc3RhbmNlLlxuICAgICAgW0VudGl0eS4kLmtleS5jb25jZXJldGVCZWhhdmlvcl0oeyB0YXJnZXRJbnN0YW5jZSB9LCB7IGNvbmNlcmV0ZUJlaGF2aW9yIH0pIHtcbiAgICAgICAgLy8gYWRkIHRvIHByb3RvdHlwZSBkZWxlZ2F0aW9uXG4gICAgICAgIE11bHRpcGxlRGVsZWdhdGlvbi5hZGREZWxlZ2F0aW9uKHsgdGFyZ2V0T2JqZWN0OiB0YXJnZXRJbnN0YW5jZSwgZGVsZWdhdGlvbkxpc3Q6IFtjb25jZXJldGVCZWhhdmlvcl0gfSlcbiAgICAgICAgcmV0dXJuIHRhcmdldEluc3RhbmNlXG4gICAgICB9LFxuXG4gICAgICBbJC5rZXkuc2V0dGVyXShjb250ZXh0T2JqZWN0ID0ge30pIHtcbiAgICAgICAgYXNzZXJ0KHR5cGVvZiBjb250ZXh0T2JqZWN0ID09ICdvYmplY3QnLCAn4oCiIGNvbnRleHRPYmplY3QgbXVzdCBiZSBhbiBvYmplY3QuJylcbiAgICAgICAgdGhpc1skLmtleS5zaGFyZWRDb250ZXh0XSB8fD0ge31cbiAgICAgICAgT2JqZWN0LmFzc2lnbih0aGlzWyQua2V5LnNoYXJlZENvbnRleHRdLCBjb250ZXh0T2JqZWN0KVxuICAgICAgfSxcbiAgICAgIFskLmtleS5nZXR0ZXJdKCkge1xuICAgICAgICByZXR1cm4gdGhpc1skLmtleS5zaGFyZWRDb250ZXh0XVxuICAgICAgfSxcbiAgICB9KSlcblxuQ2xhc3M6OkNsYXNzWyQucHJvdG90eXBlRGVsZWdhdGlvbi5nZXR0ZXJdKENvbnN0cnVjdGFibGUuJC5rZXkuY29uc3RydWN0YWJsZUluc3RhbmNlKS5pbnN0YW5jZVByb3RvdHlwZVxuICB8PiAocHJvdG90eXBlID0+IHtcbiAgICBDbGFzczo6cHJvdG90eXBlW0VudGl0eS4kLmluaXRpYWxpemUuc2V0dGVyXSh7XG4gICAgICBbRW50aXR5LiQua2V5LmhhbmRsZURhdGFJbnN0YW5jZV0oeyB0YXJnZXRJbnN0YW5jZSB9LCB7IGRhdGEgfSkge1xuICAgICAgICB0YXJnZXRJbnN0YW5jZVskLmtleS5zZXR0ZXJdKGRhdGEpXG4gICAgICAgIHJldHVybiB0YXJnZXRJbnN0YW5jZVxuICAgICAgfSxcbiAgICB9KVxuICB9KVxuXG5jb25zdCBjbGllbnRJbnRlcmZhY2UgPSBDbGFzczo6Q2xhc3NbRW50aXR5LiQuY2xpZW50SW50ZXJmYWNlLnN3aXRjaF0oRW50aXR5LiQua2V5LnN0YXRlSW5zdGFuY2UpKHsgY29uc3RydWN0b3JJbXBsZW1lbnRhdGlvbjogRW50aXR5LiQua2V5LmhhbmRsZURhdGFJbnN0YW5jZSB9KVxuXG5leHBvcnQgeyBDbGFzcyBhcyBjbGFzcywgJCwgY2xpZW50SW50ZXJmYWNlIH1cbiJdfQ==
