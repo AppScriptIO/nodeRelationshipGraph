@@ -1,3 +1,4 @@
+import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
 import { Entity, Constructable } from '@dependency/entity'
 import * as Traversal from '../Traversal.class.js'
 import * as Database from '../Database.class.js'
@@ -91,12 +92,20 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
         )
 
         // expose functionality for direct simplified access:
+
         let concereteDatabase = instance[Entity.$.getInstanceOf](Database.class)
         instance.database = concereteDatabase[Database.$.key.getter]()
+
         let concreteTraversal = instance[Entity.$.getInstanceOf](Traversal.class)
         instance.traversal = concreteTraversal[ImplementationManagement.$.key.getter]()
-        let context = instance[Entity.$.getInstanceOf](Context.class)
-        instance.context = context ? context[Context.$.key.getter]() : {}
+
+        /*
+        - Retrieve all context instances in the delegation chain.
+        - Provide interface for accessing properties from these context instances.
+        Note: Assums that prototype chain of the graph instance will not be changed after creation of the instance. Which will make algotrithm lighter and simplified, and prevent repeated lookups.
+        */
+        let instanceList = instance[Entity.$.getInstanceOf](Context.class, { recursive: true })
+        instance.context = new MultipleDelegation(instanceList) // create a proxy to for looking up properties of all context instances
 
         return instance
       },

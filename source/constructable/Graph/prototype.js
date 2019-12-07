@@ -266,7 +266,7 @@ export const { traverse } = {
     traversalConfig ||= new graphInstance.TraversalConfig({
       traversalImplementationHierarchy: {
         // Context instance parameter
-        context: (graphInstance[Context.$.key.getter] ? graphInstance[Context.$.key.getter]()?.implementationKey : {}) || {} |> removeUndefinedFromObject,
+        context: graphInstance.context?.implementationKey || {} |> removeUndefinedFromObject,
         // parent arguments
         // TODO: deal with depth property configuration effect in nested nodes.
         parent: parentTraversalArg ? parentTraversalArg[0].traversalConfig.getTraversalImplementationKey() || {} : {},

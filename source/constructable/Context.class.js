@@ -9,9 +9,6 @@ const { class: Class, reference: $ } = new Entity.clientInterface.constructableI
 
 Object.assign($, {
   key: {
-    // usage on instance `nodeInstance[Context.$.key.sharedContext]`
-    sharedContext: Symbol('Context.sharedContext'),
-    getter: Symbol('Context.getter'),
     setter: Symbol('Context.setter'),
   },
 })
@@ -28,11 +25,7 @@ Class::Class[$.prototypeDelegation.getter](Entity.$.key.stateInstance).instanceP
 
       [$.key.setter](contextObject = {}) {
         assert(typeof contextObject == 'object', '• contextObject must be an object.')
-        this[$.key.sharedContext] ||= {}
-        Object.assign(this[$.key.sharedContext], contextObject)
-      },
-      [$.key.getter]() {
-        return this[$.key.sharedContext]
+        Object.assign(this, contextObject)
       },
     }))
 
