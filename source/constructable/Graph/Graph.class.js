@@ -105,7 +105,8 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
         Note: Assums that prototype chain of the graph instance will not be changed after creation of the instance. Which will make algotrithm lighter and simplified, and prevent repeated lookups.
         */
         let instanceList = instance[Entity.$.getInstanceOf](Context.class, { recursive: true })
-        instance.context = new MultipleDelegation(instanceList) // create a proxy to for looking up properties of all context instances
+        let { proxy } = new MultipleDelegation(instanceList) // create a proxy to for looking up properties of all context instances
+        instance.context = proxy
 
         return instance
       },
