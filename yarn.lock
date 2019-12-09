@@ -923,9 +923,9 @@
   version "1.0.2"
   resolved "https://github.com/AppScriptIO/addModuleResolutionPath#fa351d3da0d496bf34831d840c5e30be2ab8defe"
 
-"@dependency/buildTool@https://github.com/AppScriptIO/buildTool#semver:1.0.27":
-  version "1.0.27"
-  resolved "https://github.com/AppScriptIO/buildTool#c64df9fec47592d3594d2184588f6f864551254d"
+"@dependency/buildTool@https://github.com/AppScriptIO/buildTool#semver:1.0.28":
+  version "1.0.28"
+  resolved "https://github.com/AppScriptIO/buildTool#e7f601a5b051824455bad62ab3aa2c19739a7cd1"
   dependencies:
     "@dependency/deploymentProvisioning" "https://github.com/AppScriptIO/deploymentProvisioning#semver:^1.x.x"
     "@dependency/fragmentIndentationObjectStream" "https://github.com/AppScriptIO/fragmentIndentationObjectStream#semver:^1.x.x"
@@ -988,13 +988,13 @@
     which "*"
 
 "@dependency/deploymentScript@https://github.com/AppScriptIO/deploymentScript#semver:^1.x.x":
-  version "1.3.2"
-  resolved "https://github.com/AppScriptIO/deploymentScript#df160dfe7d46639ea19a721cdce68ff00c96186e"
+  version "1.3.3"
+  resolved "https://github.com/AppScriptIO/deploymentScript#2a2cc108670d9689e17450d15ce3a5cd94d9c8bd"
   dependencies:
-    "@dependency/buildTool" "https://github.com/AppScriptIO/buildTool#semver:1.0.27"
+    "@dependency/buildTool" "https://github.com/AppScriptIO/buildTool#semver:1.0.28"
     "@dependency/deploymentProvisioning" "https://github.com/AppScriptIO/deploymentProvisioning#semver:^1.x.x"
-    "@dependency/entity" "https://github.com/AppScriptIO/entity#semver:1.0.11"
-    "@dependency/graphTraversal" "https://github.com/AppScriptIO/graphTraversal#semver:2.0.3"
+    "@dependency/entity" "https://github.com/AppScriptIO/entity#semver:1.0.13"
+    "@dependency/graphTraversal" "https://github.com/AppScriptIO/graphTraversal#semver:2.0.4"
     "@dependency/graphTraversal-implementation" "https://github.com/AppScriptIO/graphTraversal-implementation#semver:2.0.2"
     "@dependency/javascriptTestRunner" "git+https://github.com/AppScriptIO/javascriptTestRunner.git#semver:^1.x.x"
     "@dependency/nodejsLiveReload" "git+https://github.com/AppScriptIO/nodejsLiveReload.git#semver:^1.x.x"
@@ -1017,16 +1017,18 @@
     uuid "^3.3.2"
     write-json-file "*"
 
-"@dependency/entity@https://github.com/AppScriptIO/entity#semver:1.0.11":
-  version "1.0.11"
-  resolved "https://github.com/AppScriptIO/entity#a9ce5746ff50429ec48734604d78c4887fc4a5b9"
-  dependencies:
-    "@dependency/multiplePrototypeDelegation" "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:1.0.15"
-    lodash "^4.17.11"
-
-"@dependency/entity@https://github.com/AppScriptIO/entity#semver:^1.x.x":
+"@dependency/entity@https://github.com/AppScriptIO/entity#semver:1.0.13":
   version "1.0.13"
   resolved "https://github.com/AppScriptIO/entity#80bf66240a0fc6a26397928548186d72adda3543"
+  dependencies:
+    "@dependency/multiplePrototypeDelegation" "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x"
+    deepmerge "^4.2.2"
+    lodash "^4.17.11"
+    merge-anything "^2.4.4"
+
+"@dependency/entity@https://github.com/AppScriptIO/entity#semver:^1.x.x":
+  version "1.0.15"
+  resolved "https://github.com/AppScriptIO/entity#32f3f551cc8fd1bb38023c4c743acea3d4e961fe"
   dependencies:
     "@dependency/multiplePrototypeDelegation" "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x"
     deepmerge "^4.2.2"
@@ -1045,9 +1047,9 @@
     redisgraph.js "^1.1.4"
     uuid "*"
 
-"@dependency/graphTraversal@https://github.com/AppScriptIO/graphTraversal#semver:2.0.3", "@dependency/graphTraversal@https://github.com/AppScriptIO/graphTraversal#semver:^2.x.x":
-  version "2.0.3"
-  resolved "https://github.com/AppScriptIO/graphTraversal#31130419a086c719541acffad0cb23f84ef39aee"
+"@dependency/graphTraversal@https://github.com/AppScriptIO/graphTraversal#semver:2.0.4", "@dependency/graphTraversal@https://github.com/AppScriptIO/graphTraversal#semver:^2.x.x":
+  version "2.0.4"
+  resolved "https://github.com/AppScriptIO/graphTraversal#0163fb9c90c6c348239f65eeca5c1cbb1c10c073"
   dependencies:
     "@dependency/entity" "https://github.com/AppScriptIO/entity#semver:^1.x.x"
     "@dependency/graphTraversal-implementation" "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^2.x.x"
@@ -1147,10 +1149,6 @@
   dependencies:
     "@dependency/recursiveCreateDirectory" "https://github.com/AppScriptIO/recursiveCreateDirectory#semver:^1.x.x"
     del "^3.0.0"
-
-"@dependency/multiplePrototypeDelegation@https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:1.0.15":
-  version "1.0.15"
-  resolved "https://github.com/AppScriptIO/multiplePrototypeDelegation#054481e8228dc836f93d65b3790d66a7dba3c50c"
 
 "@dependency/multiplePrototypeDelegation@https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x":
   version "1.0.16"
@@ -1440,9 +1438,9 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@>=6":
-  version "12.12.14"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.14.tgz#1c1d6e3c75dba466e0326948d56e8bd72a1903d2"
-  integrity sha512-u/SJDyXwuihpwjXy7hOOghagLEV1KdAST6syfnOk6QZAMzZuWZqXy5aYYZbh8Jdpd4escVFP0MvftHNDb9pruA==
+  version "12.12.15"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.15.tgz#8dfb6ce22fedd469128137640a3aa8f17415422f"
+  integrity sha512-Pv+vWicyFd07Hw/SmNnTUguqrHgDfMtjabvD9sQyxeqbpCEg8CmViLBaVPHtNsoBgZECrRf5/pgV6FJIBrGSjw==
 
 "@types/node@^4.0.30":
   version "4.9.4"
@@ -2670,7 +2668,7 @@ browser-sync@*:
     ua-parser-js "0.7.17"
     yargs "6.4.0"
 
-browserslist@^4.6.0, browserslist@^4.8.0:
+browserslist@^4.6.0, browserslist@^4.8.0, browserslist@^4.8.2:
   version "4.8.2"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.8.2.tgz#b45720ad5fbc8713b7253c20766f701c9a694289"
   integrity sha512-+M4oeaTplPm/f1pXDw84YohEv7B1i/2Aisei8s4s6k3QsoSHa7i5sz8u/cGQkkatCPxMASKxPualR4wwYgVboA==
@@ -3218,22 +3216,22 @@ copy-props@^2.0.1:
     is-plain-object "^2.0.1"
 
 core-js-compat@^3.4.7:
-  version "3.4.7"
-  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.4.7.tgz#39f8080b1d92a524d6d90505c42b9c5c1eb90611"
-  integrity sha512-57+mgz/P/xsGdjwQYkwtBZR3LuISaxD1dEwVDtbk8xJMqAmwqaxLOvnNT7kdJ7jYE/NjNptyzXi+IQFMi/2fCw==
+  version "3.4.8"
+  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.4.8.tgz#f72e6a4ed76437ea710928f44615f926a81607d5"
+  integrity sha512-l3WTmnXHV2Sfu5VuD7EHE2w7y+K68+kULKt5RJg8ZJk3YhHF1qLD4O8v8AmNq+8vbOwnPFFDvds25/AoEvMqlQ==
   dependencies:
-    browserslist "^4.8.0"
+    browserslist "^4.8.2"
     semver "^6.3.0"
 
 core-js@*:
-  version "3.4.7"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.4.7.tgz#57c35937da80fe494fbc3adcf9cf3dc00eb86b34"
-  integrity sha512-qaPVGw30J1wQ0GR3GvoPqlGf9GZfKKF4kFC7kiHlcsPTqH3txrs9crCp3ZiMAXuSenhz89Jnl4GZs/67S5VOSg==
+  version "3.4.8"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.4.8.tgz#e0fc0c61f2ef90cbc10c531dbffaa46dfb7152dd"
+  integrity sha512-b+BBmCZmVgho8KnBUOXpvlqEMguko+0P+kXCwD4vIprsXC6ht1qgPxtb1OK6XgSlrySF71wkwBQ0Hv695bk9gQ==
 
 core-js@^2.4.0:
-  version "2.6.10"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.10.tgz#8a5b8391f8cc7013da703411ce5b585706300d7f"
-  integrity sha512-I39t74+4t+zau64EN1fE5v2W31Adtc/REhzWN+gWRRXg6WH5qAsZm62DHpQ1+Yhe4047T55jvzz7MUqF/dBBlA==
+  version "2.6.11"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.11.tgz#38831469f9922bded8ee21c9dc46985e0399308c"
+  integrity sha512-5wjnpaT/3dV+XB4borEsnAYQchn00XSgTAWKDkEqv+K8KevjbzmofK6hfJ9TZIlpj2N0xQpazy7PiRQiWHqzWg==
 
 core-util-is@~1.0.0:
   version "1.0.2"
