@@ -33,9 +33,12 @@ suite('Configure Graph class', () => {
     defaultImplementation: 'default',
   })
 
-  let contextInstance = new Context.clientInterface({
-    implementationKey: {},
-  })
+  let contextInstance1 = new Context.clientInterface({
+      data: { key1: 'key1' },
+    }),
+    contextInstance2 = new Context.clientInterface({
+      data: { key2: 'key2' },
+    })
 
   suite('Configured graph with loading plugins and database adapter', async () => {
     let configuredGraph = Graph.clientInterface({
@@ -43,17 +46,31 @@ suite('Configure Graph class', () => {
         {
           database: concreteDatabaseBehavior,
           traversal: concreteGraphTraversalBehavior,
-          concreteBehaviorList: [contextInstance],
+          concreteBehaviorList: [contextInstance1],
           data: {},
         },
       ],
     })
 
-    test('Should inherit implementation classes', async () => {
-      let graph = new configuredGraph.clientInterface({})
-      let multiplePrototypeProxy = Object.getPrototypeOf(graph)
-      let multiplePrototypeArray = multiplePrototypeProxy[multiplePrototypeDelegation.$.list]
-      chaiAssertion.isTrue([contextInstance, concreteGraphTraversalBehavior, concreteDatabaseBehavior].every(behavior => multiplePrototypeArray.includes(behavior)))
-    })
+    {
+      test('Should inherit implementation classes', async () => {
+        let graph = new configuredGraph.clientInterface({})
+        let multiplePrototypeProxy = Object.getPrototypeOf(graph)
+        let multiplePrototypeArray = multiplePrototypeProxy[multiplePrototypeDelegation.$.list]
+        debugger
+        chaiAssertion.isTrue([contextInstance1, concreteGraphTraversalBehavior, concreteDatabaseBehavior].every(behavior => multiplePrototypeArray.includes(behavior)))
+      })
+    }
+    {
+      test('Should merge implementations of multiple arguments successfully', async () => {
+        let graph = new configuredGraph.clientInterface({
+          // pass additional arguments to trigger merging algorithm of arguments.
+          concreteBehaviorList: [contextInstance2],
+        })
+        let multiplePrototypeProxy = Object.getPrototypeOf(graph)
+        let multiplePrototypeArray = multiplePrototypeProxy[multiplePrototypeDelegation.$.list]
+        chaiAssertion.isTrue([contextInstance1, contextInstance2, concreteGraphTraversalBehavior, concreteDatabaseBehavior].every(behavior => multiplePrototypeArray.includes(behavior)))
+      })
+    }
   })
 })
