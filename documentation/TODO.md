@@ -1,4 +1,6 @@
 ### TODO:
+- Support `if..else..` reroute (reference connection) algorithm, similar to `switch case` reroute. The difference is that if else can execute a condition graph unrelated to the other if statements, and defaults to `else` connection.
+- Support traversal of multiple node types like - same node of type Reroute, Stage, Process, Function. Which has self connections of REFERENCE, VALUE, EXECUTE, RESOURCE.
 - Use node types as only an abstraction over the actual node implementations, in which this abstraction provides easy userinterface for the client to conceptualize with. All implementations are `node implementation`, any node type in the graph is a specific abstraction over the an implementation or a group of implementations.
     Or combine multiple concepts in the user interface visually (UI), while still using the desperse integrated implementations underneath in the core code. i.e. the UI will provide an abstraction layer to the actual way of storing the concepts in the graph. Where concepts like switch shouldn't be explicitely shown in detail in the visual ui.
 Kind of making all nodes implementations separate from the node types, then relating them to the specific types - combining & mixing implementations in a node type.
