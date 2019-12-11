@@ -189,6 +189,7 @@ _resources about graphs and different implementations:_
 
 # Modules that depend on the graphTraversal module: 
 - buildTool
+- deploymentScript (graph data loading)
 - services repositories.
 - 
 
