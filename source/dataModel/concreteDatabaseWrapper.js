@@ -68,10 +68,16 @@ export async function getCase({ concreteDatabase, nodeID }) {
   return { caseArray }
 }
 
-export async function getDefault({ concreteDatabase, nodeID }) {
-  let defaultArray = await concreteDatabase.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.default })
+export async function getSelect({ concreteDatabase, nodeID }) {
+  let selectArray = await concreteDatabase.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.select })
   // Note: node type could be any node
-  return { defaultArray }
+  return { selectArray }
+}
+
+export async function getFallback({ concreteDatabase, nodeID }) {
+  let fallbackArray = await concreteDatabase.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.fallback })
+  // Note: node type could be any node
+  return { fallbackArray }
 }
 
 export async function getReference({ concreteDatabase, nodeID }) {
@@ -128,13 +134,19 @@ export async function getReferenceResolutionElement({ concreteDatabase, nodeID }
   return { reference: referenceArray.length > 0 ? referenceArray[0] : null }
 }
 
-export async function getSwitchElement({ concreteDatabase, nodeID }) {
+export async function getSelectionElement({ concreteDatabase, nodeID }) {
+  const { selectArray } = await getSelect({ concreteDatabase, nodeID })
+  const { fallbackArray } = await getFallback({ concreteDatabase, nodeID })
+
+  if (fallbackArray.length > 1) throw new Error(`• Multiple "fallback" relationships are not supported for Selection/Switch node.`)
+
+  return { selectArray: selectArray.length > 0 ? selectArray : null, fallback: fallbackArray.length > 0 ? fallbackArray[0] : null }
+}
+
+export async function getConditionSwitchElement({ concreteDatabase, nodeID }) {
   const { caseArray } = await getCase({ concreteDatabase, nodeID })
-  const { defaultArray } = await getDefault({ concreteDatabase, nodeID })
 
-  if (defaultArray.length > 1) throw new Error(`• Multiple default relationships are not supported for Switch node.`)
-
-  return { caseArray: caseArray.length > 0 ? caseArray : null, default: defaultArray.length > 0 ? defaultArray[0] : null }
+  return { caseArray: caseArray.length > 0 ? caseArray : null }
 }
 
 // Value connection concept implementation

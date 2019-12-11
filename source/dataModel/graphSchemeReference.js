@@ -27,8 +27,9 @@ export const connectionType = {
   execute: 'EXECUTE',
   resource: 'RESOURCE',
   value: 'VALUE', // {type: 'node' || 'properties'} i.e. return the node reference or return its properties.
+  fallback: 'FALLBACK',
+  select: 'SELECT',
   case: 'CASE',
-  default: 'DEFAULT',
   // root: 'ROOT',
   // run: 'RUN', // run as subgraph where the result of the subgraph traversal is to be used in the stage node calling it.
   // inherit: 'INHERIT',
@@ -61,5 +62,5 @@ export const rerouteProperty = {
 }
 
 export const referenceProperty = {
-  resolutionImplementation: ['caseSwitch', 'node'],
+  resolutionImplementation: ['selection', 'node'],
 }

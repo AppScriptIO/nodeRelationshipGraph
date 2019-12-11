@@ -15,8 +15,8 @@ export async function resolveReference({ targetNode, graphInstance, traverseCall
 
   let resolvedNode
   switch (reference.connection.properties.resolutionImplementation) {
-    case 'caseSwitch':
-      resolvedNode = await switchReferenceResolution({ graphInstance, targetNode: reference.destination, traverseCallContext })
+    case 'selection':
+      resolvedNode = await selectionReferenceResolution({ graphInstance, targetNode: reference.destination, traverseCallContext })
       break
     case 'node':
     default:
@@ -27,19 +27,37 @@ export async function resolveReference({ targetNode, graphInstance, traverseCall
   return resolvedNode
 }
 
-export async function switchReferenceResolution({ graphInstance, targetNode, traverseCallContext }) {
+/**
+ * Control flow structure supporting binary selecation (if statement), if else if, switch case (multi-way selection). A combined If Else and Switch Case concepts.
+ */
+export async function selectionReferenceResolution({ graphInstance, targetNode, traverseCallContext }) {
   let resolvedReferenceNode
-  const { caseArray, default: defaultRelationship } = await graphInstance.databaseWrapper.getSwitchElement({ concreteDatabase: graphInstance.database, nodeID: targetNode.identity })
+  const { selectArray, fallback: fallbackRelationship } = await graphInstance.databaseWrapper.getSelectionElement({ concreteDatabase: graphInstance.database, nodeID: targetNode.identity })
+  selectArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
+
+  let index = 0
+  while (selectArray.length > index && !resolvedReferenceNode) {
+    resolvedReferenceNode = await conditionSwitchResolution({ graphInstance, targetNode: selectArray[index].destination, traverseCallContext })
+    index++
+  }
+
+  resolvedReferenceNode ||= fallbackRelationship?.destination
+  return resolvedReferenceNode || null
+}
+
+/** resolves VALUE and picks the matching CASE node.
+  * @param targetNode Stage node with VALUE connection representing the condition
+
+*/
+export async function conditionSwitchResolution({ graphInstance, targetNode, traverseCallContext }) {
+  let matchingNode
+  const { caseArray } = await graphInstance.databaseWrapper.getConditionSwitchElement({ concreteDatabase: graphInstance.database, nodeID: targetNode.identity })
   let value = await resolveValue({ targetNode: targetNode, graphInstance, traverseCallContext })
   // Switch cases: return evaluation configuration
   if (caseArray) {
     // compare expected value with result
     let caseRelationship = caseArray.filter(caseRelationship => caseRelationship.connection.properties?.expected == value)[0]
-    resolvedReferenceNode = caseRelationship?.destination
+    matchingNode = caseRelationship?.destination
   }
-  resolvedReferenceNode ||= defaultRelationship?.destination
-  return resolvedReferenceNode || null
+  return matchingNode || null
 }
-
-// TODO:
-export async function ifElseReferenceResolution({ graphInstance, targetNode, traverseCallContext }) {}
