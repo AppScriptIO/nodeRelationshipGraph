@@ -1,7 +1,8 @@
-// function wrapper to set thisArg on target object methods.
-export function bindAllMethod({ target /**target object holding the methods to bind */, thisArg }) {
-  Object.keys(target).forEach(function(key) {
-    target[key] = target[key].bind(thisArg)
-  }, {})
-  return target
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.bindAllMethod = bindAllMethod;
+function bindAllMethod({ target, thisArg }) {
+  Object.keys(target).forEach(function (key) {
+    target[key] = target[key].bind(thisArg);
+  }, {});
+  return target;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS91dGlsaXR5L2JpbmRBbGxNZWh0b2QuanMiXSwibmFtZXMiOlsiYmluZEFsbE1ldGhvZCIsInRhcmdldCIsInRoaXNBcmciLCJPYmplY3QiLCJrZXlzIiwiZm9yRWFjaCIsImtleSIsImJpbmQiXSwibWFwcGluZ3MiOiI7QUFDTyxTQUFTQSxhQUFULENBQXVCLEVBQUVDLE1BQUYsRUFBMERDLE9BQTFELEVBQXZCLEVBQTRGO0FBQ2pHQyxFQUFBQSxNQUFNLENBQUNDLElBQVAsQ0FBWUgsTUFBWixFQUFvQkksT0FBcEIsQ0FBNEIsVUFBU0MsR0FBVCxFQUFjO0FBQ3hDTCxJQUFBQSxNQUFNLENBQUNLLEdBQUQsQ0FBTixHQUFjTCxNQUFNLENBQUNLLEdBQUQsQ0FBTixDQUFZQyxJQUFaLENBQWlCTCxPQUFqQixDQUFkO0FBQ0QsR0FGRCxFQUVHLEVBRkg7QUFHQSxTQUFPRCxNQUFQO0FBQ0QiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBmdW5jdGlvbiB3cmFwcGVyIHRvIHNldCB0aGlzQXJnIG9uIHRhcmdldCBvYmplY3QgbWV0aG9kcy5cbmV4cG9ydCBmdW5jdGlvbiBiaW5kQWxsTWV0aG9kKHsgdGFyZ2V0IC8qKnRhcmdldCBvYmplY3QgaG9sZGluZyB0aGUgbWV0aG9kcyB0byBiaW5kICovLCB0aGlzQXJnIH0pIHtcbiAgT2JqZWN0LmtleXModGFyZ2V0KS5mb3JFYWNoKGZ1bmN0aW9uKGtleSkge1xuICAgIHRhcmdldFtrZXldID0gdGFyZ2V0W2tleV0uYmluZCh0aGlzQXJnKVxuICB9LCB7fSlcbiAgcmV0dXJuIHRhcmdldFxufVxuIl19

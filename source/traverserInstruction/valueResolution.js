@@ -1,70 +1,71 @@
-// TODO: Move other node instruction outside of node type functions, to make a more modular instruction functions.
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.resolveValue = resolveValue;exports.conditionSubgraphValueResolution = conditionSubgraphValueResolution;exports.conditionSubgraphWithNonBooleanValueResolution = conditionSubgraphWithNonBooleanValueResolution;
 
-export async function resolveValue({ targetNode, graphInstance, traverseCallContext }) {
-  const value = await graphInstance.databaseWrapper.getValueElement({ concreteDatabase: graphInstance.database, nodeID: targetNode.identity })
-  if (!value) return
+async function resolveValue({ targetNode, graphInstance, traverseCallContext }) {
+  const value = await graphInstance.databaseWrapper.getValueElement({ concreteDatabase: graphInstance.database, nodeID: targetNode.identity });
+  if (!value) return;
 
-  let resolvedValue
-  /* run condition check against comparison value. Hierarchy of comparison value calculation:   */
+  let resolvedValue;
+
   switch (value.connection.properties.implementation) {
     case 'conditionSubgraph':
-      resolvedValue = await conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext })
-      break
+      resolvedValue = await conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext });
+      break;
     case 'properties':
-      resolvedValue = value.source.properties
-      break
+      resolvedValue = value.source.properties;
+      break;
     case 'node':
-      resolvedValue = value.source
-      break
+      resolvedValue = value.source;
+      break;
     case 'valueProperty':
     default:
-      resolvedValue = value.source.properties.value
-      break
-  }
-  return resolvedValue
+      resolvedValue = value.source.properties.value;
+      break;}
+
+  return resolvedValue;
 }
 
-/*
-    ____                _ _ _   _             
-   / ___|___  _ __   __| (_) |_(_) ___  _ __  
-  | |   / _ \| '_ \ / _` | | __| |/ _ \| '_ \ 
-  | |__| (_) | | | | (_| | | |_| | (_) | | | |
-   \____\___/|_| |_|\__,_|_|\__|_|\___/|_| |_|
-   Selective / Conditional
-*/
-/**
- * @return {Node Object} - a node object containing data.
- The condition subgraph returns a boolean value.
- */
-export async function conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext }) {
-  let resolvedValue
-  // Run reference node in a separate traversal recursive scopes, and return result.
-  // traverse the destination and extract node from the result value.
+
+
+
+
+
+
+
+
+
+
+
+
+async function conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext }) {
+  let resolvedValue;
+
+
   let resultValueArray = await graphInstance.traverse(
-    /* TODO: Note: this is a quick implementation because digging into the core code is time consuming, the different concepts used in here could be improved and built upon other already existing concepts: 
-           TODO: create an instance graph from the current graphInstance, to allow passing additional context parametrs.
-               • 'traversalCallContext' - the 2nd provided argument could be instead applied as a regular Context specific for the call, by creating a new graphInstance chain with it's unique context, in addition to the already existing context instance.
-           was this done ? ~~• ConditionAggregator & traverseThenProcessWithLogicalOperator implementations could be integratted into the other implementations.~~
-         */
-    {
-      nodeInstance: value.source,
-      implementationKey: {
-        processNode: 'executeFunctionReference', // default implementation for processing stages in condition graph.
-        traversalInterception: 'traverseThenProcessWithLogicalOperator',
-        aggregator: 'ConditionAggregator',
-      },
-    },
-    {
-      traverseCallContext: {
-        targetNode: (traverseCallContext && traverseCallContext.targetNode) || value.destination, // pass the node requesting the resolution of the reroute node if it exists, or the reroute itself in case called as root level in the traversal.
-      },
-    },
-  ) // traverse subgraph to retrieve a referenced node.
 
-  if (resultValueArray.length > 1) resolvedValue = resultValueArray.every(item => Boolean(item))
-  else if (resultValueArray.length != 0) resolvedValue = resultValueArray[0]
-  return resolvedValue
+
+
+
+
+  {
+    nodeInstance: value.source,
+    implementationKey: {
+      processNode: 'executeFunctionReference',
+      traversalInterception: 'traverseThenProcessWithLogicalOperator',
+      aggregator: 'ConditionAggregator' } },
+
+
+  {
+    traverseCallContext: {
+      targetNode: traverseCallContext && traverseCallContext.targetNode || value.destination } });
+
+
+
+
+  if (resultValueArray.length > 1) resolvedValue = resultValueArray.every(item => Boolean(item));else
+  if (resultValueArray.length != 0) resolvedValue = resultValueArray[0];
+  return resolvedValue;
 }
 
-// TODO: condition subgraph that returns non-boolean, functions for making complex condition checks.
-export async function conditionSubgraphWithNonBooleanValueResolution({ value, graphInstance, traverseCallContext }) {}
+
+async function conditionSubgraphWithNonBooleanValueResolution({ value, graphInstance, traverseCallContext }) {}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS90cmF2ZXJzZXJJbnN0cnVjdGlvbi92YWx1ZVJlc29sdXRpb24uanMiXSwibmFtZXMiOlsicmVzb2x2ZVZhbHVlIiwidGFyZ2V0Tm9kZSIsImdyYXBoSW5zdGFuY2UiLCJ0cmF2ZXJzZUNhbGxDb250ZXh0IiwidmFsdWUiLCJkYXRhYmFzZVdyYXBwZXIiLCJnZXRWYWx1ZUVsZW1lbnQiLCJjb25jcmV0ZURhdGFiYXNlIiwiZGF0YWJhc2UiLCJub2RlSUQiLCJpZGVudGl0eSIsInJlc29sdmVkVmFsdWUiLCJjb25uZWN0aW9uIiwicHJvcGVydGllcyIsImltcGxlbWVudGF0aW9uIiwiY29uZGl0aW9uU3ViZ3JhcGhWYWx1ZVJlc29sdXRpb24iLCJzb3VyY2UiLCJyZXN1bHRWYWx1ZUFycmF5IiwidHJhdmVyc2UiLCJub2RlSW5zdGFuY2UiLCJpbXBsZW1lbnRhdGlvbktleSIsInByb2Nlc3NOb2RlIiwidHJhdmVyc2FsSW50ZXJjZXB0aW9uIiwiYWdncmVnYXRvciIsImRlc3RpbmF0aW9uIiwibGVuZ3RoIiwiZXZlcnkiLCJpdGVtIiwiQm9vbGVhbiIsImNvbmRpdGlvblN1YmdyYXBoV2l0aE5vbkJvb2xlYW5WYWx1ZVJlc29sdXRpb24iXSwibWFwcGluZ3MiOiI7O0FBRU8sZUFBZUEsWUFBZixDQUE0QixFQUFFQyxVQUFGLEVBQWNDLGFBQWQsRUFBNkJDLG1CQUE3QixFQUE1QixFQUFnRjtBQUNyRixRQUFNQyxLQUFLLEdBQUcsTUFBTUYsYUFBYSxDQUFDRyxlQUFkLENBQThCQyxlQUE5QixDQUE4QyxFQUFFQyxnQkFBZ0IsRUFBRUwsYUFBYSxDQUFDTSxRQUFsQyxFQUE0Q0MsTUFBTSxFQUFFUixVQUFVLENBQUNTLFFBQS9ELEVBQTlDLENBQXBCO0FBQ0EsTUFBSSxDQUFDTixLQUFMLEVBQVk7O0FBRVosTUFBSU8sYUFBSjs7QUFFQSxVQUFRUCxLQUFLLENBQUNRLFVBQU4sQ0FBaUJDLFVBQWpCLENBQTRCQyxjQUFwQztBQUNFLFNBQUssbUJBQUw7QUFDRUgsTUFBQUEsYUFBYSxHQUFHLE1BQU1JLGdDQUFnQyxDQUFDLEVBQUVYLEtBQUYsRUFBU0YsYUFBVCxFQUF3QkMsbUJBQXhCLEVBQUQsQ0FBdEQ7QUFDQTtBQUNGLFNBQUssWUFBTDtBQUNFUSxNQUFBQSxhQUFhLEdBQUdQLEtBQUssQ0FBQ1ksTUFBTixDQUFhSCxVQUE3QjtBQUNBO0FBQ0YsU0FBSyxNQUFMO0FBQ0VGLE1BQUFBLGFBQWEsR0FBR1AsS0FBSyxDQUFDWSxNQUF0QjtBQUNBO0FBQ0YsU0FBSyxlQUFMO0FBQ0E7QUFDRUwsTUFBQUEsYUFBYSxHQUFHUCxLQUFLLENBQUNZLE1BQU4sQ0FBYUgsVUFBYixDQUF3QlQsS0FBeEM7QUFDQSxZQWJKOztBQWVBLFNBQU9PLGFBQVA7QUFDRDs7Ozs7Ozs7Ozs7Ozs7QUFjTSxlQUFlSSxnQ0FBZixDQUFnRCxFQUFFWCxLQUFGLEVBQVNGLGFBQVQsRUFBd0JDLG1CQUF4QixFQUFoRCxFQUErRjtBQUNwRyxNQUFJUSxhQUFKOzs7QUFHQSxNQUFJTSxnQkFBZ0IsR0FBRyxNQUFNZixhQUFhLENBQUNnQixRQUFkOzs7Ozs7QUFNM0I7QUFDRUMsSUFBQUEsWUFBWSxFQUFFZixLQUFLLENBQUNZLE1BRHRCO0FBRUVJLElBQUFBLGlCQUFpQixFQUFFO0FBQ2pCQyxNQUFBQSxXQUFXLEVBQUUsMEJBREk7QUFFakJDLE1BQUFBLHFCQUFxQixFQUFFLHdDQUZOO0FBR2pCQyxNQUFBQSxVQUFVLEVBQUUscUJBSEssRUFGckIsRUFOMkI7OztBQWMzQjtBQUNFcEIsSUFBQUEsbUJBQW1CLEVBQUU7QUFDbkJGLE1BQUFBLFVBQVUsRUFBR0UsbUJBQW1CLElBQUlBLG1CQUFtQixDQUFDRixVQUE1QyxJQUEyREcsS0FBSyxDQUFDb0IsV0FEMUQsRUFEdkIsRUFkMkIsQ0FBN0I7Ozs7O0FBcUJBLE1BQUlQLGdCQUFnQixDQUFDUSxNQUFqQixHQUEwQixDQUE5QixFQUFpQ2QsYUFBYSxHQUFHTSxnQkFBZ0IsQ0FBQ1MsS0FBakIsQ0FBdUJDLElBQUksSUFBSUMsT0FBTyxDQUFDRCxJQUFELENBQXRDLENBQWhCLENBQWpDO0FBQ0ssTUFBSVYsZ0JBQWdCLENBQUNRLE1BQWpCLElBQTJCLENBQS9CLEVBQWtDZCxhQUFhLEdBQUdNLGdCQUFnQixDQUFDLENBQUQsQ0FBaEM7QUFDdkMsU0FBT04sYUFBUDtBQUNEOzs7QUFHTSxlQUFla0IsOENBQWYsQ0FBOEQsRUFBRXpCLEtBQUYsRUFBU0YsYUFBVCxFQUF3QkMsbUJBQXhCLEVBQTlELEVBQTZHLENBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBUT0RPOiBNb3ZlIG90aGVyIG5vZGUgaW5zdHJ1Y3Rpb24gb3V0c2lkZSBvZiBub2RlIHR5cGUgZnVuY3Rpb25zLCB0byBtYWtlIGEgbW9yZSBtb2R1bGFyIGluc3RydWN0aW9uIGZ1bmN0aW9ucy5cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIHJlc29sdmVWYWx1ZSh7IHRhcmdldE5vZGUsIGdyYXBoSW5zdGFuY2UsIHRyYXZlcnNlQ2FsbENvbnRleHQgfSkge1xuICBjb25zdCB2YWx1ZSA9IGF3YWl0IGdyYXBoSW5zdGFuY2UuZGF0YWJhc2VXcmFwcGVyLmdldFZhbHVlRWxlbWVudCh7IGNvbmNyZXRlRGF0YWJhc2U6IGdyYXBoSW5zdGFuY2UuZGF0YWJhc2UsIG5vZGVJRDogdGFyZ2V0Tm9kZS5pZGVudGl0eSB9KVxuICBpZiAoIXZhbHVlKSByZXR1cm5cblxuICBsZXQgcmVzb2x2ZWRWYWx1ZVxuICAvKiBydW4gY29uZGl0aW9uIGNoZWNrIGFnYWluc3QgY29tcGFyaXNvbiB2YWx1ZS4gSGllcmFyY2h5IG9mIGNvbXBhcmlzb24gdmFsdWUgY2FsY3VsYXRpb246ICAgKi9cbiAgc3dpdGNoICh2YWx1ZS5jb25uZWN0aW9uLnByb3BlcnRpZXMuaW1wbGVtZW50YXRpb24pIHtcbiAgICBjYXNlICdjb25kaXRpb25TdWJncmFwaCc6XG4gICAgICByZXNvbHZlZFZhbHVlID0gYXdhaXQgY29uZGl0aW9uU3ViZ3JhcGhWYWx1ZVJlc29sdXRpb24oeyB2YWx1ZSwgZ3JhcGhJbnN0YW5jZSwgdHJhdmVyc2VDYWxsQ29udGV4dCB9KVxuICAgICAgYnJlYWtcbiAgICBjYXNlICdwcm9wZXJ0aWVzJzpcbiAgICAgIHJlc29sdmVkVmFsdWUgPSB2YWx1ZS5zb3VyY2UucHJvcGVydGllc1xuICAgICAgYnJlYWtcbiAgICBjYXNlICdub2RlJzpcbiAgICAgIHJlc29sdmVkVmFsdWUgPSB2YWx1ZS5zb3VyY2VcbiAgICAgIGJyZWFrXG4gICAgY2FzZSAndmFsdWVQcm9wZXJ0eSc6XG4gICAgZGVmYXVsdDpcbiAgICAgIHJlc29sdmVkVmFsdWUgPSB2YWx1ZS5zb3VyY2UucHJvcGVydGllcy52YWx1ZVxuICAgICAgYnJlYWtcbiAgfVxuICByZXR1cm4gcmVzb2x2ZWRWYWx1ZVxufVxuXG4vKlxuICAgIF9fX18gICAgICAgICAgICAgICAgXyBfIF8gICBfICAgICAgICAgICAgIFxuICAgLyBfX198X19fICBfIF9fICAgX198IChfKSB8XyhfKSBfX18gIF8gX18gIFxuICB8IHwgICAvIF8gXFx8ICdfIFxcIC8gX2AgfCB8IF9ffCB8LyBfIFxcfCAnXyBcXCBcbiAgfCB8X198IChfKSB8IHwgfCB8IChffCB8IHwgfF98IHwgKF8pIHwgfCB8IHxcbiAgIFxcX19fX1xcX19fL3xffCB8X3xcXF9fLF98X3xcXF9ffF98XFxfX18vfF98IHxffFxuICAgU2VsZWN0aXZlIC8gQ29uZGl0aW9uYWxcbiovXG4vKipcbiAqIEByZXR1cm4ge05vZGUgT2JqZWN0fSAtIGEgbm9kZSBvYmplY3QgY29udGFpbmluZyBkYXRhLlxuIFRoZSBjb25kaXRpb24gc3ViZ3JhcGggcmV0dXJucyBhIGJvb2xlYW4gdmFsdWUuXG4gKi9cbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBjb25kaXRpb25TdWJncmFwaFZhbHVlUmVzb2x1dGlvbih7IHZhbHVlLCBncmFwaEluc3RhbmNlLCB0cmF2ZXJzZUNhbGxDb250ZXh0IH0pIHtcbiAgbGV0IHJlc29sdmVkVmFsdWVcbiAgLy8gUnVuIHJlZmVyZW5jZSBub2RlIGluIGEgc2VwYXJhdGUgdHJhdmVyc2FsIHJlY3Vyc2l2ZSBzY29wZXMsIGFuZCByZXR1cm4gcmVzdWx0LlxuICAvLyB0cmF2ZXJzZSB0aGUgZGVzdGluYXRpb24gYW5kIGV4dHJhY3Qgbm9kZSBmcm9tIHRoZSByZXN1bHQgdmFsdWUuXG4gIGxldCByZXN1bHRWYWx1ZUFycmF5ID0gYXdhaXQgZ3JhcGhJbnN0YW5jZS50cmF2ZXJzZShcbiAgICAvKiBUT0RPOiBOb3RlOiB0aGlzIGlzIGEgcXVpY2sgaW1wbGVtZW50YXRpb24gYmVjYXVzZSBkaWdnaW5nIGludG8gdGhlIGNvcmUgY29kZSBpcyB0aW1lIGNvbnN1bWluZywgdGhlIGRpZmZlcmVudCBjb25jZXB0cyB1c2VkIGluIGhlcmUgY291bGQgYmUgaW1wcm92ZWQgYW5kIGJ1aWx0IHVwb24gb3RoZXIgYWxyZWFkeSBleGlzdGluZyBjb25jZXB0czogXG4gICAgICAgICAgIFRPRE86IGNyZWF0ZSBhbiBpbnN0YW5jZSBncmFwaCBmcm9tIHRoZSBjdXJyZW50IGdyYXBoSW5zdGFuY2UsIHRvIGFsbG93IHBhc3NpbmcgYWRkaXRpb25hbCBjb250ZXh0IHBhcmFtZXRycy5cbiAgICAgICAgICAgICAgIOKAoiAndHJhdmVyc2FsQ2FsbENvbnRleHQnIC0gdGhlIDJuZCBwcm92aWRlZCBhcmd1bWVudCBjb3VsZCBiZSBpbnN0ZWFkIGFwcGxpZWQgYXMgYSByZWd1bGFyIENvbnRleHQgc3BlY2lmaWMgZm9yIHRoZSBjYWxsLCBieSBjcmVhdGluZyBhIG5ldyBncmFwaEluc3RhbmNlIGNoYWluIHdpdGggaXQncyB1bmlxdWUgY29udGV4dCwgaW4gYWRkaXRpb24gdG8gdGhlIGFscmVhZHkgZXhpc3RpbmcgY29udGV4dCBpbnN0YW5jZS5cbiAgICAgICAgICAgd2FzIHRoaXMgZG9uZSA/IH5+4oCiIENvbmRpdGlvbkFnZ3JlZ2F0b3IgJiB0cmF2ZXJzZVRoZW5Qcm9jZXNzV2l0aExvZ2ljYWxPcGVyYXRvciBpbXBsZW1lbnRhdGlvbnMgY291bGQgYmUgaW50ZWdyYXR0ZWQgaW50byB0aGUgb3RoZXIgaW1wbGVtZW50YXRpb25zLn5+XG4gICAgICAgICAqL1xuICAgIHtcbiAgICAgIG5vZGVJbnN0YW5jZTogdmFsdWUuc291cmNlLFxuICAgICAgaW1wbGVtZW50YXRpb25LZXk6IHtcbiAgICAgICAgcHJvY2Vzc05vZGU6ICdleGVjdXRlRnVuY3Rpb25SZWZlcmVuY2UnLCAvLyBkZWZhdWx0IGltcGxlbWVudGF0aW9uIGZvciBwcm9jZXNzaW5nIHN0YWdlcyBpbiBjb25kaXRpb24gZ3JhcGguXG4gICAgICAgIHRyYXZlcnNhbEludGVyY2VwdGlvbjogJ3RyYXZlcnNlVGhlblByb2Nlc3NXaXRoTG9naWNhbE9wZXJhdG9yJyxcbiAgICAgICAgYWdncmVnYXRvcjogJ0NvbmRpdGlvbkFnZ3JlZ2F0b3InLFxuICAgICAgfSxcbiAgICB9LFxuICAgIHtcbiAgICAgIHRyYXZlcnNlQ2FsbENvbnRleHQ6IHtcbiAgICAgICAgdGFyZ2V0Tm9kZTogKHRyYXZlcnNlQ2FsbENvbnRleHQgJiYgdHJhdmVyc2VDYWxsQ29udGV4dC50YXJnZXROb2RlKSB8fCB2YWx1ZS5kZXN0aW5hdGlvbiwgLy8gcGFzcyB0aGUgbm9kZSByZXF1ZXN0aW5nIHRoZSByZXNvbHV0aW9uIG9mIHRoZSByZXJvdXRlIG5vZGUgaWYgaXQgZXhpc3RzLCBvciB0aGUgcmVyb3V0ZSBpdHNlbGYgaW4gY2FzZSBjYWxsZWQgYXMgcm9vdCBsZXZlbCBpbiB0aGUgdHJhdmVyc2FsLlxuICAgICAgfSxcbiAgICB9LFxuICApIC8vIHRyYXZlcnNlIHN1YmdyYXBoIHRvIHJldHJpZXZlIGEgcmVmZXJlbmNlZCBub2RlLlxuXG4gIGlmIChyZXN1bHRWYWx1ZUFycmF5Lmxlbmd0aCA+IDEpIHJlc29sdmVkVmFsdWUgPSByZXN1bHRWYWx1ZUFycmF5LmV2ZXJ5KGl0ZW0gPT4gQm9vbGVhbihpdGVtKSlcbiAgZWxzZSBpZiAocmVzdWx0VmFsdWVBcnJheS5sZW5ndGggIT0gMCkgcmVzb2x2ZWRWYWx1ZSA9IHJlc3VsdFZhbHVlQXJyYXlbMF1cbiAgcmV0dXJuIHJlc29sdmVkVmFsdWVcbn1cblxuLy8gVE9ETzogY29uZGl0aW9uIHN1YmdyYXBoIHRoYXQgcmV0dXJucyBub24tYm9vbGVhbiwgZnVuY3Rpb25zIGZvciBtYWtpbmcgY29tcGxleCBjb25kaXRpb24gY2hlY2tzLlxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGNvbmRpdGlvblN1YmdyYXBoV2l0aE5vbkJvb2xlYW5WYWx1ZVJlc29sdXRpb24oeyB2YWx1ZSwgZ3JhcGhJbnN0YW5jZSwgdHJhdmVyc2VDYWxsQ29udGV4dCB9KSB7fVxuIl19
