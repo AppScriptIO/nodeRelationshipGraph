@@ -40,3 +40,6 @@ export async function switchReferenceResolution({ graphInstance, targetNode, tra
   resolvedReferenceNode ||= defaultRelationship?.destination
   return resolvedReferenceNode || null
 }
+
+// TODO:
+export async function ifElseReferenceResolution({ graphInstance, targetNode, traverseCallContext }) {}

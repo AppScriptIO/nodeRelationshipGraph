@@ -1,12 +1,25 @@
 # Graph Traversal
-An immediately executed graph traversal, where nodes instruct on performing actions in customizable implementations. It hands back control to the client allowing to manipulate the traversal propagation and node data processing logic.
+An immediately executed graph traversal (Alternative name), where nodes instruct on performing actions in customizable implementations. It hands back control to the client allowing to manipulate the traversal propagation and node data processing logic.
 - On each traversal a node data can be processed/executed, taking into account precedence constraints.
 - The graph traversal module is callback & Proxy based, which hands overcontrol to concrete functions and returns an iterator of results that the proxy implementation can decide what to do with. Permitting highly configurable traversal behavior.
 - Created for graph where the node's data is the main subject, & traversal rules/configs of a relational graph, are used to decide on the way to deal with multiple processings of the nodes's data - i.e. processing logic & combination of results.
 - The core code of the module is separate from the plugin implementations and largely involved in the integration between the plugin implementations.
+- Immediately Graph Traversal: allows to move the control flow logic of the program to an in-memory graph. In addition to defining the flow of program, it controls the integration logic/algorithm between the procedure/actions of the program - which could be used for different use cases. Describing the algorithm used to handle processes/steps/procedures of the program.
+- Graphs allow to create a visual layer for the program control flow, and allow realtime changes to a running program, in which different presentation elements could be defined to display the program in a sumerized compact manner. The visual representation doesn't necessarily represent the exact graph database structure, rather it adds a level of abstraction.
 
 # The role of Immediately Executed Graphs in program design:
 Separates the program units or logic or functions from the control flow of program execution. Allowing to focus on developing needed functionality in separate modules, and then placing them in a graph to architect the interactions between them. Immediately Executed Graphs are like an integration layer and control flow for applications, where the program functions are considered abstract units that are referenced in the graph. Therefore it could be called Abstact Visual Programming, because it allows for coding the program with all language features, and integrating it in a visual manner.
+A program requires 2 structures: (https://www.youtube.com/watch?v=yC9SQJnTvo4 https://www.kullabs.com/classes/subjects/units/lessons/notes/note-detail/4207 https://teachcomputerscience.com/selection/ https://cis.temple.edu/~pwang/1057-PC/Lecture/Ch04.htm)
+    - Actions/procedures - performing calculations, etc.
+    - Sequence - combines the actions to be executed on runtime. These are control structures, this is what the graph is intended to take the role of - sequences the actions of the program.
+        subdevided into the following fundumental control structures: 
+            - compound/sequence & parallelism: executed unconditionally. (a body of a function is considered a compound structure)
+            - conditional/selection: if condition, if else, if else if, nested if else, switch case (multi-way selection).
+            - loop/iteration: while, do while, for loop.
+_The loop and conditional structures could be represented in the graph, and the statements/steps/actions are represented in modules/functions/procedures/subroutine (https://en.wikipedia.org/wiki/Subroutine)._
+
+# Alternative name for Immediately executed graph: 
+    - Control Flow Graph - A graph representing the control flow of the program. (term in use https://en.wikipedia.org/wiki/Control-flow_graph https://www.geeksforgeeks.org/software-engineering-control-flow-graph-cfg/)
 
 ### Configerability of traverser:
 _Behaviors that should be configurable:_
@@ -169,6 +182,8 @@ _resources about graphs and different implementations:_
     - code - https://github.com/neo4j/neo4j/tree/ba4e188d51e027a7e7870d511044ea940cf0455e/community/graphdb-api/src/main/java/org/neo4j/graphdb/traversal
 - yWorks diagramming tools - products like the html graph editor, and Neo4j graph presentation. 
     - Documentation contains lots of useful definitions, and so the evaluation version.
+- Cons of visual programming - https://mikehadlow.blogspot.com/2018/10/visual-programming-why-its-bad-idea.html
+- Comments about visual programming - https://www.reddit.com/r/programming/comments/9kgk75/visual_programming_why_its_a_bad_idea/
 # Notes: 
 - Generally speaking, there isn't really a concept of mutable state in abstract algebra (of which Graph Theory is a part). Only existence/non-existence. Graphs have a static state, and cannot be mutable in common Graph Theory concepts. Any 'change' indicated would be another distinct graph.
 

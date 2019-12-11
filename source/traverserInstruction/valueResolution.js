@@ -34,6 +34,7 @@ export async function resolveValue({ targetNode, graphInstance, traverseCallCont
 */
 /**
  * @return {Node Object} - a node object containing data.
+ The condition subgraph returns a boolean value.
  */
 export async function conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext }) {
   let resolvedValue
@@ -64,3 +65,6 @@ export async function conditionSubgraphValueResolution({ value, graphInstance, t
   else if (resultValueArray.length != 0) resolvedValue = resultValueArray[0]
   return resolvedValue
 }
+
+// TODO: condition subgraph that returns non-boolean, functions for making complex condition checks.
+export async function conditionSubgraphWithNonBooleanValueResolution({ value, graphInstance, traverseCallContext }) {}
