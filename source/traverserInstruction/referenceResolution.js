@@ -35,6 +35,8 @@ export async function selectionReferenceResolution({ graphInstance, targetNode, 
   const { selectArray, fallback: fallbackRelationship } = await graphInstance.databaseWrapper.getSelectionElement({ concreteDatabase: graphInstance.database, nodeID: targetNode.identity })
   selectArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
 
+  // TODO: support parallel / promise.all selection - where the first selected will be returned. When SELECT has an order it will be chronologically executed, but the selects that lack order property will be executed with promise.all
+  // TODO: Use same logic in propagation as used for Port NEXT nodes. (chronological, raceFirstPromise, allPromise, etc.)
   let index = 0
   while (selectArray.length > index && !resolvedReferenceNode) {
     resolvedReferenceNode = await conditionSwitchResolution({ graphInstance, targetNode: selectArray[index].destination, traverseCallContext })
