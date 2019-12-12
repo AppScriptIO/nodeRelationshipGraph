@@ -1,3 +1,5 @@
+import { isSelfEdge } from '../dataModel/concreteDatabaseWrapper.js'
+
 // TODO: Move other node instruction outside of node type functions, to make a more modular instruction functions.
 
 export async function resolveValue({ targetNode, graphInstance, traverseCallContext }) {
@@ -8,6 +10,7 @@ export async function resolveValue({ targetNode, graphInstance, traverseCallCont
   /* run condition check against comparison value. Hierarchy of comparison value calculation:   */
   switch (value.connection.properties.implementation) {
     case 'conditionSubgraph':
+      assert(!isSelfEdge(value), `• Self-edge for VALUE connection with "conditionSubgraph" implementation, currently not supported, as it causes infinite loop.`) // TODO: deal with circular traversal for this type.
       resolvedValue = await conditionSubgraphValueResolution({ value, graphInstance, traverseCallContext })
       break
     case 'properties':
