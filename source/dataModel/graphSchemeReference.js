@@ -35,11 +35,6 @@ export const connectionType = {
   // inherit: 'INHERIT',
 }
 
-export const connectionProperty = {
-  context: ['applicationReference', 'filesystemReference'],
-  type: ['properties', 'node', 'valueProperty'],
-}
-
 export const evaluationOption = {
   propagation: {
     // traverse neighbours or not.
@@ -64,3 +59,17 @@ export const rerouteProperty = {
 export const referenceProperty = {
   resolutionImplementation: ['selection', 'node'],
 }
+
+export const valueProperty = {
+  type: ['conditionSubgraph', 'properties', 'node', 'valueProperty'],
+}
+
+export const resourceProperty = {
+  context: ['applicationReference', 'filesystemReference'],
+}
+
+export const caseProperty = ['expected']
+
+export const forkProperty = { handlePropagationImplementation: ['chronological', 'raceFirstPromise', 'allPromise'] }
+
+export const functionProperty = ['functionName']

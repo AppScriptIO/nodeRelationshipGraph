@@ -10,7 +10,7 @@ export function isSelfEdge(edge) {
 export async function getResource({ concreteDatabase, nodeID }) {
   let resourceArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.resource })
   assert(
-    resourceArray.every(n => schemeReference.connectionProperty.context.includes(n.connection.properties.context)),
+    resourceArray.every(n => schemeReference.resourceProperty.context.includes(n.connection.properties.context)),
     `• Unsupported property value for a RESOURCE connection.`,
   ) // verify node type
   return { resourceArray }

@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { nodeLabel, connectionType, connectionProperty, evaluationOption, traversalOption } from '../../../dataModel/graphSchemeReference.js'
+import { nodeLabel, connectionType, evaluationOption, traversalOption } from '../../../dataModel/graphSchemeReference.js'
 import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
 
 /**
@@ -27,11 +27,10 @@ export async function evaluatePosition({ node, graphInstance = this }) {
           },
         },
       )
-      if(!configurationNode) continue // if no Configuration was resolved skip.
+      if (!configurationNode) continue // if no Configuration was resolved skip.
       assert(configurationNode && configurationNode.labels.includes(nodeLabel.configuration), `• CONFIGURE sub-graph traversal must return a Configuration node.`)
       // replace destination node with appropriate evaluated configuration:
       configurationMap.set(configure, configurationNode)
-    
     }
 
   // extract configuration parameters from configure relationship:
