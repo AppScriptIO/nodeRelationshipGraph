@@ -44,7 +44,12 @@ Different applications may use this module:
     - Task/command runner with ability for synchronous or async execution.
 - Task schedualing - which task should procede which one. 
 - AST representation in NoSQL database.
-- Template system for creating complex templates. 
+- Template system for creating complex templates:
+    Web documents (or documents) are composed of templates, represented as graphs. 
+    Templates require a rendering algorithm/engine to deal with marked points in them, and produce rendered content. Templates can be nested and each nested template should be redered as well.
+    Redering algorithm could involve:
+        - Only replacement of marked points in the template.
+        - Executionng of code logic and replacement of points with content produced by that code.
 - Server request handling with on the fly middleware chain compisition.
 - etc.
 
