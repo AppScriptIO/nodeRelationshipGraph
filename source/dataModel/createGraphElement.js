@@ -4,7 +4,7 @@
  */
 
 function reroute() {
-  match (n {key:''})
+  ;`  match (n {key:''})
   create (n)
     -[:CASE {expected: "GET"}]->
     (r:Reroute {name: 'request URL path switch'})
@@ -13,10 +13,7 @@ function reroute() {
     <-[:VALUE {implementation: "conditionSubgraph"}]-
     (s:Stage:Process:Function {functionName: "getUrlPathLevel1"})
         create (s)-[:EXECUTE]->(s)
-        create (s)-[:RESOURCE {context: "applicationReference"}]->(s) 
-
-
-
+        create (s)-[:RESOURCE {context: "applicationReference"}]->(s)
 
   match (n {key: ''})
     create (n) -[:VALUE {implementation: "conditionSubgraph"}]-> (n)
@@ -24,11 +21,12 @@ function reroute() {
     create (n) -[:RESOURCE {context: "applicationReference"}]-> (n)
   set n:Stage:Process:Function; set n.functionName = "getRequestMethod"
 
-}  
+`
+}
 
 function port() {
-  create (n)-[:FORK]->(n)
+  ;`  create (n)-[:FORK]->(n)
   set n:Port
   set n.handlePropagationImplementation = "chronological"
-
+`
 }
