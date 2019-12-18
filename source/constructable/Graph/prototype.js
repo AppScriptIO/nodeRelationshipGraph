@@ -325,19 +325,24 @@ export async function traverseIterationRecursiveCallback({ traversalIterator, gr
  */
 export async function* traverseGroupIterationRecursiveCall({
   groupIterator /** Feeding iterator that will accept node parameters for traversals */,
-  processDataCallback,
-  aggregator,
   graphInstance = this,
   traversalDepth,
   eventEmitter,
-  traversalConfig,
   additionalChildNode,
   parentTraversalArg,
   traverseCallContext,
+  /** 
+    Important Note:  
+    Below parameters are used in the interception proxy to decide what to traverse and how to aggregate the results. 
+    `Traversal config` in the interception will limit the traversal and processing, i.e. it decides if to process current node, if to include it to aggragation, and if to traverse the nested nodes.
+    If interception proxy is excluded (no implementation set), the graph should traverse all nodes with no restrictions.
+  */
+  traversalConfig,
+  processDataCallback,
+  aggregator,
 }: {
   eventEmitter: Event,
 }) {
-  if (!traversalConfig.shouldContinue()) return // skip traversal
   traversalDepth += 1 // increase traversal depth
   // port traversal result - last node iterator feed should be an array of resolved node promises that will be forwarded through this function
   // forward array of resolved results

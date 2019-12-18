@@ -50,8 +50,6 @@ export const { stageNode } = {
         {
           stageNode: nodeInstance,
           nextProcessData,
-          traversalConfig,
-          aggregator,
           getImplementation: implementationKey =>
             traversalConfig.getImplementationCallback({ key: 'processNode', graphInstance })({
               nodeImplementationKey: implementationKey ? { processNode: implementationKey } : undefined,
