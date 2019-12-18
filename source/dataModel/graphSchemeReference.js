@@ -1,75 +1,76 @@
-export const nodeLabel = {
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.functionProperty = exports.forkProperty = exports.caseProperty = exports.resourceProperty = exports.valueProperty = exports.referenceProperty = exports.rerouteProperty = exports.traversalOption = exports.evaluationOption = exports.connectionType = exports.nodeLabel = void 0;const nodeLabel = {
   stage: 'Stage',
   port: 'Port',
   process: 'Process',
   configuration: 'Configuration',
   file: 'File',
   function: 'Function',
-  reroute: 'Reroute',
-  // evaluation: 'Evaluation',
-  // subgraphTemplate: 'SubgraphTemplate',
-  // nodeReference: 'NodeReference',
-  // switch: 'Switch',
-  // switchBoolean: 'SwitchBoolean',
-}
+  reroute: 'Reroute' };exports.nodeLabel = nodeLabel;
 
-export const connectionType = {
-  // Reroute
+
+
+
+
+
+
+const connectionType = {
+
   reference: 'REFERENCE',
   insert: 'INSERT',
   extend: 'EXTEND',
-  // Stage
+
   next: 'NEXT',
   fork: 'FORK',
-  //TODO: implement `depthAffected` property for CONFIGURE connection
+
   configure: 'CONFIGURE',
-  // Process & Evaluation
+
   execute: 'EXECUTE',
   resource: 'RESOURCE',
-  value: 'VALUE', // {type: 'node' || 'properties'} i.e. return the node reference or return its properties.
+  value: 'VALUE',
   fallback: 'FALLBACK',
   select: 'SELECT',
-  case: 'CASE',
-  // root: 'ROOT',
-  // run: 'RUN', // run as subgraph where the result of the subgraph traversal is to be used in the stage node calling it.
-  // inherit: 'INHERIT',
-}
+  case: 'CASE' };exports.connectionType = connectionType;
 
-export const evaluationOption = {
+
+
+
+
+const evaluationOption = {
   propagation: {
-    // traverse neighbours or not.
-    continue: 'continue', // continue traversal of child nodes
-    break: 'break', // do not traverse subprocess
-    hult: 'hult', // hult traversal all together and return.
-  },
+
+    continue: 'continue',
+    break: 'break',
+    hult: 'hult' },
+
   aggregation: {
-    // execute & include or don't execute & exclude from aggregated results.
+
     include: 'process&include',
     exclude: 'process&exclude',
-    skip: 'skipProcess',
-  },
-}
+    skip: 'skipProcess' } };exports.evaluationOption = evaluationOption;
 
-export const traversalOption = ['processNode', 'portNode', 'aggregator', 'traversalInterception']
 
-export const rerouteProperty = {
-  externalReferenceNodeKey: 'externalReferenceNodeKey',
-}
 
-export const referenceProperty = {
-  resolutionImplementation: ['selection', 'node'],
-}
+const traversalOption = ['processNode', 'portNode', 'aggregator', 'traversalInterception'];exports.traversalOption = traversalOption;
 
-export const valueProperty = {
-  type: ['conditionSubgraph', 'properties', 'node', 'valueProperty'],
-}
+const rerouteProperty = {
+  externalReferenceNodeKey: 'externalReferenceNodeKey' };exports.rerouteProperty = rerouteProperty;
 
-export const resourceProperty = {
-  context: ['applicationReference', 'filesystemReference'],
-}
 
-export const caseProperty = ['expected']
+const referenceProperty = {
+  resolutionImplementation: ['selection', 'node'] };exports.referenceProperty = referenceProperty;
 
-export const forkProperty = { handlePropagationImplementation: ['chronological', 'raceFirstPromise', 'allPromise'] }
 
-export const functionProperty = ['functionName']
+const valueProperty = {
+  type: ['conditionSubgraph', 'properties', 'node', 'valueProperty'] };exports.valueProperty = valueProperty;
+
+
+const resourceProperty = {
+  context: ['applicationReference', 'filesystemReference'] };exports.resourceProperty = resourceProperty;
+
+
+const caseProperty = ['expected'];exports.caseProperty = caseProperty;
+
+const forkProperty = { handlePropagationImplementation: ['chronological', 'raceFirstPromise', 'allPromise'] };exports.forkProperty = forkProperty;
+
+const functionProperty = ['functionName'];exports.functionProperty = functionProperty;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9kYXRhTW9kZWwvZ3JhcGhTY2hlbWVSZWZlcmVuY2UuanMiXSwibmFtZXMiOlsibm9kZUxhYmVsIiwic3RhZ2UiLCJwb3J0IiwicHJvY2VzcyIsImNvbmZpZ3VyYXRpb24iLCJmaWxlIiwiZnVuY3Rpb24iLCJyZXJvdXRlIiwiY29ubmVjdGlvblR5cGUiLCJyZWZlcmVuY2UiLCJpbnNlcnQiLCJleHRlbmQiLCJuZXh0IiwiZm9yayIsImNvbmZpZ3VyZSIsImV4ZWN1dGUiLCJyZXNvdXJjZSIsInZhbHVlIiwiZmFsbGJhY2siLCJzZWxlY3QiLCJjYXNlIiwiZXZhbHVhdGlvbk9wdGlvbiIsInByb3BhZ2F0aW9uIiwiY29udGludWUiLCJicmVhayIsImh1bHQiLCJhZ2dyZWdhdGlvbiIsImluY2x1ZGUiLCJleGNsdWRlIiwic2tpcCIsInRyYXZlcnNhbE9wdGlvbiIsInJlcm91dGVQcm9wZXJ0eSIsImV4dGVybmFsUmVmZXJlbmNlTm9kZUtleSIsInJlZmVyZW5jZVByb3BlcnR5IiwicmVzb2x1dGlvbkltcGxlbWVudGF0aW9uIiwidmFsdWVQcm9wZXJ0eSIsInR5cGUiLCJyZXNvdXJjZVByb3BlcnR5IiwiY29udGV4dCIsImNhc2VQcm9wZXJ0eSIsImZvcmtQcm9wZXJ0eSIsImhhbmRsZVByb3BhZ2F0aW9uSW1wbGVtZW50YXRpb24iLCJmdW5jdGlvblByb3BlcnR5Il0sIm1hcHBpbmdzIjoic1dBQU8sTUFBTUEsU0FBUyxHQUFHO0FBQ3ZCQyxFQUFBQSxLQUFLLEVBQUUsT0FEZ0I7QUFFdkJDLEVBQUFBLElBQUksRUFBRSxNQUZpQjtBQUd2QkMsRUFBQUEsT0FBTyxFQUFFLFNBSGM7QUFJdkJDLEVBQUFBLGFBQWEsRUFBRSxlQUpRO0FBS3ZCQyxFQUFBQSxJQUFJLEVBQUUsTUFMaUI7QUFNdkJDLEVBQUFBLFFBQVEsRUFBRSxVQU5hO0FBT3ZCQyxFQUFBQSxPQUFPLEVBQUUsU0FQYyxFQUFsQixDOzs7Ozs7OztBQWVBLE1BQU1DLGNBQWMsR0FBRzs7QUFFNUJDLEVBQUFBLFNBQVMsRUFBRSxXQUZpQjtBQUc1QkMsRUFBQUEsTUFBTSxFQUFFLFFBSG9CO0FBSTVCQyxFQUFBQSxNQUFNLEVBQUUsUUFKb0I7O0FBTTVCQyxFQUFBQSxJQUFJLEVBQUUsTUFOc0I7QUFPNUJDLEVBQUFBLElBQUksRUFBRSxNQVBzQjs7QUFTNUJDLEVBQUFBLFNBQVMsRUFBRSxXQVRpQjs7QUFXNUJDLEVBQUFBLE9BQU8sRUFBRSxTQVhtQjtBQVk1QkMsRUFBQUEsUUFBUSxFQUFFLFVBWmtCO0FBYTVCQyxFQUFBQSxLQUFLLEVBQUUsT0FicUI7QUFjNUJDLEVBQUFBLFFBQVEsRUFBRSxVQWRrQjtBQWU1QkMsRUFBQUEsTUFBTSxFQUFFLFFBZm9CO0FBZ0I1QkMsRUFBQUEsSUFBSSxFQUFFLE1BaEJzQixFQUF2QixDOzs7Ozs7QUFzQkEsTUFBTUMsZ0JBQWdCLEdBQUc7QUFDOUJDLEVBQUFBLFdBQVcsRUFBRTs7QUFFWEMsSUFBQUEsUUFBUSxFQUFFLFVBRkM7QUFHWEMsSUFBQUEsS0FBSyxFQUFFLE9BSEk7QUFJWEMsSUFBQUEsSUFBSSxFQUFFLE1BSkssRUFEaUI7O0FBTzlCQyxFQUFBQSxXQUFXLEVBQUU7O0FBRVhDLElBQUFBLE9BQU8sRUFBRSxpQkFGRTtBQUdYQyxJQUFBQSxPQUFPLEVBQUUsaUJBSEU7QUFJWEMsSUFBQUEsSUFBSSxFQUFFLGFBSkssRUFQaUIsRUFBekIsQzs7OztBQWVBLE1BQU1DLGVBQWUsR0FBRyxDQUFDLGFBQUQsRUFBZ0IsVUFBaEIsRUFBNEIsWUFBNUIsRUFBMEMsdUJBQTFDLENBQXhCLEM7O0FBRUEsTUFBTUMsZUFBZSxHQUFHO0FBQzdCQyxFQUFBQSx3QkFBd0IsRUFBRSwwQkFERyxFQUF4QixDOzs7QUFJQSxNQUFNQyxpQkFBaUIsR0FBRztBQUMvQkMsRUFBQUEsd0JBQXdCLEVBQUUsQ0FBQyxXQUFELEVBQWMsTUFBZCxDQURLLEVBQTFCLEM7OztBQUlBLE1BQU1DLGFBQWEsR0FBRztBQUMzQkMsRUFBQUEsSUFBSSxFQUFFLENBQUMsbUJBQUQsRUFBc0IsWUFBdEIsRUFBb0MsTUFBcEMsRUFBNEMsZUFBNUMsQ0FEcUIsRUFBdEIsQzs7O0FBSUEsTUFBTUMsZ0JBQWdCLEdBQUc7QUFDOUJDLEVBQUFBLE9BQU8sRUFBRSxDQUFDLHNCQUFELEVBQXlCLHFCQUF6QixDQURxQixFQUF6QixDOzs7QUFJQSxNQUFNQyxZQUFZLEdBQUcsQ0FBQyxVQUFELENBQXJCLEM7O0FBRUEsTUFBTUMsWUFBWSxHQUFHLEVBQUVDLCtCQUErQixFQUFFLENBQUMsZUFBRCxFQUFrQixrQkFBbEIsRUFBc0MsWUFBdEMsQ0FBbkMsRUFBckIsQzs7QUFFQSxNQUFNQyxnQkFBZ0IsR0FBRyxDQUFDLGNBQUQsQ0FBekIsQyIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBjb25zdCBub2RlTGFiZWwgPSB7XG4gIHN0YWdlOiAnU3RhZ2UnLFxuICBwb3J0OiAnUG9ydCcsXG4gIHByb2Nlc3M6ICdQcm9jZXNzJyxcbiAgY29uZmlndXJhdGlvbjogJ0NvbmZpZ3VyYXRpb24nLFxuICBmaWxlOiAnRmlsZScsXG4gIGZ1bmN0aW9uOiAnRnVuY3Rpb24nLFxuICByZXJvdXRlOiAnUmVyb3V0ZScsXG4gIC8vIGV2YWx1YXRpb246ICdFdmFsdWF0aW9uJyxcbiAgLy8gc3ViZ3JhcGhUZW1wbGF0ZTogJ1N1YmdyYXBoVGVtcGxhdGUnLFxuICAvLyBub2RlUmVmZXJlbmNlOiAnTm9kZVJlZmVyZW5jZScsXG4gIC8vIHN3aXRjaDogJ1N3aXRjaCcsXG4gIC8vIHN3aXRjaEJvb2xlYW46ICdTd2l0Y2hCb29sZWFuJyxcbn1cblxuZXhwb3J0IGNvbnN0IGNvbm5lY3Rpb25UeXBlID0ge1xuICAvLyBSZXJvdXRlXG4gIHJlZmVyZW5jZTogJ1JFRkVSRU5DRScsXG4gIGluc2VydDogJ0lOU0VSVCcsXG4gIGV4dGVuZDogJ0VYVEVORCcsXG4gIC8vIFN0YWdlXG4gIG5leHQ6ICdORVhUJyxcbiAgZm9yazogJ0ZPUksnLFxuICAvL1RPRE86IGltcGxlbWVudCBgZGVwdGhBZmZlY3RlZGAgcHJvcGVydHkgZm9yIENPTkZJR1VSRSBjb25uZWN0aW9uXG4gIGNvbmZpZ3VyZTogJ0NPTkZJR1VSRScsXG4gIC8vIFByb2Nlc3MgJiBFdmFsdWF0aW9uXG4gIGV4ZWN1dGU6ICdFWEVDVVRFJyxcbiAgcmVzb3VyY2U6ICdSRVNPVVJDRScsXG4gIHZhbHVlOiAnVkFMVUUnLCAvLyB7dHlwZTogJ25vZGUnIHx8ICdwcm9wZXJ0aWVzJ30gaS5lLiByZXR1cm4gdGhlIG5vZGUgcmVmZXJlbmNlIG9yIHJldHVybiBpdHMgcHJvcGVydGllcy5cbiAgZmFsbGJhY2s6ICdGQUxMQkFDSycsXG4gIHNlbGVjdDogJ1NFTEVDVCcsXG4gIGNhc2U6ICdDQVNFJyxcbiAgLy8gcm9vdDogJ1JPT1QnLFxuICAvLyBydW46ICdSVU4nLCAvLyBydW4gYXMgc3ViZ3JhcGggd2hlcmUgdGhlIHJlc3VsdCBvZiB0aGUgc3ViZ3JhcGggdHJhdmVyc2FsIGlzIHRvIGJlIHVzZWQgaW4gdGhlIHN0YWdlIG5vZGUgY2FsbGluZyBpdC5cbiAgLy8gaW5oZXJpdDogJ0lOSEVSSVQnLFxufVxuXG5leHBvcnQgY29uc3QgZXZhbHVhdGlvbk9wdGlvbiA9IHtcbiAgcHJvcGFnYXRpb246IHtcbiAgICAvLyB0cmF2ZXJzZSBuZWlnaGJvdXJzIG9yIG5vdC5cbiAgICBjb250aW51ZTogJ2NvbnRpbnVlJywgLy8gY29udGludWUgdHJhdmVyc2FsIG9mIGNoaWxkIG5vZGVzXG4gICAgYnJlYWs6ICdicmVhaycsIC8vIGRvIG5vdCB0cmF2ZXJzZSBzdWJwcm9jZXNzXG4gICAgaHVsdDogJ2h1bHQnLCAvLyBodWx0IHRyYXZlcnNhbCBhbGwgdG9nZXRoZXIgYW5kIHJldHVybi5cbiAgfSxcbiAgYWdncmVnYXRpb246IHtcbiAgICAvLyBleGVjdXRlICYgaW5jbHVkZSBvciBkb24ndCBleGVjdXRlICYgZXhjbHVkZSBmcm9tIGFnZ3JlZ2F0ZWQgcmVzdWx0cy5cbiAgICBpbmNsdWRlOiAncHJvY2VzcyZpbmNsdWRlJyxcbiAgICBleGNsdWRlOiAncHJvY2VzcyZleGNsdWRlJyxcbiAgICBza2lwOiAnc2tpcFByb2Nlc3MnLFxuICB9LFxufVxuXG5leHBvcnQgY29uc3QgdHJhdmVyc2FsT3B0aW9uID0gWydwcm9jZXNzTm9kZScsICdwb3J0Tm9kZScsICdhZ2dyZWdhdG9yJywgJ3RyYXZlcnNhbEludGVyY2VwdGlvbiddXG5cbmV4cG9ydCBjb25zdCByZXJvdXRlUHJvcGVydHkgPSB7XG4gIGV4dGVybmFsUmVmZXJlbmNlTm9kZUtleTogJ2V4dGVybmFsUmVmZXJlbmNlTm9kZUtleScsXG59XG5cbmV4cG9ydCBjb25zdCByZWZlcmVuY2VQcm9wZXJ0eSA9IHtcbiAgcmVzb2x1dGlvbkltcGxlbWVudGF0aW9uOiBbJ3NlbGVjdGlvbicsICdub2RlJ10sXG59XG5cbmV4cG9ydCBjb25zdCB2YWx1ZVByb3BlcnR5ID0ge1xuICB0eXBlOiBbJ2NvbmRpdGlvblN1YmdyYXBoJywgJ3Byb3BlcnRpZXMnLCAnbm9kZScsICd2YWx1ZVByb3BlcnR5J10sXG59XG5cbmV4cG9ydCBjb25zdCByZXNvdXJjZVByb3BlcnR5ID0ge1xuICBjb250ZXh0OiBbJ2FwcGxpY2F0aW9uUmVmZXJlbmNlJywgJ2ZpbGVzeXN0ZW1SZWZlcmVuY2UnXSxcbn1cblxuZXhwb3J0IGNvbnN0IGNhc2VQcm9wZXJ0eSA9IFsnZXhwZWN0ZWQnXVxuXG5leHBvcnQgY29uc3QgZm9ya1Byb3BlcnR5ID0geyBoYW5kbGVQcm9wYWdhdGlvbkltcGxlbWVudGF0aW9uOiBbJ2Nocm9ub2xvZ2ljYWwnLCAncmFjZUZpcnN0UHJvbWlzZScsICdhbGxQcm9taXNlJ10gfVxuXG5leHBvcnQgY29uc3QgZnVuY3Rpb25Qcm9wZXJ0eSA9IFsnZnVuY3Rpb25OYW1lJ11cbiJdfQ==
