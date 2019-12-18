@@ -36,6 +36,13 @@ _Behaviors that should be configurable:_
 - General traversal control parameters. e.g. depth. 
 - on-demand node registration in the Graph controller / memory storage, etc. In case the graph isn't loaded into memory by it's entirety.
 
+### Multiple initiated traversals in connected graphs: 
+The same graph could be composed of multiple traversals. Where each traversal sequence/set uses a set of configs and aggregates separately.
+Initiating the traversal set/sequence could be from the core code of graph traversal module (e.g. VALUE edge), or externally in referenced code (e.g. in middleware functions). 
+Options to support a common way to initiate a traversal sequence and represent it in the graph.
+    - Initiate graph sequence using a relationship (e.g. "initiate"). How to deal with the relational value. 
+        VALUE {type: edge:traverse} -> Stage <-- TRAVERSE {traversalConfig: Condition}
+
 ### Applications: 
 Different applications may use this module:
 - Build systems with package dependencies - make a topological sort to know which library should be built first.
