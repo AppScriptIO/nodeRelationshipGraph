@@ -43,6 +43,8 @@ Options to support a common way to initiate a traversal sequence and represent i
     - Initiate graph sequence using a relationship (e.g. "initiate"). How to deal with the relational value. 
         VALUE {type: edge:traverse} -> Stage <-- TRAVERSE {traversalConfig: Condition}
 
+Some Types of traversal configs: Condition, Middleware, Template. Which mark the different implemenetaion sets used for graph initiated traversal.
+
 ### Applications: 
 Different applications may use this module:
 - Build systems with package dependencies - make a topological sort to know which library should be built first.
