@@ -1,4 +1,3 @@
-import EventEmitter from 'events'
 // import { proxifyMethodDecorator } from '../utility/proxifyMethodDecorator.js'
 
 /**
@@ -15,7 +14,7 @@ export const { stageNode } = {
       passedArg: argumentsList,
       defaultArg: [
         {
-          graphInstance: thisArg,
+          graph: thisArg,
           traversalDepth: 0,
           path: null,
           additionalChildNode: [],
@@ -28,33 +27,27 @@ export const { stageNode } = {
   */
   async stageNode(
     {
-      graphInstance = this, // <type Graph>
-      nodeInstance,
-      traversalConfig,
-      traversalDepth = 0, // <type Number> level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
-      path = null, // path to the current traversal.  // TODO: implement path sequence preservation. allow for the node traverse function to rely on the current path data.
+      graph = this,
+      traverser,
       additionalChildNode = [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
-      // supported events: 'nodeTraversalCompleted'
-      eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
-      aggregator, // used to aggregate results of nested nodes.
     } = {},
-    { parentTraversalArg = null, traverseCallContext = {} } = {},
+    { traverseCallContext = {} } = {},
   ) {
-    let { implementation } = traversalConfig.calculateConfig({ graphInstance })
+    const { node } = traverser
+    let { implementation } = traverser.calculateConfig({ graph })
+
     let traversalInterceptionImplementation = implementation.traversalInterception || (targetFunction => new Proxy(targetFunction, {})) // in case no implementation exists for intercepting traversal, use an empty proxy.
-    aggregator ||= new (nodeInstance::implementation.aggregator)()
 
     // EXECUTE edge
     const processDataCallback = ({ nextProcessData, additionalParameter }) =>
-      graphInstance::graphInstance.executeEdge(
+      graph::graph.executeEdge(
         {
-          stageNode: nodeInstance,
+          stageNode: node,
           nextProcessData,
           getImplementation: implementationKey =>
-            traversalConfig.getImplementationCallback({ key: 'processNode', graphInstance })({
+            traverser.getImplementationCallback({ key: 'processNode', graph })({
               nodeImplementationKey: implementationKey ? { processNode: implementationKey } : undefined,
             }),
-          graphInstance,
         },
         { additionalParameter, traverseCallContext },
       )
@@ -63,25 +56,20 @@ export const { stageNode } = {
      * FORK edge - traverse stage node to other next nodes through the port nodes.
      * @return {iterator} providing node parameters for recursive traversal calls.
      */
-    let groupIterator = graphInstance::graphInstance.forkEdge({
-      stageNode: nodeInstance,
+    let groupIterator = graph::graph.forkEdge({
+      stageNode: node,
       getImplementation: implementationKey =>
-        traversalConfig.getImplementationCallback({ key: 'portNode', graphInstance })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
+        traverser.getImplementationCallback({ key: 'portNode', graph })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
       additionalChildNode,
     })
 
     // intercept and return result (Stage interception)
-    let proxifiedRecursiveIteration = graphInstance::graphInstance.traverseGroupIterationRecursiveCall |> graphInstance::traversalInterceptionImplementation
+    let proxifiedRecursiveIteration = graph::graph.traverseGroupIterationRecursiveCall |> graph::traversalInterceptionImplementation
     let result = await proxifiedRecursiveIteration({
       groupIterator,
+      traverser,
       processDataCallback,
-      aggregator,
-      nodeInstance,
-      traversalDepth,
-      eventEmitter,
-      traversalConfig,
       additionalChildNode,
-      parentTraversalArg: arguments,
       traverseCallContext,
     })
 

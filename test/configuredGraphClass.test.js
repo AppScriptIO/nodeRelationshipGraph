@@ -57,7 +57,7 @@ suite('Configure Graph class', () => {
         let graph = new configuredGraph.clientInterface({})
         let multiplePrototypeProxy = Object.getPrototypeOf(graph)
         let multiplePrototypeArray = multiplePrototypeProxy[multiplePrototypeDelegation.$.list]
-        debugger
+
         chaiAssertion.isTrue([contextInstance1, concreteGraphTraversalBehavior, concreteDatabaseBehavior].every(behavior => multiplePrototypeArray.includes(behavior)))
       })
     }

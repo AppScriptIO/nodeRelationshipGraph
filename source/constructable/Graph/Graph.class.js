@@ -8,8 +8,8 @@ import * as ImplementationManagement from '../ImplementationManagement.class.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
 import * as schemeReference from '../../dataModel/graphSchemeReference.js'
 
-/** Conceptual Graph
- * Graph Class holds and manages graph elements and traversal algorithm implementations:
+/** Conceptual Graph - encapsulates different elements of used to work with a graph.
+ * Graph (GraphTraverser) Class holds and manages graph elements and traversal algorithm implementations:
  *  - Cache: on-demand retrived nodes from DB are cached.
  *  - Database: get graph data and load it into memory.
  *  - Traversal: implementation for the traversal algorithm.

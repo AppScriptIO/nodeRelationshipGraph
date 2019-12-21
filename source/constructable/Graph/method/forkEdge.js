@@ -8,18 +8,18 @@ import promiseProperRace from '@dependency/promiseProperRace'
  * OR
  * @return {undefined} in case no forks.
  **/
-export async function* forkEdge({ stageNode, additionalChildNode, getImplementation, graphInstance = this }) {
-  const { forkArray } = await graphInstance.databaseWrapper.getFork({ concreteDatabase: graphInstance.database, nodeID: stageNode.identity })
+export async function* forkEdge({ stageNode, additionalChildNode, getImplementation, graph = this }) {
+  const { forkArray } = await graph.databaseWrapper.getFork({ concreteDatabase: graph.database, nodeID: stageNode.identity })
   if (forkArray.length == 0) return
   // Bulk actions on forks - sort forks
   forkArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property
 
   for (let forkEdge of forkArray) {
-    assert(forkEdge.destination.labels.includes(graphInstance.schemeReference.nodeLabel.port), `• "${forkEdge.destination.labels}" Unsupported node type for a FORK connection.`) // verify node type
+    assert(forkEdge.destination.labels.includes(graph.schemeReference.nodeLabel.port), `• "${forkEdge.destination.labels}" Unsupported node type for a FORK connection.`) // verify node type
 
     // the first iterator object call is used to initialize the function, in addition to the iterator function call.
     let implementation = getImplementation(forkEdge.destination.properties.implementation) // Traversal implementation - node/edge properties implementation hierarchy - calculate and pick correct implementation according to parameter hierarchy.
-    let nodeIteratorFeed = graphInstance::implementation({ forkEdge, additionalChildNode, graphInstance })
+    let nodeIteratorFeed = graph::implementation({ forkEdge, additionalChildNode, graph })
 
     let traversalIterator = traversalIterator2WayCommunication({
       nodeIteratorFeed,

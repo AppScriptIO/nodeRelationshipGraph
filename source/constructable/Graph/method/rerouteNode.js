@@ -1,19 +1,16 @@
-import { resolveReference } from '../../../traverserInstruction/referenceResolution.js'
 import * as schemeReference from '../../../dataModel/graphSchemeReference.js'
 
 /**
  * Reroute node is an entrypoint node that the graph traversal can be started from.
  */
 
-export async function returnReference(
-  { graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator },
-  { parentTraversalArg, traverseCallContext },
-) {
-  let referencedNode = await resolveReference({ targetNode: nodeInstance, graphInstance, traverseCallContext })
+export async function returnReference({ traverser, additionalChildNode, graph = this }, { traverseCallContext }) {
+  const { node } = traverser
+  let referencedNode = await graph.traverserInstruction.referenceResolution.resolveReference({ targetNode: node, graph, traverseCallContext })
   if (referencedNode)
     // if the reference node is a reroute itself, traverse it recursively
     while (referencedNode && referencedNode.labels.includes(schemeReference.nodeLabel.reroute))
-      referencedNode = await graphInstance.traverse(
+      referencedNode = await graph::graph.traverse(
         {
           nodeInstance: referencedNode,
           implementationKey: {
@@ -28,17 +25,15 @@ export async function returnReference(
   return referencedNode
 }
 
-// TODO: provide a way to mark subgraph templates, to distinguish them from other reroute nodes in the graph.
-export async function traverseReference(
-  { graphInstance, nodeInstance, traversalConfig, traversalDepth, path, additionalChildNode, eventEmitter, aggregator },
-  { parentTraversalArg, traverseCallContext },
-) {
+// TODO: provide a way to mark subgraph templates, to distinguish them from other reroute nodes in the traverser.graph.
+export async function traverseReference({ traverser, additionalChildNode, graph = this }, { traverseCallContext }) {
+  const { node } = traverser
   // get referencedNode and handle extended node.
   let referencedNode
-  const { extend, insertArray } = await graphInstance.databaseWrapper.getRerouteTraverseReferenceElement({ concreteDatabase: graphInstance.database, nodeID: nodeInstance.identity })
+  const { extend, insertArray } = await graph.databaseWrapper.getRerouteTraverseReferenceElement({ concreteDatabase: graph.database, nodeID: node.identity })
 
   referencedNode =
-    (await resolveReference({ targetNode: nodeInstance, graphInstance, traverseCallContext })) ||
+    (await graph.traverserInstruction.referenceResolution.resolveReference({ targetNode: node, graph, traverseCallContext })) ||
     // TODO: rethink the implementation of extend and how the overriding works.
     (extend && extend.destination)
   if (!referencedNode) return // in case no reference node was resolved
@@ -57,9 +52,9 @@ export async function traverseReference(
   additionalChildNode = [...(additionalChildNode || []), ...insertAdditionalNode]
 
   // set additional parameters
-  arguments[0].traversalConfig = traversalConfig
-  arguments[0].nodeInstance = referencedNode // referencedNode will be used as entrypoint to traversal call
+  traverser.node = referencedNode // referencedNode will be used as entrypoint to traversal call
+  arguments[0].traverser = traverser
   arguments[0].additionalChildNode = additionalChildNode
   // traverse reference node in the same traversal recursive scopes.
-  return await graphInstance.traverse(...arguments)
+  return await graph::graph.traverse(...arguments)
 }
