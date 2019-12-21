@@ -1,2 +1,2 @@
-export * as referenceResolution from './referenceResolution.js'
-export * as valueResolution from './valueResolution.js'
+"use strict";var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");Object.defineProperty(exports, "__esModule", { value: true });exports.valueResolution = exports.referenceResolution = void 0;var _referenceResolution = _interopRequireWildcard(require("./referenceResolution.js"));exports.referenceResolution = _referenceResolution;var _valueResolution = _interopRequireWildcard(require("./valueResolution.js"));exports.valueResolution = _valueResolution;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsInNvdXJjZXNDb250ZW50IjpbXX0=

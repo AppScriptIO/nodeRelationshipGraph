@@ -1,17 +1,16 @@
-import assert from 'assert'
-import { Entity, Constructable } from '@dependency/entity'
-import * as ImplementationManagement from './ImplementationManagement.class.js'
+"use strict";var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");Object.defineProperty(exports, "__esModule", { value: true });exports.clientInterface = exports.$ = exports.class = void 0;
+var _entity = require("@dependency/entity");
+var ImplementationManagement = _interopRequireWildcard(require("./ImplementationManagement.class.js"));
 
-interface TraversalImplementation {
-  // Usage of async generators will prevent handing the control to called function (against `Run-to-complete` principle), and will allow interceptin the execution mid way.
-  traverseGraph: Function;
-}
 
-/**
- ** Traversal system for supporting different graph implementation (concrete behavior of plugin that will be used in the client target).
- */
-const { class: Class, reference: $ } = new ImplementationManagement.clientInterface({ label: 'Traversal' })
 
-const clientInterface = Class::Class[Entity.$.clientInterface.switch](Entity.$.key.stateInstance)({ constructorImplementation: Entity.$.key.handleDataInstance })
 
-export { Class as class, $, clientInterface }
+
+
+
+
+
+const { class: Class, reference: $ } = new ImplementationManagement.clientInterface({ label: 'Traversal' });exports.$ = $;exports.class = Class;
+
+const clientInterface = Class[_entity.Entity.$.clientInterface.switch].call(Class, _entity.Entity.$.key.stateInstance)({ constructorImplementation: _entity.Entity.$.key.handleDataInstance });exports.clientInterface = clientInterface;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL1RyYXZlcnNhbC5jbGFzcy5qcyJdLCJuYW1lcyI6WyJjbGFzcyIsIkNsYXNzIiwicmVmZXJlbmNlIiwiJCIsIkltcGxlbWVudGF0aW9uTWFuYWdlbWVudCIsImNsaWVudEludGVyZmFjZSIsImxhYmVsIiwiRW50aXR5Iiwic3dpdGNoIiwia2V5Iiwic3RhdGVJbnN0YW5jZSIsImNvbnN0cnVjdG9ySW1wbGVtZW50YXRpb24iLCJoYW5kbGVEYXRhSW5zdGFuY2UiXSwibWFwcGluZ3MiOiI7QUFDQTtBQUNBOzs7Ozs7Ozs7O0FBVUEsTUFBTSxFQUFFQSxLQUFLLEVBQUVDLEtBQVQsRUFBZ0JDLFNBQVMsRUFBRUMsQ0FBM0IsS0FBaUMsSUFBSUMsd0JBQXdCLENBQUNDLGVBQTdCLENBQTZDLEVBQUVDLEtBQUssRUFBRSxXQUFULEVBQTdDLENBQXZDLEM7O0FBRUEsTUFBTUQsZUFBZSxHQUFVSixLQUFLLENBQUNNLGVBQU9KLENBQVAsQ0FBU0UsZUFBVCxDQUF5QkcsTUFBMUIsQ0FBWixNQUFBUCxLQUFLLEVBQXlDTSxlQUFPSixDQUFQLENBQVNNLEdBQVQsQ0FBYUMsYUFBdEQsQ0FBTCxDQUEwRSxFQUFFQyx5QkFBeUIsRUFBRUosZUFBT0osQ0FBUCxDQUFTTSxHQUFULENBQWFHLGtCQUExQyxFQUExRSxDQUF4QixDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGFzc2VydCBmcm9tICdhc3NlcnQnXHJcbmltcG9ydCB7IEVudGl0eSwgQ29uc3RydWN0YWJsZSB9IGZyb20gJ0BkZXBlbmRlbmN5L2VudGl0eSdcclxuaW1wb3J0ICogYXMgSW1wbGVtZW50YXRpb25NYW5hZ2VtZW50IGZyb20gJy4vSW1wbGVtZW50YXRpb25NYW5hZ2VtZW50LmNsYXNzLmpzJ1xyXG5cclxuaW50ZXJmYWNlIFRyYXZlcnNhbEltcGxlbWVudGF0aW9uIHtcclxuICAvLyBVc2FnZSBvZiBhc3luYyBnZW5lcmF0b3JzIHdpbGwgcHJldmVudCBoYW5kaW5nIHRoZSBjb250cm9sIHRvIGNhbGxlZCBmdW5jdGlvbiAoYWdhaW5zdCBgUnVuLXRvLWNvbXBsZXRlYCBwcmluY2lwbGUpLCBhbmQgd2lsbCBhbGxvdyBpbnRlcmNlcHRpbiB0aGUgZXhlY3V0aW9uIG1pZCB3YXkuXHJcbiAgdHJhdmVyc2VHcmFwaDogRnVuY3Rpb247XHJcbn1cclxuXHJcbi8qKlxyXG4gKiogVHJhdmVyc2FsIHN5c3RlbSBmb3Igc3VwcG9ydGluZyBkaWZmZXJlbnQgZ3JhcGggaW1wbGVtZW50YXRpb24gKGNvbmNyZXRlIGJlaGF2aW9yIG9mIHBsdWdpbiB0aGF0IHdpbGwgYmUgdXNlZCBpbiB0aGUgY2xpZW50IHRhcmdldCkuXHJcbiAqL1xyXG5jb25zdCB7IGNsYXNzOiBDbGFzcywgcmVmZXJlbmNlOiAkIH0gPSBuZXcgSW1wbGVtZW50YXRpb25NYW5hZ2VtZW50LmNsaWVudEludGVyZmFjZSh7IGxhYmVsOiAnVHJhdmVyc2FsJyB9KVxyXG5cclxuY29uc3QgY2xpZW50SW50ZXJmYWNlID0gQ2xhc3M6OkNsYXNzW0VudGl0eS4kLmNsaWVudEludGVyZmFjZS5zd2l0Y2hdKEVudGl0eS4kLmtleS5zdGF0ZUluc3RhbmNlKSh7IGNvbnN0cnVjdG9ySW1wbGVtZW50YXRpb246IEVudGl0eS4kLmtleS5oYW5kbGVEYXRhSW5zdGFuY2UgfSlcclxuXHJcbmV4cG9ydCB7IENsYXNzIGFzIGNsYXNzLCAkLCBjbGllbnRJbnRlcmZhY2UgfVxyXG4iXX0=

@@ -1,14 +1,13 @@
-import assert from 'assert'
-import { Entity, Constructable } from '@dependency/entity'
-import * as ImplementationManagement from './ImplementationManagement.class.js'
+"use strict";var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");Object.defineProperty(exports, "__esModule", { value: true });exports.clientInterface = exports.$ = exports.class = void 0;
+var _entity = require("@dependency/entity");
+var ImplementationManagement = _interopRequireWildcard(require("./ImplementationManagement.class.js"));
 
-/**
- ** Database system for supporting different database adapters.
- * Create concrete behavior of database that will be used in the client target.
- * 'databaseModelAdaper' - database model functions for retriving node, dataItem, and other documents. should be async functions.
- */
-const { class: Class, reference: $ } = new ImplementationManagement.clientInterface({ label: 'Database' })
 
-const clientInterface = Class::Class[Entity.$.clientInterface.switch](Entity.$.key.stateInstance)({ constructorImplementation: Entity.$.key.handleDataInstance })
 
-export { Class as class, $, clientInterface }
+
+
+
+const { class: Class, reference: $ } = new ImplementationManagement.clientInterface({ label: 'Database' });exports.$ = $;exports.class = Class;
+
+const clientInterface = Class[_entity.Entity.$.clientInterface.switch].call(Class, _entity.Entity.$.key.stateInstance)({ constructorImplementation: _entity.Entity.$.key.handleDataInstance });exports.clientInterface = clientInterface;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL0RhdGFiYXNlLmNsYXNzLmpzIl0sIm5hbWVzIjpbImNsYXNzIiwiQ2xhc3MiLCJyZWZlcmVuY2UiLCIkIiwiSW1wbGVtZW50YXRpb25NYW5hZ2VtZW50IiwiY2xpZW50SW50ZXJmYWNlIiwibGFiZWwiLCJFbnRpdHkiLCJzd2l0Y2giLCJrZXkiLCJzdGF0ZUluc3RhbmNlIiwiY29uc3RydWN0b3JJbXBsZW1lbnRhdGlvbiIsImhhbmRsZURhdGFJbnN0YW5jZSJdLCJtYXBwaW5ncyI6IjtBQUNBO0FBQ0E7Ozs7Ozs7QUFPQSxNQUFNLEVBQUVBLEtBQUssRUFBRUMsS0FBVCxFQUFnQkMsU0FBUyxFQUFFQyxDQUEzQixLQUFpQyxJQUFJQyx3QkFBd0IsQ0FBQ0MsZUFBN0IsQ0FBNkMsRUFBRUMsS0FBSyxFQUFFLFVBQVQsRUFBN0MsQ0FBdkMsQzs7QUFFQSxNQUFNRCxlQUFlLEdBQVVKLEtBQUssQ0FBQ00sZUFBT0osQ0FBUCxDQUFTRSxlQUFULENBQXlCRyxNQUExQixDQUFaLE1BQUFQLEtBQUssRUFBeUNNLGVBQU9KLENBQVAsQ0FBU00sR0FBVCxDQUFhQyxhQUF0RCxDQUFMLENBQTBFLEVBQUVDLHlCQUF5QixFQUFFSixlQUFPSixDQUFQLENBQVNNLEdBQVQsQ0FBYUcsa0JBQTFDLEVBQTFFLENBQXhCLEMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgYXNzZXJ0IGZyb20gJ2Fzc2VydCdcclxuaW1wb3J0IHsgRW50aXR5LCBDb25zdHJ1Y3RhYmxlIH0gZnJvbSAnQGRlcGVuZGVuY3kvZW50aXR5J1xyXG5pbXBvcnQgKiBhcyBJbXBsZW1lbnRhdGlvbk1hbmFnZW1lbnQgZnJvbSAnLi9JbXBsZW1lbnRhdGlvbk1hbmFnZW1lbnQuY2xhc3MuanMnXHJcblxyXG4vKipcclxuICoqIERhdGFiYXNlIHN5c3RlbSBmb3Igc3VwcG9ydGluZyBkaWZmZXJlbnQgZGF0YWJhc2UgYWRhcHRlcnMuXHJcbiAqIENyZWF0ZSBjb25jcmV0ZSBiZWhhdmlvciBvZiBkYXRhYmFzZSB0aGF0IHdpbGwgYmUgdXNlZCBpbiB0aGUgY2xpZW50IHRhcmdldC5cclxuICogJ2RhdGFiYXNlTW9kZWxBZGFwZXInIC0gZGF0YWJhc2UgbW9kZWwgZnVuY3Rpb25zIGZvciByZXRyaXZpbmcgbm9kZSwgZGF0YUl0ZW0sIGFuZCBvdGhlciBkb2N1bWVudHMuIHNob3VsZCBiZSBhc3luYyBmdW5jdGlvbnMuXHJcbiAqL1xyXG5jb25zdCB7IGNsYXNzOiBDbGFzcywgcmVmZXJlbmNlOiAkIH0gPSBuZXcgSW1wbGVtZW50YXRpb25NYW5hZ2VtZW50LmNsaWVudEludGVyZmFjZSh7IGxhYmVsOiAnRGF0YWJhc2UnIH0pXHJcblxyXG5jb25zdCBjbGllbnRJbnRlcmZhY2UgPSBDbGFzczo6Q2xhc3NbRW50aXR5LiQuY2xpZW50SW50ZXJmYWNlLnN3aXRjaF0oRW50aXR5LiQua2V5LnN0YXRlSW5zdGFuY2UpKHsgY29uc3RydWN0b3JJbXBsZW1lbnRhdGlvbjogRW50aXR5LiQua2V5LmhhbmRsZURhdGFJbnN0YW5jZSB9KVxyXG5cclxuZXhwb3J0IHsgQ2xhc3MgYXMgY2xhc3MsICQsIGNsaWVudEludGVyZmFjZSB9XHJcbiJdfQ==
