@@ -83,7 +83,7 @@ export const { traverse } = {
       traverser,
       // represents a traversal sequence that has it's own cache, aggregator, statistics, and other parameters.
       // traversal sequence related parameters -
-      traversalSequenceState,
+      traversalSequenceState, // TODO: implement traversal sequence
     },
     { parentTraverser, traverseCallContext } = {},
   ) {
