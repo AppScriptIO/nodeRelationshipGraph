@@ -6,7 +6,6 @@ import * as Traversal from '../Traversal.class.js' // traversal implementation m
 import { Traverser } from './Traverser.class.js'
 
 // Each exported property ends up as the prototype property of the class.
-export * from './method/evaluatePosition.js'
 export * from './method/stageNode.js'
 export * from './method/rerouteNode.js'
 export * from './method/forkEdge.js'
@@ -112,7 +111,7 @@ export const { traverse } = {
       }
 
       // Evaluation that affects the traverser itself - get configuration of type 'evaluation' & 'implementation'
-      let { implementationConfiguration, evaluationConfiguration } = await this::this.evaluatePosition({ traverser })
+      let { implementationConfiguration, evaluationConfiguration } = await this.traverserInstruction.configurationEvaluation.resolveEvaluationConfiguration({ targetNode: traverser.node, graph: this })
       traverser.setImplementationHierarchy('configuration', implementationConfiguration)
       traverser.setEvaluationHierarchy('configuration', evaluationConfiguration)
 

@@ -1,14 +1,13 @@
 import assert from 'assert'
-import * as schemeReference from '../../../dataModel/graphSchemeReference.js'
-import { extractConfigProperty } from '../../../utility/extractPropertyFromObject.js'
+import * as schemeReference from '../dataModel/graphSchemeReference.js'
+import { extractConfigProperty } from '../utility/extractPropertyFromObject.js'
 
 /**
  * Node's include/exclude evaluation - evaluate whether or not a node whould be included in the node feed and subsequently in the traversal. continue child nodes traversal or break traversal.
  * & traversal implementation configuration - chooses the custom functions to be used in the traversal.
  */
-export async function evaluatePosition({ traverser, graph = this }) {
-  const { node } = traverser
-  let { configureArray } = await graph.databaseWrapper.getConfigure({ concreteDatabase: graph.database, nodeID: node.identity })
+export async function resolveEvaluationConfiguration({ targetNode, graph }) {
+  let { configureArray } = await graph.databaseWrapper.getConfigure({ concreteDatabase: graph.database, nodeID: targetNode.identity })
 
   // evaluate configuration by traversing subgraph nodes (traverse switch stage node) & replace destination node with a configuration node:
   let configurationMap = new Map() // maps evaluated configuration to the CONFIGURE relationships.
