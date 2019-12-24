@@ -13,5 +13,8 @@ export async function executeEdge({ stageNode, nextProcessData, getImplementatio
   let implementation = getImplementation(execute.connection.properties.implementation) // node/edge properties implementation hierarchy - calculate and pick correct implementation according to parameter hierarchy.
   let processResult = await graph::implementation({ processNode: execute.destination, stageNode, nextProcessData }, { additionalParameter, traverseCallContext })
 
+  // further processing from pipe process nodes:
+  processResult = graph.traverserInstruction.pipeProcess.pipeProcessing({ targetNode: execute.destination, processResult, graph })
+
   return processResult
 }

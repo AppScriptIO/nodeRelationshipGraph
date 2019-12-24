@@ -30,6 +30,15 @@ export async function getExecution({ concreteDatabase, nodeID }) {
   return { executeArray }
 }
 
+export async function getPipe({ concreteDatabase, nodeID }) {
+  let pipeArray = await concreteDatabase.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.pipe })
+  assert(
+    pipeArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.process)),
+    `• Unsupported node type for a PIPE connection.`,
+  ) // verify node type
+  return { pipeArray }
+}
+
 export async function getFork({ concreteDatabase, nodeID }) {
   let forkArray = await concreteDatabase.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.fork })
   assert(

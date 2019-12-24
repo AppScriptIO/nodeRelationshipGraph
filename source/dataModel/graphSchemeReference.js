@@ -25,6 +25,7 @@ export const connectionType = {
   configure: 'CONFIGURE',
   // Process & Evaluation
   execute: 'EXECUTE',
+  pipe: 'PIPE',
   resource: 'RESOURCE',
   value: 'VALUE', // {type: 'node' || 'properties'} i.e. return the node reference or return its properties.
   fallback: 'FALLBACK',
