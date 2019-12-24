@@ -11,8 +11,10 @@ export async function pipeProcessing({ targetNode, processResult, graph }) {
   let pipeResult = processResult // set initial result
 
   let functionCallback = await graph.traverserInstruction.resourceResolution.resolveResource({ targetNode: pipe.destination, graph, contextPropertyName: 'functionReferenceContext' })
-  let pipeFunction = await functionCallback({ node: pipe.destination, graph }) // expected to return a pipe function.
-  pipeResult = pipeFunction(processResult)
+  if (functionCallback) {
+    let pipeFunction = await functionCallback({ node: pipe.destination, graph }) // expected to return a pipe function.
+    pipeResult = pipeFunction(processResult)
+  }
 
   // recursive call for nested pipe edges (forming a pipeline from the main process node).
   pipeResult = pipeProcessing({ targetNode: pipe.destination, processResult: pipeResult, graph })
