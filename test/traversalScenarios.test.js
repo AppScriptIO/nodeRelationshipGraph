@@ -13,7 +13,7 @@ import * as Database from '../source/constructable/Database.class.js'
 import * as Context from '../source/constructable/Context.class.js'
 import * as schemeReference from '../source/dataModel/graphSchemeReference.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
-import graphData from './asset/graph.json' // load sample data
+import graphData from './graph.json' // load sample data
 const fixture = { traversalResult: ['dataItem-key-1'] }
 
 async function clearGraphData() {
@@ -67,14 +67,17 @@ let configuredGraph = Graph.clientInterface({
   ],
 })
 
-suite('Graph traversal scenarios - Traversing graphs with different implementations', () => {
-  setup(async () => await clearGraphData())
+suite('Graph traversal scenarios - basic features and core implementations of traversal', () => {
+  suiteSetup(async () => {
+    await clearGraphData()
+    let graph = new configuredGraph.clientInterface({}) // instance creation for using prototype methods.
+    await graph.load({ graphData })
+  })
 
   suite('Reroute node with Extend, Insert, Reference edges:', () => {
     const fixture = ['referencedTarget-0', 'insert-before', 'dataItem-1', 'insert-after']
     let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully', async () => {
-      await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
@@ -84,7 +87,6 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     const fixture = ['include-0', 'include-1', 'include-2', 'include-3']
     let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully', async () => {
-      await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '9160338f-6990-4957-9506-deebafdb6e29', implementationKey: { processNode: 'returnDataItemKey' } })
       chaiAssertion.deepEqual(result, fixture)
     })
@@ -95,23 +97,58 @@ suite('Graph traversal scenarios - Traversing graphs with different implementati
     const fixture = ['dataItem-0', 'parallel-1', 'parallel-2', 'parallel-3', 'parallel-4', 'chronological-1', 'chronological-2', 'chronological-3', 'race-firstSetteled']
     let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully ', async () => {
-      await graph.load({ graphData })
       let result = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
   })
 
   suite('Execute edge with Process node & reference context.', () => {
-    const fixture = []
-    contextInstance[Context.$.key.setter]({
-      // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
-      fileContext: { shellscript: path.join(__dirname, './asset/shellscript.sh') },
+    suite('Execute function with a processes that doesnt return result + a process returning with further processing through pipe functions', () => {
+      const fixture = ['<tag>prefix_dataItem</tag>']
+
+      let contextInstance = new Context.clientInterface({
+        data: {
+          // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
+          fileContext: {
+            shellscript: path.join(__dirname, './asset/shellscript.sh'),
+          },
+          functionReferenceContext: {
+            prefixWithWord: ({ node, graph }) => string => `prefix_${string}`,
+            wrapWithTag: ({ node, graph }) => string => `<tag>${string}</tag>`,
+          },
+        },
+      })
+
+      let graph = new configuredGraph.clientInterface({ concreteBehaviorList: [contextInstance] })
+
+      test('Should traverse graph successfully - during which a shell script executed', async () => {
+        let result = await graph.traverse({ nodeKey: '28a486af-1c27-4183-8953-c40742a68ab0', implementationKey: {} })
+        chaiAssertion.deepEqual(result, fixture)
+      })
     })
-    let graph = new configuredGraph.clientInterface({})
-    test('Should traverse graph successfully - during which a shell script executed', async () => {
-      await graph.load({ graphData })
-      let result = await graph.traverse({ nodeKey: '28a486af-1c27-4183-8953-c40742a68ab0', implementationKey: {} })
-      chaiAssertion.deepEqual(result, fixture)
+  })
+
+  suite('Traversing graphs with different external implementations', () => {
+    suite('Template graph rendering.', () => {
+      let contextInstance = new Context.clientInterface({
+        data: {
+          // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
+          fileContext: {
+            template: path.join(__dirname, './asset/template/template.html'),
+            fileCss: path.join(__dirname, './asset/template/file.css'),
+            fileText: path.join(__dirname, './asset/template/file.txt'),
+            fileHtml: path.join(__dirname, './asset/template/file.html'),
+          },
+        },
+      })
+
+      let graph = new configuredGraph.clientInterface({ concreteBehaviorList: [contextInstance] })
+
+      test('Should traverse graph successfully and return a rendered template', async () => {
+        console.log('Template rendering')
+        // let result = await graph.traverse({ nodeKey: '28a486af-1c27-4183-8953-c40742a68ab0', implementationKey: {} })
+        // chaiAssertion.deepEqual(result, fixture)
+      })
     })
   })
 })
