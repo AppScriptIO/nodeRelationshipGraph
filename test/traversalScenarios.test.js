@@ -129,7 +129,21 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
   })
 
   suite('Traversing graphs with different external implementations', () => {
+    const fixture =
+      {}
+      |> (object => {
+        filesystem.readdirSync(path.join(__dirname, 'fixture')).forEach(filename => {
+          object[filename] = filesystem.readFileSync(path.join(__dirname, 'fixture', filename), { encoding: 'utf-8' })
+        })
+        return object
+      })
+
     suite('Template graph rendering.', () => {
+      // set underscore settings:
+      const underscore = require('underscore')
+      const underscoreTemplateInterpolationSetting = { evaluate: /\{\%(.+?)\%\}/g, interpolate: /\{\%=(.+?)\%\}/g, escape: /\{\%-(.+?)\%\}/g } // initial underscore template settings on first import gets applied on the rest.
+      underscore.templateSettings = underscoreTemplateInterpolationSetting
+
       let contextInstance = new Context.clientInterface({
         data: {
           // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
@@ -139,15 +153,28 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
             fileText: path.join(__dirname, './asset/template/file.txt'),
             fileHtml: path.join(__dirname, './asset/template/file.html'),
           },
+          functionReferenceContext: {
+            wrapWithTag: ({ node, graph }) => string => {
+              let tagName = node.properties.tagName || 'tag'
+              return `<${tagName}>${string}</${tagName}>`
+            },
+          },
         },
       })
 
       let graph = new configuredGraph.clientInterface({ concreteBehaviorList: [contextInstance] })
 
       test('Should traverse graph successfully and return a rendered template', async () => {
-        console.log('Template rendering')
-        // let result = await graph.traverse({ nodeKey: '28a486af-1c27-4183-8953-c40742a68ab0', implementationKey: {} })
-        // chaiAssertion.deepEqual(result, fixture)
+        let renderedDocument = await graph.traverse({
+          nodeKey: '528ec4f4-824e-4952-b42f-a92ff70414f0',
+          implementationKey: {
+            processNode: 'templateRenderingWithInseritonPosition',
+            traversalInterception: 'traverseThenProcess',
+            aggregator: 'AggregatorObjectOfArray',
+          },
+        })
+        // filesystem.writeFileSync(path.join(__dirname, 'fixture', 'renderedDocument'), renderedDocument)
+        assert(renderedDocument === fixture.renderedDocument, `• Document must be rendered correctly.`)
       })
     })
   })
