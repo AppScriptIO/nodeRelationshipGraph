@@ -138,7 +138,7 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
         return object
       })
 
-    suite('Template graph rendering.', () => {
+    suite('Template implementation - Template graph rendering.', () => {
       // set underscore settings:
       const underscore = require('underscore')
       const underscoreTemplateInterpolationSetting = { evaluate: /\{\%(.+?)\%\}/g, interpolate: /\{\%=(.+?)\%\}/g, escape: /\{\%-(.+?)\%\}/g } // initial underscore template settings on first import gets applied on the rest.
@@ -177,5 +177,8 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
         assert(renderedDocument === fixture.renderedDocument, `• Document must be rendered correctly.`)
       })
     })
+
+    // TODO:
+    suite('Condition implementation - Value resolution with condition graph', () => {})
   })
 })

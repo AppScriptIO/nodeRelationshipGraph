@@ -1,4 +1,5 @@
 import { isSelfEdge } from '../dataModel/concreteDatabaseWrapper.js'
+import assert from 'assert'
 
 // TODO: Move other node instruction outside of node type functions, to make a more modular instruction functions.
 
