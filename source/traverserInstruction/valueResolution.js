@@ -3,7 +3,7 @@ import assert from 'assert'
 
 // TODO: Move other node instruction outside of node type functions, to make a more modular instruction functions.
 
-export async function resolveValue({ targetNode, graph, traverseCallContext }) {
+export async function resolveValue({ targetNode, graph, traverseCallContext, allowSelfEdge = false }) {
   const value = await graph.databaseWrapper.getValueElement({ concreteDatabase: graph.database, nodeID: targetNode.identity })
   if (!value) return
 
@@ -11,7 +11,7 @@ export async function resolveValue({ targetNode, graph, traverseCallContext }) {
   /* run condition check against comparison value. Hierarchy of comparison value calculation:   */
   switch (value.connection.properties.implementation) {
     case 'conditionSubgraph':
-      assert(!isSelfEdge(value), `• Self-edge for VALUE connection with "conditionSubgraph" implementation, currently not supported, as it causes infinite loop.`) // TODO: deal with circular traversal for this type.
+      if (!allowSelfEdge) assert(!isSelfEdge(value), `• Self-edge for VALUE connection with "conditionSubgraph" implementation, currently not supported, as it causes infinite loop.`) // TODO: deal with circular traversal for this type.
       resolvedValue = await graph.traverserInstruction.valueResolution.conditionSubgraphValueResolution({ value, graph, traverseCallContext })
       break
     case 'properties':

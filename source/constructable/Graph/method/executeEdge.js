@@ -14,7 +14,7 @@ export async function executeEdge({ stageNode, nextProcessData, getImplementatio
   let processResult = await graph::implementation({ processNode: execute.destination, stageNode, nextProcessData }, { additionalParameter, traverseCallContext })
 
   // further processing from pipe process nodes:
-  processResult = graph.traverserInstruction.pipeProcess.pipeProcessing({ targetNode: execute.destination, processResult, graph })
+  processResult = await graph.traverserInstruction.pipeProcess.pipeProcessing({ targetNode: execute.destination, processResult, graph })
 
   return processResult
 }
