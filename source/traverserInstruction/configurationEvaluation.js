@@ -1,59 +1,60 @@
-import assert from 'assert'
-import * as schemeReference from '../dataModel/graphSchemeReference.js'
-import { extractConfigProperty } from '../utility/extractPropertyFromObject.js'
+"use strict";var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.resolveEvaluationConfiguration = resolveEvaluationConfiguration;var _assert = _interopRequireDefault(require("assert"));
+var schemeReference = _interopRequireWildcard(require("../dataModel/graphSchemeReference.js"));
+var _extractPropertyFromObject = require("../utility/extractPropertyFromObject.js");
 
-/**
- * Node's include/exclude evaluation - evaluate whether or not a node whould be included in the node feed and subsequently in the traversal. continue child nodes traversal or break traversal.
- * & traversal implementation configuration - chooses the custom functions to be used in the traversal.
- */
-export async function resolveEvaluationConfiguration({ targetNode, graph }) {
-  let { configureArray } = await graph.databaseWrapper.getConfigure({ concreteDatabase: graph.database, nodeID: targetNode.identity })
 
-  // evaluate configuration by traversing subgraph nodes (traverse switch stage node) & replace destination node with a configuration node:
-  let configurationMap = new Map() // maps evaluated configuration to the CONFIGURE relationships.
+
+
+
+async function resolveEvaluationConfiguration({ targetNode, graph }) {
+  let { configureArray } = await graph.databaseWrapper.getConfigure({ concreteDatabase: graph.database, nodeID: targetNode.identity });
+
+
+  let configurationMap = new Map();
   for (let configure of configureArray)
-    if (configure.source.labels.includes(schemeReference.nodeLabel.reroute)) {
-      // if reroute node, then request resolution to the reference node (run in a separate traversal recursive scopes)
-      let configurationNode = await graph::graph.traverse(
-        {
-          nodeInstance: configure.source,
-          implementationKey: {
-            [schemeReference.nodeLabel.reroute]: 'returnReference',
-          },
-        },
-        {
-          traverseCallContext: {
-            targetNode: configure.destination, // provide access in the reroute for the target node caller requesting the resolution of the reference.
-          },
-        },
-      )
-      if (!configurationNode) continue // if no Configuration was resolved skip.
-      assert(configurationNode && configurationNode.labels.includes(schemeReference.nodeLabel.configuration), `• CONFIGURE sub-graph traversal must return a Configuration node.`)
-      // replace destination node with appropriate evaluated configuration:
-      configurationMap.set(configure, configurationNode)
-    }
+  if (configure.source.labels.includes(schemeReference.nodeLabel.reroute)) {
 
-  // extract configuration parameters from configure relationship:
-  let implementationConfigurationArray = configureArray
-    .filter(configure => configure.connection.properties.setting == 'implementation')
-    .map(configure => {
-      let configuration
-      if (configurationMap.get(configure)) configuration = configurationMap.get(configure)
-      else configuration = configure.source
-      return extractConfigProperty(configuration.properties, schemeReference.traversalOption)
-    })
-  let evaluationConfigurationArray = configureArray
-    .filter(configure => configure.connection.properties.setting == 'evaluation')
-    .map(configure => {
-      let configuration
-      if (configurationMap.get(configure)) configuration = configurationMap.get(configure)
-      else configuration = configure.source
-      return extractConfigProperty(configuration.properties, schemeReference.evaluationOption)
-    })
+    let configurationNode = await graph.traverse.call(graph,
+    {
+      nodeInstance: configure.source,
+      implementationKey: {
+        [schemeReference.nodeLabel.reroute]: 'returnReference' } },
 
-  // merge multiple configurations of the same type
-  let implementationConfiguration = implementationConfigurationArray.length > 0 ? Object.assign(...implementationConfigurationArray) : {}
-  let evaluationConfiguration = evaluationConfigurationArray.length > 0 ? Object.assign(...evaluationConfigurationArray) : {}
 
-  return { implementationConfiguration, evaluationConfiguration }
+    {
+      traverseCallContext: {
+        targetNode: configure.destination } });
+
+
+
+    if (!configurationNode) continue;
+    (0, _assert.default)(configurationNode && configurationNode.labels.includes(schemeReference.nodeLabel.configuration), `• CONFIGURE sub-graph traversal must return a Configuration node.`);
+
+    configurationMap.set(configure, configurationNode);
+  }
+
+
+  let implementationConfigurationArray = configureArray.
+  filter(configure => configure.connection.properties.setting == 'implementation').
+  map(configure => {
+    let configuration;
+    if (configurationMap.get(configure)) configuration = configurationMap.get(configure);else
+    configuration = configure.source;
+    return (0, _extractPropertyFromObject.extractConfigProperty)(configuration.properties, schemeReference.traversalOption);
+  });
+  let evaluationConfigurationArray = configureArray.
+  filter(configure => configure.connection.properties.setting == 'evaluation').
+  map(configure => {
+    let configuration;
+    if (configurationMap.get(configure)) configuration = configurationMap.get(configure);else
+    configuration = configure.source;
+    return (0, _extractPropertyFromObject.extractConfigProperty)(configuration.properties, schemeReference.evaluationOption);
+  });
+
+
+  let implementationConfiguration = implementationConfigurationArray.length > 0 ? Object.assign(...implementationConfigurationArray) : {};
+  let evaluationConfiguration = evaluationConfigurationArray.length > 0 ? Object.assign(...evaluationConfigurationArray) : {};
+
+  return { implementationConfiguration, evaluationConfiguration };
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS90cmF2ZXJzZXJJbnN0cnVjdGlvbi9jb25maWd1cmF0aW9uRXZhbHVhdGlvbi5qcyJdLCJuYW1lcyI6WyJyZXNvbHZlRXZhbHVhdGlvbkNvbmZpZ3VyYXRpb24iLCJ0YXJnZXROb2RlIiwiZ3JhcGgiLCJjb25maWd1cmVBcnJheSIsImRhdGFiYXNlV3JhcHBlciIsImdldENvbmZpZ3VyZSIsImNvbmNyZXRlRGF0YWJhc2UiLCJkYXRhYmFzZSIsIm5vZGVJRCIsImlkZW50aXR5IiwiY29uZmlndXJhdGlvbk1hcCIsIk1hcCIsImNvbmZpZ3VyZSIsInNvdXJjZSIsImxhYmVscyIsImluY2x1ZGVzIiwic2NoZW1lUmVmZXJlbmNlIiwibm9kZUxhYmVsIiwicmVyb3V0ZSIsImNvbmZpZ3VyYXRpb25Ob2RlIiwidHJhdmVyc2UiLCJub2RlSW5zdGFuY2UiLCJpbXBsZW1lbnRhdGlvbktleSIsInRyYXZlcnNlQ2FsbENvbnRleHQiLCJkZXN0aW5hdGlvbiIsImNvbmZpZ3VyYXRpb24iLCJzZXQiLCJpbXBsZW1lbnRhdGlvbkNvbmZpZ3VyYXRpb25BcnJheSIsImZpbHRlciIsImNvbm5lY3Rpb24iLCJwcm9wZXJ0aWVzIiwic2V0dGluZyIsIm1hcCIsImdldCIsInRyYXZlcnNhbE9wdGlvbiIsImV2YWx1YXRpb25Db25maWd1cmF0aW9uQXJyYXkiLCJldmFsdWF0aW9uT3B0aW9uIiwiaW1wbGVtZW50YXRpb25Db25maWd1cmF0aW9uIiwibGVuZ3RoIiwiT2JqZWN0IiwiYXNzaWduIiwiZXZhbHVhdGlvbkNvbmZpZ3VyYXRpb24iXSwibWFwcGluZ3MiOiIrVEFBQTtBQUNBO0FBQ0E7Ozs7OztBQU1PLGVBQWVBLDhCQUFmLENBQThDLEVBQUVDLFVBQUYsRUFBY0MsS0FBZCxFQUE5QyxFQUFxRTtBQUMxRSxNQUFJLEVBQUVDLGNBQUYsS0FBcUIsTUFBTUQsS0FBSyxDQUFDRSxlQUFOLENBQXNCQyxZQUF0QixDQUFtQyxFQUFFQyxnQkFBZ0Is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MkYsRUFBekg7O0FBRUEsU0FBTyxFQUFFRSwyQkFBRixFQUErQkksdUJBQS9CLEVBQVA7QUFDRCIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBhc3NlcnQgZnJvbSAnYXNzZXJ0J1xuaW1wb3J0ICogYXMgc2NoZW1lUmVmZXJlbmNlIGZyb20gJy4uL2RhdGFNb2RlbC9ncmFwaFNjaGVtZVJlZmVyZW5jZS5qcydcbmltcG9ydCB7IGV4dHJhY3RDb25maWdQcm9wZXJ0eSB9IGZyb20gJy4uL3V0aWxpdHkvZXh0cmFjdFByb3BlcnR5RnJvbU9iamVjdC5qcydcblxuLyoqXG4gKiBOb2RlJ3MgaW5jbHVkZS9leGNsdWRlIGV2YWx1YXRpb24gLSBldmFsdWF0ZSB3aGV0aGVyIG9yIG5vdCBhIG5vZGUgd2hvdWxkIGJlIGluY2x1ZGVkIGluIHRoZSBub2RlIGZlZWQgYW5kIHN1YnNlcXVlbnRseSBpbiB0aGUgdHJhdmVyc2FsLiBjb250aW51ZSBjaGlsZCBub2RlcyB0cmF2ZXJzYWwgb3IgYnJlYWsgdHJhdmVyc2FsLlxuICogJiB0cmF2ZXJzYWwgaW1wbGVtZW50YXRpb24gY29uZmlndXJhdGlvbiAtIGNob29zZXMgdGhlIGN1c3RvbSBmdW5jdGlvbnMgdG8gYmUgdXNlZCBpbiB0aGUgdHJhdmVyc2FsLlxuICovXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gcmVzb2x2ZUV2YWx1YXRpb25Db25maWd1cmF0aW9uKHsgdGFyZ2V0Tm9kZSwgZ3JhcGggfSkge1xuICBsZXQgeyBjb25maWd1cmVBcnJheSB9ID0gYXdhaXQgZ3JhcGguZGF0YWJhc2VXcmFwcGVyLmdldENvbmZpZ3VyZSh7IGNvbmNyZXRlRGF0YWJhc2U6IGdyYXBoLmRhdGFiYXNlLCBub2RlSUQ6IHRhcmdldE5vZGUuaWRlbnRpdHkgfSlcblxuICAvLyBldmFsdWF0ZSBjb25maWd1cmF0aW9uIGJ5IHRyYXZlcnNpbmcgc3ViZ3JhcGggbm9kZXMgKHRyYXZlcnNlIHN3aXRjaCBzdGFnZSBub2RlKSAmIHJlcGxhY2UgZGVzdGluYXRpb24gbm9kZSB3aXRoIGEgY29uZmlndXJhdGlvbiBub2RlOlxuICBsZXQgY29uZmlndXJhdGlvbk1hcCA9IG5ldyBNYXAoKSAvLyBtYXBzIGV2YWx1YXRlZCBjb25maWd1cmF0aW9uIHRvIHRoZSBDT05GSUdVUkUgcmVsYXRpb25zaGlwcy5cbiAgZm9yIChsZXQgY29uZmlndXJlIG9mIGNvbmZpZ3VyZUFycmF5KVxuICAgIGlmIChjb25maWd1cmUuc291cmNlLmxhYmVscy5pbmNsdWRlcyhzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnJlcm91dGUpKSB7XG4gICAgICAvLyBpZiByZXJvdXRlIG5vZGUsIHRoZW4gcmVxdWVzdCByZXNvbHV0aW9uIHRvIHRoZSByZWZlcmVuY2Ugbm9kZSAocnVuIGluIGEgc2VwYXJhdGUgdHJhdmVyc2FsIHJlY3Vyc2l2ZSBzY29wZXMpXG4gICAgICBsZXQgY29uZmlndXJhdGlvbk5vZGUgPSBhd2FpdCBncmFwaDo6Z3JhcGgudHJhdmVyc2UoXG4gICAgICAgIHtcbiAgICAgICAgICBub2RlSW5zdGFuY2U6IGNvbmZpZ3VyZS5zb3VyY2UsXG4gICAgICAgICAgaW1wbGVtZW50YXRpb25LZXk6IHtcbiAgICAgICAgICAgIFtzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnJlcm91dGVdOiAncmV0dXJuUmVmZXJlbmNlJyxcbiAgICAgICAgICB9LFxuICAgICAgICB9LFxuICAgICAgICB7XG4gICAgICAgICAgdHJhdmVyc2VDYWxsQ29udGV4dDoge1xuICAgICAgICAgICAgdGFyZ2V0Tm9kZTogY29uZmlndXJlLmRlc3RpbmF0aW9uLCAvLyBwcm92aWRlIGFjY2VzcyBpbiB0aGUgcmVyb3V0ZSBmb3IgdGhlIHRhcmdldCBub2RlIGNhbGxlciByZXF1ZXN0aW5nIHRoZSByZXNvbHV0aW9uIG9mIHRoZSByZWZlcmVuY2UuXG4gICAgICAgICAgfSxcbiAgICAgICAgfSxcbiAgICAgIClcbiAgICAgIGlmICghY29uZmlndXJhdGlvbk5vZGUpIGNvbnRpbnVlIC8vIGlmIG5vIENvbmZpZ3VyYXRpb24gd2FzIHJlc29sdmVkIHNraXAuXG4gICAgICBhc3NlcnQoY29uZmlndXJhdGlvbk5vZGUgJiYgY29uZmlndXJhdGlvbk5vZGUubGFiZWxzLmluY2x1ZGVzKHNjaGVtZVJlZmVyZW5jZS5ub2RlTGFiZWwuY29uZmlndXJhdGlvbiksIGDigKIgQ09ORklHVVJFIHN1Yi1ncmFwaCB0cmF2ZXJzYWwgbXVzdCByZXR1cm4gYSBDb25maWd1cmF0aW9uIG5vZGUuYClcbiAgICAgIC8vIHJlcGxhY2UgZGVzdGluYXRpb24gbm9kZSB3aXRoIGFwcHJvcHJpYXRlIGV2YWx1YXRlZCBjb25maWd1cmF0aW9uOlxuICAgICAgY29uZmlndXJhdGlvbk1hcC5zZXQoY29uZmlndXJlLCBjb25maWd1cmF0aW9uTm9kZSlcbiAgICB9XG5cbiAgLy8gZXh0cmFjdCBjb25maWd1cmF0aW9uIHBhcmFtZXRlcnMgZnJvbSBjb25maWd1cmUgcmVsYXRpb25zaGlwOlxuICBsZXQgaW1wbGVtZW50YXRpb25Db25maWd1cmF0aW9uQXJyYXkgPSBjb25maWd1cmVBcnJheVxuICAgIC5maWx0ZXIoY29uZmlndXJlID0+IGNvbmZpZ3VyZS5jb25uZWN0aW9uLnByb3BlcnRpZXMuc2V0dGluZyA9PSAnaW1wbGVtZW50YXRpb24nKVxuICAgIC5tYXAoY29uZmlndXJlID0+IHtcbiAgICAgIGxldCBjb25maWd1cmF0aW9uXG4gICAgICBpZiAoY29uZmlndXJhdGlvbk1hcC5nZXQoY29uZmlndXJlKSkgY29uZmlndXJhdGlvbiA9IGNvbmZpZ3VyYXRpb25NYXAuZ2V0KGNvbmZpZ3VyZSlcbiAgICAgIGVsc2UgY29uZmlndXJhdGlvbiA9IGNvbmZpZ3VyZS5zb3VyY2VcbiAgICAgIHJldHVybiBleHRyYWN0Q29uZmlnUHJvcGVydHkoY29uZmlndXJhdGlvbi5wcm9wZXJ0aWVzLCBzY2hlbWVSZWZlcmVuY2UudHJhdmVyc2FsT3B0aW9uKVxuICAgIH0pXG4gIGxldCBldmFsdWF0aW9uQ29uZmlndXJhdGlvbkFycmF5ID0gY29uZmlndXJlQXJyYXlcbiAgICAuZmlsdGVyKGNvbmZpZ3VyZSA9PiBjb25maWd1cmUuY29ubmVjdGlvbi5wcm9wZXJ0aWVzLnNldHRpbmcgPT0gJ2V2YWx1YXRpb24nKVxuICAgIC5tYXAoY29uZmlndXJlID0+IHtcbiAgICAgIGxldCBjb25maWd1cmF0aW9uXG4gICAgICBpZiAoY29uZmlndXJhdGlvbk1hcC5nZXQoY29uZmlndXJlKSkgY29uZmlndXJhdGlvbiA9IGNvbmZpZ3VyYXRpb25NYXAuZ2V0KGNvbmZpZ3VyZSlcbiAgICAgIGVsc2UgY29uZmlndXJhdGlvbiA9IGNvbmZpZ3VyZS5zb3VyY2VcbiAgICAgIHJldHVybiBleHRyYWN0Q29uZmlnUHJvcGVydHkoY29uZmlndXJhdGlvbi5wcm9wZXJ0aWVzLCBzY2hlbWVSZWZlcmVuY2UuZXZhbHVhdGlvbk9wdGlvbilcbiAgICB9KVxuXG4gIC8vIG1lcmdlIG11bHRpcGxlIGNvbmZpZ3VyYXRpb25zIG9mIHRoZSBzYW1lIHR5cGVcbiAgbGV0IGltcGxlbWVudGF0aW9uQ29uZmlndXJhdGlvbiA9IGltcGxlbWVudGF0aW9uQ29uZmlndXJhdGlvbkFycmF5Lmxlbmd0aCA+IDAgPyBPYmplY3QuYXNzaWduKC4uLmltcGxlbWVudGF0aW9uQ29uZmlndXJhdGlvbkFycmF5KSA6IHt9XG4gIGxldCBldmFsdWF0aW9uQ29uZmlndXJhdGlvbiA9IGV2YWx1YXRpb25Db25maWd1cmF0aW9uQXJyYXkubGVuZ3RoID4gMCA/IE9iamVjdC5hc3NpZ24oLi4uZXZhbHVhdGlvbkNvbmZpZ3VyYXRpb25BcnJheSkgOiB7fVxuXG4gIHJldHVybiB7IGltcGxlbWVudGF0aW9uQ29uZmlndXJhdGlvbiwgZXZhbHVhdGlvbkNvbmZpZ3VyYXRpb24gfVxufVxuIl19
