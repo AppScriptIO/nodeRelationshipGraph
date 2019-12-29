@@ -41,14 +41,17 @@ export async function resolveReference({ targetNode, graph, traverseCallContext 
 export async function selectionReferenceResolution({ graph, targetNode, traverseCallContext }) {
   let resolvedReferenceNode
   const { selectArray, fallback: fallbackRelationship } = await graph.databaseWrapper.getSelectionElement({ concreteDatabase: graph.database, nodeID: targetNode.identity })
-  selectArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
 
-  // TODO: support parallel / promise.all selection - where the first selected will be returned. When SELECT has an order it will be chronologically executed, but the selects that lack order property will be executed with promise.all
-  // TODO: Use same logic in propagation as used for Port NEXT nodes. (chronological, raceFirstPromise, allPromise, etc.)
-  let index = 0
-  while (selectArray.length > index && !resolvedReferenceNode) {
-    resolvedReferenceNode = await graph.traverserInstruction.referenceResolution.conditionSwitchResolution({ graph, targetNode: selectArray[index].destination, traverseCallContext })
-    index++
+  if (selectArray) {
+    selectArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
+
+    // TODO: support parallel / promise.all selection - where the first selected will be returned. When SELECT has an order it will be chronologically executed, but the selects that lack order property will be executed with promise.all
+    // TODO: Use same logic in propagation as used for Port NEXT nodes. (chronological, raceFirstPromise, allPromise, etc.)
+    let index = 0
+    while (selectArray.length > index && !resolvedReferenceNode) {
+      resolvedReferenceNode = await graph.traverserInstruction.referenceResolution.conditionSwitchResolution({ graph, targetNode: selectArray[index].destination, traverseCallContext })
+      index++
+    }
   }
 
   // Important: reroute resolution must return a node even if no actual one was resolved. This will prevent returning an undefined that will throw during aggregation of results. Instead return a Stage that will be skipped.
