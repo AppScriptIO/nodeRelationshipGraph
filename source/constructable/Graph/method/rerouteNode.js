@@ -40,7 +40,7 @@ export async function traverseReference({ traverser, additionalChildNode, graph 
 
   // get additional nodes from insert array and add them to the passed array.
   let insertAdditionalNode = insertArray
-    .sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property // Bulk actions on forks - sort forks
+    .sort((former, latter) => former.connection.properties.order - latter.connection.properties.order || isNaN(former.connection.properties.order) - isNaN(latter.connection.properties.order)) // using `order` property // Bulk actions on forks - sort forks
     .map(insert => ({
       node: insert.source,
       placement: {

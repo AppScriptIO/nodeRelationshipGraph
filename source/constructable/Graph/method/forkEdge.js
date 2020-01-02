@@ -12,7 +12,7 @@ export async function* forkEdge({ stageNode, additionalChildNode, getImplementat
   const { forkArray } = await graph.databaseWrapper.getFork({ concreteDatabase: graph.database, nodeID: stageNode.identity })
   if (forkArray.length == 0) return
   // Bulk actions on forks - sort forks
-  forkArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order) // using `order` property
+  forkArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order || isNaN(former.connection.properties.order) - isNaN(latter.connection.properties.order)) // using `order` property
 
   for (let forkEdge of forkArray) {
     assert(forkEdge.destination.labels.includes(graph.schemeReference.nodeLabel.port), `• "${forkEdge.destination.labels}" Unsupported node type for a FORK connection.`) // verify node type
