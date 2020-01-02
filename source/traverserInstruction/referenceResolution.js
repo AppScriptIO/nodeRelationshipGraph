@@ -1,3 +1,4 @@
+import underscore from 'underscore'
 import { isSelfEdge } from '../dataModel/concreteDatabaseWrapper.js'
 // Fallback node for unresolved reference reroute. This is an implicit node, that doesn't actually exist in the graph.
 const emptyStageNode = {
@@ -69,10 +70,15 @@ export async function conditionSwitchResolution({ graph, targetNode, traverseCal
   let matchingNode
   const { caseArray } = await graph.databaseWrapper.getConditionSwitchElement({ concreteDatabase: graph.database, nodeID: targetNode.identity })
   let value = await graph.traverserInstruction.valueResolution.resolveValue({ targetNode: targetNode, graph, traverseCallContext, allowSelfEdge: true })
+
   // Switch cases: return evaluation configuration
   if (caseArray) {
     // compare expected value with result
-    let caseRelationship = caseArray.filter(caseRelationship => caseRelationship.connection.properties?.expected == value)[0]
+    let caseRelationship = caseArray.filter(caseRelationship => {
+      // in case array comparison is required.
+      if (Array.isArray(caseRelationship.connection.properties?.expected)) return underscore.isEqual(caseRelationship.connection.properties?.expected, value)
+      return caseRelationship.connection.properties?.expected == value
+    })[0]
     matchingNode = caseRelationship?.destination
   }
   return matchingNode || null
