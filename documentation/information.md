@@ -54,6 +54,7 @@ Different applications may use this module:
 - Task schedualing - which task should procede which one. 
 - AST representation in NoSQL database.
 - Template system for creating complex templates:
+    _A better terminology whould be "document", as it may represent a collection of template & configs/parameters._
     Web documents (or documents) are composed of templates, represented as graphs. 
     Templates require a rendering algorithm/engine to deal with marked points in them, and produce rendered content. Templates can be nested and each nested template should be redered as well.
     Redering algorithm could involve:

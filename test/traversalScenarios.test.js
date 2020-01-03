@@ -146,6 +146,7 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
 
       let contextInstance = new Context.clientInterface({
         data: {
+          templateArgument: {},
           // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
           fileContext: {
             template: path.join(__dirname, './asset/template/template.html'),
