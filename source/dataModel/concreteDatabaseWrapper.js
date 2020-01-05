@@ -117,6 +117,15 @@ export async function getInsert({ concreteDatabase, nodeID }) {
   return { insertArray }
 }
 
+export async function getSubgraph({ concreteDatabase, nodeID }) {
+  let subgraphArray = await concreteDatabase.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.subgraph })
+  assert(
+    subgraphArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.stage) || n.source.labels.includes(schemeReference.nodeLabel.reroute)),
+    `• Unsupported node type for a SUBGRAPH connection.`,
+  ) // verify node type
+  return { subgraphArray }
+}
+
 /*
       _                                    _           _                         _           
      / \   __ _  __ _ _ __ ___  __ _  __ _| |_ ___  __| |   __ _ _   _  ___ _ __(_) ___  ___ 

@@ -5,9 +5,8 @@ export const nodeLabel = {
   configuration: 'Configuration',
   file: 'File',
   function: 'Function',
-  reroute: 'Reroute',
+  reroute: 'Reroute', // previously named subgraphTemplate: 'SubgraphTemplate',
   // evaluation: 'Evaluation',
-  // subgraphTemplate: 'SubgraphTemplate',
   // nodeReference: 'NodeReference',
   // switch: 'Switch',
   // switchBoolean: 'SwitchBoolean',
@@ -31,6 +30,7 @@ export const connectionType = {
   fallback: 'FALLBACK',
   select: 'SELECT',
   case: 'CASE',
+  subgraph: 'SUBGRAPH', // subgraphs used for secondary traversals.
   // root: 'ROOT',
   // run: 'RUN', // run as subgraph where the result of the subgraph traversal is to be used in the stage node calling it.
   // inherit: 'INHERIT',
