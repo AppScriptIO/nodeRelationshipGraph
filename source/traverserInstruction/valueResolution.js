@@ -10,6 +10,7 @@ export async function resolveValue({ targetNode, graph, traverseCallContext, all
   let resolvedValue
   /* run condition check against comparison value. Hierarchy of comparison value calculation:   */
   switch (value.connection.properties.implementation) {
+    // TODO: consider using "SUBGRAPH" edge to connect the 2 subgraphs - main graph (e.g. Middleware) with Condition graph.
     case 'conditionSubgraph':
       if (!allowSelfEdge) assert(!isSelfEdge(value), `• Self-edge for VALUE connection with "conditionSubgraph" implementation, currently not supported, as it causes infinite loop.`) // TODO: deal with circular traversal for this type.
       resolvedValue = await graph.traverserInstruction.valueResolution.conditionSubgraphValueResolution({ value, graph, traverseCallContext })
