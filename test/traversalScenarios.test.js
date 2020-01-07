@@ -146,7 +146,7 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
 
       let contextInstance = new Context.clientInterface({
         data: {
-          templateArgument: {},
+          templateParameter: {},
           // modify context to include the filesystem stat information of the file to be referenced during the graph traversal.
           fileContext: {
             template: path.join(__dirname, './asset/template/template.html'),
@@ -176,6 +176,95 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
         })
         // filesystem.writeFileSync(path.join(__dirname, 'fixture', 'renderedDocument'), renderedDocument)
         assert(renderedDocument === fixture.renderedDocument, `• Document must be rendered correctly.`)
+      })
+    })
+
+    suite('Middleware implementation - execute middlewares in chain and execution (downstream & upstream)', () => {
+      suite('Linear graph of middlewares', () => {
+        const fixture = { middlewareExecutionOrder: ['ce BEFORE', 'a4 BEFORE', 'aa BEFORE', 'aa AFTER', 'a4 AFTER', 'ce AFTER'] }
+
+        let middlewareExecutionOrder = []
+        let contextInstance = new Context.clientInterface({
+          data: {
+            middlewareParameter: {},
+            functionReferenceContext: {
+              middleware1: traverser => async next => {
+                middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} BEFORE`)
+                await next()
+                middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} AFTER`)
+              },
+              middleware2: traverser => async next => {
+                middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} BEFORE`)
+                await next()
+                middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} AFTER`)
+              },
+              middleware3: traverser => async next => {
+                middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} BEFORE`)
+                await next()
+                middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} AFTER`)
+              },
+            },
+          },
+        })
+
+        let graph = new configuredGraph.clientInterface({ concreteBehaviorList: [contextInstance] })
+
+        test('Should traverse graph successfully - during which middlewares are executed in chain with downstream and upstream execution.', async () => {
+          let middlewareArray = await graph.traverse({
+            nodeKey: '80629744-a860-439e-8869-717989e72a6a',
+            implementationKey: {
+              processNode: 'immediatelyExecuteMiddleware',
+              traversalInterception: 'handleMiddlewareNextCall',
+            },
+          })
+
+          chaiAssertion.deepEqual(middlewareExecutionOrder, fixture.middlewareExecutionOrder)
+          assert(
+            middlewareArray.every(item => typeof item == 'function'),
+            `• Non function value in middleware result array.`,
+          )
+        })
+      })
+      suite('neighbour children graph of middlewares (non-linear chain structure)', () => {
+        // const fixture = { middlewareExecutionOrder: ['ce BEFORE', 'a4 BEFORE', 'aa BEFORE', 'aa AFTER', 'a4 AFTER', 'ce AFTER'] }
+        // let middlewareExecutionOrder = []
+        // let contextInstance = new Context.clientInterface({
+        //   data: {
+        //     middlewareParameter: {},
+        //     functionReferenceContext: {
+        //       middleware1: traverser => async next => {
+        //         middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} BEFORE`)
+        //         await next()
+        //         middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} AFTER`)
+        //       },
+        //       middleware2: traverser => async next => {
+        //         middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} BEFORE`)
+        //         await next()
+        //         middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} AFTER`)
+        //       },
+        //       middleware3: traverser => async next => {
+        //         middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} BEFORE`)
+        //         await next()
+        //         middlewareExecutionOrder.push(`${traverser.node.properties.key.substring(0, 2)} AFTER`)
+        //       },
+        //     },
+        //   },
+        // })
+        // let graph = new configuredGraph.clientInterface({ concreteBehaviorList: [contextInstance] })
+        // test('Should traverse graph successfully - during which middlewares are executed in chain with downstream and upstream execution.', async () => {
+        //   let middlewareArray = await graph.traverse({
+        //     nodeKey: '80629744-a860-439e-8869-717989e72a6a',
+        //     implementationKey: {
+        //       processNode: 'immediatelyExecuteMiddleware',
+        //       traversalInterception: 'handleMiddlewareNextCall',
+        //     },
+        //   })
+        //   chaiAssertion.deepEqual(middlewareExecutionOrder, fixture.middlewareExecutionOrder)
+        //   assert(
+        //     middlewareArray.every(item => typeof item == 'function'),
+        //     `• Non function value in middleware result array.`,
+        //   )
+        // })
       })
     })
 
