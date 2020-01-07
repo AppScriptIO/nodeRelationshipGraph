@@ -127,14 +127,14 @@ export const { traverse } = {
 /** next iterator returns entrypoint nodes (Stage or Reroute/SubgraphTemplate nodes)
  * @param nodeIterator - iterator of object { node: <node data> }
  */
-export async function traverseIterationRecursiveCallback({ traversalIterator, additionalChildNode, traverser, traverseCallContext }) {
+export async function traverseIterationRecursiveCallback({ traversalIterator /*2-way communication with propagation implamentation*/, additionalChildNode, traverser, traverseCallContext }) {
   // first call is used to initialize the function (using non-standard function.sent)
   let nextYielded = await traversalIterator.next({ eventEmitterCallback: (...args) => traverser.eventEmitter.emit('nodeTraversalCompleted', ...args) })
-  while (!nextYielded.done)
+  while (!nextYielded.done) {
+    let traversalPromise = this::this.traverse({ nodeInstance: nextYielded.value.node /* next node */, additionalChildNode }, { parentTraverser: traverser, traverseCallContext })
     // 🔁 recursion traversal call (with next node)
-    nextYielded = await traversalIterator.next({
-      traversalPromise: this::this.traverse({ nodeInstance: nextYielded.value.node /* next node */, additionalChildNode }, { parentTraverser: traverser, traverseCallContext }),
-    })
+    nextYielded = await traversalIterator.next({ traversalPromise })
+  }
   return nextYielded.value // last yielded value is the result array.
 }
 
