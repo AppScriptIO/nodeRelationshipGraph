@@ -21,7 +21,7 @@ export class Traverser {
   // hardcoded default implementation values matching the implementations from the instance initialization of Graph class.
   static defaultTraversalImplementationKey = {
     processNode: 'returnDataItemKey',
-    portNode: 'propagationControl',
+    portNode: 'nestedNode',
     aggregator: 'AggregatorArray',
     traversalInterception: 'processThenTraverse',
     // entrypoint node implementations - in the core code

@@ -50,7 +50,7 @@ let concreteGraphTraversalBehavior = new Traversal.clientInterface({
 let contextInstance = new Context.clientInterface({
   implementationKey: {
     processNode: 'returnDataItemKey',
-    portNode: 'propagationControl',
+    portNode: 'nestedNode',
     aggregator: 'AggregatorArray',
     traversalInterception: 'processThenTraverse',
   },
@@ -243,6 +243,31 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
                 middlewareExecutionOrder.push(`${traverser.node.properties.name} AFTER`)
               },
               middleware3: traverser => async next => {
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} BEFORE`)
+                await next()
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} AFTER`)
+              },
+              middleware4: traverser => async next => {
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} BEFORE`)
+                await next()
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} AFTER`)
+              },
+              middleware5: traverser => async next => {
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} BEFORE`)
+                await next()
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} AFTER`)
+              },
+              middleware6: traverser => async next => {
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} BEFORE`)
+                await next()
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} AFTER`)
+              },
+              middleware7: traverser => async next => {
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} BEFORE`)
+                await next()
+                middlewareExecutionOrder.push(`${traverser.node.properties.name} AFTER`)
+              },
+              middleware8: traverser => async next => {
                 middlewareExecutionOrder.push(`${traverser.node.properties.name} BEFORE`)
                 await next()
                 middlewareExecutionOrder.push(`${traverser.node.properties.name} AFTER`)
