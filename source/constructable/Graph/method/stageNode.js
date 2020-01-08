@@ -38,6 +38,17 @@ export const { stageNode } = {
 
     let traversalInterceptionImplementation = implementation.traversalInterception || (targetFunction => new Proxy(targetFunction, {})) // in case no implementation exists for intercepting traversal, use an empty proxy.
 
+    /** Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
+     * FORK edge - traverse stage node to other next nodes through the port nodes.
+     * @return {iterator} providing node parameters for recursive traversal calls.
+     */
+    let groupIterator = graph::graph.forkEdge({
+      stageNode: node,
+      getImplementation: implementationKey =>
+        traverser.getImplementationCallback({ key: 'portNode', graph })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
+      additionalChildNode,
+    })
+
     // EXECUTE edge
     const processDataCallback = ({ nextProcessData, additionalParameter }) =>
       graph::graph.executeEdge(
@@ -51,17 +62,6 @@ export const { stageNode } = {
         },
         { additionalParameter, traverseCallContext },
       )
-
-    /** Core functionality required is to traverse nodes, any additional is added through intercepting the traversal.
-     * FORK edge - traverse stage node to other next nodes through the port nodes.
-     * @return {iterator} providing node parameters for recursive traversal calls.
-     */
-    let groupIterator = graph::graph.forkEdge({
-      stageNode: node,
-      getImplementation: implementationKey =>
-        traverser.getImplementationCallback({ key: 'portNode', graph })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
-      additionalChildNode,
-    })
 
     // intercept and return result (Stage interception)
     let proxifiedRecursiveIteration = graph::graph.traverseGroupIterationRecursiveCall |> graph::traversalInterceptionImplementation
