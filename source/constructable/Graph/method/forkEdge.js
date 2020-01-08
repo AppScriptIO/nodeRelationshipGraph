@@ -17,10 +17,11 @@ export async function* forkEdge({ stageNode, additionalChildNode, getImplementat
   for (let forkEdge of forkArray) {
     assert(forkEdge.destination.labels.includes(graph.schemeReference.nodeLabel.port), `• "${forkEdge.destination.labels}" Unsupported node type for a FORK connection.`) // verify node type
 
-    // the first iterator object call is used to initialize the function, in addition to the iterator function call.
+    // get node iteartor from "portNode" implemenation - e.g. "nestedNode"
     let implementation = getImplementation(forkEdge.destination.properties.implementation) // Traversal implementation - node/edge properties implementation hierarchy - calculate and pick correct implementation according to parameter hierarchy.
     let nodeIteratorFeed = graph::implementation({ forkEdge, additionalChildNode, graph })
 
+    // the first iterator object call is used to initialize the function, in addition to the iterator function call.
     let traversalIterator = traversalIterator2WayCommunication({
       nodeIteratorFeed,
       implementation: handlePropagation[forkEdge.connection.properties.handlePropagationImplementation || 'chronological'],
@@ -38,7 +39,9 @@ export async function* forkEdge({ stageNode, additionalChildNode, getImplementat
   }
 }
 
-/** Async generator trap (all port propagation handlers pass through this trap) which verifies that all port implementations follow a 2 way iterator communication.
+/** 
+This function is a middleware between 'traverseIterationRecursiveCallback' external function and internal handlePropagation implementation.
+Async generator trap (all port propagation handlers pass through this trap) which verifies that all port implementations follow a 2 way iterator communication.
  * @receive [function.sent] Object { eventEmitterCallback: <function emitting a traversal complete event> } - during iterator initialization.
  *
  * Iteration 2 way communication:
@@ -71,6 +74,30 @@ async function* traversalIterator2WayCommunication({ nodeIteratorFeed, implement
  * @param emit event emitter callback used to indicate immediate resolution of node traversal promise (i.e. when the node completes it's traversal).
  */
 const handlePropagation = {
+  /**
+  * Execution of nodes in chain with downstream & upstream - Execute node partially then wait for the next node, in order to finish execution. 
+    e.g. Koa Middlewares concept, where each middleware waits for the next to finish and then continues it's own execution.
+    In this case the graph represents the order of middlewares to be chained, without necessarily using a linear grpah (the graph still uses nested and neighbouring children to represent the middleware chain, which allows for more flexibility).
+  **/
+  downAndUpStream: async function*({ nodeIteratorFeed, emit }) {
+    let nodeResultList = []
+    // first to be executed is last to finish
+    for await (let { node } of nodeIteratorFeed) {
+      /** 
+      Steps: 
+        - yield node data
+        -(external function): call traverse, producing promise
+        - decide when to await for the promise
+        - return results
+      */
+      yield { node }
+      let nextResult = await function.sent.traversalPromise
+      emit(nextResult) // emit for immediate consumption
+      nodeResultList.push(nextResult)
+    }
+    return nodeResultList
+  },
+
   /**
    * Sequential node execution - await each node till it finishes execution.
    **/

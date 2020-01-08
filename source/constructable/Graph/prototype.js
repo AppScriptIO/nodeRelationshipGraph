@@ -130,7 +130,10 @@ export const { traverse } = {
 export async function traverseIterationRecursiveCallback({ traversalIterator /*2-way communication with propagation implamentation*/, additionalChildNode, traverser, traverseCallContext }) {
   // first call is used to initialize the function (using non-standard function.sent)
   let nextYielded = await traversalIterator.next({ eventEmitterCallback: (...args) => traverser.eventEmitter.emit('nodeTraversalCompleted', ...args) })
+  // call traverse for each node
+  // TODO: Pass next function to control traversal initiation of next sibling node inline.
   while (!nextYielded.done) {
+    let traversalInvocation = function() {}
     let traversalPromise = this::this.traverse({ nodeInstance: nextYielded.value.node /* next node */, additionalChildNode }, { parentTraverser: traverser, traverseCallContext })
     // 🔁 recursion traversal call (with next node)
     nextYielded = await traversalIterator.next({ traversalPromise })
