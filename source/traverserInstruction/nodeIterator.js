@@ -9,7 +9,7 @@
  * @param {*} nodeConnectionArray - array of connection for the particular node
  * @yield { Object{node: <node data>} }
  */
-async function* iterateNext({ targetNode, additionalChildNode, graph } = {}) {
+export async function* iterateNext({ targetNode, additionalChildNode, graph } = {}) {
   const { nextArray } = await graph.databaseWrapper.getNext({ concreteDatabase: graph.database, nodeID: targetNode.identity })
   if (nextArray.length == 0) return
 
