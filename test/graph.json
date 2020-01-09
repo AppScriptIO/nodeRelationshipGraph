@@ -336,9 +336,9 @@
     "identity": 19676,
     "labels": ["Stage", "Port", "Process", "Function"],
     "properties": {
-      "functionName": "middleware3",
+      "functionName": "middleware2",
       "key": "a421f3b0-925b-4f85-b478-4b0998e12eeb",
-      "name": "middleware 3"
+      "name": "middleware 2"
     }
   }, {
     "identity": 19677,
@@ -357,9 +357,9 @@
     "identity": 19679,
     "labels": ["Stage", "Port", "Process", "Function"],
     "properties": {
-      "functionName": "middleware4",
+      "functionName": "middleware3",
       "key": "aa679c02-e094-47cc-bc33-b982e3a9f209",
-      "name": "middleware 4"
+      "name": "middleware 3"
     }
   }, {
     "identity": 19680,
