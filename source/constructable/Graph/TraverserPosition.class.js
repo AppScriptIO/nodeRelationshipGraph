@@ -12,7 +12,7 @@ import * as rerouteNode from './method/rerouteNode.js'
  - https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/graphdb/traversal/TraversalConfig.html
  - Implement 'depthAffected' for the affected depth of the configure connections on a stage and its child nodes.
  */
-export class Traverser {
+export class TraverserPosition {
   static defaultEvaluationHierarchyKey = {
     propagation: schemeReference.evaluationOption.propagation.continue,
     aggregation: schemeReference.evaluationOption.aggregation.include,
@@ -35,7 +35,7 @@ export class Traverser {
   static entrypointNodeArray = [schemeReference.nodeLabel.reroute, schemeReference.nodeLabel.stage]
   // get the type of current node labels which is considered an entrypoint
   static getEntrypointNodeType({ node }) {
-    for (let nodeLabel of Traverser.entrypointNodeArray) if (node.labels.includes(nodeLabel)) return nodeLabel
+    for (let nodeLabel of TraverserPosition.entrypointNodeArray) if (node.labels.includes(nodeLabel)) return nodeLabel
     // if no label is permitted as an entrypoint type:
     throw new Error(`• Unsupported entrypoint node type for traversal function - ${node.labels}`)
   }
@@ -109,7 +109,7 @@ export class Traverser {
     let nodeImplementationKey = implementationKey ? { [nodeLabel]: implementationKey } : undefined
     // TODO: use the same rule for node implementation properies for non entrypoints as well (e.g. Process, Port, etc.), when multiple types are used for the current node. OR reconsider and use a different way to configure type of a node with multiple labels.
     let calculatedImplementationKey = this.getTraversalImplementationKey({ key: nodeLabel, nodeImplementationKey })
-    return Traverser.entrypointNodeImplementation[nodeLabel][calculatedImplementationKey]
+    return TraverserPosition.entrypointNodeImplementation[nodeLabel][calculatedImplementationKey]
   }
 
   getAllImplementation() {
@@ -153,7 +153,7 @@ export class Traverser {
     let implementationKey = Object.assign(
       {},
       // * 6. default values specified in the function scope.
-      Traverser.defaultTraversalImplementationKey,
+      TraverserPosition.defaultTraversalImplementationKey,
       // * 5. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
       this.traversalImplementationHierarchy.context,
       // * 4. parent parameters
@@ -169,7 +169,7 @@ export class Traverser {
   }
 
   calculateEvaluationHierarchy() {
-    this.evaluation = Object.assign({}, Traverser.defaultEvaluationHierarchyKey, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
+    this.evaluation = Object.assign({}, TraverserPosition.defaultEvaluationHierarchyKey, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
     return this.evaluation
   }
   /**

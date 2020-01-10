@@ -4,7 +4,7 @@ import { proxifyMethodDecorator } from '../../utility/proxifyMethodDecorator.js'
 import { removeUndefinedFromObject } from '../../utility/removeUndefinedFromObject.js'
 import * as Context from '../Context.class.js'
 import * as Traversal from '../Traversal.class.js' // traversal implementation management
-import { Traverser } from './Traverser.class.js'
+import { TraverserPosition } from './TraverserPosition.class.js'
 
 // Each exported property ends up as the prototype property of the class.
 export * from './method/stageNode.js'
@@ -68,7 +68,7 @@ export const { traverse } = {
       ;['nodeKey', 'nodeID'].forEach(property => delete argumentsList[0][property]) // remove node related identifiers.
     }
     // Verify entrypoint, and mark the label being used as entrypoint node type (as multiple entrypoint node types could be registered on the same node)
-    nodeInstance.entrypointNodeType = Traverser.getEntrypointNodeType({ node: nodeInstance })
+    nodeInstance.entrypointNodeType = TraverserPosition.getEntrypointNodeType({ node: nodeInstance })
 
     argumentsList[0].nodeInstance ||= nodeInstance // set node data
     return Reflect.apply(target, thisArg, argumentsList)
@@ -91,7 +91,7 @@ export const { traverse } = {
 
     {
       // each call creates new traverser with calculation of traversal implementation hierarchy  and position evaluation for the current node
-      traverser ||= new Traverser({
+      traverser ||= new TraverserPosition({
         graph: this,
         node: nodeInstance,
         parentTraverser,
