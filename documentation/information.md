@@ -66,6 +66,7 @@ Different applications may use this module:
 # Graph Concepts: 
 - **Graph** _(Node Relationship Graph / Nested Unit Tree)_ - can represent any collection of objects having some kind of pairwise relationship (conveying of relational information). Many realworld systems and problems can be modeled using a graph.
 - Programming concepts implemented in the graph: 
+    The graph traversal chain (a single recursive traversal call) could traverse nodes in an independent way, where each node traversal awaits only it's own nested and siblings traversals, or it could be executed in a manner where each node can control the entire chain iterator and await any other node, even if it is not nested or part of the same port group of nodes.
     - Command execution in sequence and in parallel.
     - Conditionals - logical operations: 
         - Switch multiple cases

@@ -132,9 +132,10 @@ export async function traverseIterationRecursiveCallback({ traversalIterator, ad
   // first call is used to initialize the function (using non-standard function.sent)
   let nextYielded = await traversalIterator.next({ eventEmitterCallback: (...args) => traverser.eventEmitter.emit('nodeTraversalCompleted', ...args) })
   // call traverse for each node
-  // TODO: Pass next function to control traversal initiation of next sibling node inline.
   while (!nextYielded.done) {
-    // TODO:
+    /* TODO: Missing ability to await next node in chain traversal P- e.g. Pass next function to control traversal initiation of next node in line
+      Use generator function to stop traversal function and signal to the control code to await specific group of node iterators. This will keep the control of iteration in the originating port controller/function, instead of iterating from within many other nodes (which will be hard to debug).
+    */
     // let traversalInvocation = function() {}
     // pass Iterator
     // from within next - call iterator.next & traverse
