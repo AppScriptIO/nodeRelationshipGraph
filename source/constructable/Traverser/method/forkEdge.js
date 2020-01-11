@@ -7,8 +7,8 @@ import assert from 'assert'
  * OR
  * @return {undefined} in case no forks.
  **/
-export async function* forkEdge({ stageNode, additionalChildNode, getImplementation, graph = this }) {
-  const { forkArray } = await graph.databaseWrapper.getFork({ concreteDatabase: graph.database, nodeID: stageNode.identity })
+export async function* forkEdge({ stageNode, additionalChildNode, getImplementation }) {
+  const { forkArray } = await this.graph.database::this.graph.database.getFork({ nodeID: stageNode.identity })
   if (forkArray.length == 0) return
   // Bulk actions on forks - sort forks
   forkArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order || isNaN(former.connection.properties.order) - isNaN(latter.connection.properties.order)) // using `order` property

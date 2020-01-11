@@ -1,10 +1,10 @@
-import { isSelfEdge } from '../dataModel/concreteDatabaseWrapper.js'
 import assert from 'assert'
+import { isSelfEdge } from '../../../../dataModel/concreteDatabaseWrapper.js'
 
 // TODO: Move other node instruction outside of node type functions, to make a more modular instruction functions.
 
-export async function resolveValue({ targetNode, graph, traverseCallContext, allowSelfEdge = false }) {
-  const value = await graph.databaseWrapper.getValueElement({ concreteDatabase: graph.database, nodeID: targetNode.identity })
+export async function resolveValue({ targetNode, traverseCallContext, allowSelfEdge = false, traverser = this }) {
+  const value = await traverser.graph.database::traverser.graph.database.getValueElement({ nodeID: targetNode.identity })
   if (!value) return
 
   let resolvedValue
@@ -13,7 +13,7 @@ export async function resolveValue({ targetNode, graph, traverseCallContext, all
     // TODO: consider using "SUBGRAPH" edge to connect the 2 subgraphs - main graph (e.g. Middleware) with Condition graph.
     case 'conditionSubgraph':
       if (!allowSelfEdge) assert(!isSelfEdge(value), `• Self-edge for VALUE connection with "conditionSubgraph" implementation, currently not supported, as it causes infinite loop.`) // TODO: deal with circular traversal for this type.
-      resolvedValue = await graph.traverserInstruction.valueResolution.conditionSubgraphValueResolution({ value, graph, traverseCallContext })
+      resolvedValue = await traverser::traverser.traverserInstruction.valueResolution.conditionSubgraphValueResolution({ value, traverseCallContext })
       break
     case 'properties':
       resolvedValue = value.source.properties
@@ -41,11 +41,11 @@ export async function resolveValue({ targetNode, graph, traverseCallContext, all
  * @return {Node Object} - a node object containing data.
  The condition subgraph returns a boolean value.
  */
-export async function conditionSubgraphValueResolution({ value, graph, traverseCallContext }) {
+export async function conditionSubgraphValueResolution({ value, traverseCallContext, traverser = this }) {
   let resolvedValue
   // Run reference node in a separate traversal recursive scopes, and return result.
   // traverse the destination and extract node from the result value.
-  let resultValueArray = await graph.traverse(
+  let resultValueArray = await traverser::traverser.traverse(
     /* TODO: Note: this is a quick implementation because digging into the core code is time consuming, the different concepts used in here could be improved and built upon other already existing concepts: 
            TODO: create an instance graph from the current graph, to allow passing additional context parametrs.
                • 'traversalCallContext' - the 2nd provided argument could be instead applied as a regular Context specific for the call, by creating a new graph chain with it's unique context, in addition to the already existing context instance.

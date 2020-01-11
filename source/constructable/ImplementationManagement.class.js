@@ -57,9 +57,9 @@ Class::Class[$.prototypeDelegation.getter](Entity.$.key.stateInstance).instanceP
 
 Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInstance).instancePrototype
   |> (prototype => {
-    prototype::Class[Entity.$.initialize.setter]({
+    prototype::prototype[Entity.$.initialize.setter]({
       /* Each concerete behavior can hold multiple implementations that can be used depending on requested parameters during execution. */
-      [Entity.$.key.handleDataInstance]: function*({ targetInstance, callerClass = this }, { implementationList, defaultImplementation } /** `data` parameter used to merge data to instance */) {
+      [Entity.$.key.concereteBehavior]: function*({ targetInstance, callerClass = this }, { implementationList, defaultImplementation } /** `data` parameter used to merge data to instance */) {
         // super implementation should take care of setting the constructableDelegationSetting
         let { superCallback } = function.sent
         if (superCallback) targetInstance = callerClass::superCallback(...arguments) // call implementation higher in the hierarchy.

@@ -41,7 +41,7 @@ export class TraverserPosition {
   }
 
   node
-  graph
+  traverser
   aggregator
   traversalImplementationHierarchy = {}
   evaluationHierarchy = {} // evaluation object that contains configuration relating to traverser action on the current position
@@ -53,25 +53,25 @@ export class TraverserPosition {
 
   constructor({
     node,
-    graph,
+    traverser,
     depth = 0, // <type Number> level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
     path = null, // path to the current traversal.  // TODO: implement path sequence preservation. allow for the node traverse function to rely on the current path data.
     /* supported events: 'nodeTraversalCompleted' */
     eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
-    parentTraverser,
+    parentTraverserPosition,
   }) {
     this.node = node
-    this.graph = graph
-    this.path = parentTraverser ? parentTraverser.path : path
-    this.depth = parentTraverser ? parentTraverser.depth + 1 : depth // increase traversal depth
+    this.traverser = traverser
+    this.path = parentTraverserPosition ? parentTraverserPosition.path : path
+    this.depth = parentTraverserPosition ? parentTraverserPosition.depth + 1 : depth // increase traversal depth
     this.eventEmitter = eventEmitter
 
     this.traversalImplementationHierarchy = {
       // Context instance parameter
-      context: graph.context?.implementationKey || {} |> removeUndefinedFromObject,
+      context: this.traverser.context?.implementationKey || {} |> removeUndefinedFromObject,
       // parent arguments
       // TODO: deal with depth property configuration effect in nested nodes.
-      parent: parentTraverser ? parentTraverser.getTraversalImplementationKey() || {} : {},
+      parent: parentTraverserPosition ? parentTraverserPosition.getTraversalImplementationKey() || {} : {},
     }
     this.evaluationHierarchy = {}
 
@@ -115,10 +115,10 @@ export class TraverserPosition {
   getAllImplementation() {
     let implementationKey = this.getTraversalImplementationKey()
     let implementation = {
-      processNode: this.graph.traversal.processNode[implementationKey.processNode],
-      portNode: this.graph.traversal.portNode[implementationKey.portNode],
-      traversalInterception: this.graph.traversal.traversalInterception[implementationKey.traversalInterception],
-      aggregator: this.graph.traversal.aggregator[implementationKey.aggregator],
+      processNode: this.traverser.graph.traversal.processNode[implementationKey.processNode],
+      portNode: this.traverser.graph.traversal.portNode[implementationKey.portNode],
+      traversalInterception: this.traverser.graph.traversal.traversalInterception[implementationKey.traversalInterception],
+      aggregator: this.traverser.graph.traversal.aggregator[implementationKey.aggregator],
     }
     Object.entries(implementation).forEach(([key, value]) => {
       assert(
@@ -133,7 +133,7 @@ export class TraverserPosition {
     let getTraversalImplementationKey = this.getTraversalImplementationKey
     return ({ nodeImplementationKey } = {}) => {
       let implementationKey = this.getTraversalImplementationKey({ key: key, nodeImplementationKey })
-      let implementation = this.graph.traversal[key][implementationKey]
+      let implementation = this.traverser.graph.traversal[key][implementationKey]
       assert(implementation, `• 'implementation' concerete function must be registered, the implementationKey "${implementationKey}" provided doesn't match any of the registered implementaions.`)
       return implementation
     }

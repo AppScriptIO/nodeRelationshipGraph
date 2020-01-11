@@ -28,13 +28,13 @@ export const { stageNode } = {
   async stageNode(
     {
       graph = this,
-      traverser,
+      traverserPosition,
       additionalChildNode = [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
     } = {},
     { traverseCallContext = {} } = {},
   ) {
-    const { node } = traverser
-    let { implementation } = traverser.calculateConfig({ graph })
+    const { node } = traverserPosition
+    let { implementation } = traverserPosition.calculateConfig({ graph })
 
     let traversalInterceptionImplementation = implementation.traversalInterception || (targetFunction => new Proxy(targetFunction, {})) // in case no implementation exists for intercepting traversal, use an empty proxy.
 
@@ -45,7 +45,7 @@ export const { stageNode } = {
     let groupIterator = graph::graph.forkEdge({
       stageNode: node,
       getImplementation: implementationKey =>
-        traverser.getImplementationCallback({ key: 'portNode', graph })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
+        traverserPosition.getImplementationCallback({ key: 'portNode', graph })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
       additionalChildNode,
     })
 
@@ -56,7 +56,7 @@ export const { stageNode } = {
           stageNode: node,
           nextProcessData,
           getImplementation: implementationKey =>
-            traverser.getImplementationCallback({ key: 'processNode', graph })({
+            traverserPosition.getImplementationCallback({ key: 'processNode', graph })({
               nodeImplementationKey: implementationKey ? { processNode: implementationKey } : undefined,
             }),
         },
@@ -67,7 +67,7 @@ export const { stageNode } = {
     let proxifiedRecursiveIteration = graph::graph.traverseGroupIterationRecursiveCall |> graph::traversalInterceptionImplementation
     let result = await proxifiedRecursiveIteration({
       groupIterator,
-      traverser,
+      traverserPosition,
       processDataCallback,
       additionalChildNode,
       traverseCallContext,

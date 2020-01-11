@@ -4,8 +4,8 @@ import * as schemeReference from '../../../dataModel/graphSchemeReference.js'
  * Reroute node is an entrypoint node that the graph traversal can be started from.
  */
 
-export async function returnReference({ traverser, additionalChildNode, graph = this }, { traverseCallContext }) {
-  const { node } = traverser
+export async function returnReference({ traverserPosition, additionalChildNode, graph = this }, { traverseCallContext }) {
+  const { node } = traverserPosition
   let referencedNode = await graph.traverserInstruction.referenceResolution.resolveReference({ targetNode: node, graph, traverseCallContext })
   if (referencedNode)
     // if the reference node is a reroute itself, traverse it recursively
@@ -26,8 +26,8 @@ export async function returnReference({ traverser, additionalChildNode, graph = 
 }
 
 // TODO: provide a way to mark subgraph templates, to distinguish them from other reroute nodes in the traverser.graph.
-export async function traverseReference({ traverser, additionalChildNode, graph = this }, { traverseCallContext }) {
-  const { node } = traverser
+export async function traverseReference({ traverserPosition, additionalChildNode, graph = this }, { traverseCallContext }) {
+  const { node } = traverserPosition
   // get referencedNode and handle extended node.
   let referencedNode
   const { extend, insertArray } = await graph.databaseWrapper.getRerouteTraverseReferenceElement({ concreteDatabase: graph.database, nodeID: node.identity })
@@ -52,8 +52,8 @@ export async function traverseReference({ traverser, additionalChildNode, graph 
   additionalChildNode = [...(additionalChildNode || []), ...insertAdditionalNode]
 
   // set additional parameters
-  traverser.node = referencedNode // referencedNode will be used as entrypoint to traversal call
-  arguments[0].traverser = traverser
+  traverserPosition.node = referencedNode // referencedNode will be used as entrypoint to traversal call
+  arguments[0].traverserPosition = traverserPosition
   arguments[0].additionalChildNode = additionalChildNode
   // traverse reference node in the same traversal recursive scopes.
   return await graph::graph.traverse(...arguments)
