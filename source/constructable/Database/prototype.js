@@ -8,7 +8,7 @@ export function isSelfEdge(edge) {
 }
 
 export async function getResource({ nodeID }) {
-  let resourceArray = await this::this.getNodeConnection({ direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.resource })
+  let resourceArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.resource })
   assert(
     resourceArray.every(n => schemeReference.resourceProperty.context.includes(n.connection.properties.context)),
     `• Unsupported property value for a RESOURCE connection.`,
@@ -17,12 +17,12 @@ export async function getResource({ nodeID }) {
 }
 
 export async function getValue({ nodeID }) {
-  let valueArray = await this::this.getNodeConnection({ direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.value })
+  let valueArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.value })
   return { valueArray: valueArray }
 }
 
 export async function getExecution({ nodeID }) {
-  let executeArray = await this::this.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.execute })
+  let executeArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.execute })
   assert(
     executeArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.process)),
     `• Unsupported node type for a EXECUTE connection.`,
@@ -31,7 +31,7 @@ export async function getExecution({ nodeID }) {
 }
 
 export async function getPipe({ nodeID }) {
-  let pipeArray = await this::this.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.pipe })
+  let pipeArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.pipe })
   assert(
     pipeArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.process)),
     `• Unsupported node type for a PIPE connection.`,
@@ -40,7 +40,7 @@ export async function getPipe({ nodeID }) {
 }
 
 export async function getFork({ nodeID }) {
-  let forkArray = await this::this.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.fork })
+  let forkArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.fork })
   assert(
     forkArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.port)),
     `• Unsupported property value for a FORK connection.`,
@@ -49,7 +49,7 @@ export async function getFork({ nodeID }) {
 }
 
 export async function getNext({ nodeID }) {
-  let nextArray = await this::this.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.next })
+  let nextArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.next })
   assert(
     nextArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.stage) || n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
     `• Unsupported property value for a NEXT connection.`,
@@ -58,7 +58,7 @@ export async function getNext({ nodeID }) {
 }
 
 export async function getConfigure({ nodeID }) {
-  let configureArray = await this::this.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.configure })
+  let configureArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.configure })
   assert(
     configureArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.configuration) || n.source.labels.includes(schemeReference.nodeLabel.reroute)),
     `• Unsupported node type for a CONFIGURE connection.`,
@@ -72,25 +72,25 @@ export async function getConfigure({ nodeID }) {
 }
 
 export async function getCase({ nodeID }) {
-  let caseArray = await this::this.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.case })
+  let caseArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.case })
   // Note: node type could be any node
   return { caseArray }
 }
 
 export async function getSelect({ nodeID }) {
-  let selectArray = await this::this.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.select })
+  let selectArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.select })
   // Note: node type could be any node
   return { selectArray }
 }
 
 export async function getFallback({ nodeID }) {
-  let fallbackArray = await this::this.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.fallback })
+  let fallbackArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.fallback })
   // Note: node type could be any node
   return { fallbackArray }
 }
 
 export async function getReference({ nodeID }) {
-  let referenceArray = await this::this.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.reference })
+  let referenceArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.reference })
   // TODO: use entrypoint array from TraversalConfig class.
   assert(
     referenceArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.stage) || n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
@@ -100,7 +100,7 @@ export async function getReference({ nodeID }) {
 }
 
 export async function getExtend({ nodeID }) {
-  let extendArray = await this::this.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.extend })
+  let extendArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.extend })
   assert(
     extendArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
     `• Unsupported node type for a EXTEND connection.`,
@@ -109,7 +109,7 @@ export async function getExtend({ nodeID }) {
 }
 
 export async function getInsert({ nodeID }) {
-  let insertArray = await this::this.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.insert })
+  let insertArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.insert })
   assert(
     insertArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.stage)),
     `• Unsupported node type for a INSERT connection.`,
@@ -118,7 +118,7 @@ export async function getInsert({ nodeID }) {
 }
 
 export async function getSubgraph({ nodeID }) {
-  let subgraphArray = await this::this.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.subgraph })
+  let subgraphArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.subgraph })
   assert(
     subgraphArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.stage) || n.source.labels.includes(schemeReference.nodeLabel.reroute)),
     `• Unsupported node type for a SUBGRAPH connection.`,
@@ -136,8 +136,8 @@ export async function getSubgraph({ nodeID }) {
 */
 
 export async function getRerouteTraverseReferenceElement({ nodeID }) {
-  const { extendArray } = await this::this.getExtend({ nodeID })
-  const { insertArray } = await this::this.getInsert({ nodeID })
+  const { extendArray } = await this.getExtend({ nodeID })
+  const { insertArray } = await this.getInsert({ nodeID })
 
   if (extendArray.length > 1) throw new Error(`• Multiple extend relationships are not supported for Reroute node.`)
 
@@ -145,7 +145,7 @@ export async function getRerouteTraverseReferenceElement({ nodeID }) {
 }
 
 export async function getReferenceResolutionElement({ nodeID }) {
-  const { referenceArray } = await this::this.getReference({ nodeID })
+  const { referenceArray } = await this.getReference({ nodeID })
 
   if (referenceArray.length > 1) throw new Error(`• Multiple reference relationships are not supported for Reroute node.`)
 
@@ -153,8 +153,8 @@ export async function getReferenceResolutionElement({ nodeID }) {
 }
 
 export async function getSelectionElement({ nodeID }) {
-  const { selectArray } = await this::this.getSelect({ nodeID })
-  const { fallbackArray } = await this::this.getFallback({ nodeID })
+  const { selectArray } = await this.getSelect({ nodeID })
+  const { fallbackArray } = await this.getFallback({ nodeID })
 
   if (fallbackArray.length > 1) throw new Error(`• Multiple "fallback" relationships are not supported for Selection/Switch node.`)
 
@@ -162,7 +162,7 @@ export async function getSelectionElement({ nodeID }) {
 }
 
 export async function getConditionSwitchElement({ nodeID }) {
-  const { caseArray } = await this::this.getCase({ nodeID })
+  const { caseArray } = await this.getCase({ nodeID })
 
   return { caseArray: caseArray.length > 0 ? caseArray : null }
 }
@@ -171,7 +171,7 @@ export async function getConditionSwitchElement({ nodeID }) {
 export async function getValueElement({ nodeID }) {
   // get VALUE connection
   let value
-  const { valueArray } = await this::this.getValue({ nodeID })
+  const { valueArray } = await this.getValue({ nodeID })
   if (valueArray.length > 1) throw new Error(`• Multiple VALUE relationships are not supported for Process node.`)
   else if (valueArray.length != 0 && valueArray[0]) return valueArray[0]
 }

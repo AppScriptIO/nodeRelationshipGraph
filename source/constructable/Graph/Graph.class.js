@@ -1,10 +1,9 @@
 import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
 import { Entity, Constructable } from '@dependency/entity'
-import * as Traversal from '../Traversal.class.js'
-import * as Database from '../Database.class.js'
+import * as Traverser from '../Traverser'
+import * as Database from '../Database'
 import * as Context from '../Context.class.js'
 import * as ImplementationManagement from '../ImplementationManagement.class.js'
-
 import * as implementation from '@dependency/graphTraversal-implementation'
 
 /** Conceptual Graph - encapsulates different elements of used to work with a graph.
@@ -50,53 +49,56 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
         {
           // Concerete behaviors / implementaions
           // cache,
-          database, // database concrete behavior
-          traversal, // traversal concrete behavior
+          database = new Database.clientInterface({
+            implementationList: {
+              boltCypher: implementation.database.boltCypherModelAdapterFunction,
+            },
+            defaultImplementation: 'boltCypher',
+          }), // database concrete behavior
+          configuredTraverser, // configured traverser function that produces traversal concrete behavior
           // additional behaviors
           concreteBehaviorList = [],
-          data, // data to be merged into the instance (i.e. graphInstance.propety)
           callerClass = this,
           mode = 'applicationInMemory' || 'databaseInMemory',
         }: {
           cache: Cache,
           database: Database,
-          traversal: Traversal,
+          configuredTraverser: configuredTraverser,
           concreteBehaviorList: List,
         } = {},
       ) {
-        database ||= new Database.clientInterface({
-          implementationList: {
-            boltCypher: implementation.database.boltCypherModelAdapterFunction,
-          },
-          defaultImplementation: 'boltCypher',
-        })
-
-        traversal ||= new Traversal.clientInterface({
-          implementationList: {
-            default: {
-              traversalInterception: implementation.traversal.traversalInterception, // Stage
-              aggregator: implementation.traversal.aggregator,
-              processNode: implementation.traversal.processNode, // Process
-              portNode: implementation.traversal.portNode, // Port
-            },
-          },
-          defaultImplementation: 'default',
-        })
-
         let instance = callerClass::callerClass[Entity.$.constructor.switch](Entity.$.key.concereteBehavior)(
           {}, // options
           {
-            concreteBehaviorList: [...concreteBehaviorList, database, traversal],
+            concreteBehaviorList: [...concreteBehaviorList, database],
           },
         )
 
         // expose functionality for direct simplified access:
+        instance.database = database
 
-        let concereteDatabase = instance[Entity.$.getInstanceOf](Database.class)
-        instance.database = concereteDatabase[Database.$.key.getter]()
+        // retrieve database instances in the target instance hierarchy chain
+        // let concereteDatabase = instance[Entity.$.getInstanceOf](Database.class)
+        // let resolvedDatabaseImplementation = concereteDatabase[Database.$.key.getter]()
 
-        let concreteTraversal = instance[Entity.$.getInstanceOf](Traversal.class)
-        instance.traversal = concreteTraversal[ImplementationManagement.$.key.getter]()
+        configuredTraverser ||= configuredTraverser.clientInterface({
+          parameter: [
+            {
+              implementationList: {
+                default: {
+                  traversalInterception: implementation.traversal.traversalInterception, // Stage
+                  aggregator: implementation.traversal.aggregator,
+                  processNode: implementation.traversal.processNode, // Process
+                  portNode: implementation.traversal.portNode, // Port
+                },
+              },
+              defaultImplementation: 'default',
+            },
+          ],
+        })
+
+        // provide graph instance to the configured Traverser instances and expose configured Traverser
+        instance.configuredTraverser = configuredTraverser.clientInterface({ parameter: [{ graph: instance }] })
 
         /*
         - Retrieve all context instances in the delegation chain.
@@ -104,8 +106,10 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
         Note: Assums that prototype chain of the graph instance will not be changed after creation of the instance. Which will make algotrithm lighter and simplified, and prevent repeated lookups.
         */
         let instanceList = instance[Entity.$.getInstanceOf](Context.class, { recursive: true })
-        let { proxy } = new MultipleDelegation(instanceList) // create a proxy to for looking up properties of all context instances
-        instance.context = proxy
+        if (instanceList.length > 0) {
+          let { proxy } = new MultipleDelegation(instanceList) // create a proxy to for looking up properties of all context instances
+          instance.context = proxy
+        }
 
         return instance
       },

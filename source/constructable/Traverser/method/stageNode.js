@@ -27,14 +27,13 @@ export const { stageNode } = {
   */
   async stageNode(
     {
-      graph = this,
       traverserPosition,
       additionalChildNode = [], // child nodes to add to the current node's children. These are added indirectly to a node without changing the node's children itself, as a way to extend current nodes.
     } = {},
     { traverseCallContext = {} } = {},
   ) {
     const { node } = traverserPosition
-    let { implementation } = traverserPosition.calculateConfig({ graph })
+    let { implementation } = traverserPosition.calculateConfig()
 
     let traversalInterceptionImplementation = implementation.traversalInterception || (targetFunction => new Proxy(targetFunction, {})) // in case no implementation exists for intercepting traversal, use an empty proxy.
 
@@ -42,21 +41,21 @@ export const { stageNode } = {
      * FORK edge - traverse stage node to other next nodes through the port nodes.
      * @return {iterator} providing node parameters for recursive traversal calls.
      */
-    let groupIterator = graph::graph.forkEdge({
+    let groupIterator = this::this.forkEdge({
       stageNode: node,
       getImplementation: implementationKey =>
-        traverserPosition.getImplementationCallback({ key: 'portNode', graph })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
+        traverserPosition.getImplementationCallback({ key: 'portNode' })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
       additionalChildNode,
     })
 
     // EXECUTE edge
     const processDataCallback = ({ nextProcessData, additionalParameter }) =>
-      graph::graph.executeEdge(
+      this::this.executeEdge(
         {
           stageNode: node,
           nextProcessData,
           getImplementation: implementationKey =>
-            traverserPosition.getImplementationCallback({ key: 'processNode', graph })({
+            traverserPosition.getImplementationCallback({ key: 'processNode' })({
               nodeImplementationKey: implementationKey ? { processNode: implementationKey } : undefined,
             }),
         },
@@ -64,7 +63,7 @@ export const { stageNode } = {
       )
 
     // intercept and return result (Stage interception)
-    let proxifiedRecursiveIteration = graph::graph.traverseGroupIterationRecursiveCall |> graph::traversalInterceptionImplementation
+    let proxifiedRecursiveIteration = this::this.traverseGroupIterationRecursiveCall |> this::traversalInterceptionImplementation
     let result = await proxifiedRecursiveIteration({
       groupIterator,
       traverserPosition,

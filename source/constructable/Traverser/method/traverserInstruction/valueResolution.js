@@ -1,5 +1,4 @@
 import assert from 'assert'
-import { isSelfEdge } from '../../../../dataModel/concreteDatabaseWrapper.js'
 
 // TODO: Move other node instruction outside of node type functions, to make a more modular instruction functions.
 
@@ -12,7 +11,8 @@ export async function resolveValue({ targetNode, traverseCallContext, allowSelfE
   switch (value.connection.properties.implementation) {
     // TODO: consider using "SUBGRAPH" edge to connect the 2 subgraphs - main graph (e.g. Middleware) with Condition graph.
     case 'conditionSubgraph':
-      if (!allowSelfEdge) assert(!isSelfEdge(value), `• Self-edge for VALUE connection with "conditionSubgraph" implementation, currently not supported, as it causes infinite loop.`) // TODO: deal with circular traversal for this type.
+      if (!allowSelfEdge)
+        assert(!traverser.graph.database.isSelfEdge(value), `• Self-edge for VALUE connection with "conditionSubgraph" implementation, currently not supported, as it causes infinite loop.`) // TODO: deal with circular traversal for this type.
       resolvedValue = await traverser::traverser.traverserInstruction.valueResolution.conditionSubgraphValueResolution({ value, traverseCallContext })
       break
     case 'properties':

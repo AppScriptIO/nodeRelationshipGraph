@@ -29,28 +29,20 @@ Class::Class[$.prototypeDelegation.getter](Entity.$.key.stateInstance).instanceP
 Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInstance).instancePrototype
   |> (prototype => {
     prototype::Class[Entity.$.initialize.setter]({
-      [Entity.$.key.concreteBehaviorList]: function*({ targetInstance, callerClass = this }, { entrypointNode }) {
+      [Entity.$.key.handleDataInstance]: function*({ targetInstance, callerClass = this }, { graph }) {
         // super implementation should take care of setting the constructableDelegationSetting
         let { superCallback } = function.sent
         if (superCallback) targetInstance = callerClass::superCallback(...arguments) // call implementation higher in the hierarchy.
 
-        /*
-        - Retrieve all context instances in the delegation chain.
-        - Provide interface for accessing properties from these context instances.
-        Note: Assums that prototype chain of the graph instance will not be changed after creation of the instance. Which will make algotrithm lighter and simplified, and prevent repeated lookups.
-        */
-        let instanceList = targetInstance[Entity.$.getInstanceOf](Context.class, { recursive: true })
-        let { proxy } = new MultipleDelegation(instanceList) // create a proxy to for looking up properties of all context instances
-        targetInstance.context = proxy
-
-        targetInstance.entrypointNode = entrypointNode
         targetInstance.traversedNodeList = [] // track traversed nodes.
+        targetInstance.graph = graph
+        assert(targetInstance.graph, `• A graph instance must be passed to the Traverser class instances.`)
 
         return targetInstance
       },
     })
   })
 
-const clientInterface = Class::Class[Entity.$.clientInterface.switch](Entity.$.key.stateInstance)({ constructorImplementation: Entity.$.key.concereteBehavior })
+const clientInterface = Class::Class[Entity.$.clientInterface.switch](Entity.$.key.stateInstance)({ constructorImplementation: Entity.$.key.stateInstance })
 
 export { Class as class, $, clientInterface }

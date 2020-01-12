@@ -23,9 +23,9 @@ export const { traverse } = {
     // create node instance, in case string key is passed as parameter.
     let { nodeInstance /* type Node */, nodeKey, nodeID, traverserPosition } = argumentsList[0]
     if (!nodeInstance) {
-      if (nodeKey) nodeInstance = await thisArg.graph.database::thisArg.graph.database.getNodeByKey({ key: nodeKey })
+      if (nodeKey) nodeInstance = await thisArg.graph.database::thisArg.graph.database.implementation.getNodeByKey({ key: nodeKey })
       // retrieve node data on-demand
-      else if (nodeID) nodeInstance = await thisArg.graph.database::thisArg.graph.database.getNodeByID({ id: nodeID })
+      else if (nodeID) nodeInstance = await thisArg.graph.database::thisArg.graph.database.implementation.getNodeByID({ id: nodeID })
       // in case an already initiated traverser instance is passed.
       else if (traverserPosition) nodeInstance = traverserPosition.node
       // retrieve node data on-demand
@@ -54,7 +54,7 @@ export const { traverse } = {
     {
       // each call creates new traverser with calculation of traversal implementation hierarchy  and position evaluation for the current node
       traverserPosition ||= new TraverserPosition({
-        traverser,
+        traverser: this,
         node: nodeInstance,
         parentTraverserPosition,
       })

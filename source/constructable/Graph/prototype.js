@@ -6,14 +6,14 @@ export * as schemeReference from '../../dataModel/graphSchemeReference.js'
 export async function load({ graphData } = {}) {
   // load json graph data.
   assert(graphData.node && graphData.edge, `• Graph data object must contain node & edge arrays.`)
-  return await this.database.loadGraphData({ nodeEntryData: graphData.node, connectionEntryData: graphData.edge })
+  return await this.database.implementation.loadGraphData({ nodeEntryData: graphData.node, connectionEntryData: graphData.edge })
 }
 
 export async function print({} = {}) {
   console.log(`______ Graph elements: ____________________`)
   let count = await this.count()
-  let allNode = await this.database.getAllNode()
-  let allEdge = await this.database.getAllEdge()
+  let allNode = await this.database.implementation.getAllNode()
+  let allEdge = await this.database.implementation.getAllEdge()
   console.log(`#Vertex = ${count.node}`)
   for (let node of allNode) {
     console.log(node.identity)
@@ -28,14 +28,14 @@ export async function print({} = {}) {
 export async function count({} = {}) {
   // count number of cached elements
   return {
-    node: await this.database.countNode(),
-    connection: await this.database.countEdge(),
+    node: await this.database.implementation.countNode(),
+    connection: await this.database.implementation.countEdge(),
   }
 }
 
-export async function traverse() {
-  let T = new Traverser({ graph: this })
-  T.traverse(...arguments)
-  T.statistics()
-  return T.result()
+export async function traverse({ configuredTraverser = this.configuredTraverser } = {}) {
+  let traverser = new configuredTraverser.clientInterface()
+  return traverser.traverse(...arguments)
+  // traverser.statistics()
+  // return traverser.result()
 }

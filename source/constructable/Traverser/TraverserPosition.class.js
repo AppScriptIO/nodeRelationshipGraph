@@ -115,10 +115,10 @@ export class TraverserPosition {
   getAllImplementation() {
     let implementationKey = this.getTraversalImplementationKey()
     let implementation = {
-      processNode: this.traverser.graph.traversal.processNode[implementationKey.processNode],
-      portNode: this.traverser.graph.traversal.portNode[implementationKey.portNode],
-      traversalInterception: this.traverser.graph.traversal.traversalInterception[implementationKey.traversalInterception],
-      aggregator: this.traverser.graph.traversal.aggregator[implementationKey.aggregator],
+      processNode: this.traverser.implementation.processNode[implementationKey.processNode],
+      portNode: this.traverser.implementation.portNode[implementationKey.portNode],
+      traversalInterception: this.traverser.implementation.traversalInterception[implementationKey.traversalInterception],
+      aggregator: this.traverser.implementation.aggregator[implementationKey.aggregator],
     }
     Object.entries(implementation).forEach(([key, value]) => {
       assert(
@@ -130,10 +130,9 @@ export class TraverserPosition {
   }
 
   getImplementationCallback({ key }) {
-    let getTraversalImplementationKey = this.getTraversalImplementationKey
     return ({ nodeImplementationKey } = {}) => {
       let implementationKey = this.getTraversalImplementationKey({ key: key, nodeImplementationKey })
-      let implementation = this.traverser.graph.traversal[key][implementationKey]
+      let implementation = this.traverser.implementation[key][implementationKey]
       assert(implementation, `• 'implementation' concerete function must be registered, the implementationKey "${implementationKey}" provided doesn't match any of the registered implementaions.`)
       return implementation
     }

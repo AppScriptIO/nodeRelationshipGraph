@@ -1,5 +1,4 @@
 import underscore from 'underscore'
-import { isSelfEdge } from '../../../../dataModel/concreteDatabaseWrapper.js'
 // Fallback node for unresolved reference reroute. This is an implicit node, that doesn't actually exist in the graph.
 const emptyStageNode = {
   identity: -1,
@@ -15,7 +14,7 @@ export async function resolveReference({ targetNode, traverseCallContext, traver
   if (!reference) return
 
   // prevent circular traversal, in case multiple types are used for the same node and the reference edge is self edge:
-  if (isSelfEdge(reference)) {
+  if (traverser.graph.database.isSelfEdge(reference)) {
     // workaround is to remove the Reroute type from the labels array. TODO: consider allowing a parameter that controls which entrypoint node implementations are ignored.
     let labelIndex = reference.destination.labels.indexOf(targetNode.entrypointNodeType)
     reference.destination.labels[labelIndex] += `-ignore` // ignore on next traversal (keep the entry for debugging purposes).
