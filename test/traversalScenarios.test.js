@@ -8,8 +8,8 @@ const boltProtocolDriver = require('neo4j-driver').v1
 
 import { Entity } from '@dependency/entity'
 import * as Graph from '../source/constructable/Graph'
-import * as Traversal from '../source/constructable/Traversal.class.js'
-import * as Database from '../source/constructable/Database.class.js'
+import * as Traverser from '../source/constructable/Traverser'
+import * as Database from '../source/constructable/Database'
 import * as Context from '../source/constructable/Context.class.js'
 import * as schemeReference from '../source/dataModel/graphSchemeReference.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
@@ -26,27 +26,6 @@ async function clearGraphData() {
   session.close()
 }
 
-let concreteDatabaseBehavior = new Database.clientInterface({
-  implementationList: {
-    redisModelAdapterFunction: implementation.database.redisModelAdapterFunction(),
-    simpleMemoryModelAdapter: implementation.database.simpleMemoryModelAdapterFunction(),
-    boltCypher: implementation.database.boltCypherModelAdapterFunction({ schemeReference }),
-  },
-  defaultImplementation: 'boltCypher',
-})
-
-let concreteGraphTraversalBehavior = new Traversal.clientInterface({
-  implementationList: {
-    default: {
-      portNode: implementation.traversal.portNode, // Port
-      traversalInterception: implementation.traversal.traversalInterception, // Stage
-      aggregator: implementation.traversal.aggregator,
-      processNode: implementation.traversal.processNode, // Process
-    },
-  },
-  defaultImplementation: 'default',
-})
-
 let contextInstance = new Context.clientInterface({
   implementationKey: {
     processNode: 'returnDataItemKey',
@@ -56,13 +35,38 @@ let contextInstance = new Context.clientInterface({
   },
 })
 
+let concreteDatabaseBehavior = new Database.clientInterface({
+  implementationList: {
+    redisModelAdapterFunction: implementation.database.redisModelAdapterFunction,
+    simpleMemoryModelAdapter: implementation.database.simpleMemoryModelAdapterFunction,
+    boltCypher: implementation.database.boltCypherModelAdapterFunction,
+  },
+  defaultImplementation: 'boltCypher',
+})
+
+let configuredTraverser = Traverser.clientInterface({
+  parameter: [
+    {
+      concreteBehaviorList: [contextInstance],
+      implementationList: {
+        default: {
+          portNode: implementation.traversal.portNode, // Port
+          traversalInterception: implementation.traversal.traversalInterception, // Stage
+          aggregator: implementation.traversal.aggregator,
+          processNode: implementation.traversal.processNode, // Process
+        },
+      },
+      defaultImplementation: 'default',
+    },
+  ],
+})
+
 let configuredGraph = Graph.clientInterface({
   parameter: [
     {
       database: concreteDatabaseBehavior,
-      traversal: concreteGraphTraversalBehavior,
-      concreteBehaviorList: [contextInstance],
-      data: {},
+      configuredTraverser: configuredTraverser,
+      concreteBehaviorList: [],
     },
   ],
 })
@@ -119,7 +123,9 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
         },
       })
 
-      let graph = new configuredGraph.clientInterface({ concreteBehaviorList: [contextInstance] })
+      let _configuredTraverser = configuredTraverser.clientInterface({ parameter: [{ concreteBehaviorList: [contextInstance] }] })
+
+      let graph = new configuredGraph.clientInterface({ configuredTraverser: _configuredTraverser })
 
       test('Should traverse graph successfully - during which a shell script executed', async () => {
         let result = await graph.traverse({ nodeKey: '28a486af-1c27-4183-8953-c40742a68ab0', implementationKey: {} })
@@ -163,7 +169,9 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
         },
       })
 
-      let graph = new configuredGraph.clientInterface({ concreteBehaviorList: [contextInstance] })
+      let _configuredTraverser = configuredTraverser.clientInterface({ parameter: [{ concreteBehaviorList: [contextInstance] }] })
+
+      let graph = new configuredGraph.clientInterface({ configuredTraverser: _configuredTraverser })
 
       test('Should traverse graph successfully and return a rendered template', async () => {
         let renderedDocument = await graph.traverse({
@@ -207,7 +215,9 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
           },
         })
 
-        let graph = new configuredGraph.clientInterface({ concreteBehaviorList: [contextInstance] })
+        let _configuredTraverser = configuredTraverser.clientInterface({ parameter: [{ concreteBehaviorList: [contextInstance] }] })
+
+        let graph = new configuredGraph.clientInterface({ configuredTraverser: _configuredTraverser })
 
         test('Should traverse graph successfully - during which middlewares are executed in chain with downstream and upstream execution.', async () => {
           let middlewareArray = await graph.traverse({
@@ -225,7 +235,7 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
           )
         })
       })
-      suite.only('branching (neighbour children) graph of middlewares (non-linear chain structure)', () => {
+      suite('branching (neighbour children) graph of middlewares (non-linear chain structure)', () => {
         const fixture = { middlewareExecutionOrder: ['middleware 1 BEFORE', 'middleware 2 BEFORE', 'middleware 3 BEFORE', 'middleware 3 AFTER', 'middleware 2 AFTER', 'middleware 1 AFTER'] }
         let middlewareExecutionOrder = []
         let contextInstance = new Context.clientInterface({
@@ -275,7 +285,8 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
             },
           },
         })
-        let graph = new configuredGraph.clientInterface({ concreteBehaviorList: [contextInstance] })
+        let _configuredTraverser = configuredTraverser.clientInterface({ parameter: [{ concreteBehaviorList: [contextInstance] }] })
+        let graph = new configuredGraph.clientInterface({ configuredTraverser: _configuredTraverser })
         test('Should traverse graph successfully - during which middlewares are executed in chain with downstream and upstream execution.', async () => {
           let middlewareArray = await graph.traverse({
             nodeKey: 'c12af985-225e-4d3d-adea-36a813d22077',
@@ -284,7 +295,6 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
               traversalInterception: 'handleMiddlewareNextCall',
             },
           })
-          console.log(middlewareExecutionOrder)
           chaiAssertion.deepEqual(middlewareExecutionOrder, fixture.middlewareExecutionOrder)
           assert(
             middlewareArray.every(item => typeof item == 'function'),

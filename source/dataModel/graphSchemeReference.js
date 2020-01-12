@@ -1,3 +1,5 @@
+/** Scheme Reference - shared by Traverser logic (Usually in validation) and Database graph. */
+
 export const nodeLabel = {
   stage: 'Stage',
   port: 'Port',

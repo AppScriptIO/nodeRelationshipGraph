@@ -1,5 +1,4 @@
 import underscore from 'underscore'
-import { isSelfEdge } from '../dataModel/concreteDatabaseWrapper.js'
 // Fallback node for unresolved reference reroute. This is an implicit node, that doesn't actually exist in the graph.
 const emptyStageNode = {
   identity: -1,
@@ -10,12 +9,12 @@ const emptyStageNode = {
 }
 
 // Resolution of reference node using different mechanisms.
-export async function resolveReference({ targetNode, graph, traverseCallContext }) {
-  const { reference } = await graph.databaseWrapper.getReferenceResolutionElement({ concreteDatabase: graph.database, nodeID: targetNode.identity })
+export async function resolveReference({ targetNode, traverseCallContext, traverser = this }) {
+  const { reference } = await traverser.graph.database::traverser.graph.database.getReferenceResolutionElement({ nodeID: targetNode.identity })
   if (!reference) return
 
   // prevent circular traversal, in case multiple types are used for the same node and the reference edge is self edge:
-  if (isSelfEdge(reference)) {
+  if (traverser.graph.database.isSelfEdge(reference)) {
     // workaround is to remove the Reroute type from the labels array. TODO: consider allowing a parameter that controls which entrypoint node implementations are ignored.
     let labelIndex = reference.destination.labels.indexOf(targetNode.entrypointNodeType)
     reference.destination.labels[labelIndex] += `-ignore` // ignore on next traversal (keep the entry for debugging purposes).
@@ -24,7 +23,7 @@ export async function resolveReference({ targetNode, graph, traverseCallContext 
   let resolvedNode
   switch (reference.connection.properties.resolutionImplementation) {
     case 'selection':
-      resolvedNode = await graph.traverserInstruction.referenceResolution.selectionReferenceResolution({ graph, targetNode: reference.destination, traverseCallContext })
+      resolvedNode = await traverser::traverser.traverserInstruction.referenceResolution.selectionReferenceResolution({ targetNode: reference.destination, traverseCallContext })
       break
     case 'node':
     default:
@@ -39,9 +38,11 @@ export async function resolveReference({ targetNode, graph, traverseCallContext 
  * Control flow structure supporting binary selecation (if statement), if else if, switch case (multi-way selection). A combined If Else and Switch Case concepts.
   TODO: Consider using "Comparison" as the node label for selection destinations.
  */
-export async function selectionReferenceResolution({ graph, targetNode, traverseCallContext }) {
+export async function selectionReferenceResolution({ targetNode, traverseCallContext, traverser = this }) {
   let resolvedReferenceNode
-  const { selectArray, fallback: fallbackRelationship } = await graph.databaseWrapper.getSelectionElement({ concreteDatabase: graph.database, nodeID: targetNode.identity })
+  const { selectArray, fallback: fallbackRelationship } = await traverser.graph.database::traverser.graph.database.getSelectionElement({
+    nodeID: targetNode.identity,
+  })
 
   if (selectArray) {
     selectArray.sort(
@@ -52,7 +53,7 @@ export async function selectionReferenceResolution({ graph, targetNode, traverse
     // TODO: Use same logic in propagation as used for Port NEXT nodes. (chronological, raceFirstPromise, allPromise, etc.)
     let index = 0
     while (selectArray.length > index && !resolvedReferenceNode) {
-      resolvedReferenceNode = await graph.traverserInstruction.referenceResolution.conditionSwitchResolution({ graph, targetNode: selectArray[index].destination, traverseCallContext })
+      resolvedReferenceNode = await traverser::traverser.traverserInstruction.referenceResolution.conditionSwitchResolution({ targetNode: selectArray[index].destination, traverseCallContext })
       index++
     }
   }
@@ -66,10 +67,10 @@ export async function selectionReferenceResolution({ graph, targetNode, traverse
   * @param targetNode Stage node with VALUE connection representing the condition
 
 */
-export async function conditionSwitchResolution({ graph, targetNode, traverseCallContext }) {
+export async function conditionSwitchResolution({ targetNode, traverseCallContext, traverser = this }) {
   let matchingNode
-  const { caseArray } = await graph.databaseWrapper.getConditionSwitchElement({ concreteDatabase: graph.database, nodeID: targetNode.identity })
-  let value = await graph.traverserInstruction.valueResolution.resolveValue({ targetNode: targetNode, graph, traverseCallContext, allowSelfEdge: true })
+  const { caseArray } = await traverser.graph.database::traverser.graph.database.getConditionSwitchElement({ nodeID: targetNode.identity })
+  let value = await traverser::traverser.traverserInstruction.valueResolution.resolveValue({ targetNode: targetNode, traverseCallContext, allowSelfEdge: true })
 
   // Switch cases: return evaluation configuration
   if (caseArray) {

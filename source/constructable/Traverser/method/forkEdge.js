@@ -1,4 +1,5 @@
 import assert from 'assert'
+import * as schemeReference from '../../../dataModel/graphSchemeReference.js'
 
 /**
  * @description loops through all the `node ports` and initializes each one to execute the `node connections` specific for it.
@@ -7,18 +8,18 @@ import assert from 'assert'
  * OR
  * @return {undefined} in case no forks.
  **/
-export async function* forkEdge({ stageNode, additionalChildNode, getImplementation, graph = this }) {
-  const { forkArray } = await graph.databaseWrapper.getFork({ concreteDatabase: graph.database, nodeID: stageNode.identity })
+export async function* forkEdge({ stageNode, additionalChildNode, getImplementation }) {
+  const { forkArray } = await this.graph.database::this.graph.database.getFork({ nodeID: stageNode.identity })
   if (forkArray.length == 0) return
   // Bulk actions on forks - sort forks
   forkArray.sort((former, latter) => former.connection.properties.order - latter.connection.properties.order || isNaN(former.connection.properties.order) - isNaN(latter.connection.properties.order)) // using `order` property
 
   for (let forkEdge of forkArray) {
-    assert(forkEdge.destination.labels.includes(graph.schemeReference.nodeLabel.port), `• "${forkEdge.destination.labels}" Unsupported node type for a FORK connection.`) // verify node type
+    assert(forkEdge.destination.labels.includes(schemeReference.nodeLabel.port), `• "${forkEdge.destination.labels}" Unsupported node type for a FORK connection.`) // verify node type
 
     // get node iteartor from "portNode" implemenation - e.g. "nestedNode"
     let implementation = getImplementation(forkEdge.destination.properties.implementation) // Traversal implementation - node/edge properties implementation hierarchy - calculate and pick correct implementation according to parameter hierarchy.
-    let nodeIterator = graph::implementation({ forkEdge, additionalChildNode, graph })
+    let nodeIterator = this::implementation({ forkEdge, additionalChildNode })
 
     yield {
       group: {

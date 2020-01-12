@@ -9,8 +9,8 @@
  * @param {*} nodeConnectionArray - array of connection for the particular node
  * @yield { Object{node: <node data>} }
  */
-export async function* iterateNext({ targetNode, additionalChildNode, graph } = {}) {
-  const { nextArray } = await graph.databaseWrapper.getNext({ concreteDatabase: graph.database, nodeID: targetNode.identity })
+export async function* iterateNext({ targetNode, additionalChildNode, traverser = this } = {}) {
+  const { nextArray } = await traverser.graph.database::traverser.graph.database.getNext({ nodeID: targetNode.identity })
   if (nextArray.length == 0) return
 
   // Bulk action - sort connection array - in addition to the database sorting of the query results.

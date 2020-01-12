@@ -12,7 +12,7 @@ import * as rerouteNode from './method/rerouteNode.js'
  - https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/graphdb/traversal/TraversalConfig.html
  - Implement 'depthAffected' for the affected depth of the configure connections on a stage and its child nodes.
  */
-export class Traverser {
+export class TraverserPosition {
   static defaultEvaluationHierarchyKey = {
     propagation: schemeReference.evaluationOption.propagation.continue,
     aggregation: schemeReference.evaluationOption.aggregation.include,
@@ -35,13 +35,13 @@ export class Traverser {
   static entrypointNodeArray = [schemeReference.nodeLabel.reroute, schemeReference.nodeLabel.stage]
   // get the type of current node labels which is considered an entrypoint
   static getEntrypointNodeType({ node }) {
-    for (let nodeLabel of Traverser.entrypointNodeArray) if (node.labels.includes(nodeLabel)) return nodeLabel
+    for (let nodeLabel of TraverserPosition.entrypointNodeArray) if (node.labels.includes(nodeLabel)) return nodeLabel
     // if no label is permitted as an entrypoint type:
     throw new Error(`• Unsupported entrypoint node type for traversal function - ${node.labels}`)
   }
 
   node
-  graph
+  traverser
   aggregator
   traversalImplementationHierarchy = {}
   evaluationHierarchy = {} // evaluation object that contains configuration relating to traverser action on the current position
@@ -53,25 +53,25 @@ export class Traverser {
 
   constructor({
     node,
-    graph,
+    traverser,
     depth = 0, // <type Number> level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
     path = null, // path to the current traversal.  // TODO: implement path sequence preservation. allow for the node traverse function to rely on the current path data.
     /* supported events: 'nodeTraversalCompleted' */
     eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
-    parentTraverser,
+    parentTraverserPosition,
   }) {
     this.node = node
-    this.graph = graph
-    this.path = parentTraverser ? parentTraverser.path : path
-    this.depth = parentTraverser ? parentTraverser.depth + 1 : depth // increase traversal depth
+    this.traverser = traverser
+    this.path = parentTraverserPosition ? parentTraverserPosition.path : path
+    this.depth = parentTraverserPosition ? parentTraverserPosition.depth + 1 : depth // increase traversal depth
     this.eventEmitter = eventEmitter
 
     this.traversalImplementationHierarchy = {
       // Context instance parameter
-      context: graph.context?.implementationKey || {} |> removeUndefinedFromObject,
+      context: this.traverser.context?.implementationKey || {} |> removeUndefinedFromObject,
       // parent arguments
       // TODO: deal with depth property configuration effect in nested nodes.
-      parent: parentTraverser ? parentTraverser.getTraversalImplementationKey() || {} : {},
+      parent: parentTraverserPosition ? parentTraverserPosition.getTraversalImplementationKey() || {} : {},
     }
     this.evaluationHierarchy = {}
 
@@ -109,16 +109,16 @@ export class Traverser {
     let nodeImplementationKey = implementationKey ? { [nodeLabel]: implementationKey } : undefined
     // TODO: use the same rule for node implementation properies for non entrypoints as well (e.g. Process, Port, etc.), when multiple types are used for the current node. OR reconsider and use a different way to configure type of a node with multiple labels.
     let calculatedImplementationKey = this.getTraversalImplementationKey({ key: nodeLabel, nodeImplementationKey })
-    return Traverser.entrypointNodeImplementation[nodeLabel][calculatedImplementationKey]
+    return TraverserPosition.entrypointNodeImplementation[nodeLabel][calculatedImplementationKey]
   }
 
   getAllImplementation() {
     let implementationKey = this.getTraversalImplementationKey()
     let implementation = {
-      processNode: this.graph.traversal.processNode[implementationKey.processNode],
-      portNode: this.graph.traversal.portNode[implementationKey.portNode],
-      traversalInterception: this.graph.traversal.traversalInterception[implementationKey.traversalInterception],
-      aggregator: this.graph.traversal.aggregator[implementationKey.aggregator],
+      processNode: this.traverser.implementation.processNode[implementationKey.processNode],
+      portNode: this.traverser.implementation.portNode[implementationKey.portNode],
+      traversalInterception: this.traverser.implementation.traversalInterception[implementationKey.traversalInterception],
+      aggregator: this.traverser.implementation.aggregator[implementationKey.aggregator],
     }
     Object.entries(implementation).forEach(([key, value]) => {
       assert(
@@ -130,10 +130,9 @@ export class Traverser {
   }
 
   getImplementationCallback({ key }) {
-    let getTraversalImplementationKey = this.getTraversalImplementationKey
     return ({ nodeImplementationKey } = {}) => {
       let implementationKey = this.getTraversalImplementationKey({ key: key, nodeImplementationKey })
-      let implementation = this.graph.traversal[key][implementationKey]
+      let implementation = this.traverser.implementation[key][implementationKey]
       assert(implementation, `• 'implementation' concerete function must be registered, the implementationKey "${implementationKey}" provided doesn't match any of the registered implementaions.`)
       return implementation
     }
@@ -153,7 +152,7 @@ export class Traverser {
     let implementationKey = Object.assign(
       {},
       // * 6. default values specified in the function scope.
-      Traverser.defaultTraversalImplementationKey,
+      TraverserPosition.defaultTraversalImplementationKey,
       // * 5. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
       this.traversalImplementationHierarchy.context,
       // * 4. parent parameters
@@ -169,7 +168,7 @@ export class Traverser {
   }
 
   calculateEvaluationHierarchy() {
-    this.evaluation = Object.assign({}, Traverser.defaultEvaluationHierarchyKey, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
+    this.evaluation = Object.assign({}, TraverserPosition.defaultEvaluationHierarchyKey, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
     return this.evaluation
   }
   /**

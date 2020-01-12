@@ -1,6 +1,7 @@
 import assert from 'assert'
 import { Entity, Constructable } from '@dependency/entity'
 import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
+import * as Context from './Context.class.js'
 
 /**
  * Manages implementation list with ability to assign fallback value. i.e. set and retrieve an implementation or fallback to default.
@@ -9,6 +10,7 @@ const { class: Class, reference: $ } = new Entity.clientInterface.constructableI
 
 Object.assign($, {
   key: {
+    implementation: 'implementation', // expose an accesible api without relying on a module symbol
     list: Symbol('implementation.list'),
     getter: Symbol('implementation.getter'),
     setter: Symbol('implementation.setter'),
@@ -57,7 +59,7 @@ Class::Class[$.prototypeDelegation.getter](Entity.$.key.stateInstance).instanceP
 
 Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInstance).instancePrototype
   |> (prototype => {
-    prototype::Class[Entity.$.initialize.setter]({
+    prototype::prototype[Entity.$.initialize.setter]({
       /* Each concerete behavior can hold multiple implementations that can be used depending on requested parameters during execution. */
       [Entity.$.key.handleDataInstance]: function*({ targetInstance, callerClass = this }, { implementationList, defaultImplementation } /** `data` parameter used to merge data to instance */) {
         // super implementation should take care of setting the constructableDelegationSetting
@@ -66,7 +68,43 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
 
         targetInstance[$.key.setter](implementationList)
         if (defaultImplementation) targetInstance[$.key.fallback] = defaultImplementation
+        // expose resolved implementattion:
+        targetInstance[$.key.implementation] = targetInstance[$.key.getter]()
+
+        // expose functionality for direct simplified access:
+        /*
+            - Retrieve all context instances in the delegation chain.
+            - Provide interface for accessing properties from these context instances.
+            Note: Assums that prototype chain of the graph instance will not be changed after creation of the instance. Which will make algotrithm lighter and simplified, and prevent repeated lookups.
+            */
+        let instanceList = targetInstance[Entity.$.getInstanceOf](Context.class, { recursive: true })
+        if (instanceList.length > 0) {
+          let { proxy } = new MultipleDelegation(instanceList) // create a proxy to for looking up properties of all context instances
+          targetInstance.context = proxy
+        }
+
         return targetInstance
+      },
+    })
+    prototype::prototype[Entity.$.constructor.setter]({
+      // This constructor uses a combination of concereteBehavior constructor and handleDataInstance initialize.
+      [Entity.$.key.stateInstance]({}, args = {}) {
+        let {
+          concreteBehaviorList = [], // Concerete behaviors / implementaions
+          callerClass = this,
+          // accepts in addiiton parameters used in initialization.
+        } = args
+        let instance = callerClass::callerClass[Entity.$.constructor.switch](Entity.$.key.concereteBehavior)(
+          {}, // options
+          {
+            concreteBehaviorList: [...concreteBehaviorList],
+          },
+        )
+
+        // allows the subclasses to add additional initialization steps to deal with the data parameter provided.
+        callerClass::callerClass[Constructable.$.initialize.switch](Entity.$.key.handleDataInstance, { recursiveDelegationChainExecution: true })({ targetInstance: instance }, args)
+
+        return instance
       },
     })
   })
