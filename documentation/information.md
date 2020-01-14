@@ -1,5 +1,6 @@
 # Graph Traversal
 An immediately executed graph traversal (Alternative name), where nodes instruct on performing actions in customizable implementations. It hands back control to the client allowing to manipulate the traversal propagation and node data processing logic.
+- Eagerly executed, promise and iterators based.
 - On each traversal a node data can be processed/executed, taking into account precedence constraints.
 - The graph traversal module is callback & Proxy based, which hands overcontrol to concrete functions and returns an iterator of results that the proxy implementation can decide what to do with. Permitting highly configurable traversal behavior.
 - Created for graph where the node's data is the main subject, & traversal rules/configs of a relational graph, are used to decide on the way to deal with multiple processings of the nodes's data - i.e. processing logic & combination of results.
