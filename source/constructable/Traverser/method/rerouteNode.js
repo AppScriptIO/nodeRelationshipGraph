@@ -56,5 +56,5 @@ export async function traverseReference({ traverserPosition, additionalChildNode
   arguments[0].traverserPosition = traverserPosition
   arguments[0].additionalChildNode = additionalChildNode
   // traverse reference node in the same traversal recursive scopes.
-  return await this.graph::this.graph.traverse(...arguments)
+  return await this::this.traverse(...arguments)
 }
