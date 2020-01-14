@@ -111,6 +111,10 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
           instance.context = proxy
         }
 
+        instance.statistics = {
+          traverserArray: [],
+        }
+
         return instance
       },
     })

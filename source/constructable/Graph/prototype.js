@@ -1,10 +1,8 @@
 import assert from 'assert'
-
 export * as schemeReference from '../../dataModel/graphSchemeReference.js'
 
-// load graph into memory
 export async function load({ graphData } = {}) {
-  // load json graph data.
+  // load graph into memory - load json graph data.
   assert(graphData.node && graphData.edge, `• Graph data object must contain node & edge arrays.`)
   return await this.database.implementation.loadGraphData({ nodeEntryData: graphData.node, connectionEntryData: graphData.edge })
 }
@@ -26,7 +24,6 @@ export async function print({} = {}) {
 }
 
 export async function count({} = {}) {
-  // count number of cached elements
   return {
     node: await this.database.implementation.countNode(),
     connection: await this.database.implementation.countEdge(),
@@ -35,7 +32,7 @@ export async function count({} = {}) {
 
 export async function traverse({ configuredTraverser = this.configuredTraverser } = {}) {
   let traverser = new configuredTraverser.clientInterface()
-  return traverser.traverse(...arguments)
-  // traverser.statistics()
-  // return traverser.result()
+  this.statistics.traverserArray.push(traverser)
+  traverser.result = await traverser.traverse(...arguments)
+  return traverser.result
 }

@@ -65,6 +65,7 @@ export class TraverserPosition {
     this.path = parentTraverserPosition ? parentTraverserPosition.path : path
     this.depth = parentTraverserPosition ? parentTraverserPosition.depth + 1 : depth // increase traversal depth
     this.eventEmitter = eventEmitter
+    this.emitCompletedTraversal = (...args) => this.eventEmitter.emit('nodeTraversalCompleted', ...args) // callback for easier usage
 
     this.traversalImplementationHierarchy = {
       // Context instance parameter
