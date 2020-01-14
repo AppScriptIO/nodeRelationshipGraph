@@ -46,6 +46,11 @@ export const { stageNode } = {
       getImplementation: implementationKey =>
         traverserPosition.getImplementationCallback({ key: 'portNode' })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
       additionalChildNode,
+      nestedTraversalCallParameter: {
+        additionalChildNode,
+        traverserPosition,
+        traverseCallContext,
+      },
     })
 
     // EXECUTE edge

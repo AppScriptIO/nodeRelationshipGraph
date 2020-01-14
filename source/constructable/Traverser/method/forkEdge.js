@@ -8,7 +8,7 @@ import * as schemeReference from '../../../dataModel/graphSchemeReference.js'
  * OR
  * @return {undefined} in case no forks.
  **/
-export async function* forkEdge({ stageNode, additionalChildNode, getImplementation }) {
+export async function* forkEdge({ stageNode, additionalChildNode, getImplementation, nestedTraversalCallParameter }) {
   const { forkArray } = await this.graph.database::this.graph.database.getFork({ nodeID: stageNode.identity })
   if (forkArray.length == 0) return
   // Bulk actions on forks - sort forks
@@ -20,10 +20,12 @@ export async function* forkEdge({ stageNode, additionalChildNode, getImplementat
     // get node iteartor from "portNode" implemenation - e.g. "nestedNode"
     let implementation = getImplementation(forkEdge.destination.properties.implementation) // Traversal implementation - node/edge properties implementation hierarchy - calculate and pick correct implementation according to parameter hierarchy.
     let nodeIterator = this::implementation({ forkEdge, additionalChildNode })
+    // pipe node itrator to create a traversal iterator (where traversal invocation callback is provided)
+    let traversalIterator = this::this.traversalIteration({ nodeIteratorFeed: nodeIterator, nestedTraversalCallParameter })
 
     yield {
       group: {
-        nodeIterator, // node iterator feed
+        traversalIterator,
         // nodes group configuration and info
         config: {
           forkEdge,
