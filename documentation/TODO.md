@@ -1,4 +1,7 @@
 ### TODO:
+- Use Traverser sequence "iteratorObjectList" in all interception implementation, tracking the iterators during traversal. & integrate the downstream&upstream implementation "handleMiddlewareNextCall_branchedGraph" into the other implementations traversal logic.
+- Traverse edge for instructing the traverser to initiate a new traversion, instead of hard coding and creating a specific node scheme where a new traversal is needed (e.g. VALUE edge resolution with conditionGraph implementation).
+- Consider renaming module to "immediatelyExecutedGraph" & "immediatelyExecutedGraph-implementation"
 - Support `if..else..` reroute (reference connection) algorithm, similar to `switch case` reroute. The difference is that if else can execute a condition graph unrelated to the other if statements, and defaults to `else` connection.
 - Support traversal of multiple node types like - same node of type Reroute, Stage, Process, Function. Which has self connections of REFERENCE, VALUE, EXECUTE, RESOURCE.
 - Use node types as only an abstraction over the actual node implementations, in which this abstraction provides easy userinterface for the client to conceptualize with. All implementations are `node implementation`, any node type in the graph is a specific abstraction over the an implementation or a group of implementations.

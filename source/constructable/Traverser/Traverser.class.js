@@ -34,9 +34,14 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
         let { superCallback } = function.sent
         if (superCallback) targetInstance = callerClass::superCallback(...arguments) // call implementation higher in the hierarchy.
 
-        targetInstance.traversedNodeList = [] // track traversed nodes.
+        targetInstance.statistics = {
+          traversedNodeList: [], // track traversed nodes.
+        }
         targetInstance.graph = graph
         assert(targetInstance.graph, `• A graph instance must be passed to the Traverser class instances.`)
+
+        // for providing shared iterator for all traversal sequence
+        targetInstance.iteratorObjectList = [] // Note: these are not iterator functions, rather the objects created by them.
 
         return targetInstance
       },

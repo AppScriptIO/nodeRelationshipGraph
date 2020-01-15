@@ -14,7 +14,7 @@ export async function resolveEvaluationConfiguration({ targetNode, traverser = t
   for (let configure of configureArray)
     if (configure.source.labels.includes(schemeReference.nodeLabel.reroute)) {
       // if reroute node, then request resolution to the reference node (run in a separate traversal recursive scopes)
-      let configurationNode = await traverser.graph::traverser.graph.traverse(
+      let { result: configurationNode } = await traverser.graph::traverser.graph.traverse(
         {
           nodeInstance: configure.source,
           implementationKey: {

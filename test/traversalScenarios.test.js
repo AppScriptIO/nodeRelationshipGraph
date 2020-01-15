@@ -82,7 +82,7 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
     const fixture = ['referencedTarget-0', 'insert-before', 'dataItem-1', 'insert-after']
     let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully', async () => {
-      let result = await graph.traverse({ nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4', implementationKey: {} })
+      let { result } = await graph.traverse({ nodeKey: '968f644a-ac89-11e9-a2a3-2a2ae2dbcce4', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
   })
@@ -91,7 +91,7 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
     const fixture = ['include-0', 'include-1', 'include-2', 'include-3']
     let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully', async () => {
-      let result = await graph.traverse({ nodeKey: '9160338f-6990-4957-9506-deebafdb6e29', implementationKey: { processNode: 'returnDataItemKey' } })
+      let { result } = await graph.traverse({ nodeKey: '9160338f-6990-4957-9506-deebafdb6e29', implementationKey: { processNode: 'returnDataItemKey' } })
       chaiAssertion.deepEqual(result, fixture)
     })
   })
@@ -101,7 +101,7 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
     const fixture = ['dataItem-0', 'parallel-1', 'parallel-2', 'parallel-3', 'parallel-4', 'chronological-1', 'chronological-2', 'chronological-3', 'race-firstSetteled']
     let graph = new configuredGraph.clientInterface({})
     test('Should traverse graph successfully ', async () => {
-      let result = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
+      let { result } = await graph.traverse({ nodeKey: '5ab7f475-f5a1-4a23-bd9d-161e26e1aef6', implementationKey: {} })
       chaiAssertion.deepEqual(result, fixture)
     })
   })
@@ -128,7 +128,7 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
       let graph = new configuredGraph.clientInterface({ configuredTraverser: _configuredTraverser })
 
       test('Should traverse graph successfully - during which a shell script executed', async () => {
-        let result = await graph.traverse({ nodeKey: '28a486af-1c27-4183-8953-c40742a68ab0', implementationKey: {} })
+        let { result } = await graph.traverse({ nodeKey: '28a486af-1c27-4183-8953-c40742a68ab0', implementationKey: {} })
         chaiAssertion.deepEqual(result, fixture)
       })
     })
@@ -174,7 +174,7 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
       let graph = new configuredGraph.clientInterface({ configuredTraverser: _configuredTraverser })
 
       test('Should traverse graph successfully and return a rendered template', async () => {
-        let renderedDocument = await graph.traverse({
+        let { result: renderedDocument } = await graph.traverse({
           nodeKey: '528ec4f4-824e-4952-b42f-a92ff70414f0',
           implementationKey: {
             processNode: 'templateRenderingWithInseritonPosition',
@@ -220,11 +220,11 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
         let graph = new configuredGraph.clientInterface({ configuredTraverser: _configuredTraverser })
 
         test('Should traverse graph successfully - during which middlewares are executed in chain with downstream and upstream execution.', async () => {
-          let middlewareArray = await graph.traverse({
+          let { result: middlewareArray } = await graph.traverse({
             nodeKey: '80629744-a860-439e-8869-717989e72a6a',
             implementationKey: {
               processNode: 'immediatelyExecuteMiddleware',
-              traversalInterception: 'handleMiddlewareNextCall',
+              traversalInterception: 'handleMiddlewareNextCall_linearGraph',
             },
           })
 
@@ -236,7 +236,26 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
         })
       })
       suite('branching (neighbour children) graph of middlewares (non-linear chain structure)', () => {
-        const fixture = { middlewareExecutionOrder: ['middleware 1 BEFORE', 'middleware 2 BEFORE', 'middleware 3 BEFORE', 'middleware 3 AFTER', 'middleware 2 AFTER', 'middleware 1 AFTER'] }
+        const fixture = {
+          middlewareExecutionOrder: [
+            'middleware 1 BEFORE',
+            'middleware 2 BEFORE',
+            'middleware 3 BEFORE',
+            'middleware 4 BEFORE',
+            'middleware 5 BEFORE',
+            'middleware 6 BEFORE',
+            'middleware 7 BEFORE',
+            'middleware 8 BEFORE',
+            'middleware 8 AFTER',
+            'middleware 7 AFTER',
+            'middleware 6 AFTER',
+            'middleware 5 AFTER',
+            'middleware 4 AFTER',
+            'middleware 3 AFTER',
+            'middleware 2 AFTER',
+            'middleware 1 AFTER',
+          ],
+        }
         let middlewareExecutionOrder = []
         let contextInstance = new Context.clientInterface({
           data: {
@@ -288,13 +307,16 @@ suite('Graph traversal scenarios - basic features and core implementations of tr
         let _configuredTraverser = configuredTraverser.clientInterface({ parameter: [{ concreteBehaviorList: [contextInstance] }] })
         let graph = new configuredGraph.clientInterface({ configuredTraverser: _configuredTraverser })
         test('Should traverse graph successfully - during which middlewares are executed in chain with downstream and upstream execution.', async () => {
-          let middlewareArray = await graph.traverse({
+          let traverser = await graph.traverse({
             nodeKey: 'c12af985-225e-4d3d-adea-36a813d22077',
             implementationKey: {
               processNode: 'immediatelyExecuteMiddleware',
-              traversalInterception: 'handleMiddlewareNextCall',
+              traversalInterception: 'handleMiddlewareNextCall_branchedGraph',
             },
           })
+          let { result: middlewareArray } = traverser
+          let { statistics } = graph
+
           chaiAssertion.deepEqual(middlewareExecutionOrder, fixture.middlewareExecutionOrder)
           assert(
             middlewareArray.every(item => typeof item == 'function'),

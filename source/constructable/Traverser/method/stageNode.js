@@ -46,6 +46,11 @@ export const { stageNode } = {
       getImplementation: implementationKey =>
         traverserPosition.getImplementationCallback({ key: 'portNode' })({ nodeImplementationKey: implementationKey ? { portNode: implementationKey } : undefined }),
       additionalChildNode,
+      nestedTraversalCallParameter: {
+        additionalChildNode,
+        traverserPosition,
+        traverseCallContext,
+      },
     })
 
     // EXECUTE edge
@@ -64,7 +69,7 @@ export const { stageNode } = {
 
     // intercept and return result (Stage interception)
     let proxifiedRecursiveIteration = this::this.traverseGroupIterationRecursiveCall |> this::traversalInterceptionImplementation
-    let result = await proxifiedRecursiveIteration({
+    let result = await this::proxifiedRecursiveIteration({
       groupIterator,
       traverserPosition,
       processDataCallback,
