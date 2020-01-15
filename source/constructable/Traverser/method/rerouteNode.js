@@ -9,8 +9,8 @@ export async function returnReference({ traverserPosition, additionalChildNode }
   let referencedNode = await this::this.traverserInstruction.referenceResolution.resolveReference({ targetNode: node, traverseCallContext })
   if (referencedNode)
     // if the reference node is a reroute itself, traverse it recursively
-    while (referencedNode && referencedNode.labels.includes(schemeReference.nodeLabel.reroute))
-      referencedNode = await this.graph::this.graph.traverse(
+    while (referencedNode && referencedNode.labels.includes(schemeReference.nodeLabel.reroute)) {
+      ;({ result: referencedNode } = await this.graph::this.graph.traverse(
         {
           nodeInstance: referencedNode,
           implementationKey: {
@@ -20,7 +20,8 @@ export async function returnReference({ traverserPosition, additionalChildNode }
         {
           traverseCallContext,
         },
-      )
+      ))
+    }
 
   return referencedNode
 }

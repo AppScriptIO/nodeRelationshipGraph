@@ -86,3 +86,19 @@ export const { traverse } = {
     return await this::entrypointNodeImplementation({ traverserPosition, additionalChildNode }, { traverseCallContext })
   },
 }
+
+// encapsulates iterators during traversal of the graph (relating to a traverser sequence)
+export async function invokeNextTraversalPromise() {
+  if (this.iteratorObjectList.length == 0) return // if no iterators
+
+  let iteratorObject
+  do {
+    if (this.iteratorObjectList.length == 0) return // no more iterators
+    let iterator = this.iteratorObjectList[this.iteratorObjectList.length - 1] // last iterator added during traverser
+    iteratorObject = await iterator.next()
+    if (iteratorObject.done) this.iteratorObjectList.pop()
+  } while (iteratorObject.done)
+
+  let traversalPromise = iteratorObject.value.traversalInvocation()
+  return { traversalPromise, node: iteratorObject.value.node }
+}

@@ -40,6 +40,9 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
         targetInstance.graph = graph
         assert(targetInstance.graph, `• A graph instance must be passed to the Traverser class instances.`)
 
+        // for providing shared iterator for all traversal sequence
+        targetInstance.iteratorObjectList = [] // Note: these are not iterator functions, rather the objects created by them.
+
         return targetInstance
       },
     })

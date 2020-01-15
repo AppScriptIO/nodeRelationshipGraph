@@ -34,5 +34,5 @@ export async function traverse({ configuredTraverser = this.configuredTraverser 
   let traverser = new configuredTraverser.clientInterface()
   this.statistics.traverserArray.push(traverser)
   traverser.result = await traverser.traverse(...arguments)
-  return traverser.result
+  return traverser
 }

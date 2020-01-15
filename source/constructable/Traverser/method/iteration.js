@@ -40,7 +40,8 @@ export async function* traverseIterationRecursiveCall({ traversalIterator, trave
   let iteratorObject = await traversalIterator.next()
   // call traverse for each node - 🔁 recursion traversal call (with next node)
   while (!iteratorObject.done) {
-    yield { traversalPromise: iteratorObject.value.traversalInvocation(iteratorObject) }
+    let traversalPromise = iteratorObject.value.traversalInvocation()
+    yield { traversalPromise }
     iteratorObject = await traversalIterator.next()
   }
 }
@@ -73,8 +74,8 @@ export async function* traverseGroupIterationRecursiveCall({
       2-way communication with propagation implamentation -  next nodes iterator with receiving promise of node traversal
       the first iterator object call is used to initialize the function, in addition to the iterator function call.
     */
-    let traversalPromiseFeed = await this::this.traverseIterationRecursiveCall({ traversalIterator: group.traversalIterator })
-    let traversalResult = await handlePropagationImplementation({ traversalPromiseFeed, emit: traverserPosition.emitCompletedTraversal }) // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
+    let invokedPromiseIterator = await this::this.traverseIterationRecursiveCall({ traversalIterator: group.traversalIterator })
+    let traversalResult = await handlePropagationImplementation({ invokedPromiseIterator, emit: traverserPosition.emitCompletedTraversal }) // pass iterator to implementation and propagate back (through return statement) the results of the node promises after completion
 
     yield {
       group: {
@@ -88,6 +89,7 @@ export async function* traverseGroupIterationRecursiveCall({
 }
 
 /**
+   
   //! Update comments - Refactored to control of feed of promises
  * Methods controlling the iteration over nodes and execution arrangement.
  * Propagation Control implementation - Handles the graph traversal propagation order of Next nodes: 
@@ -99,35 +101,14 @@ export async function* traverseGroupIterationRecursiveCall({
  * @param emit event emitter callback used to indicate immediate resolution of node traversal promise (i.e. when the node completes it's traversal).
  */
 const handlePropagation = {
-  /**
-  * Execution of nodes in chain with downstream & upstream - Execute node partially then wait for the next node, in order to finish execution. 
-    e.g. Koa Middlewares concept, where each middleware waits for the next to finish and then continues it's own execution.
-    In this case the graph represents the order of middlewares to be chained, without necessarily using a linear grpah (the graph still uses nested and neighbouring children to represent the middleware chain, which allows for more flexibility).
-  **/
-  downAndUpStream: async function({ traversalPromiseFeed, emit }) {
-    let traversalResultList = []
-    // first to be executed is last to finish
-    for await (let { traversalPromise } of traversalPromiseFeed) {
-      /** 
-      Steps: 
-        - yield node data
-        -(external function): call traverse, producing promise
-        - decide when to await for the promise
-        - return results
-      */
-      let nextResult = await traversalPromise
-      emit(nextResult) // emit for immediate consumption
-      traversalResultList.push(nextResult)
-    }
-    return traversalResultList
-  },
+  // TODO: down & upstream - implement a port implementation that will word with the downAndUpstream interception function.
 
   /**
    * Sequential node execution - await each node till it finishes execution.
    **/
-  chronological: async function({ traversalPromiseFeed, emit }) {
+  chronological: async function({ invokedPromiseIterator, emit }) {
     let nodeResultList = []
-    for await (let { traversalPromise } of traversalPromiseFeed) {
+    for await (let { traversalPromise } of invokedPromiseIterator) {
       let nextResult = await traversalPromise
       emit(nextResult) // emit for immediate consumption
       nodeResultList.push(nextResult)
@@ -135,15 +116,15 @@ const handlePropagation = {
     return nodeResultList
   },
   // Note: kept for future reference. Implementation using while loop instead of `for await`, as it allows for passing initial config value for the generator function (that will use function.sent to catch it.)
-  chronological_implementationUsingWhileLoop: async function({ traversalPromiseFeed, emit }) {
+  chronological_implementationUsingWhileLoop: async function({ invokedPromiseIterator, emit }) {
     let nodeResultList = []
 
-    let iteratorObject = await traversalPromiseFeed.next() // initialize generator function execution and pass execution configurations.
+    let iteratorObject = await invokedPromiseIterator.next() // initialize generator function execution and pass execution configurations.
     while (!iteratorObject.done) {
       let nextResult = await iteratorObject.value.traversalPromise
       emit(nextResult) // emit for immediate consumption
       nodeResultList.push(nextResult)
-      iteratorObject = await traversalPromiseFeed.next()
+      iteratorObject = await invokedPromiseIterator.next()
     }
 
     return nodeResultList
@@ -152,14 +133,14 @@ const handlePropagation = {
   /**
    * Race promise of nodes - first to resolve is the one to be returned
    */
-  raceFirstPromise: async function({ traversalPromiseFeed, emit }) {
+  raceFirstPromise: async function({ invokedPromiseIterator, emit }) {
     let traversalPromiseArray = []
 
-    let iteratorObject = await traversalPromiseFeed.next() // initialize generator function execution and pass execution configurations.
+    let iteratorObject = await invokedPromiseIterator.next() // initialize generator function execution and pass execution configurations.
     while (!iteratorObject.done) {
       let traversalPromise = iteratorObject.value.traversalPromise
       traversalPromiseArray.push(traversalPromise)
-      iteratorObject = await traversalPromiseFeed.next()
+      iteratorObject = await invokedPromiseIterator.next()
     }
 
     let nodeResolvedResult = await promiseProperRace(traversalPromiseArray)
@@ -180,18 +161,18 @@ const handlePropagation = {
   /**
    * Insures all nodeConnection promises resolves.
    **/
-  allPromise: async function({ traversalPromiseFeed, emit }) {
+  allPromise: async function({ invokedPromiseIterator, emit }) {
     let traversalPromiseArray = [] // order of call initialization
     let resolvedOrderedNodeResolvedResult = [] // order of completion
 
-    let iteratorObject = await traversalPromiseFeed.next() // initialize generator function execution and pass execution configurations.
+    let iteratorObject = await invokedPromiseIterator.next() // initialize generator function execution and pass execution configurations.
     while (!iteratorObject.done) {
       let traversalPromise = iteratorObject.value.traversalPromise.then(result => {
         emit(result) // emit result for immediate usage by lisnters
         resolvedOrderedNodeResolvedResult.push(result) // array of node process results.
       }) // arrange promises according to resolution order.
       traversalPromiseArray.push(traversalPromise) // promises are in the same arrangment of connection iteration.
-      iteratorObject = await traversalPromiseFeed.next()
+      iteratorObject = await invokedPromiseIterator.next()
     }
 
     // resolve all promises

@@ -759,7 +759,6 @@
     "end": 19707,
     "type": "FORK",
     "properties": {
-      "handlePropagationImplementation": "downAndUpStream",
       "key": "329d09e6-9857-444e-9c5f-4656a88dacbe"
     }
   }, {
@@ -1178,7 +1177,6 @@
     "end": 19704,
     "type": "FORK",
     "properties": {
-      "handlePropagationImplementation": "downAndUpStream",
       "key": "16d01f77-3c05-450d-8bfa-a595208f625b"
     }
   }, {
@@ -1410,7 +1408,6 @@
     "end": 19705,
     "type": "FORK",
     "properties": {
-      "handlePropagationImplementation": "downAndUpStream",
       "key": "a5b4f2ed-362a-4a55-9e67-57af161a9c78"
     }
   }, {
