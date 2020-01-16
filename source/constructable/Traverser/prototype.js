@@ -52,11 +52,7 @@ export const { traverse } = {
     this.statistics.traversedNodeList.push(nodeInstance)
 
     // each call creates new traverser with calculation of traversal implementation hierarchy  and position evaluation for the current node
-    traverserPosition ||= new TraverserPosition({
-      traverser: this,
-      node: nodeInstance,
-      parentTraverserPosition,
-    })
+    traverserPosition ||= new TraverserPosition({ traverser: this, node: nodeInstance, parentTraverserPosition })
 
     if (implementationKey) {
       traverserPosition.setImplementationHierarchy('parameter', implementationKey |> removeUndefinedFromObject)
