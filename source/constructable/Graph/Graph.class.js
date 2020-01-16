@@ -5,6 +5,17 @@ import * as Database from '../Database'
 import * as Context from '../Context.class.js'
 import * as ImplementationManagement from '../ImplementationManagement.class.js'
 import * as implementation from '@dependency/graphTraversal-implementation'
+let defaultImplementationParameter = {
+  implementationList: {
+    default: {
+      traversalInterception: implementation.traversal.traversalInterception, // Stage
+      aggregator: implementation.traversal.aggregator,
+      processNode: implementation.traversal.processNode, // Process
+      portNode: implementation.traversal.portNode, // Port
+    },
+  },
+  defaultImplementation: 'default',
+}
 
 /** Conceptual Graph - encapsulates different elements of used to work with a graph.
  * Graph (GraphTraverser) Class holds and manages graph elements and traversal algorithm implementations:
@@ -81,24 +92,16 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
         // let concereteDatabase = instance[Entity.$.getInstanceOf](Database.class)
         // let resolvedDatabaseImplementation = concereteDatabase[Database.$.key.getter]()
 
-        configuredTraverser ||= configuredTraverser.clientInterface({
-          parameter: [
-            {
-              implementationList: {
-                default: {
-                  traversalInterception: implementation.traversal.traversalInterception, // Stage
-                  aggregator: implementation.traversal.aggregator,
-                  processNode: implementation.traversal.processNode, // Process
-                  portNode: implementation.traversal.portNode, // Port
-                },
-              },
-              defaultImplementation: 'default',
-            },
-          ],
-        })
+        if (configuredTraverser)
+          configuredTraverser = configuredTraverser.clientInterface({
+            parameter: [defaultImplementationParameter],
+          })
 
         // provide graph instance to the configured Traverser instances and expose configured Traverser
         instance.configuredTraverser = configuredTraverser.clientInterface({ parameter: [{ graph: instance }] })
+
+        // In case a passed configuredTraverser, if no implementations are provided use the default list from `graph-implementation`.
+        if (!configuredTraverser.class[Entity.$.parameter][0].implementationList) Object.assing(configuredTraverser.class[Entity.$.parameter][0], defaultImplementationParameter)
 
         /*
         - Retrieve all context instances in the delegation chain.
