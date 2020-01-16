@@ -1,1 +1,2 @@
-export * from './Database.class.js'
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });var _DatabaseClass = require("./Database.class.js");Object.keys(_DatabaseClass).forEach(function (key) {if (key === "default" || key === "__esModule") return;Object.defineProperty(exports, key, { enumerable: true, get: function () {return _DatabaseClass[key];} });});
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL0RhdGFiYXNlL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiIyRUFBQSIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCAqIGZyb20gJy4vRGF0YWJhc2UuY2xhc3MuanMnXG4iXX0=
