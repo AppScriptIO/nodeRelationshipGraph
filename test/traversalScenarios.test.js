@@ -39,7 +39,7 @@ let concreteDatabaseBehavior = new Database.clientInterface({
   implementationList: {
     redisModelAdapterFunction: implementation.database.redisModelAdapterFunction,
     simpleMemoryModelAdapter: implementation.database.simpleMemoryModelAdapterFunction,
-    boltCypher: implementation.database.boltCypherModelAdapterFunction,
+    boltCypher: implementation.database.boltCypherModelAdapterFunction({}),
   },
   defaultImplementation: 'boltCypher',
 })

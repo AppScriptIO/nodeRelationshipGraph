@@ -62,7 +62,7 @@ Class::Class[$.prototypeDelegation.getter](Constructable.$.key.constructableInst
           // cache,
           database = new Database.clientInterface({
             implementationList: {
-              boltCypher: implementation.database.boltCypherModelAdapterFunction,
+              boltCypher: implementation.database.boltCypherModelAdapterFunction({}),
             },
             defaultImplementation: 'boltCypher',
           }), // database concrete behavior
