@@ -1,6 +1,6 @@
 {
 	"name": "@dependency/graphTraversal",
-	"version": "4.1.5",
+	"version": "4.1.6",
 	"main": "./entrypoint/programmaticAPI",
 	"scripts": {
 		"setup": "yarn install --production=false",
