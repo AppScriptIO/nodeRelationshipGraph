@@ -13,6 +13,6 @@ if (filesystem.existsSync(projectConfig.directory.distribution)) {
   module.exports = require(path.join(projectConfig.directory.source, projectConfig.entrypoint.programmaticAPI))
   // process.on('exit', () => {
   //   console.log(compiler.loadedFiles.map(value => value.filename))
-  //   console.log(compiler.babelRegisterConfig.ignore)
+  //   console.log(compiler.config.ignore)
   // })
 }
