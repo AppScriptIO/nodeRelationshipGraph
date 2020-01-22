@@ -1,6 +1,6 @@
 {
 	"name": "@dependency/graphTraversal",
-	"version": "4.2.1",
+	"version": "4.2.2",
 	"main": "./entrypoint/programmaticAPI",
 	"scripts": {
 		"setup": "yarn install --production=false",
@@ -13,7 +13,7 @@
 		"exportGraphData": "yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".graphDataLoading.exportAllGraphData({targetPath: './test/asset',fileName: 'graph.json'})\""
 	},
 	"dependencies": {
-		"@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^1.x.x",
+		"@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^2.x.x",
 		"@dependency/graphTraversal-implementation": "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^4.x.x",
 		"@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x",
 		"@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x",
@@ -23,8 +23,8 @@
 	"devDependencies": {
 		"@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^2.x.x",
 		"@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis#semver:^1.x.x",
-		"@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
-		"@dependency/prototypeChainDebug": "https://github.com/AppScriptIO/prototypeChainDebug#semver:^1.x.x",
+		"@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^2.x.x",
+		"@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x",
 		"@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager#semver:^1.x.x",
 		"neo4j-driver": "^1.7.5",
 		"typescript": "^3.3.3333"
