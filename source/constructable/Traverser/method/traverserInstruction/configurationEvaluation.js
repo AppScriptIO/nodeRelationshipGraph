@@ -1,6 +1,6 @@
 import assert from 'assert'
 import * as schemeReference from '../../../../dataModel/graphSchemeReference.js'
-import { extractConfigProperty } from '../../../../utility/extractPropertyFromObject.js'
+import { extractPropertyFromObject } from '@dependency/handleJSNativeDataStructure'
 
 /**
  * Node's include/exclude evaluation - evaluate whether or not a node whould be included in the node feed and subsequently in the traversal. continue child nodes traversal or break traversal.
@@ -40,7 +40,7 @@ export async function resolveEvaluationConfiguration({ targetNode, traverser = t
       let configuration
       if (configurationMap.get(configure)) configuration = configurationMap.get(configure)
       else configuration = configure.source
-      return extractConfigProperty(configuration.properties, schemeReference.traversalOption)
+      return extractPropertyFromObject(configuration.properties, schemeReference.traversalOption)
     })
   let evaluationConfigurationArray = configureArray
     .filter(configure => configure.connection.properties.setting == 'evaluation')
@@ -48,7 +48,7 @@ export async function resolveEvaluationConfiguration({ targetNode, traverser = t
       let configuration
       if (configurationMap.get(configure)) configuration = configurationMap.get(configure)
       else configuration = configure.source
-      return extractConfigProperty(configuration.properties, schemeReference.evaluationOption)
+      return extractPropertyFromObject(configuration.properties, schemeReference.evaluationOption)
     })
 
   // merge multiple configurations of the same type

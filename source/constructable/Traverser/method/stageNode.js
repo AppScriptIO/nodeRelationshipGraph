@@ -1,4 +1,5 @@
 // import { proxifyMethodDecorator } from '../utility/proxifyMethodDecorator.js'
+// import {mergeDefaultParameter} from '@dependency/handleJSNativeDataStructure'
 
 /**
  * Stage node is an entrypoint node that the graph traversal can be started from.

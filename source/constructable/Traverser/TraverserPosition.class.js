@@ -1,6 +1,6 @@
 import assert from 'assert'
 import EventEmitter from 'events'
-import { removeUndefinedFromObject } from '../../utility/removeUndefinedFromObject.js'
+import { removeUndefinedFromObject } from '@dependency/handleJSNativeDataStructure'
 import * as schemeReference from '../../dataModel/graphSchemeReference.js'
 import * as stageNode from './method/stageNode.js'
 import * as rerouteNode from './method/rerouteNode.js'

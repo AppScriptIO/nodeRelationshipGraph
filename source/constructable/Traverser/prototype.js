@@ -1,5 +1,5 @@
 import { proxifyMethodDecorator } from '../../utility/proxifyMethodDecorator.js'
-import { removeUndefinedFromObject } from '../../utility/removeUndefinedFromObject.js'
+import { removeUndefinedFromObject } from '@dependency/handleJSNativeDataStructure'
 import * as Context from '../Context.class.js'
 import { TraverserPosition } from './TraverserPosition.class.js'
 
