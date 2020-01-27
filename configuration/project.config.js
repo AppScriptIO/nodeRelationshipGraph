@@ -1,7 +1,11 @@
 const path = require('path')
 const { script } = require('./script.config.js')
+const filesystem = require('fs')
 
 const ownConfig = {
+  get getPackageJson() {
+    return require(path.join(ownConfig.directory.root, 'package.json'))
+  },
   directory: {
     root: path.resolve(`${__dirname}/..`),
     get source() {
