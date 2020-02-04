@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { Entity, Constructable } from '@dependency/entity'
-import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
+import { MultipleDelegation } from '@dependency/handlePrototypeDelegation'
 
 /**
  ** Cache system for supporting different graph implementation and database adapters.

@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { Entity, Constructable } from '@dependency/entity'
-import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
+import { MultipleDelegation } from '@dependency/handlePrototypeDelegation'
 
 /**
  * Context is responsible for creating a grouping context - where information could be shared between instances of some class that belong/inherit the context.

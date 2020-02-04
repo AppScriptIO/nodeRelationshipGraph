@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
+import { MultipleDelegation } from '@dependency/handlePrototypeDelegation'
 import { Entity, Constructable } from '@dependency/entity'
 import * as Context from '../Context.class.js'
 import * as ImplementationManagement from '../ImplementationManagement.class.js'

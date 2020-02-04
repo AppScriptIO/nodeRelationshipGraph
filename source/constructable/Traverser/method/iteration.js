@@ -1,4 +1,4 @@
-import promiseProperRace from '@dependency/promiseProperRace'
+import {promiseProperRace} from '@dependency/handleEventLoop'
 
 /** 
 This function is a middleware between 'traverseIterationRecursiveCall' external function and internal handlePropagation implementation.

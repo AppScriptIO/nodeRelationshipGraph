@@ -1,4 +1,4 @@
-import { MultipleDelegation } from '@dependency/multiplePrototypeDelegation'
+import { MultipleDelegation } from '@dependency/handlePrototypeDelegation'
 import { Entity, Constructable } from '@dependency/entity'
 import * as Traverser from '../Traverser'
 import * as Database from '../Database'

@@ -2,7 +2,7 @@ process.env['SZN_DEBUG'] = true
 import assert from 'assert'
 import { assert as chaiAssertion } from 'chai'
 import util from 'util'
-import * as multiplePrototypeDelegation from '@dependency/multiplePrototypeDelegation'
+import * as handlePrototypeDelegation from '@dependency/handlePrototypeDelegation'
 import { Entity } from '@dependency/entity'
 import * as Graph from '../source/constructable/Graph'
 import * as Traverser from '../source/constructable/Traverser'
@@ -68,7 +68,7 @@ suite('Configure Graph class', () => {
     test('graph instance - Should inherit implementation classes', async () => {
       let graph = new configuredGraph.clientInterface({})
       let multiplePrototypeProxy = Object.getPrototypeOf(graph)
-      let multiplePrototypeArray = multiplePrototypeProxy[multiplePrototypeDelegation.$.list]
+      let multiplePrototypeArray = multiplePrototypeProxy[handlePrototypeDelegation.$.list]
 
       chaiAssertion.isTrue([contextInstance1, concreteDatabaseBehavior].every(behavior => multiplePrototypeArray.includes(behavior)))
     })
@@ -79,7 +79,7 @@ suite('Configure Graph class', () => {
         concreteBehaviorList: [contextInstance2],
       })
       let multiplePrototypeProxy = Object.getPrototypeOf(graph)
-      let multiplePrototypeArray = multiplePrototypeProxy[multiplePrototypeDelegation.$.list]
+      let multiplePrototypeArray = multiplePrototypeProxy[handlePrototypeDelegation.$.list]
       chaiAssertion.isTrue([contextInstance1, contextInstance2, concreteDatabaseBehavior].every(behavior => multiplePrototypeArray.includes(behavior)))
     })
 
@@ -89,7 +89,7 @@ suite('Configure Graph class', () => {
         concreteBehaviorList: [contextInstance1, contextInstance2],
       })
       let multiplePrototypeProxy = Object.getPrototypeOf(traverser)
-      let multiplePrototypeArray = multiplePrototypeProxy[multiplePrototypeDelegation.$.list]
+      let multiplePrototypeArray = multiplePrototypeProxy[handlePrototypeDelegation.$.list]
 
       chaiAssertion.isTrue([contextInstance1, contextInstance2].every(behavior => multiplePrototypeArray.includes(behavior)))
     })

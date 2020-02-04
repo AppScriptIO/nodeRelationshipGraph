@@ -15,8 +15,8 @@
 	"dependencies": {
 		"@dependency/entity": "https://github.com/AppScriptIO/entity#semver:^2.x.x",
 		"@dependency/graphTraversal-implementation": "https://github.com/AppScriptIO/graphTraversal-implementation#semver:^4.x.x",
-		"@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^1.x.x",
-		"@dependency/promiseProperRace": "https://github.com/AppScriptIO/promiseProperRace#semver:^1.x.x",
+		"@dependency/handlePrototypeDelegation": "https://github.com/AppScriptIO/handlePrototypeDelegation#semver:^1.x.x",
+		"@dependency/handleEventLoop": "https://github.com/AppScriptIO/handleEventLoop#semver:^1.x.x",
 		"@dependency/handleJSNativeDataStructure": "https://github.com/AppScriptIO/handleJSNativeDataStructure#semver:^2.x.x",
 		"underscore": "^1.9.1"
 	},
@@ -24,7 +24,7 @@
 		"@deployment/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^2.x.x",
 		"@deployment/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis#semver:^2.x.x",
 		"@deployment/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^2.x.x",
-		"@dependency/multiplePrototypeDelegation": "https://github.com/AppScriptIO/multiplePrototypeDelegation#semver:^2.x.x",
+		"@dependency/handlePrototypeDelegation": "https://github.com/AppScriptIO/handlePrototypeDelegation#semver:^1.x.x",
 		"@deployment/scriptManager": "https://github.com/AppScriptIO/scriptManager#semver:^2.x.x",
 		"neo4j-driver": "^1.7.5",
 		"typescript": "^3.3.3333"
