@@ -1,194 +1,194 @@
-/** Use concrete Database class instances to retrieve nodes and verify the results with a schema - wrap the concrete database with more specific query functions */
+"use strict";var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.isSelfEdge = isSelfEdge;exports.getResource = getResource;exports.getValue = getValue;exports.getExecution = getExecution;exports.getPipe = getPipe;exports.getFork = getFork;exports.getNext = getNext;exports.getConfigure = getConfigure;exports.getCase = getCase;exports.getSelect = getSelect;exports.getFallback = getFallback;exports.getReference = getReference;exports.getExtend = getExtend;exports.getInsert = getInsert;exports.getSubgraph = getSubgraph;exports.getRerouteTraverseReferenceElement = getRerouteTraverseReferenceElement;exports.getReferenceResolutionElement = getReferenceResolutionElement;exports.getSelectionElement = getSelectionElement;exports.getConditionSwitchElement = getConditionSwitchElement;exports.getValueElement = getValueElement;
 
-import assert from 'assert'
-import * as schemeReference from '../../dataModel/graphSchemeReference.js'
+var _assert = _interopRequireDefault(require("assert"));
+var schemeReference = _interopRequireWildcard(require("../../dataModel/graphSchemeReference.js"));
 
-export function isSelfEdge(edge) {
-  return edge.source.identity == edge.destination.identity
+function isSelfEdge(edge) {
+  return edge.source.identity == edge.destination.identity;
 }
 
-export async function getResource({ nodeID }) {
-  let resourceArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.resource })
-  assert(
-    resourceArray.every(n => schemeReference.resourceProperty.context.includes(n.connection.properties.context)),
-    `• Unsupported property value for a RESOURCE connection.`,
-  ) // verify node type
-  return { resourceArray }
+async function getResource({ nodeID }) {
+  let resourceArray = await this.implementation.getNodeConnection.call(this, { direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.resource });
+  (0, _assert.default)(
+  resourceArray.every(n => schemeReference.resourceProperty.context.includes(n.connection.properties.context)),
+  `• Unsupported property value for a RESOURCE connection.`);
+
+  return { resourceArray };
 }
 
-export async function getValue({ nodeID }) {
-  let valueArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.value })
-  return { valueArray: valueArray }
+async function getValue({ nodeID }) {
+  let valueArray = await this.implementation.getNodeConnection.call(this, { direction: 'incoming', nodeID, connectionType: schemeReference.connectionType.value });
+  return { valueArray: valueArray };
 }
 
-export async function getExecution({ nodeID }) {
-  let executeArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.execute })
-  assert(
-    executeArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.process)),
-    `• Unsupported node type for a EXECUTE connection.`,
-  ) // verify node type
-  return { executeArray }
+async function getExecution({ nodeID }) {
+  let executeArray = await this.implementation.getNodeConnection.call(this, { direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.execute });
+  (0, _assert.default)(
+  executeArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.process)),
+  `• Unsupported node type for a EXECUTE connection.`);
+
+  return { executeArray };
 }
 
-export async function getPipe({ nodeID }) {
-  let pipeArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.pipe })
-  assert(
-    pipeArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.process)),
-    `• Unsupported node type for a PIPE connection.`,
-  ) // verify node type
-  return { pipeArray }
+async function getPipe({ nodeID }) {
+  let pipeArray = await this.implementation.getNodeConnection.call(this, { direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.pipe });
+  (0, _assert.default)(
+  pipeArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.process)),
+  `• Unsupported node type for a PIPE connection.`);
+
+  return { pipeArray };
 }
 
-export async function getFork({ nodeID }) {
-  let forkArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.fork })
-  assert(
-    forkArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.port)),
-    `• Unsupported property value for a FORK connection.`,
-  ) // verify node type
-  return { forkArray }
+async function getFork({ nodeID }) {
+  let forkArray = await this.implementation.getNodeConnection.call(this, { direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.fork });
+  (0, _assert.default)(
+  forkArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.port)),
+  `• Unsupported property value for a FORK connection.`);
+
+  return { forkArray };
 }
 
-export async function getNext({ nodeID }) {
-  let nextArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.next })
-  assert(
-    nextArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.stage) || n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
-    `• Unsupported property value for a NEXT connection.`,
-  ) // verify node type
-  return { nextArray }
+async function getNext({ nodeID }) {
+  let nextArray = await this.implementation.getNodeConnection.call(this, { direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.next });
+  (0, _assert.default)(
+  nextArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.stage) || n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
+  `• Unsupported property value for a NEXT connection.`);
+
+  return { nextArray };
 }
 
-export async function getConfigure({ nodeID }) {
-  let configureArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.configure })
-  assert(
-    configureArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.configuration) || n.source.labels.includes(schemeReference.nodeLabel.reroute)),
-    `• Unsupported node type for a CONFIGURE connection.`,
-  ) // verify node type
-  assert(
-    configureArray.every(n => n.connection.properties.setting),
-    `• Missing "setting" property on a CONFIGURE connection.`,
-  )
+async function getConfigure({ nodeID }) {
+  let configureArray = await this.implementation.getNodeConnection.call(this, { direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.configure });
+  (0, _assert.default)(
+  configureArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.configuration) || n.source.labels.includes(schemeReference.nodeLabel.reroute)),
+  `• Unsupported node type for a CONFIGURE connection.`);
 
-  return { configureArray }
+  (0, _assert.default)(
+  configureArray.every(n => n.connection.properties.setting),
+  `• Missing "setting" property on a CONFIGURE connection.`);
+
+
+  return { configureArray };
 }
 
-export async function getCase({ nodeID }) {
-  let caseArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.case })
-  // Note: node type could be any node
-  return { caseArray }
+async function getCase({ nodeID }) {
+  let caseArray = await this.implementation.getNodeConnection.call(this, { direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.case });
+
+  return { caseArray };
 }
 
-export async function getSelect({ nodeID }) {
-  let selectArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.select })
-  // Note: node type could be any node
-  return { selectArray }
+async function getSelect({ nodeID }) {
+  let selectArray = await this.implementation.getNodeConnection.call(this, { direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.select });
+
+  return { selectArray };
 }
 
-export async function getFallback({ nodeID }) {
-  let fallbackArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.fallback })
-  // Note: node type could be any node
-  return { fallbackArray }
+async function getFallback({ nodeID }) {
+  let fallbackArray = await this.implementation.getNodeConnection.call(this, { direction: 'outgoing', nodeID, connectionType: schemeReference.connectionType.fallback });
+
+  return { fallbackArray };
 }
 
-export async function getReference({ nodeID }) {
-  let referenceArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.reference })
-  // TODO: use entrypoint array from TraversalConfig class.
-  assert(
-    referenceArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.stage) || n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
-    `• Unsupported node type for a ${schemeReference.connectionType.reference} connection.`,
-  ) // verify node type
-  return { referenceArray }
+async function getReference({ nodeID }) {
+  let referenceArray = await this.implementation.getNodeConnection.call(this, { direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.reference });
+
+  (0, _assert.default)(
+  referenceArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.stage) || n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
+  `• Unsupported node type for a ${schemeReference.connectionType.reference} connection.`);
+
+  return { referenceArray };
 }
 
-export async function getExtend({ nodeID }) {
-  let extendArray = await this::this.implementation.getNodeConnection({ direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.extend })
-  assert(
-    extendArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
-    `• Unsupported node type for a EXTEND connection.`,
-  ) // verify node type
-  return { extendArray }
+async function getExtend({ nodeID }) {
+  let extendArray = await this.implementation.getNodeConnection.call(this, { direction: 'outgoing', nodeID: nodeID, connectionType: schemeReference.connectionType.extend });
+  (0, _assert.default)(
+  extendArray.every(n => n.destination.labels.includes(schemeReference.nodeLabel.reroute)),
+  `• Unsupported node type for a EXTEND connection.`);
+
+  return { extendArray };
 }
 
-export async function getInsert({ nodeID }) {
-  let insertArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.insert })
-  assert(
-    insertArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.stage)),
-    `• Unsupported node type for a INSERT connection.`,
-  ) // verify node type
-  return { insertArray }
+async function getInsert({ nodeID }) {
+  let insertArray = await this.implementation.getNodeConnection.call(this, { direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.insert });
+  (0, _assert.default)(
+  insertArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.stage)),
+  `• Unsupported node type for a INSERT connection.`);
+
+  return { insertArray };
 }
 
-export async function getSubgraph({ nodeID }) {
-  let subgraphArray = await this::this.implementation.getNodeConnection({ direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.subgraph })
-  assert(
-    subgraphArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.stage) || n.source.labels.includes(schemeReference.nodeLabel.reroute)),
-    `• Unsupported node type for a SUBGRAPH connection.`,
-  ) // verify node type
-  return { subgraphArray }
+async function getSubgraph({ nodeID }) {
+  let subgraphArray = await this.implementation.getNodeConnection.call(this, { direction: 'incoming', nodeID: nodeID, connectionType: schemeReference.connectionType.subgraph });
+  (0, _assert.default)(
+  subgraphArray.every(n => n.source.labels.includes(schemeReference.nodeLabel.stage) || n.source.labels.includes(schemeReference.nodeLabel.reroute)),
+  `• Unsupported node type for a SUBGRAPH connection.`);
+
+  return { subgraphArray };
 }
 
-/*
-      _                                    _           _                         _           
-     / \   __ _  __ _ _ __ ___  __ _  __ _| |_ ___  __| |   __ _ _   _  ___ _ __(_) ___  ___ 
-    / _ \ / _` |/ _` | '__/ _ \/ _` |/ _` | __/ _ \/ _` |  / _` | | | |/ _ \ '__| |/ _ \/ __|
-   / ___ \ (_| | (_| | | |  __/ (_| | (_| | ||  __/ (_| | | (_| | |_| |  __/ |  | |  __/\__ \
-  /_/   \_\__, |\__, |_|  \___|\__, |\__,_|\__\___|\__,_|  \__, |\__,_|\___|_|  |_|\___||___/
-          |___/ |___/          |___/                          |_|                            
-*/
 
-export async function getRerouteTraverseReferenceElement({ nodeID }) {
-  const { extendArray } = await this.getExtend({ nodeID })
-  const { insertArray } = await this.getInsert({ nodeID })
 
-  if (extendArray.length > 1) throw new Error(`• Multiple extend relationships are not supported for Reroute node.`)
 
-  return { extend: extendArray.length > 0 ? extendArray[0] : null, insertArray }
+
+
+
+
+
+
+async function getRerouteTraverseReferenceElement({ nodeID }) {
+  const { extendArray } = await this.getExtend({ nodeID });
+  const { insertArray } = await this.getInsert({ nodeID });
+
+  if (extendArray.length > 1) throw new Error(`• Multiple extend relationships are not supported for Reroute node.`);
+
+  return { extend: extendArray.length > 0 ? extendArray[0] : null, insertArray };
 }
 
-export async function getReferenceResolutionElement({ nodeID }) {
-  const { referenceArray } = await this.getReference({ nodeID })
+async function getReferenceResolutionElement({ nodeID }) {
+  const { referenceArray } = await this.getReference({ nodeID });
 
-  if (referenceArray.length > 1) throw new Error(`• Multiple reference relationships are not supported for Reroute node.`)
+  if (referenceArray.length > 1) throw new Error(`• Multiple reference relationships are not supported for Reroute node.`);
 
-  return { reference: referenceArray.length > 0 ? referenceArray[0] : null }
+  return { reference: referenceArray.length > 0 ? referenceArray[0] : null };
 }
 
-export async function getSelectionElement({ nodeID }) {
-  const { selectArray } = await this.getSelect({ nodeID })
-  const { fallbackArray } = await this.getFallback({ nodeID })
+async function getSelectionElement({ nodeID }) {
+  const { selectArray } = await this.getSelect({ nodeID });
+  const { fallbackArray } = await this.getFallback({ nodeID });
 
-  if (fallbackArray.length > 1) throw new Error(`• Multiple "fallback" relationships are not supported for Selection/Switch node.`)
+  if (fallbackArray.length > 1) throw new Error(`• Multiple "fallback" relationships are not supported for Selection/Switch node.`);
 
-  return { selectArray: selectArray.length > 0 ? selectArray : null, fallback: fallbackArray.length > 0 ? fallbackArray[0] : null }
+  return { selectArray: selectArray.length > 0 ? selectArray : null, fallback: fallbackArray.length > 0 ? fallbackArray[0] : null };
 }
 
-export async function getConditionSwitchElement({ nodeID }) {
-  const { caseArray } = await this.getCase({ nodeID })
+async function getConditionSwitchElement({ nodeID }) {
+  const { caseArray } = await this.getCase({ nodeID });
 
-  return { caseArray: caseArray.length > 0 ? caseArray : null }
+  return { caseArray: caseArray.length > 0 ? caseArray : null };
 }
 
-// Value connection concept implementation
-export async function getValueElement({ nodeID }) {
-  // get VALUE connection
-  let value
-  const { valueArray } = await this.getValue({ nodeID })
-  if (valueArray.length > 1) throw new Error(`• Multiple VALUE relationships are not supported for Process node.`)
-  else if (valueArray.length != 0 && valueArray[0]) return valueArray[0]
+
+async function getValueElement({ nodeID }) {
+
+  let value;
+  const { valueArray } = await this.getValue({ nodeID });
+  if (valueArray.length > 1) throw new Error(`• Multiple VALUE relationships are not supported for Process node.`);else
+  if (valueArray.length != 0 && valueArray[0]) return valueArray[0];
 }
 
-/*
-   __  __             _             _       _   _                          _ _                  
-  |  \/  | __ _ _ __ (_)_ __  _   _| | __ _| |_(_) ___  _ __     __ _  ___(_) |_ ___  _ __  ___ 
-  | |\/| |/ _` | '_ \| | '_ \| | | | |/ _` | __| |/ _ \| '_ \   / _` |/ __| | __/ _ \| '_ \/ __|
-  | |  | | (_| | | | | | |_) | |_| | | (_| | |_| | (_) | | | | | (_| | (__| | || (_) | | | \__ \
-  |_|  |_|\__,_|_| |_|_| .__/ \__,_|_|\__,_|\__|_|\___/|_| |_|  \__,_|\___|_|\__\___/|_| |_|___/
-                       |_|                                                                      
-*/
-// Database models for creating Graph elements (multiple related nodes with their connections).
 
-/** Graph Traversal Model
- * TODO: create query functions for each graph element.
- */
+
+
+
+
+
+
+
+
+
+
+
+
 function reroute() {
   ;`  match (n {key:''})
   create (n)
@@ -207,12 +207,13 @@ function reroute() {
     create (n) -[:RESOURCE {context: "applicationReference"}]-> (n)
   set n:Stage:Process:Function; set n.functionName = "getRequestMethod"
 
-`
+`;
 }
 
 function port() {
   ;`  create (n)-[:FORK]->(n)
   set n:Port
   set n.handlePropagationImplementation = "chronological"
-`
+`;
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL0RhdGFiYXNlL3Byb3RvdHlwZS5qcyJdLCJuYW1lcyI6WyJpc1NlbGZFZGdlIiwiZWRnZSIsInNvdXJjZSIsImlkZW50aXR5IiwiZGVzdGluYXRpb24iLCJnZXRSZXNvdXJjZSIsIm5vZGVJRCIsInJlc291cmNlQXJyYXkiLCJpbXBsZW1lbnRhdGlvbiIsImdldE5vZGVDb25uZWN0aW9uIiwiZGlyZWN0aW9uIiwiY29ubmVjdGlvblR5cGUiLCJzY2hlbWVSZWZlcmVuY2UiLCJyZXNvdXJjZSIsImV2ZXJ5IiwibiIsInJlc291cmNlUHJvcGVydHkiLCJjb250ZXh0IiwiaW5jbHVkZXMiLCJjb25uZWN0aW9uIiwicHJvcGVydGllcyIsImdldFZhbHVlIiwidmFsdWVBcnJheSIsInZhbHVlIiwiZ2V0RXhlY3V0aW9uIiwiZXhlY3V0ZUFycmF5IiwiZXhlY3V0ZSIsImxhYmVscyIsIm5vZGVMYWJlbCIsInByb2Nlc3MiLCJnZXRQaXBlIiwicGlwZUFycmF5IiwicGlwZSIsImdldEZvcmsiLCJmb3JrQXJyYXkiLCJmb3JrIiwicG9ydCIsImdldE5leHQiLCJuZXh0QXJyYXkiLCJuZXh0Iiwic3RhZ2UiLCJyZXJvdXRlIiwiZ2V0Q29uZmlndXJlIiwiY29uZmlndXJlQXJyYXkiLCJjb25maWd1cmUiLCJjb25maWd1cmF0aW9uIiwic2V0dGluZyIsImdldENhc2UiLCJjYXNlQXJyYXkiLCJjYXNlIiwiZ2V0U2VsZWN0Iiwic2VsZWN0QXJyYXkiLCJzZWxlY3QiLCJnZXRGYWxsYmFjayIsImZhbGxiYWNrQXJyYXkiLCJmYWxsYmFjayIsImdldFJlZmVyZW5jZSIsInJlZmVyZW5jZUFycmF5IiwicmVmZXJlbmNlIiwiZ2V0RXh0ZW5kIiwiZXh0ZW5kQXJyYXkiLCJleHRlbmQiLCJnZXRJbnNlcnQiLCJpbnNlcnRBcnJheSIsImluc2VydCIsImdldFN1YmdyYXBoIiwic3ViZ3JhcGhBcnJheSIsInN1YmdyYXBoIiwiZ2V0UmVyb3V0ZVRyYXZlcnNlUmVmZXJlbmNlRWxlbWVudCIsImxlbmd0aCIsIkVycm9yIiwiZ2V0UmVmZXJlbmNlUmVzb2x1dGlvbkVsZW1lbnQiLCJnZXRTZWxlY3Rpb25FbGVtZW50IiwiZ2V0Q29uZGl0aW9uU3dpdGNoRWxlbWVudCIsImdldFZhbHVlRWxlbWVudCJdLCJtYXBwaW5ncyI6Ijs7QUFFQTtBQUNBOztBQUVPLFNBQVNBLFVBQVQsQ0FBb0JDLElBQXBCLEVBQTBCO0FBQy9CLFNBQU9BLElBQUksQ0FBQ0MsTUFBTCxDQUFZQyxRQUFaLElBQXdCRixJQUFJLENBQUNHLFdBQUwsQ0FBaUJELFFBQWhEO0FBQ0Q7O0FBRU0sZUFBZUUsV0FBZixDQUEyQixFQUFFQyxNQUFGLEVBQTNCLEVBQXVDO0FBQzVDLE1BQUlDLGFBQWEsR0FBRyxNQUFZLEtBQUtDLGNBQUwsQ0FBb0JDLGlCQUExQixZQUE0QyxFQUFFQyxTQUFTLEVBQUUsVUFBYixFQUF5QkosTUFBekIsRUFBaUNLLGNBQWMsRUFBRUMsZUFBZSxDQUFDRCxjQUFoQixDQUErQkUsUUFBaEYsRUFBNUMsQ0FBMUI7QUFDQTtBQUNFTixFQUFBQSxhQUFhLENBQUNPLEtBQWQsQ0FBb0JDLENBQUMsSUFBSUgsZUFBZSxDQUFDSSxnQkFBaEIsQ0FBaUNDLE9BQWpDLENBQXlDQyxRQUF6QyxDQUFrREgsQ0FBQyxDQUFDSSxVQUFGLENBQWFDLFVBQWIsQ0FBd0JILE9BQTFFLENBQXpCLENBREY7QUFFRywyREFGSDs7QUFJQSxTQUFPLEVBQUVWLGFBQUYsRUFBUDtBQUNEOztBQUVNLGVBQWVjLFFBQWYsQ0FBd0IsRUFBRWYsTUFBRixFQUF4QixFQUFvQztBQUN6QyxNQUFJZ0IsVUFBVSxHQUFHLE1BQVksS0FBS2QsY0FBTCxDQUFvQkMsaUJBQTFCLFlBQTRDLEVBQUVDLFNBQVMsRUFBRSxVQUFiLEVBQXlCSixNQUF6QixFQUFpQ0ssY0FBYyxFQUFFQyxlQUFlLENBQUNELGNBQWhCLENBQStCWSxLQUFoRixFQUE1QyxDQUF2QjtBQUNBLFNBQU8s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QUYsRUFBZCxDQUE3QjtBQUNBLE1BQUlnQixVQUFVLENBQUMrQyxNQUFYLEdBQW9CLENBQXhCLEVBQTJCLE1BQU0sSUFBSUMsS0FBSixDQUFXLG9FQUFYLENBQU4sQ0FBM0I7QUFDSyxNQUFJaEQsVUFBVSxDQUFDK0MsTUFBWCxJQUFxQixDQUFyQixJQUEwQi9DLFVBQVUsQ0FBQyxDQUFELENBQXhDLEVBQTZDLE9BQU9BLFVBQVUsQ0FBQyxDQUFELENBQWpCO0FBQ25EOzs7Ozs7Ozs7Ozs7Ozs7QUFlRCxTQUFTbUIsT0FBVCxHQUFtQjtBQUNqQixHQUFFOzs7Ozs7Ozs7Ozs7Ozs7OztDQUFEO0FBa0JGOztBQUVELFNBQVNMLElBQVQsR0FBZ0I7QUFDZCxHQUFFOzs7Q0FBRDtBQUlGIiwic291cmNlc0NvbnRlbnQiOlsiLyoqIFVzZSBjb25jcmV0ZSBEYXRhYmFzZSBjbGFzcyBpbnN0YW5jZXMgdG8gcmV0cmlldmUgbm9kZXMgYW5kIHZlcmlmeSB0aGUgcmVzdWx0cyB3aXRoIGEgc2NoZW1hIC0gd3JhcCB0aGUgY29uY3JldGUgZGF0YWJhc2Ugd2l0aCBtb3JlIHNwZWNpZmljIHF1ZXJ5IGZ1bmN0aW9ucyAqL1xuXG5pbXBvcnQgYXNzZXJ0IGZyb20gJ2Fzc2VydCdcbmltcG9ydCAqIGFzIHNjaGVtZVJlZmVyZW5jZSBmcm9tICcuLi8uLi9kYXRhTW9kZWwvZ3JhcGhTY2hlbWVSZWZlcmVuY2UuanMnXG5cbmV4cG9ydCBmdW5jdGlvbiBpc1NlbGZFZGdlKGVkZ2UpIHtcbiAgcmV0dXJuIGVkZ2Uuc291cmNlLmlkZW50aXR5ID09IGVkZ2UuZGVzdGluYXRpb24uaWRlbnRpdHlcbn1cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldFJlc291cmNlKHsgbm9kZUlEIH0pIHtcbiAgbGV0IHJlc291cmNlQXJyYXkgPSBhd2FpdCB0aGlzOjp0aGlzLmltcGxlbWVudGF0aW9uLmdldE5vZGVDb25uZWN0aW9uKHsgZGlyZWN0aW9uOiAnaW5jb21pbmcnLCBub2RlSUQsIGNvbm5lY3Rpb25UeXBlOiBzY2hlbWVSZWZlcmVuY2UuY29ubmVjdGlvblR5cGUucmVzb3VyY2UgfSlcbiAgYXNzZXJ0KFxuICAgIHJlc291cmNlQXJyYXkuZXZlcnkobiA9PiBzY2hlbWVSZWZlcmVuY2UucmVzb3VyY2VQcm9wZXJ0eS5jb250ZXh0LmluY2x1ZGVzKG4uY29ubmVjdGlvbi5wcm9wZXJ0aWVzLmNvbnRleHQpKSxcbiAgICBg4oCiIFVuc3VwcG9ydGVkIHByb3BlcnR5IHZhbHVlIGZvciBhIFJFU09VUkNFIGNvbm5lY3Rpb24uYCxcbiAgKSAvLyB2ZXJpZnkgbm9kZSB0eXBlXG4gIHJldHVybiB7IHJlc291cmNlQXJyYXkgfVxufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0VmFsdWUoeyBub2RlSUQgfSkge1xuICBsZXQgdmFsdWVBcnJheSA9IGF3YWl0IHRoaXM6OnRoaXMuaW1wbGVtZW50YXRpb24uZ2V0Tm9kZUNvbm5lY3Rpb24oeyBkaXJlY3Rpb246ICdpbmNvbWluZycsIG5vZGVJRCwgY29ubmVjdGlvblR5cGU6IHNjaGVtZVJlZmVyZW5jZS5jb25uZWN0aW9uVHlwZS52YWx1ZSB9KVxuICByZXR1cm4geyB2YWx1ZUFycmF5OiB2YWx1ZUFycmF5IH1cbn1cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldEV4ZWN1dGlvbih7IG5vZGVJRCB9KSB7XG4gIGxldCBleGVjdXRlQXJyYXkgPSBhd2FpdCB0aGlzOjp0aGlzLmltcGxlbWVudGF0aW9uLmdldE5vZGVDb25uZWN0aW9uKHsgZGlyZWN0aW9uOiAnb3V0Z29pbmcnLCBub2RlSUQsIGNvbm5lY3Rpb25UeXBlOiBzY2hlbWVSZWZlcmVuY2UuY29ubmVjdGlvblR5cGUuZXhlY3V0ZSB9KVxuICBhc3NlcnQoXG4gICAgZXhlY3V0ZUFycmF5LmV2ZXJ5KG4gPT4gbi5kZXN0aW5hdGlvbi5sYWJlbHMuaW5jbHVkZXMoc2NoZW1lUmVmZXJlbmNlLm5vZGVMYWJlbC5wcm9jZXNzKSksXG4gICAgYOKAoiBVbnN1cHBvcnRlZCBub2RlIHR5cGUgZm9yIGEgRVhFQ1VURSBjb25uZWN0aW9uLmAsXG4gICkgLy8gdmVyaWZ5IG5vZGUgdHlwZVxuICByZXR1cm4geyBleGVjdXRlQXJyYXkgfVxufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0UGlwZSh7IG5vZGVJRCB9KSB7XG4gIGxldCBwaXBlQXJyYXkgPSBhd2FpdCB0aGlzOjp0aGlzLmltcGxlbWVudGF0aW9uLmdldE5vZGVDb25uZWN0aW9uKHsgZGlyZWN0aW9uOiAnb3V0Z29pbmcnLCBub2RlSUQsIGNvbm5lY3Rpb25UeXBlOiBzY2hlbWVSZWZlcmVuY2UuY29ubmVjdGlvblR5cGUucGlwZSB9KVxuICBhc3NlcnQoXG4gICAgcGlwZUFycmF5LmV2ZXJ5KG4gPT4gbi5kZXN0aW5hdGlvbi5sYWJlbHMuaW5jbHVkZXMoc2NoZW1lUmVmZXJlbmNlLm5vZGVMYWJlbC5wcm9jZXNzKSksXG4gICAgYOKAoiBVbnN1cHBvcnRlZCBub2RlIHR5cGUgZm9yIGEgUElQRSBjb25uZWN0aW9uLmAsXG4gICkgLy8gdmVyaWZ5IG5vZGUgdHlwZVxuICByZXR1cm4geyBwaXBlQXJyYXkgfVxufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0Rm9yayh7IG5vZGVJRCB9KSB7XG4gIGxldCBmb3JrQXJyYXkgPSBhd2FpdCB0aGlzOjp0aGlzLmltcGxlbWVudGF0aW9uLmdldE5vZGVDb25uZWN0aW9uKHsgZGlyZWN0aW9uOiAnb3V0Z29pbmcnLCBub2RlSUQ6IG5vZGVJRCwgY29ubmVjdGlvblR5cGU6IHNjaGVtZVJlZmVyZW5jZS5jb25uZWN0aW9uVHlwZS5mb3JrIH0pXG4gIGFzc2VydChcbiAgICBmb3JrQXJyYXkuZXZlcnkobiA9PiBuLmRlc3RpbmF0aW9uLmxhYmVscy5pbmNsdWRlcyhzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnBvcnQpKSxcbiAgICBg4oCiIFVuc3VwcG9ydGVkIHByb3BlcnR5IHZhbHVlIGZvciBhIEZPUksgY29ubmVjdGlvbi5gLFxuICApIC8vIHZlcmlmeSBub2RlIHR5cGVcbiAgcmV0dXJuIHsgZm9ya0FycmF5IH1cbn1cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldE5leHQoeyBub2RlSUQgfSkge1xuICBsZXQgbmV4dEFycmF5ID0gYXdhaXQgdGhpczo6dGhpcy5pbXBsZW1lbnRhdGlvbi5nZXROb2RlQ29ubmVjdGlvbih7IGRpcmVjdGlvbjogJ291dGdvaW5nJywgbm9kZUlEOiBub2RlSUQsIGNvbm5lY3Rpb25UeXBlOiBzY2hlbWVSZWZlcmVuY2UuY29ubmVjdGlvblR5cGUubmV4dCB9KVxuICBhc3NlcnQoXG4gICAgbmV4dEFycmF5LmV2ZXJ5KG4gPT4gbi5kZXN0aW5hdGlvbi5sYWJlbHMuaW5jbHVkZXMoc2NoZW1lUmVmZXJlbmNlLm5vZGVMYWJlbC5zdGFnZSkgfHwgbi5kZXN0aW5hdGlvbi5sYWJlbHMuaW5jbHVkZXMoc2NoZW1lUmVmZXJlbmNlLm5vZGVMYWJlbC5yZXJvdXRlKSksXG4gICAgYOKAoiBVbnN1cHBvcnRlZCBwcm9wZXJ0eSB2YWx1ZSBmb3IgYSBORVhUIGNvbm5lY3Rpb24uYCxcbiAgKSAvLyB2ZXJpZnkgbm9kZSB0eXBlXG4gIHJldHVybiB7IG5leHRBcnJheSB9XG59XG5cbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBnZXRDb25maWd1cmUoeyBub2RlSUQgfSkge1xuICBsZXQgY29uZmlndXJlQXJyYXkgPSBhd2FpdCB0aGlzOjp0aGlzLmltcGxlbWVudGF0aW9uLmdldE5vZGVDb25uZWN0aW9uKHsgZGlyZWN0aW9uOiAnaW5jb21pbmcnLCBub2RlSUQ6IG5vZGVJRCwgY29ubmVjdGlvblR5cGU6IHNjaGVtZVJlZmVyZW5jZS5jb25uZWN0aW9uVHlwZS5jb25maWd1cmUgfSlcbiAgYXNzZXJ0KFxuICAgIGNvbmZpZ3VyZUFycmF5LmV2ZXJ5KG4gPT4gbi5zb3VyY2UubGFiZWxzLmluY2x1ZGVzKHNjaGVtZVJlZmVyZW5jZS5ub2RlTGFiZWwuY29uZmlndXJhdGlvbikgfHwgbi5zb3VyY2UubGFiZWxzLmluY2x1ZGVzKHNjaGVtZVJlZmVyZW5jZS5ub2RlTGFiZWwucmVyb3V0ZSkpLFxuICAgIGDigKIgVW5zdXBwb3J0ZWQgbm9kZSB0eXBlIGZvciBhIENPTkZJR1VSRSBjb25uZWN0aW9uLmAsXG4gICkgLy8gdmVyaWZ5IG5vZGUgdHlwZVxuICBhc3NlcnQoXG4gICAgY29uZmlndXJlQXJyYXkuZXZlcnkobiA9PiBuLmNvbm5lY3Rpb24ucHJvcGVydGllcy5zZXR0aW5nKSxcbiAgICBg4oCiIE1pc3NpbmcgXCJzZXR0aW5nXCIgcHJvcGVydHkgb24gYSBDT05GSUdVUkUgY29ubmVjdGlvbi5gLFxuICApXG5cbiAgcmV0dXJuIHsgY29uZmlndXJlQXJyYXkgfVxufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0Q2FzZSh7IG5vZGVJRCB9KSB7XG4gIGxldCBjYXNlQXJyYXkgPSBhd2FpdCB0aGlzOjp0aGlzLmltcGxlbWVudGF0aW9uLmdldE5vZGVDb25uZWN0aW9uKHsgZGlyZWN0aW9uOiAnb3V0Z29pbmcnLCBub2RlSUQsIGNvbm5lY3Rpb25UeXBlOiBzY2hlbWVSZWZlcmVuY2UuY29ubmVjdGlvblR5cGUuY2FzZSB9KVxuICAvLyBOb3RlOiBub2RlIHR5cGUgY291bGQgYmUgYW55IG5vZGVcbiAgcmV0dXJuIHsgY2FzZUFycmF5IH1cbn1cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldFNlbGVjdCh7IG5vZGVJRCB9KSB7XG4gIGxldCBzZWxlY3RBcnJheSA9IGF3YWl0IHRoaXM6OnRoaXMuaW1wbGVtZW50YXRpb24uZ2V0Tm9kZUNvbm5lY3Rpb24oeyBkaXJlY3Rpb246ICdvdXRnb2luZycsIG5vZGVJRCwgY29ubmVjdGlvblR5cGU6IHNjaGVtZVJlZmVyZW5jZS5jb25uZWN0aW9uVHlwZS5zZWxlY3QgfSlcbiAgLy8gTm90ZTogbm9kZSB0eXBlIGNvdWxkIGJlIGFueSBub2RlXG4gIHJldHVybiB7IHNlbGVjdEFycmF5IH1cbn1cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldEZhbGxiYWNrKHsgbm9kZUlEIH0pIHtcbiAgbGV0IGZhbGxiYWNrQXJyYXkgPSBhd2FpdCB0aGlzOjp0aGlzLmltcGxlbWVudGF0aW9uLmdldE5vZGVDb25uZWN0aW9uKHsgZGlyZWN0aW9uOiAnb3V0Z29pbmcnLCBub2RlSUQsIGNvbm5lY3Rpb25UeXBlOiBzY2hlbWVSZWZlcmVuY2UuY29ubmVjdGlvblR5cGUuZmFsbGJhY2sgfSlcbiAgLy8gTm90ZTogbm9kZSB0eXBlIGNvdWxkIGJlIGFueSBub2RlXG4gIHJldHVybiB7IGZhbGxiYWNrQXJyYXkgfVxufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0UmVmZXJlbmNlKHsgbm9kZUlEIH0pIHtcbiAgbGV0IHJlZmVyZW5jZUFycmF5ID0gYXdhaXQgdGhpczo6dGhpcy5pbXBsZW1lbnRhdGlvbi5nZXROb2RlQ29ubmVjdGlvbih7IGRpcmVjdGlvbjogJ291dGdvaW5nJywgbm9kZUlEOiBub2RlSUQsIGNvbm5lY3Rpb25UeXBlOiBzY2hlbWVSZWZlcmVuY2UuY29ubmVjdGlvblR5cGUucmVmZXJlbmNlIH0pXG4gIC8vIFRPRE86IHVzZSBlbnRyeXBvaW50IGFycmF5IGZyb20gVHJhdmVyc2FsQ29uZmlnIGNsYXNzLlxuICBhc3NlcnQoXG4gICAgcmVmZXJlbmNlQXJyYXkuZXZlcnkobiA9PiBuLmRlc3RpbmF0aW9uLmxhYmVscy5pbmNsdWRlcyhzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnN0YWdlKSB8fCBuLmRlc3RpbmF0aW9uLmxhYmVscy5pbmNsdWRlcyhzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnJlcm91dGUpKSxcbiAgICBg4oCiIFVuc3VwcG9ydGVkIG5vZGUgdHlwZSBmb3IgYSAke3NjaGVtZVJlZmVyZW5jZS5jb25uZWN0aW9uVHlwZS5yZWZlcmVuY2V9IGNvbm5lY3Rpb24uYCxcbiAgKSAvLyB2ZXJpZnkgbm9kZSB0eXBlXG4gIHJldHVybiB7IHJlZmVyZW5jZUFycmF5IH1cbn1cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldEV4dGVuZCh7IG5vZGVJRCB9KSB7XG4gIGxldCBleHRlbmRBcnJheSA9IGF3YWl0IHRoaXM6OnRoaXMuaW1wbGVtZW50YXRpb24uZ2V0Tm9kZUNvbm5lY3Rpb24oeyBkaXJlY3Rpb246ICdvdXRnb2luZycsIG5vZGVJRDogbm9kZUlELCBjb25uZWN0aW9uVHlwZTogc2NoZW1lUmVmZXJlbmNlLmNvbm5lY3Rpb25UeXBlLmV4dGVuZCB9KVxuICBhc3NlcnQoXG4gICAgZXh0ZW5kQXJyYXkuZXZlcnkobiA9PiBuLmRlc3RpbmF0aW9uLmxhYmVscy5pbmNsdWRlcyhzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnJlcm91dGUpKSxcbiAgICBg4oCiIFVuc3VwcG9ydGVkIG5vZGUgdHlwZSBmb3IgYSBFWFRFTkQgY29ubmVjdGlvbi5gLFxuICApIC8vIHZlcmlmeSBub2RlIHR5cGVcbiAgcmV0dXJuIHsgZXh0ZW5kQXJyYXkgfVxufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0SW5zZXJ0KHsgbm9kZUlEIH0pIHtcbiAgbGV0IGluc2VydEFycmF5ID0gYXdhaXQgdGhpczo6dGhpcy5pbXBsZW1lbnRhdGlvbi5nZXROb2RlQ29ubmVjdGlvbih7IGRpcmVjdGlvbjogJ2luY29taW5nJywgbm9kZUlEOiBub2RlSUQsIGNvbm5lY3Rpb25UeXBlOiBzY2hlbWVSZWZlcmVuY2UuY29ubmVjdGlvblR5cGUuaW5zZXJ0IH0pXG4gIGFzc2VydChcbiAgICBpbnNlcnRBcnJheS5ldmVyeShuID0+IG4uc291cmNlLmxhYmVscy5pbmNsdWRlcyhzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnN0YWdlKSksXG4gICAgYOKAoiBVbnN1cHBvcnRlZCBub2RlIHR5cGUgZm9yIGEgSU5TRVJUIGNvbm5lY3Rpb24uYCxcbiAgKSAvLyB2ZXJpZnkgbm9kZSB0eXBlXG4gIHJldHVybiB7IGluc2VydEFycmF5IH1cbn1cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldFN1YmdyYXBoKHsgbm9kZUlEIH0pIHtcbiAgbGV0IHN1YmdyYXBoQXJyYXkgPSBhd2FpdCB0aGlzOjp0aGlzLmltcGxlbWVudGF0aW9uLmdldE5vZGVDb25uZWN0aW9uKHsgZGlyZWN0aW9uOiAnaW5jb21pbmcnLCBub2RlSUQ6IG5vZGVJRCwgY29ubmVjdGlvblR5cGU6IHNjaGVtZVJlZmVyZW5jZS5jb25uZWN0aW9uVHlwZS5zdWJncmFwaCB9KVxuICBhc3NlcnQoXG4gICAgc3ViZ3JhcGhBcnJheS5ldmVyeShuID0+IG4uc291cmNlLmxhYmVscy5pbmNsdWRlcyhzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnN0YWdlKSB8fCBuLnNvdXJjZS5sYWJlbHMuaW5jbHVkZXMoc2NoZW1lUmVmZXJlbmNlLm5vZGVMYWJlbC5yZXJvdXRlKSksXG4gICAgYOKAoiBVbnN1cHBvcnRlZCBub2RlIHR5cGUgZm9yIGEgU1VCR1JBUEggY29ubmVjdGlvbi5gLFxuICApIC8vIHZlcmlmeSBub2RlIHR5cGVcbiAgcmV0dXJuIHsgc3ViZ3JhcGhBcnJheSB9XG59XG5cbi8qXG4gICAgICBfICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXyAgICAgICAgICAgXyAgICAgICAgICAgICAgICAgICAgICAgICBfICAgICAgICAgICBcbiAgICAgLyBcXCAgIF9fIF8gIF9fIF8gXyBfXyBfX18gIF9fIF8gIF9fIF98IHxfIF9fXyAgX198IHwgICBfXyBfIF8gICBfICBfX18gXyBfXyhfKSBfX18gIF9fXyBcbiAgICAvIF8gXFwgLyBfYCB8LyBfYCB8ICdfXy8gXyBcXC8gX2AgfC8gX2AgfCBfXy8gXyBcXC8gX2AgfCAgLyBfYCB8IHwgfCB8LyBfIFxcICdfX3wgfC8gXyBcXC8gX198XG4gICAvIF9fXyBcXCAoX3wgfCAoX3wgfCB8IHwgIF9fLyAoX3wgfCAoX3wgfCB8fCAgX18vIChffCB8IHwgKF98IHwgfF98IHwgIF9fLyB8ICB8IHwgIF9fL1xcX18gXFxcbiAgL18vICAgXFxfXFxfXywgfFxcX18sIHxffCAgXFxfX198XFxfXywgfFxcX18sX3xcXF9fXFxfX198XFxfXyxffCAgXFxfXywgfFxcX18sX3xcXF9fX3xffCAgfF98XFxfX198fF9fXy9cbiAgICAgICAgICB8X19fLyB8X19fLyAgICAgICAgICB8X19fLyAgICAgICAgICAgICAgICAgICAgICAgICAgfF98ICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuKi9cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldFJlcm91dGVUcmF2ZXJzZVJlZmVyZW5jZUVsZW1lbnQoeyBub2RlSUQgfSkge1xuICBjb25zdCB7IGV4dGVuZEFycmF5IH0gPSBhd2FpdCB0aGlzLmdldEV4dGVuZCh7IG5vZGVJRCB9KVxuICBjb25zdCB7IGluc2VydEFycmF5IH0gPSBhd2FpdCB0aGlzLmdldEluc2VydCh7IG5vZGVJRCB9KVxuXG4gIGlmIChleHRlbmRBcnJheS5sZW5ndGggPiAxKSB0aHJvdyBuZXcgRXJyb3IoYOKAoiBNdWx0aXBsZSBleHRlbmQgcmVsYXRpb25zaGlwcyBhcmUgbm90IHN1cHBvcnRlZCBmb3IgUmVyb3V0ZSBub2RlLmApXG5cbiAgcmV0dXJuIHsgZXh0ZW5kOiBleHRlbmRBcnJheS5sZW5ndGggPiAwID8gZXh0ZW5kQXJyYXlbMF0gOiBudWxsLCBpbnNlcnRBcnJheSB9XG59XG5cbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBnZXRSZWZlcmVuY2VSZXNvbHV0aW9uRWxlbWVudCh7IG5vZGVJRCB9KSB7XG4gIGNvbnN0IHsgcmVmZXJlbmNlQXJyYXkgfSA9IGF3YWl0IHRoaXMuZ2V0UmVmZXJlbmNlKHsgbm9kZUlEIH0pXG5cbiAgaWYgKHJlZmVyZW5jZUFycmF5Lmxlbmd0aCA+IDEpIHRocm93IG5ldyBFcnJvcihg4oCiIE11bHRpcGxlIHJlZmVyZW5jZSByZWxhdGlvbnNoaXBzIGFyZSBub3Qgc3VwcG9ydGVkIGZvciBSZXJvdXRlIG5vZGUuYClcblxuICByZXR1cm4geyByZWZlcmVuY2U6IHJlZmVyZW5jZUFycmF5Lmxlbmd0aCA+IDAgPyByZWZlcmVuY2VBcnJheVswXSA6IG51bGwgfVxufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0U2VsZWN0aW9uRWxlbWVudCh7IG5vZGVJRCB9KSB7XG4gIGNvbnN0IHsgc2VsZWN0QXJyYXkgfSA9IGF3YWl0IHRoaXMuZ2V0U2VsZWN0KHsgbm9kZUlEIH0pXG4gIGNvbnN0IHsgZmFsbGJhY2tBcnJheSB9ID0gYXdhaXQgdGhpcy5nZXRGYWxsYmFjayh7IG5vZGVJRCB9KVxuXG4gIGlmIChmYWxsYmFja0FycmF5Lmxlbmd0aCA+IDEpIHRocm93IG5ldyBFcnJvcihg4oCiIE11bHRpcGxlIFwiZmFsbGJhY2tcIiByZWxhdGlvbnNoaXBzIGFyZSBub3Qgc3VwcG9ydGVkIGZvciBTZWxlY3Rpb24vU3dpdGNoIG5vZGUuYClcblxuICByZXR1cm4geyBzZWxlY3RBcnJheTogc2VsZWN0QXJyYXkubGVuZ3RoID4gMCA/IHNlbGVjdEFycmF5IDogbnVsbCwgZmFsbGJhY2s6IGZhbGxiYWNrQXJyYXkubGVuZ3RoID4gMCA/IGZhbGxiYWNrQXJyYXlbMF0gOiBudWxsIH1cbn1cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGdldENvbmRpdGlvblN3aXRjaEVsZW1lbnQoeyBub2RlSUQgfSkge1xuICBjb25zdCB7IGNhc2VBcnJheSB9ID0gYXdhaXQgdGhpcy5nZXRDYXNlKHsgbm9kZUlEIH0pXG5cbiAgcmV0dXJuIHsgY2FzZUFycmF5OiBjYXNlQXJyYXkubGVuZ3RoID4gMCA/IGNhc2VBcnJheSA6IG51bGwgfVxufVxuXG4vLyBWYWx1ZSBjb25uZWN0aW9uIGNvbmNlcHQgaW1wbGVtZW50YXRpb25cbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBnZXRWYWx1ZUVsZW1lbnQoeyBub2RlSUQgfSkge1xuICAvLyBnZXQgVkFMVUUgY29ubmVjdGlvblxuICBsZXQgdmFsdWVcbiAgY29uc3QgeyB2YWx1ZUFycmF5IH0gPSBhd2FpdCB0aGlzLmdldFZhbHVlKHsgbm9kZUlEIH0pXG4gIGlmICh2YWx1ZUFycmF5Lmxlbmd0aCA+IDEpIHRocm93IG5ldyBFcnJvcihg4oCiIE11bHRpcGxlIFZBTFVFIHJlbGF0aW9uc2hpcHMgYXJlIG5vdCBzdXBwb3J0ZWQgZm9yIFByb2Nlc3Mgbm9kZS5gKVxuICBlbHNlIGlmICh2YWx1ZUFycmF5Lmxlbmd0aCAhPSAwICYmIHZhbHVlQXJyYXlbMF0pIHJldHVybiB2YWx1ZUFycmF5WzBdXG59XG5cbi8qXG4gICBfXyAgX18gICAgICAgICAgICAgXyAgICAgICAgICAgICBfICAgICAgIF8gICBfICAgICAgICAgICAgICAgICAgICAgICAgICBfIF8gICAgICAgICAgICAgICAgICBcbiAgfCAgXFwvICB8IF9fIF8gXyBfXyAoXylfIF9fICBfICAgX3wgfCBfXyBffCB8XyhfKSBfX18gIF8gX18gICAgIF9fIF8gIF9fXyhfKSB8XyBfX18gIF8gX18gIF9fXyBcbiAgfCB8XFwvfCB8LyBfYCB8ICdfIFxcfCB8ICdfIFxcfCB8IHwgfCB8LyBfYCB8IF9ffCB8LyBfIFxcfCAnXyBcXCAgIC8gX2AgfC8gX198IHwgX18vIF8gXFx8ICdfIFxcLyBfX3xcbiAgfCB8ICB8IHwgKF98IHwgfCB8IHwgfCB8XykgfCB8X3wgfCB8IChffCB8IHxffCB8IChfKSB8IHwgfCB8IHwgKF98IHwgKF9ffCB8IHx8IChfKSB8IHwgfCBcXF9fIFxcXG4gIHxffCAgfF98XFxfXyxffF98IHxffF98IC5fXy8gXFxfXyxffF98XFxfXyxffFxcX198X3xcXF9fXy98X3wgfF98ICBcXF9fLF98XFxfX198X3xcXF9fXFxfX18vfF98IHxffF9fXy9cbiAgICAgICAgICAgICAgICAgICAgICAgfF98ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuKi9cbi8vIERhdGFiYXNlIG1vZGVscyBmb3IgY3JlYXRpbmcgR3JhcGggZWxlbWVudHMgKG11bHRpcGxlIHJlbGF0ZWQgbm9kZXMgd2l0aCB0aGVpciBjb25uZWN0aW9ucykuXG5cbi8qKiBHcmFwaCBUcmF2ZXJzYWwgTW9kZWxcbiAqIFRPRE86IGNyZWF0ZSBxdWVyeSBmdW5jdGlvbnMgZm9yIGVhY2ggZ3JhcGggZWxlbWVudC5cbiAqL1xuZnVuY3Rpb24gcmVyb3V0ZSgpIHtcbiAgO2AgIG1hdGNoIChuIHtrZXk6Jyd9KVxuICBjcmVhdGUgKG4pXG4gICAgLVs6Q0FTRSB7ZXhwZWN0ZWQ6IFwiR0VUXCJ9XS0+XG4gICAgKHI6UmVyb3V0ZSB7bmFtZTogJ3JlcXVlc3QgVVJMIHBhdGggc3dpdGNoJ30pXG4gICAgICAgIGNyZWF0ZSAociktWzpSRUZFUkVOQ0Uge3Jlc29sdXRpb25JbXBsZW1lbnRhdGlvbjogXCJjYXNlU3dpdGNoXCJ9XS0+IChyKVxuICBjcmVhdGUgKHIpXG4gICAgPC1bOlZBTFVFIHtpbXBsZW1lbnRhdGlvbjogXCJjb25kaXRpb25TdWJncmFwaFwifV0tXG4gICAgKHM6U3RhZ2U6UHJvY2VzczpGdW5jdGlvbiB7ZnVuY3Rpb25OYW1lOiBcImdldFVybFBhdGhMZXZlbDFcIn0pXG4gICAgICAgIGNyZWF0ZSAocyktWzpFWEVDVVRFXS0+KHMpXG4gICAgICAgIGNyZWF0ZSAocyktWzpSRVNPVVJDRSB7Y29udGV4dDogXCJhcHBsaWNhdGlvblJlZmVyZW5jZVwifV0tPihzKVxuXG4gIG1hdGNoIChuIHtrZXk6ICcnfSlcbiAgICBjcmVhdGUgKG4pIC1bOlZBTFVFIHtpbXBsZW1lbnRhdGlvbjogXCJjb25kaXRpb25TdWJncmFwaFwifV0tPiAobilcbiAgICBjcmVhdGUgKG4pIC1bOkVYRUNVVEVdLT4gKG4pXG4gICAgY3JlYXRlIChuKSAtWzpSRVNPVVJDRSB7Y29udGV4dDogXCJhcHBsaWNhdGlvblJlZmVyZW5jZVwifV0tPiAobilcbiAgc2V0IG46U3RhZ2U6UHJvY2VzczpGdW5jdGlvbjsgc2V0IG4uZnVuY3Rpb25OYW1lID0gXCJnZXRSZXF1ZXN0TWV0aG9kXCJcblxuYFxufVxuXG5mdW5jdGlvbiBwb3J0KCkge1xuICA7YCAgY3JlYXRlIChuKS1bOkZPUktdLT4obilcbiAgc2V0IG46UG9ydFxuICBzZXQgbi5oYW5kbGVQcm9wYWdhdGlvbkltcGxlbWVudGF0aW9uID0gXCJjaHJvbm9sb2dpY2FsXCJcbmBcbn1cbiJdfQ==

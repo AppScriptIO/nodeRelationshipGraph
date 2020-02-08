@@ -1,220 +1,220 @@
-import assert from 'assert'
-import EventEmitter from 'events'
-import { removeUndefinedFromObject } from '@dependency/handleJSNativeDataStructure'
-import * as schemeReference from '../../dataModel/graphSchemeReference.js'
-import * as stageNode from './method/stageNode.js'
-import * as rerouteNode from './method/rerouteNode.js'
+"use strict";var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.TraverserPosition = void 0;var _assert = _interopRequireDefault(require("assert"));
+var _events = _interopRequireDefault(require("events"));
+var _handleJSNativeDataStructure = require("@dependency/handleJSNativeDataStructure");
+var schemeReference = _interopRequireWildcard(require("../../dataModel/graphSchemeReference.js"));
+var stageNode = _interopRequireWildcard(require("./method/stageNode.js"));
+var rerouteNode = _interopRequireWildcard(require("./method/rerouteNode.js"));
 
-// represents the current traversion of a node with it's properties.
-// & represents traversal config - Handles parameter hierarchy handling
-/** 
- * TODO:  REFACTOR adding Traversal description class - ability to pick a defined set of implementation keys to be used to gether - e.g. implementation type: Condition, Middleware, Template, Schema, Shellscript.
- - https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/graphdb/traversal/TraversalConfig.html
- - Implement 'depthAffected' for the affected depth of the configure connections on a stage and its child nodes.
- */
-export class TraverserPosition {
-  static defaultEvaluationHierarchyKey = {
-    propagation: schemeReference.evaluationOption.propagation.continue,
-    aggregation: schemeReference.evaluationOption.aggregation.include,
-  }
-  // implementation keys of node instance own config parameters and of default values set in function scope
-  // hardcoded default implementation values matching the implementations from the instance initialization of Graph class.
-  static defaultTraversalImplementationKey = {
-    processNode: 'returnDataItemKey',
-    portNode: 'nestedNode',
-    aggregator: 'AggregatorArray',
-    traversalInterception: 'processThenTraverse',
-    // entrypoint node implementations - in the core code
-    [schemeReference.nodeLabel.reroute]: 'traverseReference',
-    [schemeReference.nodeLabel.stage]: 'stageNode',
-  }
-  static entrypointNodeImplementation = {
-    [schemeReference.nodeLabel.reroute]: rerouteNode,
-    [schemeReference.nodeLabel.stage]: stageNode,
-  }
-  static entrypointNodeArray = [schemeReference.nodeLabel.reroute, schemeReference.nodeLabel.stage]
-  // get the type of current node labels which is considered an entrypoint
+
+
+
+
+
+
+
+class TraverserPosition {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   static getEntrypointNodeType({ node }) {
-    for (let nodeLabel of TraverserPosition.entrypointNodeArray) if (node.labels.includes(nodeLabel)) return nodeLabel
-    // if no label is permitted as an entrypoint type:
-    throw new Error(`• Unsupported entrypoint node type for traversal function - ${node.labels}`)
+    for (let nodeLabel of TraverserPosition.entrypointNodeArray) if (node.labels.includes(nodeLabel)) return nodeLabel;
+
+    throw new Error(`• Unsupported entrypoint node type for traversal function - ${node.labels}`);
   }
 
-  node
-  traverser
-  aggregator
-  traversalImplementationHierarchy = {}
-  evaluationHierarchy = {} // evaluation object that contains configuration relating to traverser action on the current position
-  evaluation
-  implementation
-  path
-  depth
-  eventEmitter
+
+
+
+
+
+
+
+
+
+
 
   constructor({
     node,
     traverser,
-    depth = 0, // <type Number> level of recursion - allows to identify entrypoint level (toplevel) that needs to return the value of aggregator.
-    path = null, // path to the current traversal.  // TODO: implement path sequence preservation. allow for the node traverse function to rely on the current path data.
-    /* supported events: 'nodeTraversalCompleted' */
-    eventEmitter = new EventEmitter(), // create an event emitter to catch events from nested nodes of this node during their traversals.
-    parentTraverserPosition,
-  }) {
-    this.node = node
-    this.traverser = traverser
-    this.path = parentTraverserPosition ? parentTraverserPosition.path : path
-    this.depth = parentTraverserPosition ? parentTraverserPosition.depth + 1 : depth // increase traversal depth
-    this.eventEmitter = eventEmitter
-    this.emitCompletedTraversal = (...args) => this.eventEmitter.emit('nodeTraversalCompleted', ...args) // callback for easier usage
+    depth = 0,
+    path = null,
+
+    eventEmitter = new _events.default(),
+    parentTraverserPosition })
+  {var _ref, _this$traverser$conte;this.traversalImplementationHierarchy = {};this.evaluationHierarchy = {};
+    this.node = node;
+    this.traverser = traverser;
+    this.path = parentTraverserPosition ? parentTraverserPosition.path : path;
+    this.depth = parentTraverserPosition ? parentTraverserPosition.depth + 1 : depth;
+    this.eventEmitter = eventEmitter;
+    this.emitCompletedTraversal = (...args) => this.eventEmitter.emit('nodeTraversalCompleted', ...args);
 
     this.traversalImplementationHierarchy = {
-      // Context instance parameter
-      context: this.traverser.context?.implementationKey || {} |> removeUndefinedFromObject,
-      // parent arguments
-      // TODO: deal with depth property configuration effect in nested nodes.
-      parent: parentTraverserPosition ? parentTraverserPosition.getTraversalImplementationKey() || {} : {},
-    }
-    this.evaluationHierarchy = {}
 
-    return this
+      context: (_ref = ((_this$traverser$conte = this.traverser.context) === null || _this$traverser$conte === void 0 ? void 0 : _this$traverser$conte.implementationKey) || {}, (0, _handleJSNativeDataStructure.removeUndefinedFromObject)(_ref)),
+
+
+      parent: parentTraverserPosition ? parentTraverserPosition.getTraversalImplementationKey() || {} : {} };
+
+    this.evaluationHierarchy = {};
+
+    return this;
   }
 
-  // calculate config and set own parameters
+
   initialize() {
     if (!this.aggregator) {
-      let Aggregator = this.getImplementationCallback({ key: 'aggregator' })() // returns a function that can be passed additional hierarchy parameters
-      this.aggregator = new Aggregator()
+      let Aggregator = this.getImplementationCallback({ key: 'aggregator' })();
+      this.aggregator = new Aggregator();
     }
   }
 
   setEvaluationHierarchy(parameterType, evaluation) {
-    if (!this.evaluationHierarchy[parameterType]) this.evaluationHierarchy[parameterType] = {}
-    Object.assign(this.evaluationHierarchy[parameterType], evaluation)
+    if (!this.evaluationHierarchy[parameterType]) this.evaluationHierarchy[parameterType] = {};
+    Object.assign(this.evaluationHierarchy[parameterType], evaluation);
   }
 
   setImplementationHierarchy(parameterType, implementationKey) {
-    if (!this.traversalImplementationHierarchy[parameterType]) this.traversalImplementationHierarchy[parameterType] = {}
-    Object.assign(this.traversalImplementationHierarchy[parameterType], implementationKey)
+    if (!this.traversalImplementationHierarchy[parameterType]) this.traversalImplementationHierarchy[parameterType] = {};
+    Object.assign(this.traversalImplementationHierarchy[parameterType], implementationKey);
   }
 
   calculateConfig() {
     return {
       evaluation: this.calculateEvaluationHierarchy(),
-      implementation: this.getAllImplementation(),
-    }
+      implementation: this.getAllImplementation() };
+
   }
 
   getEntrypointNodeImplementation({ nodeLabel = this.node.entrypointNodeType, implementationKey } = {}) {
-    let implementationPropertyName = `${nodeLabel}_implementation` // associate an implementation to a node type incase multiple types present. e.g. "Stage_implementation"
-    implementationKey ||= this.node.properties[implementationPropertyName] ? this.node.properties[implementationPropertyName] : undefined // node implementatio property that will affect the hierarchy implementation calculation.
-    let nodeImplementationKey = implementationKey ? { [nodeLabel]: implementationKey } : undefined
-    // TODO: use the same rule for node implementation properies for non entrypoints as well (e.g. Process, Port, etc.), when multiple types are used for the current node. OR reconsider and use a different way to configure type of a node with multiple labels.
-    let calculatedImplementationKey = this.getTraversalImplementationKey({ key: nodeLabel, nodeImplementationKey })
-    return TraverserPosition.entrypointNodeImplementation[nodeLabel][calculatedImplementationKey]
+    let implementationPropertyName = `${nodeLabel}_implementation`;
+    implementationKey || (implementationKey = this.node.properties[implementationPropertyName] ? this.node.properties[implementationPropertyName] : undefined);
+    let nodeImplementationKey = implementationKey ? { [nodeLabel]: implementationKey } : undefined;
+
+    let calculatedImplementationKey = this.getTraversalImplementationKey({ key: nodeLabel, nodeImplementationKey });
+    return TraverserPosition.entrypointNodeImplementation[nodeLabel][calculatedImplementationKey];
   }
 
   getAllImplementation() {
-    let implementationKey = this.getTraversalImplementationKey()
+    let implementationKey = this.getTraversalImplementationKey();
     let implementation = {
       processNode: this.traverser.implementation.processNode[implementationKey.processNode],
       portNode: this.traverser.implementation.portNode[implementationKey.portNode],
       traversalInterception: this.traverser.implementation.traversalInterception[implementationKey.traversalInterception],
-      aggregator: this.traverser.implementation.aggregator[implementationKey.aggregator],
-    }
+      aggregator: this.traverser.implementation.aggregator[implementationKey.aggregator] };
+
     Object.entries(implementation).forEach(([key, value]) => {
-      assert(
-        Boolean(value),
-        `• All traversal implementation concerete functions must be registered, the implementationKey "${key}" provided doesn't match any of the registered implementaions - ${implementation[key]}`,
-      )
-    })
-    return implementation
+      (0, _assert.default)(
+      Boolean(value),
+      `• All traversal implementation concerete functions must be registered, the implementationKey "${key}" provided doesn't match any of the registered implementaions - ${implementation[key]}`);
+
+    });
+    return implementation;
   }
 
   getImplementationCallback({ key }) {
     return ({ nodeImplementationKey } = {}) => {
-      let implementationKey = this.getTraversalImplementationKey({ key: key, nodeImplementationKey })
-      let implementation = this.traverser.implementation[key][implementationKey]
-      assert(implementation, `• 'implementation' concerete function must be registered, the implementationKey "${implementationKey}" provided doesn't match any of the registered implementaions.`)
-      return implementation
-    }
+      let implementationKey = this.getTraversalImplementationKey({ key: key, nodeImplementationKey });
+      let implementation = this.traverser.implementation[key][implementationKey];
+      (0, _assert.default)(implementation, `• 'implementation' concerete function must be registered, the implementationKey "${implementationKey}" provided doesn't match any of the registered implementaions.`);
+      return implementation;
+    };
   }
 
-  // get implementation functions
+
   getTraversalImplementationKey({ key, nodeImplementationKey } = {}) {
-    let implementationKey = this.calculateImplementationHierarchy({ nodeImplementationKey })
-    if (key) return implementationKey[key]
-    else return implementationKey
+    let implementationKey = this.calculateImplementationHierarchy({ nodeImplementationKey });
+    if (key) return implementationKey[key];else
+    return implementationKey;
   }
 
   calculateImplementationHierarchy({ nodeImplementationKey = {} } = {}) {
-    // overwrite (for all subtraversals) implementation through directly passed parameters - overwritable traversal implementation ignoring each nodes configuration, i.e. overwritable over nodeInstance own property implementation keys
-    /** Pick implementation function from implemntation keys
-     ** Parameter hirerchy for graph traversal implementations: (1 as first priority):*/
+
+
+
     let implementationKey = Object.assign(
-      {},
-      // * 6. default values specified in the function scope.
-      TraverserPosition.defaultTraversalImplementationKey,
-      // * 5. shared context configurations - that could be used as overwriting values. e.g. nodeInstance[Context.getSharedContext].concereteImplementationKeys
-      this.traversalImplementationHierarchy.context,
-      // * 4. parent parameters
-      this.traversalImplementationHierarchy.parent,
-      // * 3. node configurations
-      this.traversalImplementationHierarchy.configuration,
-      // * 2. node instance and edge properties
-      nodeImplementationKey,
-      // * 1. call parameters that are passed directly
-      this.traversalImplementationHierarchy.parameter,
-    )
-    return implementationKey
+    {},
+
+    TraverserPosition.defaultTraversalImplementationKey,
+
+    this.traversalImplementationHierarchy.context,
+
+    this.traversalImplementationHierarchy.parent,
+
+    this.traversalImplementationHierarchy.configuration,
+
+    nodeImplementationKey,
+
+    this.traversalImplementationHierarchy.parameter);
+
+    return implementationKey;
   }
 
   calculateEvaluationHierarchy() {
-    this.evaluation = Object.assign({}, TraverserPosition.defaultEvaluationHierarchyKey, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter)
-    return this.evaluation
+    this.evaluation = Object.assign({}, TraverserPosition.defaultEvaluationHierarchyKey, this.evaluationHierarchy.configuration, this.evaluationHierarchy.parameter);
+    return this.evaluation;
   }
-  /**
-   * Responsible for creating evaluator configuration for each traverser and deciding whether traversal and actions should be performed on each position accordingly.
-   */
+
+
+
   shouldContinue() {
     switch (this.evaluation.propagation) {
       case schemeReference.evaluationOption.propagation.continue:
-        return true
-        break
+        return true;
+        break;
       case schemeReference.evaluationOption.propagation.break:
       case schemeReference.evaluationOption.propagation.hult:
-        return false
-        break
+        return false;
+        break;
       default:
-        throw new Error(`• Unknown option for 'evaluator.propagation' = ${this.evaluation.propagation}.`)
-        break
-    }
+        throw new Error(`• Unknown option for 'evaluator.propagation' = ${this.evaluation.propagation}.`);
+        break;}
+
   }
   shouldIncludeResult() {
     switch (this.evaluation.aggregation) {
       case schemeReference.evaluationOption.aggregation.include:
-        return true
-        break
+        return true;
+        break;
       case schemeReference.evaluationOption.aggregation.exclude:
       case schemeReference.evaluationOption.aggregation.skip:
-        return false
-        break
+        return false;
+        break;
       default:
-        throw new Error(`• Unknown option for 'evaluator.aggregation' = ${this.evaluation.aggregation}.`)
-        break
-    }
+        throw new Error(`• Unknown option for 'evaluator.aggregation' = ${this.evaluation.aggregation}.`);
+        break;}
+
   }
   shouldExecuteProcess() {
     switch (this.evaluation.aggregation) {
       case schemeReference.evaluationOption.aggregation.include:
       case schemeReference.evaluationOption.aggregation.exclude:
-        return true
-        break
+        return true;
+        break;
       case schemeReference.evaluationOption.aggregation.skip:
-        return false
-        break
+        return false;
+        break;
       default:
-        throw new Error(`• Unknown option for 'evaluator.aggregation' = ${this.evaluation.aggregation}.`)
-        break
-    }
-  }
-}
+        throw new Error(`• Unknown option for 'evaluator.aggregation' = ${this.evaluation.aggregation}.`);
+        break;}
+
+  }}exports.TraverserPosition = TraverserPosition;TraverserPosition.defaultEvaluationHierarchyKey = { propagation: schemeReference.evaluationOption.propagation.continue, aggregation: schemeReference.evaluationOption.aggregation.include };TraverserPosition.defaultTraversalImplementationKey = { processNode: 'returnDataItemKey', portNode: 'nestedNode', aggregator: 'AggregatorArray', traversalInterception: 'processThenTraverse', [schemeReference.nodeLabel.reroute]: 'traverseReference', [schemeReference.nodeLabel.stage]: 'stageNode' };TraverserPosition.entrypointNodeImplementation = { [schemeReference.nodeLabel.reroute]: rerouteNode, [schemeReference.nodeLabel.stage]: stageNode };TraverserPosition.entrypointNodeArray = [schemeReference.nodeLabel.reroute, schemeReference.nodeLabel.stage];
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL1RyYXZlcnNlci9UcmF2ZXJzZXJQb3NpdGlvbi5jbGFzcy5qcyJdLCJuYW1lcyI6WyJUcmF2ZXJzZXJQb3NpdGlvbiIsImdldEVudHJ5cG9pbnROb2RlVHlwZSIsIm5vZGUiLCJub2RlTGFiZWwiLCJlbnRyeXBvaW50Tm9kZUFycmF5IiwibGFiZWxzIiwiaW5jbHVkZXMiLCJFcnJvciIsImNvbnN0cnVjdG9yIiwidHJhdmVyc2VyIiwiZGVwdGgiLCJwYXRoIiwiZXZlbnRFbWl0dGVyIiwiRXZlbnRFbWl0dGVyIiwicGFyZW50VHJhdmVyc2VyUG9zaXRpb24iLCJ0cmF2ZXJzYWxJbXBsZW1lbnRhdGlvbkhpZXJhcmNoeSIsImV2YWx1YXRpb25IaWVyYXJjaHkiLCJlbWl0Q29tcGxldGVkVHJhdmVyc2FsIiwiYXJncyIsImVtaXQiLCJjb250ZXh0IiwiaW1wbGVtZW50YXRpb25LZXkiLCJyZW1vdmVVbmRlZmluZWRGcm9tT2JqZWN0IiwicGFyZW50IiwiZ2V0VHJhdmVyc2FsSW1wbGVtZW50YXRpb25LZXkiLCJpbml0aWFsaXplIiwiYWdncmVnYXRvciIsIkFnZ3JlZ2F0b3IiLCJnZXRJbXBsZW1lbnRhdGlvbkNhbGxiYWNrIiwia2V5Iiwic2V0RXZhbHVhdGlvbkhpZXJhcmNoeSIsInBhcmFtZXRlclR5cGUiLCJldmFsdWF0aW9uIiwiT2JqZWN0IiwiYXNzaWduIiwic2V0SW1wbGVtZW50YXRpb25IaWVyYXJjaHkiLCJjYWxjdWxhdGVDb25maWciLCJjYWxjdWxhdGVFdmFsdWF0aW9uSGllcmFyY2h5IiwiaW1wbGVtZW50YXRpb24iLCJnZXRBbGxJbXBsZW1lbnRhdGlvbiIsImdldEVudHJ5cG9pbnROb2RlSW1wbGVtZW50YXRpb24iLCJlbnRyeXBvaW50Tm9kZVR5cGUiLCJpbXBsZW1lbnRhdGlvblByb3BlcnR5TmFtZSIsInByb3BlcnRpZXMiLCJ1bmRlZmluZWQiLCJub2RlSW1wbGVtZW50YXRpb25LZXkiLCJjYWxjdWxhdGVkSW1wbGVtZW50YXRpb25LZXkiLCJlbnRyeXBvaW50Tm9kZUltcGxlbWVudGF0aW9uIiwicHJvY2Vzc05vZGUiLCJwb3J0Tm9kZSIsInRyYXZlcnNhbEludGVyY2VwdGlvbiIsImVudHJpZXMiLCJmb3JFYWNoIiwidmFsdWUiLCJCb29sZWFuIiwiY2FsY3VsYXRlSW1wbGVtZW50YXRpb25IaWVyYXJjaHkiLCJkZWZhdWx0VHJhdmVyc2FsSW1wbGVtZW50YXRpb25LZXkiLCJjb25maWd1cmF0aW9uIiwicGFyYW1ldGVyIiwiZGVmYXVsdEV2YWx1YXRpb25IaWVyYXJjaHlLZXkiLCJzaG91bGRDb250aW51ZSIsInByb3BhZ2F0aW9uIiwic2NoZW1lUmVmZXJlbmNlIiwiZXZhbHVhdGlvbk9wdGlvbiIsImNvbnRpbnVlIiwiYnJlYWsiLCJodWx0Iiwic2hvdWxkSW5jbHVkZVJlc3VsdCIsImFnZ3JlZ2F0aW9uIiwiaW5jbHVkZSIsImV4Y2x1ZGUiLCJza2lwIiwic2hvdWxkRXhlY3V0ZVByb2Nlc3MiLCJyZXJvdXRlIiwic3RhZ2UiLCJyZXJvdXRlTm9kZSIsInN0YWdlTm9kZSJdLCJtYXBwaW5ncyI6IjBSQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7Ozs7Ozs7O0FBU08sTUFBTUEsaUJBQU4sQ0FBd0I7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFzQjdCLFNBQU9DLHFCQUFQLENBQTZCLEVBQUVDLElBQUYsRUFBN0IsRUFBdUM7QUFDckMsU0FBSyxJQUFJQyxTQUFULElBQXNCSCxpQkFBaUIsQ0FBQ0ksbUJBQXhDLEVBQTZELElBQUlGLElBQUksQ0FBQ0csTUFBTCxDQUFZQyxRQUFaLENBQXFCSCxTQUFyQixDQUFKLEVBQXFDLE9BQU9BLFNBQVA7O0FBRWxHLFVBQU0sSUFBSUksS0FBSixDQUFXLCtEQUE4REwsSUFBSSxDQUFDRyxNQUFPLEVBQXJGLENBQU47QUFDRDs7Ozs7Ozs7Ozs7OztBQWFERyxFQUFBQSxXQUFXLENBQUM7QUFDVk4sSUFBQUEsSUFEVTtBQUVW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aEIsQ0FBMEJzRSxPQUEzQixHQUFxQ0UsV0FERCxFQUVwQyxDQUFDYixlQUFlLENBQUMzRCxTQUFoQixDQUEwQnVFLEtBQTNCLEdBQW1DRSxTQUZDLEUsQ0FoQjNCNUUsaUIsQ0FvQkpJLG1CLEdBQXNCLENBQUMwRCxlQUFlLENBQUMzRCxTQUFoQixDQUEwQnNFLE9BQTNCLEVBQW9DWCxlQUFlLENBQUMzRCxTQUFoQixDQUEwQnVFLEtBQTlELEMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgYXNzZXJ0IGZyb20gJ2Fzc2VydCdcbmltcG9ydCBFdmVudEVtaXR0ZXIgZnJvbSAnZXZlbnRzJ1xuaW1wb3J0IHsgcmVtb3ZlVW5kZWZpbmVkRnJvbU9iamVjdCB9IGZyb20gJ0BkZXBlbmRlbmN5L2hhbmRsZUpTTmF0aXZlRGF0YVN0cnVjdHVyZSdcbmltcG9ydCAqIGFzIHNjaGVtZVJlZmVyZW5jZSBmcm9tICcuLi8uLi9kYXRhTW9kZWwvZ3JhcGhTY2hlbWVSZWZlcmVuY2UuanMnXG5pbXBvcnQgKiBhcyBzdGFnZU5vZGUgZnJvbSAnLi9tZXRob2Qvc3RhZ2VOb2RlLmpzJ1xuaW1wb3J0ICogYXMgcmVyb3V0ZU5vZGUgZnJvbSAnLi9tZXRob2QvcmVyb3V0ZU5vZGUuanMnXG5cbi8vIHJlcHJlc2VudHMgdGhlIGN1cnJlbnQgdHJhdmVyc2lvbiBvZiBhIG5vZGUgd2l0aCBpdCdzIHByb3BlcnRpZXMuXG4vLyAmIHJlcHJlc2VudHMgdHJhdmVyc2FsIGNvbmZpZyAtIEhhbmRsZXMgcGFyYW1ldGVyIGhpZXJhcmNoeSBoYW5kbGluZ1xuLyoqIFxuICogVE9ETzogIFJFRkFDVE9SIGFkZGluZyBUcmF2ZXJzYWwgZGVzY3JpcHRpb24gY2xhc3MgLSBhYmlsaXR5IHRvIHBpY2sgYSBkZWZpbmVkIHNldCBvZiBpbXBsZW1lbnRhdGlvbiBrZXlzIHRvIGJlIHVzZWQgdG8gZ2V0aGVyIC0gZS5nLiBpbXBsZW1lbnRhdGlvbiB0eXBlOiBDb25kaXRpb24sIE1pZGRsZXdhcmUsIFRlbXBsYXRlLCBTY2hlbWEsIFNoZWxsc2NyaXB0LlxuIC0gaHR0cHM6Ly9uZW80ai5jb20vZG9jcy9qYXZhLXJlZmVyZW5jZS8zLjUvamF2YWRvY3Mvb3JnL25lbzRqL2dyYXBoZGIvdHJhdmVyc2FsL1RyYXZlcnNhbENvbmZpZy5odG1sXG4gLSBJbXBsZW1lbnQgJ2RlcHRoQWZmZWN0ZWQnIGZvciB0aGUgYWZmZWN0ZWQgZGVwdGggb2YgdGhlIGNvbmZpZ3VyZSBjb25uZWN0aW9ucyBvbiBhIHN0YWdlIGFuZCBpdHMgY2hpbGQgbm9kZXMuXG4gKi9cbmV4cG9ydCBjbGFzcyBUcmF2ZXJzZXJQb3NpdGlvbiB7XG4gIHN0YXRpYyBkZWZhdWx0RXZhbHVhdGlvbkhpZXJhcmNoeUtleSA9IHtcbiAgICBwcm9wYWdhdGlvbjogc2NoZW1lUmVmZXJlbmNlLmV2YWx1YXRpb25PcHRpb24ucHJvcGFnYXRpb24uY29udGludWUsXG4gICAgYWdncmVnYXRpb246IHNjaGVtZVJlZmVyZW5jZS5ldmFsdWF0aW9uT3B0aW9uLmFnZ3JlZ2F0aW9uLmluY2x1ZGUsXG4gIH1cbiAgLy8gaW1wbGVtZW50YXRpb24ga2V5cyBvZiBub2RlIGluc3RhbmNlIG93biBjb25maWcgcGFyYW1ldGVycyBhbmQgb2YgZGVmYXVsdCB2YWx1ZXMgc2V0IGluIGZ1bmN0aW9uIHNjb3BlXG4gIC8vIGhhcmRjb2RlZCBkZWZhdWx0IGltcGxlbWVudGF0aW9uIHZhbHVlcyBtYXRjaGluZyB0aGUgaW1wbGVtZW50YXRpb25zIGZyb20gdGhlIGluc3RhbmNlIGluaXRpYWxpemF0aW9uIG9mIEdyYXBoIGNsYXNzLlxuICBzdGF0aWMgZGVmYXVsdFRyYXZlcnNhbEltcGxlbWVudGF0aW9uS2V5ID0ge1xuICAgIHByb2Nlc3NOb2RlOiAncmV0dXJuRGF0YUl0ZW1LZXknLFxuICAgIHBvcnROb2RlOiAnbmVzdGVkTm9kZScsXG4gICAgYWdncmVnYXRvcjogJ0FnZ3JlZ2F0b3JBcnJheScsXG4gICAgdHJhdmVyc2FsSW50ZXJjZXB0aW9uOiAncHJvY2Vzc1RoZW5UcmF2ZXJzZScsXG4gICAgLy8gZW50cnlwb2ludCBub2RlIGltcGxlbWVudGF0aW9ucyAtIGluIHRoZSBjb3JlIGNvZGVcbiAgICBbc2NoZW1lUmVmZXJlbmNlLm5vZGVMYWJlbC5yZXJvdXRlXTogJ3RyYXZlcnNlUmVmZXJlbmNlJyxcbiAgICBbc2NoZW1lUmVmZXJlbmNlLm5vZGVMYWJlbC5zdGFnZV06ICdzdGFnZU5vZGUnLFxuICB9XG4gIHN0YXRpYyBlbnRyeXBvaW50Tm9kZUltcGxlbWVudGF0aW9uID0ge1xuICAgIFtzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnJlcm91dGVdOiByZXJvdXRlTm9kZSxcbiAgICBbc2NoZW1lUmVmZXJlbmNlLm5vZGVMYWJlbC5zdGFnZV06IHN0YWdlTm9kZSxcbiAgfVxuICBzdGF0aWMgZW50cnlwb2ludE5vZGVBcnJheSA9IFtzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLnJlcm91dGUsIHNjaGVtZVJlZmVyZW5jZS5ub2RlTGFiZWwuc3RhZ2VdXG4gIC8vIGdldCB0aGUgdHlwZSBvZiBjdXJyZW50IG5vZGUgbGFiZWxzIHdoaWNoIGlzIGNvbnNpZGVyZWQgYW4gZW50cnlwb2ludFxuICBzdGF0aWMgZ2V0RW50cnlwb2ludE5vZGVUeXBlKHsgbm9kZSB9KSB7XG4gICAgZm9yIChsZXQgbm9kZUxhYmVsIG9mIFRyYXZlcnNlclBvc2l0aW9uLmVudHJ5cG9pbnROb2RlQXJyYXkpIGlmIChub2RlLmxhYmVscy5pbmNsdWRlcyhub2RlTGFiZWwpKSByZXR1cm4gbm9kZUxhYmVsXG4gICAgLy8gaWYgbm8gbGFiZWwgaXMgcGVybWl0dGVkIGFzIGFuIGVudHJ5cG9pbnQgdHlwZTpcbiAgICB0aHJvdyBuZXcgRXJyb3IoYOKAoiBVbnN1cHBvcnRlZCBlbnRyeXBvaW50IG5vZGUgdHlwZSBmb3IgdHJhdmVyc2FsIGZ1bmN0aW9uIC0gJHtub2RlLmxhYmVsc31gKVxuICB9XG5cbiAgbm9kZVxuICB0cmF2ZXJzZXJcbiAgYWdncmVnYXRvclxuICB0cmF2ZXJzYWxJbXBsZW1lbnRhdGlvbkhpZXJhcmNoeSA9IHt9XG4gIGV2YWx1YXRpb25IaWVyYXJjaHkgPSB7fSAvLyBldmFsdWF0aW9uIG9iamVjdCB0aGF0IGNvbnRhaW5zIGNvbmZpZ3VyYXRpb24gcmVsYXRpbmcgdG8gdHJhdmVyc2VyIGFjdGlvbiBvbiB0aGUgY3VycmVudCBwb3NpdGlvblxuICBldmFsdWF0aW9uXG4gIGltcGxlbWVudGF0aW9uXG4gIHBhdGhcbiAgZGVwdGhcbiAgZXZlbnRFbWl0dGVyXG5cbiAgY29uc3RydWN0b3Ioe1xuICAgIG5vZGUsXG4gICAgdHJhdmVyc2VyLFxuICAgIGRlcHRoID0gMCwgLy8gPHR5cGUgTnVtYmVyPiBsZXZlbCBvZiByZWN1cnNpb24gLSBhbGxvd3MgdG8gaWRlbnRpZnkgZW50cnlwb2ludCBsZXZlbCAodG9wbGV2ZWwpIHRoYXQgbmVlZHMgdG8gcmV0dXJuIHRoZSB2YWx1ZSBvZiBhZ2dyZWdhdG9yLlxuICAgIHBhdGggPSBudWxsLCAvLyBwYXRoIHRvIHRoZSBjdXJyZW50IHRyYXZlcnNhbC4gIC8vIFRPRE86IGltcGxlbWVudCBwYXRoIHNlcXVlbmNlIHByZXNlcnZhdGlvbi4gYWxsb3cgZm9yIHRoZSBub2RlIHRyYXZlcnNlIGZ1bmN0aW9uIHRvIHJlbHkgb24gdGhlIGN1cnJlbnQgcGF0aCBkYXRhLlxuICAgIC8qIHN1cHBvcnRlZCBldmVudHM6ICdub2RlVHJhdmVyc2FsQ29tcGxldGVkJyAqL1xuICAgIGV2ZW50RW1pdHRlciA9IG5ldyBFdmVudEVtaXR0ZXIoKSwgLy8gY3JlYXRlIGFuIGV2ZW50IGVtaXR0ZXIgdG8gY2F0Y2ggZXZlbnRzIGZyb20gbmVzdGVkIG5vZGVzIG9mIHRoaXMgbm9kZSBkdXJpbmcgdGhlaXIgdHJhdmVyc2Fscy5cbiAgICBwYXJlbnRUcmF2ZXJzZXJQb3NpdGlvbixcbiAgfSkge1xuICAgIHRoaXMubm9kZSA9IG5vZGVcbiAgICB0aGlzLnRyYXZlcnNlciA9IHRyYXZlcnNlclxuICAgIHRoaXMucGF0aCA9IHBhcmVudFRyYXZlcnNlclBvc2l0aW9uID8gcGFyZW50VHJhdmVyc2VyUG9zaXRpb24ucGF0aCA6IHBhdGhcbiAgICB0aGlzLmRlcHRoID0gcGFyZW50VHJhdmVyc2VyUG9zaXRpb24gPyBwYXJlbnRUcmF2ZXJzZXJQb3NpdGlvbi5kZXB0aCArIDEgOiBkZXB0aCAvLyBpbmNyZWFzZSB0cmF2ZXJzYWwgZGVwdGhcbiAgICB0aGlzLmV2ZW50RW1pdHRlciA9IGV2ZW50RW1pdHRlclxuICAgIHRoaXMuZW1pdENvbXBsZXRlZFRyYXZlcnNhbCA9ICguLi5hcmdzKSA9PiB0aGlzLmV2ZW50RW1pdHRlci5lbWl0KCdub2RlVHJhdmVyc2FsQ29tcGxldGVkJywgLi4uYXJncykgLy8gY2FsbGJhY2sgZm9yIGVhc2llciB1c2FnZVxuXG4gICAgdGhpcy50cmF2ZXJzYWxJbXBsZW1lbnRhdGlvbkhpZXJhcmNoeSA9IHtcbiAgICAgIC8vIENvbnRleHQgaW5zdGFuY2UgcGFyYW1ldGVyXG4gICAgICBjb250ZXh0OiB0aGlzLnRyYXZlcnNlci5jb250ZXh0Py5pbXBsZW1lbnRhdGlvbktleSB8fCB7fSB8PiByZW1vdmVVbmRlZmluZWRGcm9tT2JqZWN0LFxuICAgICAgLy8gcGFyZW50IGFyZ3VtZW50c1xuICAgICAgLy8gVE9ETzogZGVhbCB3aXRoIGRlcHRoIHByb3BlcnR5IGNvbmZpZ3VyYXRpb24gZWZmZWN0IGluIG5lc3RlZCBub2Rlcy5cbiAgICAgIHBhcmVudDogcGFyZW50VHJhdmVyc2VyUG9zaXRpb24gPyBwYXJlbnRUcmF2ZXJzZXJQb3NpdGlvbi5nZXRUcmF2ZXJzYWxJbXBsZW1lbnRhdGlvbktleSgpIHx8IHt9IDoge30sXG4gICAgfVxuICAgIHRoaXMuZXZhbHVhdGlvbkhpZXJhcmNoeSA9IHt9XG5cbiAgICByZXR1cm4gdGhpc1xuICB9XG5cbiAgLy8gY2FsY3VsYXRlIGNvbmZpZyBhbmQgc2V0IG93biBwYXJhbWV0ZXJzXG4gIGluaXRpYWxpemUoKSB7XG4gICAgaWYgKCF0aGlzLmFnZ3JlZ2F0b3IpIHtcbiAgICAgIGxldCBBZ2dyZWdhdG9yID0gdGhpcy5nZXRJbXBsZW1lbnRhdGlvbkNhbGxiYWNrKHsga2V5OiAnYWdncmVnYXRvcicgfSkoKSAvLyByZXR1cm5zIGEgZnVuY3Rpb24gdGhhdCBjYW4gYmUgcGFzc2VkIGFkZGl0aW9uYWwgaGllcmFyY2h5IHBhcmFtZXRlcnNcbiAgICAgIHRoaXMuYWdncmVnYXRvciA9IG5ldyBBZ2dyZWdhdG9yKClcbiAgICB9XG4gIH1cblxuICBzZXRFdmFsdWF0aW9uSGllcmFyY2h5KHBhcmFtZXRlclR5cGUsIGV2YWx1YXRpb24pIHtcbiAgICBpZiAoIXRoaXMuZXZhbHVhdGlvbkhpZXJhcmNoeVtwYXJhbWV0ZXJUeXBlXSkgdGhpcy5ldmFsdWF0aW9uSGllcmFyY2h5W3BhcmFtZXRlclR5cGVdID0ge31cbiAgICBPYmplY3QuYXNzaWduKHRoaXMuZXZhbHVhdGlvbkhpZXJhcmNoeVtwYXJhbWV0ZXJUeXBlXSwgZXZhbHVhdGlvbilcbiAgfVxuXG4gIHNldEltcGxlbWVudGF0aW9uSGllcmFyY2h5KHBhcmFtZXRlclR5cGUsIGltcGxlbWVudGF0aW9uS2V5KSB7XG4gICAgaWYgKCF0aGlzLnRyYXZlcnNhbEltcGxlbWVudGF0aW9uSGllcmFyY2h5W3BhcmFtZXRlclR5cGVdKSB0aGlzLnRyYXZlcnNhbEltcGxlbWVudGF0aW9uSGllcmFyY2h5W3BhcmFtZXRlclR5cGVdID0ge31cbiAgICBPYmplY3QuYXNzaWduKHRoaXMudHJhdmVyc2FsSW1wbGVtZW50YXRpb25IaWVyYXJjaHlbcGFyYW1ldGVyVHlwZV0sIGltcGxlbWVudGF0aW9uS2V5KVxuICB9XG5cbiAgY2FsY3VsYXRlQ29uZmlnKCkge1xuICAgIHJldHVybiB7XG4gICAgICBldmFsdWF0aW9uOiB0aGlzLmNhbGN1bGF0ZUV2YWx1YXRpb25IaWVyYXJjaHkoKSxcbiAgICAgIGltcGxlbWVudGF0aW9uOiB0aGlzLmdldEFsbEltcGxlbWVudGF0aW9uKCksXG4gICAgfVxuICB9XG5cbiAgZ2V0RW50cnlwb2ludE5vZGVJbXBsZW1lbnRhdGlvbih7IG5vZGVMYWJlbCA9IHRoaXMubm9kZS5lbnRyeXBvaW50Tm9kZVR5cGUsIGltcGxlbWVudGF0aW9uS2V5IH0gPSB7fSkge1xuICAgIGxldCBpbXBsZW1lbnRhdGlvblByb3BlcnR5TmFtZSA9IGAke25vZGVMYWJlbH1faW1wbGVtZW50YXRpb25gIC8vIGFzc29jaWF0ZSBhbiBpbXBsZW1lbnRhdGlvbiB0byBhIG5vZGUgdHlwZSBpbmNhc2UgbXVsdGlwbGUgdHlwZXMgcHJlc2VudC4gZS5nLiBcIlN0YWdlX2ltcGxlbWVudGF0aW9uXCJcbiAgICBpbXBsZW1lbnRhdGlvbktleSB8fD0gdGhpcy5ub2RlLnByb3BlcnRpZXNbaW1wbGVtZW50YXRpb25Qcm9wZXJ0eU5hbWVdID8gdGhpcy5ub2RlLnByb3BlcnRpZXNbaW1wbGVtZW50YXRpb25Qcm9wZXJ0eU5hbWVdIDogdW5kZWZpbmVkIC8vIG5vZGUgaW1wbGVtZW50YXRpbyBwcm9wZXJ0eSB0aGF0IHdpbGwgYWZmZWN0IHRoZSBoaWVyYXJjaHkgaW1wbGVtZW50YXRpb24gY2FsY3VsYXRpb24uXG4gICAgbGV0IG5vZGVJbXBsZW1lbnRhdGlvbktleSA9IGltcGxlbWVudGF0aW9uS2V5ID8geyBbbm9kZUxhYmVsXTogaW1wbGVtZW50YXRpb25LZXkgfSA6IHVuZGVmaW5lZFxuICAgIC8vIFRPRE86IHVzZSB0aGUgc2FtZSBydWxlIGZvciBub2RlIGltcGxlbWVudGF0aW9uIHByb3BlcmllcyBmb3Igbm9uIGVudHJ5cG9pbnRzIGFzIHdlbGwgKGUuZy4gUHJvY2VzcywgUG9ydCwgZXRjLiksIHdoZW4gbXVsdGlwbGUgdHlwZXMgYXJlIHVzZWQgZm9yIHRoZSBjdXJyZW50IG5vZGUuIE9SIHJlY29uc2lkZXIgYW5kIHVzZSBhIGRpZmZlcmVudCB3YXkgdG8gY29uZmlndXJlIHR5cGUgb2YgYSBub2RlIHdpdGggbXVsdGlwbGUgbGFiZWxzLlxuICAgIGxldCBjYWxjdWxhdGVkSW1wbGVtZW50YXRpb25LZXkgPSB0aGlzLmdldFRyYXZlcnNhbEltcGxlbWVudGF0aW9uS2V5KHsga2V5OiBub2RlTGFiZWwsIG5vZGVJbXBsZW1lbnRhdGlvbktleSB9KVxuICAgIHJldHVybiBUcmF2ZXJzZXJQb3NpdGlvbi5lbnRyeXBvaW50Tm9kZUltcGxlbWVudGF0aW9uW25vZGVMYWJlbF1bY2FsY3VsYXRlZEltcGxlbWVudGF0aW9uS2V5XVxuICB9XG5cbiAgZ2V0QWxsSW1wbGVtZW50YXRpb24oKSB7XG4gICAgbGV0IGltcGxlbWVudGF0aW9uS2V5ID0gdGhpcy5nZXRUcmF2ZXJzYWxJbXBsZW1lbnRhdGlvbktleSgpXG4gICAgbGV0IGltcGxlbWVudGF0aW9uID0ge1xuICAgICAgcHJvY2Vzc05vZGU6IHRoaXMudHJhdmVyc2VyLmltcGxlbWVudGF0aW9uLnByb2Nlc3NOb2RlW2ltcGxlbWVudGF0aW9uS2V5LnByb2Nlc3NOb2RlXSxcbiAgICAgIHBvcnROb2RlOiB0aGlzLnRyYXZlcnNlci5pbXBsZW1lbnRhdGlvbi5wb3J0Tm9kZVtpbXBsZW1lbnRhdGlvbktleS5wb3J0Tm9kZV0sXG4gICAgICB0cmF2ZXJzYWxJbnRlcmNlcHRpb246IHRoaXMudHJhdmVyc2VyLmltcGxlbWVudGF0aW9uLnRyYXZlcnNhbEludGVyY2VwdGlvbltpbXBsZW1lbnRhdGlvbktleS50cmF2ZXJzYWxJbnRlcmNlcHRpb25dLFxuICAgICAgYWdncmVnYXRvcjogdGhpcy50cmF2ZXJzZXIuaW1wbGVtZW50YXRpb24uYWdncmVnYXRvcltpbXBsZW1lbnRhdGlvbktleS5hZ2dyZWdhdG9yXSxcbiAgICB9XG4gICAgT2JqZWN0LmVudHJpZXMoaW1wbGVtZW50YXRpb24pLmZvckVhY2goKFtrZXksIHZhbHVlXSkgPT4ge1xuICAgICAgYXNzZXJ0KFxuICAgICAgICBCb29sZWFuKHZhbHVlKSxcbiAgICAgICAgYOKAoiBBbGwgdHJhdmVyc2FsIGltcGxlbWVudGF0aW9uIGNvbmNlcmV0ZSBmdW5jdGlvbnMgbXVzdCBiZSByZWdpc3RlcmVkLCB0aGUgaW1wbGVtZW50YXRpb25LZXkgXCIke2tleX1cIiBwcm92aWRlZCBkb2Vzbid0IG1hdGNoIGFueSBvZiB0aGUgcmVnaXN0ZXJlZCBpbXBsZW1lbnRhaW9ucyAtICR7aW1wbGVtZW50YXRpb25ba2V5XX1gLFxuICAgICAgKVxuICAgIH0pXG4gICAgcmV0dXJuIGltcGxlbWVudGF0aW9uXG4gIH1cblxuICBnZXRJbXBsZW1lbnRhdGlvbkNhbGxiYWNrKHsga2V5IH0pIHtcbiAgICByZXR1cm4gKHsgbm9kZUltcGxlbWVudGF0aW9uS2V5IH0gPSB7fSkgPT4ge1xuICAgICAgbGV0IGltcGxlbWVudGF0aW9uS2V5ID0gdGhpcy5nZXRUcmF2ZXJzYWxJbXBsZW1lbnRhdGlvbktleSh7IGtleToga2V5LCBub2RlSW1wbGVtZW50YXRpb25LZXkgfSlcbiAgICAgIGxldCBpbXBsZW1lbnRhdGlvbiA9IHRoaXMudHJhdmVyc2VyLmltcGxlbWVudGF0aW9uW2tleV1baW1wbGVtZW50YXRpb25LZXldXG4gICAgICBhc3NlcnQoaW1wbGVtZW50YXRpb24sIGDigKIgJ2ltcGxlbWVudGF0aW9uJyBjb25jZXJldGUgZnVuY3Rpb24gbXVzdCBiZSByZWdpc3RlcmVkLCB0aGUgaW1wbGVtZW50YXRpb25LZXkgXCIke2ltcGxlbWVudGF0aW9uS2V5fVwiIHByb3ZpZGVkIGRvZXNuJ3QgbWF0Y2ggYW55IG9mIHRoZSByZWdpc3RlcmVkIGltcGxlbWVudGFpb25zLmApXG4gICAgICByZXR1cm4gaW1wbGVtZW50YXRpb25cbiAgICB9XG4gIH1cblxuICAvLyBnZXQgaW1wbGVtZW50YXRpb24gZnVuY3Rpb25zXG4gIGdldFRyYXZlcnNhbEltcGxlbWVudGF0aW9uS2V5KHsga2V5LCBub2RlSW1wbGVtZW50YXRpb25LZXkgfSA9IHt9KSB7XG4gICAgbGV0IGltcGxlbWVudGF0aW9uS2V5ID0gdGhpcy5jYWxjdWxhdGVJbXBsZW1lbnRhdGlvbkhpZXJhcmNoeSh7IG5vZGVJbXBsZW1lbnRhdGlvbktleSB9KVxuICAgIGlmIChrZXkpIHJldHVybiBpbXBsZW1lbnRhdGlvbktleVtrZXldXG4gICAgZWxzZSByZXR1cm4gaW1wbGVtZW50YXRpb25LZXlcbiAgfVxuXG4gIGNhbGN1bGF0ZUltcGxlbWVudGF0aW9uSGllcmFyY2h5KHsgbm9kZUltcGxlbWVudGF0aW9uS2V5ID0ge30gfSA9IHt9KSB7XG4gICAgLy8gb3ZlcndyaXRlIChmb3IgYWxsIHN1YnRyYXZlcnNhbHMpIGltcGxlbWVudGF0aW9uIHRocm91Z2ggZGlyZWN0bHkgcGFzc2VkIHBhcmFtZXRlcnMgLSBvdmVyd3JpdGFibGUgdHJhdmVyc2FsIGltcGxlbWVudGF0aW9uIGlnbm9yaW5nIGVhY2ggbm9kZXMgY29uZmlndXJhdGlvbiwgaS5lLiBvdmVyd3JpdGFibGUgb3ZlciBub2RlSW5zdGFuY2Ugb3duIHByb3BlcnR5IGltcGxlbWVudGF0aW9uIGtleXNcbiAgICAvKiogUGljayBpbXBsZW1lbnRhdGlvbiBmdW5jdGlvbiBmcm9tIGltcGxlbW50YXRpb24ga2V5c1xuICAgICAqKiBQYXJhbWV0ZXIgaGlyZXJjaHkgZm9yIGdyYXBoIHRyYXZlcnNhbCBpbXBsZW1lbnRhdGlvbnM6ICgxIGFzIGZpcnN0IHByaW9yaXR5KToqL1xuICAgIGxldCBpbXBsZW1lbnRhdGlvbktleSA9IE9iamVjdC5hc3NpZ24oXG4gICAgICB7fSxcbiAgICAgIC8vICogNi4gZGVmYXVsdCB2YWx1ZXMgc3BlY2lmaWVkIGluIHRoZSBmdW5jdGlvbiBzY29wZS5cbiAgICAgIFRyYXZlcnNlclBvc2l0aW9uLmRlZmF1bHRUcmF2ZXJzYWxJbXBsZW1lbnRhdGlvbktleSxcbiAgICAgIC8vICogNS4gc2hhcmVkIGNvbnRleHQgY29uZmlndXJhdGlvbnMgLSB0aGF0IGNvdWxkIGJlIHVzZWQgYXMgb3ZlcndyaXRpbmcgdmFsdWVzLiBlLmcuIG5vZGVJbnN0YW5jZVtDb250ZXh0LmdldFNoYXJlZENvbnRleHRdLmNvbmNlcmV0ZUltcGxlbWVudGF0aW9uS2V5c1xuICAgICAgdGhpcy50cmF2ZXJzYWxJbXBsZW1lbnRhdGlvbkhpZXJhcmNoeS5jb250ZXh0LFxuICAgICAgLy8gKiA0LiBwYXJlbnQgcGFyYW1ldGVyc1xuICAgICAgdGhpcy50cmF2ZXJzYWxJbXBsZW1lbnRhdGlvbkhpZXJhcmNoeS5wYXJlbnQsXG4gICAgICAvLyAqIDMuIG5vZGUgY29uZmlndXJhdGlvbnNcbiAgICAgIHRoaXMudHJhdmVyc2FsSW1wbGVtZW50YXRpb25IaWVyYXJjaHkuY29uZmlndXJhdGlvbixcbiAgICAgIC8vICogMi4gbm9kZSBpbnN0YW5jZSBhbmQgZWRnZSBwcm9wZXJ0aWVzXG4gICAgICBub2RlSW1wbGVtZW50YXRpb25LZXksXG4gICAgICAvLyAqIDEuIGNhbGwgcGFyYW1ldGVycyB0aGF0IGFyZSBwYXNzZWQgZGlyZWN0bHlcbiAgICAgIHRoaXMudHJhdmVyc2FsSW1wbGVtZW50YXRpb25IaWVyYXJjaHkucGFyYW1ldGVyLFxuICAgIClcbiAgICByZXR1cm4gaW1wbGVtZW50YXRpb25LZXlcbiAgfVxuXG4gIGNhbGN1bGF0ZUV2YWx1YXRpb25IaWVyYXJjaHkoKSB7XG4gICAgdGhpcy5ldmFsdWF0aW9uID0gT2JqZWN0LmFzc2lnbih7fSwgVHJhdmVyc2VyUG9zaXRpb24uZGVmYXVsdEV2YWx1YXRpb25IaWVyYXJjaHlLZXksIHRoaXMuZXZhbHVhdGlvbkhpZXJhcmNoeS5jb25maWd1cmF0aW9uLCB0aGlzLmV2YWx1YXRpb25IaWVyYXJjaHkucGFyYW1ldGVyKVxuICAgIHJldHVybiB0aGlzLmV2YWx1YXRpb25cbiAgfVxuICAvKipcbiAgICogUmVzcG9uc2libGUgZm9yIGNyZWF0aW5nIGV2YWx1YXRvciBjb25maWd1cmF0aW9uIGZvciBlYWNoIHRyYXZlcnNlciBhbmQgZGVjaWRpbmcgd2hldGhlciB0cmF2ZXJzYWwgYW5kIGFjdGlvbnMgc2hvdWxkIGJlIHBlcmZvcm1lZCBvbiBlYWNoIHBvc2l0aW9uIGFjY29yZGluZ2x5LlxuICAgKi9cbiAgc2hvdWxkQ29udGludWUoKSB7XG4gICAgc3dpdGNoICh0aGlzLmV2YWx1YXRpb24ucHJvcGFnYXRpb24pIHtcbiAgICAgIGNhc2Ugc2NoZW1lUmVmZXJlbmNlLmV2YWx1YXRpb25PcHRpb24ucHJvcGFnYXRpb24uY29udGludWU6XG4gICAgICAgIHJldHVybiB0cnVlXG4gICAgICAgIGJyZWFrXG4gICAgICBjYXNlIHNjaGVtZVJlZmVyZW5jZS5ldmFsdWF0aW9uT3B0aW9uLnByb3BhZ2F0aW9uLmJyZWFrOlxuICAgICAgY2FzZSBzY2hlbWVSZWZlcmVuY2UuZXZhbHVhdGlvbk9wdGlvbi5wcm9wYWdhdGlvbi5odWx0OlxuICAgICAgICByZXR1cm4gZmFsc2VcbiAgICAgICAgYnJlYWtcbiAgICAgIGRlZmF1bHQ6XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihg4oCiIFVua25vd24gb3B0aW9uIGZvciAnZXZhbHVhdG9yLnByb3BhZ2F0aW9uJyA9ICR7dGhpcy5ldmFsdWF0aW9uLnByb3BhZ2F0aW9ufS5gKVxuICAgICAgICBicmVha1xuICAgIH1cbiAgfVxuICBzaG91bGRJbmNsdWRlUmVzdWx0KCkge1xuICAgIHN3aXRjaCAodGhpcy5ldmFsdWF0aW9uLmFnZ3JlZ2F0aW9uKSB7XG4gICAgICBjYXNlIHNjaGVtZVJlZmVyZW5jZS5ldmFsdWF0aW9uT3B0aW9uLmFnZ3JlZ2F0aW9uLmluY2x1ZGU6XG4gICAgICAgIHJldHVybiB0cnVlXG4gICAgICAgIGJyZWFrXG4gICAgICBjYXNlIHNjaGVtZVJlZmVyZW5jZS5ldmFsdWF0aW9uT3B0aW9uLmFnZ3JlZ2F0aW9uLmV4Y2x1ZGU6XG4gICAgICBjYXNlIHNjaGVtZVJlZmVyZW5jZS5ldmFsdWF0aW9uT3B0aW9uLmFnZ3JlZ2F0aW9uLnNraXA6XG4gICAgICAgIHJldHVybiBmYWxzZVxuICAgICAgICBicmVha1xuICAgICAgZGVmYXVsdDpcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKGDigKIgVW5rbm93biBvcHRpb24gZm9yICdldmFsdWF0b3IuYWdncmVnYXRpb24nID0gJHt0aGlzLmV2YWx1YXRpb24uYWdncmVnYXRpb259LmApXG4gICAgICAgIGJyZWFrXG4gICAgfVxuICB9XG4gIHNob3VsZEV4ZWN1dGVQcm9jZXNzKCkge1xuICAgIHN3aXRjaCAodGhpcy5ldmFsdWF0aW9uLmFnZ3JlZ2F0aW9uKSB7XG4gICAgICBjYXNlIHNjaGVtZVJlZmVyZW5jZS5ldmFsdWF0aW9uT3B0aW9uLmFnZ3JlZ2F0aW9uLmluY2x1ZGU6XG4gICAgICBjYXNlIHNjaGVtZVJlZmVyZW5jZS5ldmFsdWF0aW9uT3B0aW9uLmFnZ3JlZ2F0aW9uLmV4Y2x1ZGU6XG4gICAgICAgIHJldHVybiB0cnVlXG4gICAgICAgIGJyZWFrXG4gICAgICBjYXNlIHNjaGVtZVJlZmVyZW5jZS5ldmFsdWF0aW9uT3B0aW9uLmFnZ3JlZ2F0aW9uLnNraXA6XG4gICAgICAgIHJldHVybiBmYWxzZVxuICAgICAgICBicmVha1xuICAgICAgZGVmYXVsdDpcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKGDigKIgVW5rbm93biBvcHRpb24gZm9yICdldmFsdWF0b3IuYWdncmVnYXRpb24nID0gJHt0aGlzLmV2YWx1YXRpb24uYWdncmVnYXRpb259LmApXG4gICAgICAgIGJyZWFrXG4gICAgfVxuICB9XG59XG4iXX0=
