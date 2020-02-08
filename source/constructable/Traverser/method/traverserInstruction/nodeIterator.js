@@ -1,38 +1,39 @@
-/**
- * TODO: check if this implementation is needed after reroute node with returnedValue Reference edge implementation was implemented.
- * Selective implementation - where a switch is used to pick the next node from many, by comparing a value to case values.
- **/
-// export async function* selectivePropagation({ forkEdge, additionalChildNode, graph }) {}
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.iterateNext = iterateNext;
 
-/**
- * Loops through node connection to traverse the connected nodes' graphs
- * @param {*} nodeConnectionArray - array of connection for the particular node
- * @yield { Object{node: <node data>} }
- */
-export async function* iterateNext({ targetNode, additionalChildNode, traverser = this } = {}) {
-  const { nextArray } = await traverser.graph.database::traverser.graph.database.getNext({ nodeID: targetNode.identity })
-  if (nextArray.length == 0) return
 
-  // Bulk action - sort connection array - in addition to the database sorting of the query results.
-  nextArray.sort((former, latter) => former.connection.properties?.order - latter.connection.properties?.order) // using `order` property
+
+
+
+
+
+
+
+
+async function* iterateNext({ targetNode, additionalChildNode, traverser = this } = {}) {var _context;
+  const { nextArray } = await (_context = traverser.graph.database, traverser.graph.database.getNext).call(_context, { nodeID: targetNode.identity });
+  if (nextArray.length == 0) return;
+
+
+  nextArray.sort((former, latter) => {var _former$connection$pr, _latter$connection$pr;return ((_former$connection$pr = former.connection.properties) === null || _former$connection$pr === void 0 ? void 0 : _former$connection$pr.order) - ((_latter$connection$pr = latter.connection.properties) === null || _latter$connection$pr === void 0 ? void 0 : _latter$connection$pr.order);});
 
   for (let next of nextArray) {
-    // deal with additional nodes
-    let insertAdditional = additionalChildNode.reduce(
-      (accumolator, additional, index, array) => {
-        if (additional.placement.connectionKey == next.connection.properties.key) {
-          // additional.placement.position is a string that can be 'before' | 'after'
-          accumolator[additional.placement.position].push(additional.node) && delete array[index]
-        }
-        return accumolator
-      },
-      { before: [], after: [] },
-    )
-    additionalChildNode = additionalChildNode.filter(n => n) // filter empty (deleted) items
 
-    // add additional nodes to current node and yield all sequentially.
+    let insertAdditional = additionalChildNode.reduce(
+    (accumolator, additional, index, array) => {
+      if (additional.placement.connectionKey == next.connection.properties.key) {
+
+        accumolator[additional.placement.position].push(additional.node) && delete array[index];
+      }
+      return accumolator;
+    },
+    { before: [], after: [] });
+
+    additionalChildNode = additionalChildNode.filter(n => n);
+
+
     for (let nextNode of [...insertAdditional.before, next.destination, ...insertAdditional.after]) {
-      yield { node: nextNode }
+      yield { node: nextNode };
     }
   }
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL1RyYXZlcnNlci9tZXRob2QvdHJhdmVyc2VySW5zdHJ1Y3Rpb24vbm9kZUl0ZXJhdG9yLmpzIl0sIm5hbWVzIjpbIml0ZXJhdGVOZXh0IiwidGFyZ2V0Tm9kZSIsImFkZGl0aW9uYWxDaGlsZE5vZGUiLCJ0cmF2ZXJzZXIiLCJuZXh0QXJyYXkiLCJncmFwaCIsImRhdGFiYXNlIiwiZ2V0TmV4dCIsIm5vZGVJRCIsImlkZW50aXR5IiwibGVuZ3RoIiwic29ydCIsImZvcm1lciIsImxhdHRlciIsImNvbm5lY3Rpb24iLCJwcm9wZXJ0aWVzIiwib3JkZXIiLCJuZXh0IiwiaW5zZXJ0QWRkaXRpb25hbCIsInJlZHVjZSIsImFjY3Vtb2xhdG9yIiwiYWRkaXRpb25hbCIsImluZGV4IiwiYXJyYXkiLCJwbGFjZW1lbnQiLCJjb25uZWN0aW9uS2V5Iiwia2V5IiwicG9zaXRpb24iLCJwdXNoIiwibm9kZSIsImJlZm9yZSIsImFmdGVyIiwiZmlsdGVyIiwibiIsIm5leHROb2RlIiwiZGVzdGluYXRpb24iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7O0FBV08sZ0JBQWdCQSxXQUFoQixDQUE0QixFQUFFQyxVQUFGLEVBQWNDLG1CQUFkLEVBQW1DQyxTQUFTLEdBQUcsSUFBL0MsS0FBd0QsRUFBcEYsRUFBd0Y7QUFDN0YsUUFBTSxFQUFFQyxTQUFGLEtBQWdCLE1BQU0sWUFBQUQsU0FBUyxDQUFDRSxLQUFWLENBQWdCQyxRQUFoQixFQUEwQkgsU0FBUyxDQUFDRSxLQUFWLENBQWdCQyxRQUFoQixDQUF5QkMsT0FBbkQsaUJBQTJELEVBQUVDLE1BQU0sRUFBRVAsVUFBVSxDQUFDUSxRQUFyQixFQUEzRCxDQUE1QjtBQUNBLE1BQUlMLFNBQVMsQ0FBQ00sTUFBVixJQUFvQixDQUF4QixFQUEyQjs7O0FBRzNCTixFQUFBQSxTQUFTLENBQUNPLElBQVYsQ0FBZSxDQUFDQyxNQUFELEVBQVNDLE1BQVQsOERBQW9CLDBCQUFBRCxNQUFNLENBQUNFLFVBQVAsQ0FBa0JDLFVBQWxCLGdGQUE4QkMsS0FBOUIsOEJBQXNDSCxNQUFNLENBQUNDLFVBQVAsQ0FBa0JDLFVBQXhELDBEQUFzQyxzQkFBOEJDLEtBQXBFLENBQXBCLEVBQWY7O0FBRUEsT0FBSyxJQUFJQyxJQUFULElBQWlCYixTQUFqQixFQUE0Qjs7QUFFMUIsUUFBSWMsZ0JBQWdCLEdBQUdoQixtQkFBbUIsQ0FBQ2lCLE1BQXBCO0FBQ3JCLEtBQUNDLFdBQUQsRUFBY0MsVUFBZCxFQUEwQkMsS0FBMUIsRUFBaUNDLEtBQWpDLEtBQTJDO0FBQ3pDLFVBQUlGLFVBQVUsQ0FBQ0csU0FBWCxDQUFxQkMsYUFBckIsSUFBc0NSLElBQUksQ0FBQ0gsVUFBTCxDQUFnQkMsVUFBaEIsQ0FBMkJXLEdBQXJFLEVBQTBFOztBQUV4RU4sUUFBQUEsV0FBVyxDQUFDQyxVQUFVLENBQUNHLFNBQVgsQ0FBcUJHLFFBQXRCLENBQVgsQ0FBMkNDLElBQTNDLENBQWdEUCxVQUFVLENBQUNRLElBQTNELEtBQW9FLE9BQU9OLEtBQUssQ0FBQ0QsS0FBRCxDQUFoRjtBQUNEO0FBQ0QsYUFBT0YsV0FBUDtBQUNELEtBUG9CO0FBUXJCLE1BQUVVLE1BQU0sRUFBRSxFQUFWLEVBQWNDLEtBQUssRUFBRSxFQUFyQixFQVJxQixDQUF2Qjs7QUFVQTdCLElBQUFBLG1CQUFtQixHQUFHQSxtQkFBbUIsQ0FBQzhCLE1BQXBCLENBQTJCQyxDQUFDLElBQUlBLENBQWhDLENBQXRCOzs7QUFHQSxTQUFLLElBQUlDLFFBQVQsSUFBcUIsQ0FBQyxHQUFHaEIsZ0JBQWdCLENBQUNZLE1BQXJCLEVBQTZCYixJQUFJLENBQUNrQixXQUFsQyxFQUErQyxHQUFHakIsZ0JBQWdCLENBQUNhLEtBQW5FLENBQXJCLEVBQWdHO0FBQzlGLFlBQU0sRUFBRUYsSUFBSSxFQUFFSyxRQUFSLEVBQU47QUFDRDtBQUNGO0FBQ0YiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIFRPRE86IGNoZWNrIGlmIHRoaXMgaW1wbGVtZW50YXRpb24gaXMgbmVlZGVkIGFmdGVyIHJlcm91dGUgbm9kZSB3aXRoIHJldHVybmVkVmFsdWUgUmVmZXJlbmNlIGVkZ2UgaW1wbGVtZW50YXRpb24gd2FzIGltcGxlbWVudGVkLlxuICogU2VsZWN0aXZlIGltcGxlbWVudGF0aW9uIC0gd2hlcmUgYSBzd2l0Y2ggaXMgdXNlZCB0byBwaWNrIHRoZSBuZXh0IG5vZGUgZnJvbSBtYW55LCBieSBjb21wYXJpbmcgYSB2YWx1ZSB0byBjYXNlIHZhbHVlcy5cbiAqKi9cbi8vIGV4cG9ydCBhc3luYyBmdW5jdGlvbiogc2VsZWN0aXZlUHJvcGFnYXRpb24oeyBmb3JrRWRnZSwgYWRkaXRpb25hbENoaWxkTm9kZSwgZ3JhcGggfSkge31cblxuLyoqXG4gKiBMb29wcyB0aHJvdWdoIG5vZGUgY29ubmVjdGlvbiB0byB0cmF2ZXJzZSB0aGUgY29ubmVjdGVkIG5vZGVzJyBncmFwaHNcbiAqIEBwYXJhbSB7Kn0gbm9kZUNvbm5lY3Rpb25BcnJheSAtIGFycmF5IG9mIGNvbm5lY3Rpb24gZm9yIHRoZSBwYXJ0aWN1bGFyIG5vZGVcbiAqIEB5aWVsZCB7IE9iamVjdHtub2RlOiA8bm9kZSBkYXRhPn0gfVxuICovXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24qIGl0ZXJhdGVOZXh0KHsgdGFyZ2V0Tm9kZSwgYWRkaXRpb25hbENoaWxkTm9kZSwgdHJhdmVyc2VyID0gdGhpcyB9ID0ge30pIHtcbiAgY29uc3QgeyBuZXh0QXJyYXkgfSA9IGF3YWl0IHRyYXZlcnNlci5ncmFwaC5kYXRhYmFzZTo6dHJhdmVyc2VyLmdyYXBoLmRhdGFiYXNlLmdldE5leHQoeyBub2RlSUQ6IHRhcmdldE5vZGUuaWRlbnRpdHkgfSlcbiAgaWYgKG5leHRBcnJheS5sZW5ndGggPT0gMCkgcmV0dXJuXG5cbiAgLy8gQnVsayBhY3Rpb24gLSBzb3J0IGNvbm5lY3Rpb24gYXJyYXkgLSBpbiBhZGRpdGlvbiB0byB0aGUgZGF0YWJhc2Ugc29ydGluZyBvZiB0aGUgcXVlcnkgcmVzdWx0cy5cbiAgbmV4dEFycmF5LnNvcnQoKGZvcm1lciwgbGF0dGVyKSA9PiBmb3JtZXIuY29ubmVjdGlvbi5wcm9wZXJ0aWVzPy5vcmRlciAtIGxhdHRlci5jb25uZWN0aW9uLnByb3BlcnRpZXM/Lm9yZGVyKSAvLyB1c2luZyBgb3JkZXJgIHByb3BlcnR5XG5cbiAgZm9yIChsZXQgbmV4dCBvZiBuZXh0QXJyYXkpIHtcbiAgICAvLyBkZWFsIHdpdGggYWRkaXRpb25hbCBub2Rlc1xuICAgIGxldCBpbnNlcnRBZGRpdGlvbmFsID0gYWRkaXRpb25hbENoaWxkTm9kZS5yZWR1Y2UoXG4gICAgICAoYWNjdW1vbGF0b3IsIGFkZGl0aW9uYWwsIGluZGV4LCBhcnJheSkgPT4ge1xuICAgICAgICBpZiAoYWRkaXRpb25hbC5wbGFjZW1lbnQuY29ubmVjdGlvbktleSA9PSBuZXh0LmNvbm5lY3Rpb24ucHJvcGVydGllcy5rZXkpIHtcbiAgICAgICAgICAvLyBhZGRpdGlvbmFsLnBsYWNlbWVudC5wb3NpdGlvbiBpcyBhIHN0cmluZyB0aGF0IGNhbiBiZSAnYmVmb3JlJyB8ICdhZnRlcidcbiAgICAgICAgICBhY2N1bW9sYXRvclthZGRpdGlvbmFsLnBsYWNlbWVudC5wb3NpdGlvbl0ucHVzaChhZGRpdGlvbmFsLm5vZGUpICYmIGRlbGV0ZSBhcnJheVtpbmRleF1cbiAgICAgICAgfVxuICAgICAgICByZXR1cm4gYWNjdW1vbGF0b3JcbiAgICAgIH0sXG4gICAgICB7IGJlZm9yZTogW10sIGFmdGVyOiBbXSB9LFxuICAgIClcbiAgICBhZGRpdGlvbmFsQ2hpbGROb2RlID0gYWRkaXRpb25hbENoaWxkTm9kZS5maWx0ZXIobiA9PiBuKSAvLyBmaWx0ZXIgZW1wdHkgKGRlbGV0ZWQpIGl0ZW1zXG5cbiAgICAvLyBhZGQgYWRkaXRpb25hbCBub2RlcyB0byBjdXJyZW50IG5vZGUgYW5kIHlpZWxkIGFsbCBzZXF1ZW50aWFsbHkuXG4gICAgZm9yIChsZXQgbmV4dE5vZGUgb2YgWy4uLmluc2VydEFkZGl0aW9uYWwuYmVmb3JlLCBuZXh0LmRlc3RpbmF0aW9uLCAuLi5pbnNlcnRBZGRpdGlvbmFsLmFmdGVyXSkge1xuICAgICAgeWllbGQgeyBub2RlOiBuZXh0Tm9kZSB9XG4gICAgfVxuICB9XG59XG4iXX0=

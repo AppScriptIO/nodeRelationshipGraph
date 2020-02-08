@@ -1,42 +1,43 @@
-import assert from 'assert'
-import * as schemeReference from '../../../../dataModel/graphSchemeReference.js'
+"use strict";var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.resolveResource = resolveResource;exports.applicationReference = applicationReference;var _assert = _interopRequireDefault(require("assert"));
+var schemeReference = _interopRequireWildcard(require("../../../../dataModel/graphSchemeReference.js"));
 
-/**
- *  @param contextPropertyName TODO: consider using Symbols instead of string keys and export them for client usage.
- */
-export async function resolveResource({ targetNode, contextPropertyName = 'referenceContext', traverser = this }) {
-  let referenceContext = traverser.context[contextPropertyName]
-  assert(referenceContext, `• Context "${contextPropertyName}" variable is required to reference functions from graph database strings.`)
 
-  let resource
-  const { resourceArray } = await traverser.graph.database::traverser.graph.database.getResource({ nodeID: targetNode.identity })
-  if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`)
-  else if (resourceArray.length == 0) return
-  else resource = resourceArray[0]
 
-  let resolvedResource
+
+async function resolveResource({ targetNode, contextPropertyName = 'referenceContext', traverser = this }) {var _context;
+  let referenceContext = traverser.context[contextPropertyName];
+  (0, _assert.default)(referenceContext, `• Context "${contextPropertyName}" variable is required to reference functions from graph database strings.`);
+
+  let resource;
+  const { resourceArray } = await (_context = traverser.graph.database, traverser.graph.database.getResource).call(_context, { nodeID: targetNode.identity });
+  if (resourceArray.length > 1) throw new Error(`• Multiple resource relationships are not supported for Process node.`);else
+  if (resourceArray.length == 0) return;else
+  resource = resourceArray[0];
+
+  let resolvedResource;
   switch (resource.connection.properties.context) {
     case 'filesystemReference':
-      throw new Error('• filesystemReference is not implemented in resource resolution functionality.')
-      break
+      throw new Error('• filesystemReference is not implemented in resource resolution functionality.');
+      break;
     case 'applicationReference':
     default:
-      resolvedResource = await traverser::traverser.traverserInstruction.resourceResolution.applicationReference({ targetNode: resource.source, referenceContext })
-      break
-  }
+      resolvedResource = await traverser.traverserInstruction.resourceResolution.applicationReference.call(traverser, { targetNode: resource.source, referenceContext });
+      break;}
 
-  return resolvedResource
+
+  return resolvedResource;
 }
 
-export async function applicationReference({ targetNode, referenceContext, traverser = this }) {
+async function applicationReference({ targetNode, referenceContext, traverser = this }) {
   if (targetNode.labels.includes(schemeReference.nodeLabel.function)) {
-    let referenceKey = targetNode.properties.functionName || throw new Error(`• function resource must have a "functionName" - ${targetNode.properties.functionName}`)
-    // a function that complies with graphTraversal processData implementation.
-    let functionCallback = referenceContext[referenceKey] || throw new Error(`• reference function name "${referenceKey}" doesn't exist in graph context.`)
-    return functionCallback
+    let referenceKey = targetNode.properties.functionName || function (e) {throw e;}(new Error(`• function resource must have a "functionName" - ${targetNode.properties.functionName}`));
+
+    let functionCallback = referenceContext[referenceKey] || function (e) {throw e;}(new Error(`• reference function name "${referenceKey}" doesn't exist in graph context.`));
+    return functionCallback;
   } else if (targetNode.labels.includes(schemeReference.nodeLabel.file)) {
-    let referenceKey = targetNode.properties.referenceKey || throw new Error(`• resource File node (with key: ${targetNode.properties.key}) must have "referenceKey" property.`)
-    let filePath = referenceContext[referenceKey] || throw new Error(`• File reference key "${referenceKey}" doesn't exist in graph context.`)
-    return filePath
-  } else throw new Error(`• Unsupported Node type for resource connection.`)
+    let referenceKey = targetNode.properties.referenceKey || function (e) {throw e;}(new Error(`• resource File node (with key: ${targetNode.properties.key}) must have "referenceKey" property.`));
+    let filePath = referenceContext[referenceKey] || function (e) {throw e;}(new Error(`• File reference key "${referenceKey}" doesn't exist in graph context.`));
+    return filePath;
+  } else throw new Error(`• Unsupported Node type for resource connection.`);
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uL3NvdXJjZS9jb25zdHJ1Y3RhYmxlL1RyYXZlcnNlci9tZXRob2QvdHJhdmVyc2VySW5zdHJ1Y3Rpb24vcmVzb3VyY2VSZXNvbHV0aW9uLmpzIl0sIm5hbWVzIjpbInJlc29sdmVSZXNvdXJjZSIsInRhcmdldE5vZGUiLCJjb250ZXh0UHJvcGVydHlOYW1lIiwidHJhdmVyc2VyIiwicmVmZXJlbmNlQ29udGV4dCIsImNvbnRleHQiLCJyZXNvdXJjZSIsInJlc291cmNlQXJyYXkiLCJncmFwaCIsImRhdGFiYXNlIiwiZ2V0UmVzb3VyY2UiLCJub2RlSUQiLCJpZGVudGl0eSIsImxlbmd0aCIsIkVycm9yIiwicmVzb2x2ZWRSZXNvdXJjZSIsImNvbm5lY3Rpb24iLCJwcm9wZXJ0aWVzIiwidHJhdmVyc2VySW5zdHJ1Y3Rpb24iLCJyZXNvdXJjZVJlc29sdXRpb24iLCJhcHBsaWNhdGlvblJlZmVyZW5jZSIsInNvdXJjZSIsImxhYmVscyIsImluY2x1ZGVzIiwic2NoZW1lUmVmZXJlbmNlIiwibm9kZUxhYmVsIiwiZnVuY3Rpb24iLCJyZWZlcmVuY2VLZXkiLCJmdW5jdGlvbk5hbWUiLCJmdW5jdGlvbkNhbGxiYWNrIiwiZmlsZSIsImtleSIsImZpbGVQYXRoIl0sIm1hcHBpbmdzIjoicVZBQUE7QUFDQTs7Ozs7QUFLTyxlQUFlQSxlQUFmLENBQStCLEVBQUVDLFVBQUYsRUFBY0MsbUJBQW1CLEdBQUcsa0JBQXBDLEVBQXdEQyxTQUFTLEdBQUcsSUFBcEUsRUFBL0IsRUFBMkc7QUFDaEgsTUFBSUMsZ0JBQWdCLEdBQUdELFNBQVMsQ0FBQ0UsT0FBVixDQUFrQkgsbUJBQWxCLENBQXZCO0FBQ0EsdUJBQU9FLGdCQUFQLEVBQTBCLGNBQWFGLG1CQUFvQiw0RUFBM0Q7O0FBRUEsTUFBSUksUUFBSjtBQUNBLFFBQU0sRUFBRUMsYUFBRixLQUFvQixNQUFNLFlBQUFKLFNBQVMsQ0FBQ0ssS0FBVixDQUFnQkMsUUFBaEIsRUFBMEJOLFNBQVMsQ0FBQ0ssS0FBVixDQUFnQkMsUUFBaEIsQ0FBeUJDLFdBQW5ELGlCQUErRCxFQUFFQyxNQUFNLEVBQUVWLFVBQVUsQ0FBQ1csUUFBckIsRUFBL0QsQ0FBaEM7QUFDQSxNQUFJTCxhQUFhLENBQUNNLE1BQWQsR0FBdUIsQ0FBM0IsRUFBOEIsTUFBTSxJQUFJQyxLQUFKLENBQVcsdUVBQVgsQ0FBTixDQUE5QjtBQUNLLE1BQUlQLGFBQWEsQ0FBQ00sTUFBZCxJQUF3QixDQUE1QixFQUErQixPQUEvQjtBQUNBUCxFQUFBQSxRQUFRLEdBQUdDLGFBQWEsQ0FBQyxDQUFELENBQXhCOztBQUVMLE1BQUlRLGdCQUFKO0FBQ0EsVUFBUVQsUUFBUSxDQUFDVSxVQUFULENBQW9CQyxVQUFwQixDQUErQlosT0FBdkM7QUFDRSxTQUFLLHFCQUFMO0FBQ0UsWUFBTSxJQUFJUyxLQUFKLENBQVUsZ0ZBQVYsQ0FBTjtBQUNBO0FBQ0YsU0FBSyxzQkFBTDtBQUNBO0FBQ0VDLE1BQUFBLGdCQUFnQixHQUFHLE1BQWlCWixTQUFTLENBQUNlLG9CQUFWLENBQStCQyxrQkFBL0IsQ0FBa0RDLG9CQUE3RCxNQUFBakIsU0FBUyxFQUF5RSxFQUFFRixVQUFVLEVBQUVLLFFBQVEsQ0FBQ2UsTUFBdkIsRUFBK0JqQixnQkFBL0IsRUFBekUsQ0FBbEM7QUFDQSxZQVBKOzs7QUFVQSxTQUFPVyxnQkFBUDtBQUNEOztBQUVNLGVBQWVLLG9CQUFmLENBQW9DLEVBQUVuQixVQUFGLEVBQWNHLGdCQUFkLEVBQWdDRCxTQUFTLEdBQUcsSUFBNUMsRUFBcEMsRUFBd0Y7QUFDN0YsTUFBSUYsVUFBVSxDQUFDcUIsTUFBWCxDQUFrQkMsUUFBbEIsQ0FBMkJDLGVBQWUsQ0FBQ0MsU0FBaEIsQ0FBMEJDLFFBQXJELENBQUosRUFBb0U7QUFDbEUsUUFBSUMsWUFBWSxHQUFHMUIsVUFBVSxDQUFDZ0IsVUFBWCxDQUFzQlcsWUFBdEIsNEJBQTRDLElBQUlkLEtBQUosQ0FBVyxvREFBbURiLFVBQVUsQ0FBQ2dCLFVBQVgsQ0FBc0JXLFlBQWEsRUFBakcsQ0FBNUMsQ0FBbkI7O0FBRUEsUUFBSUMsZ0JBQWdCLEdBQUd6QixnQkFBZ0IsQ0FBQ3VCLFlBQUQsQ0FBaEIsNEJBQXdDLElBQUliLEtBQUosQ0FBVyw4QkFBNkJhLFlBQWEsbUNBQXJELENBQXhDLENBQXZCO0FBQ0EsV0FBT0UsZ0JBQVA7QUFDRCxHQUxELE1BS08sSUFBSTVCLFVBQVUsQ0FBQ3FCLE1BQVgsQ0FBa0JDLFFBQWxCLENBQTJCQyxlQUFlLENBQUNDLFNBQWhCLENBQTBCSyxJQUFyRCxDQUFKLEVBQWdFO0FBQ3JFLFFBQUlILFlBQVksR0FBRzFCLFVBQVUsQ0FBQ2dCLFVBQVgsQ0FBc0JVLFlBQXRCLDRCQUE0QyxJQUFJYixLQUFKLENBQVcsbUNBQWtDYixVQUFVLENBQUNnQixVQUFYLENBQXNCYyxHQUFJLHNDQUF2RSxDQUE1QyxDQUFuQjtBQUNBLFFBQUlDLFFBQVEsR0FBRzVCLGdCQUFnQixDQUFDdUIsWUFBRCxDQUFoQiw0QkFBd0MsSUFBSWIsS0FBSixDQUFXLHlCQUF3QmEsWUFBYSxtQ0FBaEQsQ0FBeEMsQ0FBZjtBQUNBLFdBQU9LLFFBQVA7QUFDRCxHQUpNLE1BSUEsTUFBTSxJQUFJbEIsS0FBSixDQUFXLGtEQUFYLENBQU47QUFDUiIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBhc3NlcnQgZnJvbSAnYXNzZXJ0J1xuaW1wb3J0ICogYXMgc2NoZW1lUmVmZXJlbmNlIGZyb20gJy4uLy4uLy4uLy4uL2RhdGFNb2RlbC9ncmFwaFNjaGVtZVJlZmVyZW5jZS5qcydcblxuLyoqXG4gKiAgQHBhcmFtIGNvbnRleHRQcm9wZXJ0eU5hbWUgVE9ETzogY29uc2lkZXIgdXNpbmcgU3ltYm9scyBpbnN0ZWFkIG9mIHN0cmluZyBrZXlzIGFuZCBleHBvcnQgdGhlbSBmb3IgY2xpZW50IHVzYWdlLlxuICovXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gcmVzb2x2ZVJlc291cmNlKHsgdGFyZ2V0Tm9kZSwgY29udGV4dFByb3BlcnR5TmFtZSA9ICdyZWZlcmVuY2VDb250ZXh0JywgdHJhdmVyc2VyID0gdGhpcyB9KSB7XG4gIGxldCByZWZlcmVuY2VDb250ZXh0ID0gdHJhdmVyc2VyLmNvbnRleHRbY29udGV4dFByb3BlcnR5TmFtZV1cbiAgYXNzZXJ0KHJlZmVyZW5jZUNvbnRleHQsIGDigKIgQ29udGV4dCBcIiR7Y29udGV4dFByb3BlcnR5TmFtZX1cIiB2YXJpYWJsZSBpcyByZXF1aXJlZCB0byByZWZlcmVuY2UgZnVuY3Rpb25zIGZyb20gZ3JhcGggZGF0YWJhc2Ugc3RyaW5ncy5gKVxuXG4gIGxldCByZXNvdXJjZVxuICBjb25zdCB7IHJlc291cmNlQXJyYXkgfSA9IGF3YWl0IHRyYXZlcnNlci5ncmFwaC5kYXRhYmFzZTo6dHJhdmVyc2VyLmdyYXBoLmRhdGFiYXNlLmdldFJlc291cmNlKHsgbm9kZUlEOiB0YXJnZXROb2RlLmlkZW50aXR5IH0pXG4gIGlmIChyZXNvdXJjZUFycmF5Lmxlbmd0aCA+IDEpIHRocm93IG5ldyBFcnJvcihg4oCiIE11bHRpcGxlIHJlc291cmNlIHJlbGF0aW9uc2hpcHMgYXJlIG5vdCBzdXBwb3J0ZWQgZm9yIFByb2Nlc3Mgbm9kZS5gKVxuICBlbHNlIGlmIChyZXNvdXJjZUFycmF5Lmxlbmd0aCA9PSAwKSByZXR1cm5cbiAgZWxzZSByZXNvdXJjZSA9IHJlc291cmNlQXJyYXlbMF1cblxuICBsZXQgcmVzb2x2ZWRSZXNvdXJjZVxuICBzd2l0Y2ggKHJlc291cmNlLmNvbm5lY3Rpb24ucHJvcGVydGllcy5jb250ZXh0KSB7XG4gICAgY2FzZSAnZmlsZXN5c3RlbVJlZmVyZW5jZSc6XG4gICAgICB0aHJvdyBuZXcgRXJyb3IoJ+KAoiBmaWxlc3lzdGVtUmVmZXJlbmNlIGlzIG5vdCBpbXBsZW1lbnRlZCBpbiByZXNvdXJjZSByZXNvbHV0aW9uIGZ1bmN0aW9uYWxpdHkuJylcbiAgICAgIGJyZWFrXG4gICAgY2FzZSAnYXBwbGljYXRpb25SZWZlcmVuY2UnOlxuICAgIGRlZmF1bHQ6XG4gICAgICByZXNvbHZlZFJlc291cmNlID0gYXdhaXQgdHJhdmVyc2VyOjp0cmF2ZXJzZXIudHJhdmVyc2VySW5zdHJ1Y3Rpb24ucmVzb3VyY2VSZXNvbHV0aW9uLmFwcGxpY2F0aW9uUmVmZXJlbmNlKHsgdGFyZ2V0Tm9kZTogcmVzb3VyY2Uuc291cmNlLCByZWZlcmVuY2VDb250ZXh0IH0pXG4gICAgICBicmVha1xuICB9XG5cbiAgcmV0dXJuIHJlc29sdmVkUmVzb3VyY2Vcbn1cblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGFwcGxpY2F0aW9uUmVmZXJlbmNlKHsgdGFyZ2V0Tm9kZSwgcmVmZXJlbmNlQ29udGV4dCwgdHJhdmVyc2VyID0gdGhpcyB9KSB7XG4gIGlmICh0YXJnZXROb2RlLmxhYmVscy5pbmNsdWRlcyhzY2hlbWVSZWZlcmVuY2Uubm9kZUxhYmVsLmZ1bmN0aW9uKSkge1xuICAgIGxldCByZWZlcmVuY2VLZXkgPSB0YXJnZXROb2RlLnByb3BlcnRpZXMuZnVuY3Rpb25OYW1lIHx8IHRocm93IG5ldyBFcnJvcihg4oCiIGZ1bmN0aW9uIHJlc291cmNlIG11c3QgaGF2ZSBhIFwiZnVuY3Rpb25OYW1lXCIgLSAke3RhcmdldE5vZGUucHJvcGVydGllcy5mdW5jdGlvbk5hbWV9YClcbiAgICAvLyBhIGZ1bmN0aW9uIHRoYXQgY29tcGxpZXMgd2l0aCBncmFwaFRyYXZlcnNhbCBwcm9jZXNzRGF0YSBpbXBsZW1lbnRhdGlvbi5cbiAgICBsZXQgZnVuY3Rpb25DYWxsYmFjayA9IHJlZmVyZW5jZUNvbnRleHRbcmVmZXJlbmNlS2V5XSB8fCB0aHJvdyBuZXcgRXJyb3IoYOKAoiByZWZlcmVuY2UgZnVuY3Rpb24gbmFtZSBcIiR7cmVmZXJlbmNlS2V5fVwiIGRvZXNuJ3QgZXhpc3QgaW4gZ3JhcGggY29udGV4dC5gKVxuICAgIHJldHVybiBmdW5jdGlvbkNhbGxiYWNrXG4gIH0gZWxzZSBpZiAodGFyZ2V0Tm9kZS5sYWJlbHMuaW5jbHVkZXMoc2NoZW1lUmVmZXJlbmNlLm5vZGVMYWJlbC5maWxlKSkge1xuICAgIGxldCByZWZlcmVuY2VLZXkgPSB0YXJnZXROb2RlLnByb3BlcnRpZXMucmVmZXJlbmNlS2V5IHx8IHRocm93IG5ldyBFcnJvcihg4oCiIHJlc291cmNlIEZpbGUgbm9kZSAod2l0aCBrZXk6ICR7dGFyZ2V0Tm9kZS5wcm9wZXJ0aWVzLmtleX0pIG11c3QgaGF2ZSBcInJlZmVyZW5jZUtleVwiIHByb3BlcnR5LmApXG4gICAgbGV0IGZpbGVQYXRoID0gcmVmZXJlbmNlQ29udGV4dFtyZWZlcmVuY2VLZXldIHx8IHRocm93IG5ldyBFcnJvcihg4oCiIEZpbGUgcmVmZXJlbmNlIGtleSBcIiR7cmVmZXJlbmNlS2V5fVwiIGRvZXNuJ3QgZXhpc3QgaW4gZ3JhcGggY29udGV4dC5gKVxuICAgIHJldHVybiBmaWxlUGF0aFxuICB9IGVsc2UgdGhyb3cgbmV3IEVycm9yKGDigKIgVW5zdXBwb3J0ZWQgTm9kZSB0eXBlIGZvciByZXNvdXJjZSBjb25uZWN0aW9uLmApXG59XG4iXX0=
