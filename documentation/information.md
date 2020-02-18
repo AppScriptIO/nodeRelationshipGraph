@@ -1,4 +1,4 @@
-# Graph Traversal
+# Graph Traversal مُـخَطَط
 An immediately executed graph traversal (Alternative name), where nodes instruct on performing actions in customizable implementations. It hands back control to the client allowing to manipulate the traversal propagation and node data processing logic.
 - Eagerly executed, promise and iterators based.
 - On each traversal a node data can be processed/executed, taking into account precedence constraints.
@@ -21,6 +21,7 @@ _The loop and conditional structures could be represented in the graph, and the 
 
 # Alternative name for Immediately executed graph: 
     - Control Flow Graph - A graph representing the control flow of the program. (term in use https://en.wikipedia.org/wiki/Control-flow_graph https://www.geeksforgeeks.org/software-engineering-control-flow-graph-cfg/)
+    - Graph assisted program.
 
 ### Configerability of traverser:
 _Behaviors that should be configurable:_

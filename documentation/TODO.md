@@ -1,4 +1,5 @@
 ### TODO:
+- Document how to use multiple conditions in a single switch case node. i.e. condition & condition2 || condition3 => case true ... case false.
 - Add option in next function of traversal implmentation: `await next({ skipNested: true })` in which nested nodes will be skipped, but any other sibling next nodes will be executed and upstream can continue to function.
 - Use Traverser sequence "iteratorObjectList" in all interception implementation, tracking the iterators during traversal. & integrate the downstream&upstream implementation "handleMiddlewareNextCall_branchedGraph" into the other implementations traversal logic.
 - Traverse edge for instructing the traverser to initiate a new traversion, instead of hard coding and creating a specific node scheme where a new traversal is needed (e.g. VALUE edge resolution with conditionGraph implementation).
