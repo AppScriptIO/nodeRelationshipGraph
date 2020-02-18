@@ -1,12 +1,14 @@
 # Graph Traversal مُـخَطَط
-An immediately executed graph traversal (Alternative name), where nodes instruct on performing actions in customizable implementations. It hands back control to the client allowing to manipulate the traversal propagation and node data processing logic.
+An immediately executed graph traversal (Alternative name to "Call Graph"), where nodes instruct on performing actions in customizable implementations. It hands back control to the client allowing to manipulate the traversal propagation and node data processing logic.
 - Eagerly executed, promise and iterators based.
 - On each traversal a node data can be processed/executed, taking into account precedence constraints.
+- Graph representation of the program's control flow, as instructions directed to the traverser.
 - The graph traversal module is callback & Proxy based, which hands overcontrol to concrete functions and returns an iterator of results that the proxy implementation can decide what to do with. Permitting highly configurable traversal behavior.
 - Created for graph where the node's data is the main subject, & traversal rules/configs of a relational graph, are used to decide on the way to deal with multiple processings of the nodes's data - i.e. processing logic & combination of results.
 - The core code of the module is separate from the plugin implementations and largely involved in the integration between the plugin implementations.
 - Immediately Graph Traversal: allows to move the control flow logic of the program to an in-memory graph. In addition to defining the flow of program, it controls the integration logic/algorithm between the procedure/actions of the program - which could be used for different use cases. Describing the algorithm used to handle processes/steps/procedures of the program.
 - Graphs allow to create a visual layer for the program control flow, and allow realtime changes to a running program, in which different presentation elements could be defined to display the program in a sumerized compact manner. The visual representation doesn't necessarily represent the exact graph database structure, rather it adds a level of abstraction.
+- There is one node for each abstract procedure in the program. 
 
 # The role of Immediately Executed Graphs in program design:
 Separates the program units or logic or functions from the control flow of program execution. Allowing to focus on developing needed functionality in separate modules, and then placing them in a graph to architect the interactions between them. Immediately Executed Graphs are like an integration layer and control flow for applications, where the program functions are considered abstract units that are referenced in the graph. Therefore it could be called Abstact Visual Programming, because it allows for coding the program with all language features, and integrating it in a visual manner.
@@ -180,6 +182,10 @@ ___
 ___
 # Resources 
 _resources about graphs and different implementations:_
+- https://en.wikipedia.org/wiki/Call_graph
+- http://web.cs.iastate.edu/~weile/cs641/2.ProgramRepresentations.pdf
+- https://graphcommons.com/ - create graph maps visually.
+- [representing programs as graphs](https://www.google.com/search?biw=1280&bih=621&ei=Vv1LXqDjI_eg1fAP_t6OiAQ&q=program+as+a+graph&oq=program+as+a+graph&gs_l=psy-ab.3..0i22i30l10.10038.16958..17254...4.8..1.298.3723.2j23j1......0....1..gws-wiz.....0..0i71j0i67i70i249j0i131j0j0i273j0i131i67j0i67j0i22i10i30.Tfjb-TaT4PU&ved=0ahUKEwig5omTsNvnAhV3UBUIHX6vA0E4ChDh1QMICw&uact=5)
 - Related to extending graphs - https://en.wikipedia.org/wiki/Graph_minor#Example
 - Neo4j example traversal APi - https://neo4j.com/docs/java-reference/current/tutorial-traversal/
 - Topological sort of graph based on the interconnected edges, not any numeric value (non-numeric sort). a set of tasks to be completed in precedence constraints (precedence schedualing) - DepthFirstOrder using DFS algorithm - https://fr.coursera.org/lecture/algorithms-part2/topological-sort-RAMNS
@@ -203,6 +209,10 @@ _resources about graphs and different implementations:_
     - Documentation contains lots of useful definitions, and so the evaluation version.
 - Cons of visual programming - https://mikehadlow.blogspot.com/2018/10/visual-programming-why-its-bad-idea.html
 - Comments about visual programming - https://www.reddit.com/r/programming/comments/9kgk75/visual_programming_why_its_a_bad_idea/
+- https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/
+- https://www.researchgate.net/publication/2958895_Data_Flow_Program_Graphs
+- 
+
 # Notes: 
 - Generally speaking, there isn't really a concept of mutable state in abstract algebra (of which Graph Theory is a part). Only existence/non-existence. Graphs have a static state, and cannot be mutable in common Graph Theory concepts. Any 'change' indicated would be another distinct graph.
 
