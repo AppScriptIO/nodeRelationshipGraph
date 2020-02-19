@@ -1,0 +1,57 @@
+# Resources 
+_resources about graphs and different implementations:_
+- https://en.wikipedia.org/wiki/Call_graph
+- http://web.cs.iastate.edu/~weile/cs641/2.ProgramRepresentations.pdf
+- https://graphcommons.com/ - create graph maps visually.
+- [representing programs as graphs](https://www.google.com/search?biw=1280&bih=621&ei=Vv1LXqDjI_eg1fAP_t6OiAQ&q=program+as+a+graph&oq=program+as+a+graph&gs_l=psy-ab.3..0i22i30l10.10038.16958..17254...4.8..1.298.3723.2j23j1......0....1..gws-wiz.....0..0i71j0i67i70i249j0i131j0j0i273j0i131i67j0i67j0i22i10i30.Tfjb-TaT4PU&ved=0ahUKEwig5omTsNvnAhV3UBUIHX6vA0E4ChDh1QMICw&uact=5)
+- Related to extending graphs - https://en.wikipedia.org/wiki/Graph_minor#Example
+- Neo4j example traversal APi - https://neo4j.com/docs/java-reference/current/tutorial-traversal/
+- Topological sort of graph based on the interconnected edges, not any numeric value (non-numeric sort). a set of tasks to be completed in precedence constraints (precedence schedualing) - DepthFirstOrder using DFS algorithm - https://fr.coursera.org/lecture/algorithms-part2/topological-sort-RAMNS
+- https://www.youtube.com/watch?v=gXgEDyodOJU&list=PL2_aWCzGMAwI3W_JlcBbtYTwiQSsOTa6P&index=38
+- Graph workshop publications about different graph concepts including new researches http://www.termgraph.org.uk 
+- verbal explanation of execution order concept - https://stackoverflow.com/questions/6477269/how-to-use-graph-theory-for-scheduling-execution-order
+- https://en.wikipedia.org/wiki/Topological_sorting
+- https://stackoverflow.com/questions/6749255/directed-graph-processing-in-java
+- https://github.com/idooley/DAGExecutor
+- https://jgrapht.org/ - check out summary of the graph framework.
+- https://youtu.be/Q9PIxaNGnig?t=151
+- https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/graph/topological-sorting
+- https://davidurbina.blog/on-partial-order-total-order-and-the-topological-sort/
+- Graph API - https://www.coursera.org/lecture/algorithms-part2/digraph-api-Jeyta
+- https://davidurbina.blog/on-partial-order-total-order-and-the-topological-sort/
+- [Tree structures article](https://medium.freecodecamp.org/all-you-need-to-know-about-tree-data-structures-bceacb85490c)
+- Study Neo4j traversal API in depth 
+    - Examples - https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java 
+    - code - https://github.com/neo4j/neo4j/tree/ba4e188d51e027a7e7870d511044ea940cf0455e/community/graphdb-api/src/main/java/org/neo4j/graphdb/traversal
+- yWorks diagramming tools - products like the html graph editor, and Neo4j graph presentation. 
+    - Documentation contains lots of useful definitions, and so the evaluation version.
+- Cons of visual programming - https://mikehadlow.blogspot.com/2018/10/visual-programming-why-its-bad-idea.html
+- Comments about visual programming - https://www.reddit.com/r/programming/comments/9kgk75/visual_programming_why_its_a_bad_idea/
+- https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/
+- https://www.researchgate.net/publication/2958895_Data_Flow_Program_Graphs
+- Specification:
+    - https://en.wikipedia.org/wiki/Unified_Modeling_Language
+    - https://en.wikipedia.org/wiki/Executable_UML
+    - https://en.wikipedia.org/wiki/Action_(UML) 
+    - https://executableuml.org/
+    - https://www.youtube.com/watch?v=UFfoYJckhpc   
+- http://www.informatik.uni-bremen.de/~hof/papers/Grace98.pdf
+- https://www.researchgate.net/publication/332932830_A_Visual_Programming_Paradigm_for_Abstract_Deep_Learning_Model_Development
+- https://dzone.com/articles/visual-programming-why-its-a-bad-idea
+- https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.CAI.09.pdf
+- https://neo4j.com/graphgist/the-graph-of-programming-languages
+- https://en.wikipedia.org/wiki/Programming_paradigm
+- https://ris.utwente.nl/ws/portalfiles/portal/5103336/BonevaRensinkKurbanBauer-GraphAbstraction.pdf
+- http://www.jite.org/documents/Vol16/JITEv16ResearchP209-226Saito3387.pdf
+- https://pdfs.semanticscholar.org/d605/020bc24d9843781d4b8d43bd4ce323a76bce.pdf
+- https://openreview.net/pdf?id=BJOFETxR-
+- https://github.com/microsoft/graph-based-code-modelling
+- https://en.wikipedia.org/wiki/Abstract_semantic_graph
+- https://www.youtube.com/watch?v=vstmnbzGbwU
+- https://en.wikipedia.org/wiki/Abstract_semantic_graph
+- https://stackoverflow.com/questions/17238487/how-do-i-design-abstract-semantic-graphs
+- https://en.wikipedia.org/wiki/Abstract_Meaning_Representation
+- https://jflanigan.github.io/flanigan-thesis.pdf
+- https://books.google.co.il/books?id=lBdnDwAAQBAJ&pg=PA255&lpg=PA255&dq=Abstract+semantic+graph&source=bl&ots=pNGqlHe5BK&sig=ACfU3U3H26y1tSzTkrohnbaM3voos_e_Ag&hl=en&sa=X&ved=2ahUKEwje37_s9t3nAhWGURUIHdOYCPQ4ChDoATASegQICxAB#v=onepage&q=Abstract%20semantic%20graph&f=false
+- https://books.google.co.il/books?id=SojuCAAAQBAJ&pg=PA243&lpg=PA243&dq=what+is+an+%22abstract+program%22&source=bl&ots=ejOxLoPqDN&sig=ACfU3U07-3B3gLqNuRiyA-4Ocp0LJGX-zw&hl=en&sa=X&ved=2ahUKEwi29YPF-N3nAhXbURUIHX-yDm04HhDoATAHegQIChAB#v=onepage&q=what%20is%20an%20%22abstract%20program%22&f=false
+- https://www.hisour.com/ar/diagram-17613/
