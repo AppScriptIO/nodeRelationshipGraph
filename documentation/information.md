@@ -1,5 +1,4 @@
-# Contents: 
-- [Graph concepts](/documentation/graphConcept/concept.md)
+*Executable implementation of the [Abstract Program Graph specification](https://github.com/AbstractProgram/programGraphSpecification)*
 
 # Graph Traversal مُـخَطَط
 - similar concept to abstract semantic graph only intended for execution.
