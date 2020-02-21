@@ -27,11 +27,12 @@ Options to support a common way to initiate a traversal sequence and represent i
         VALUE {type: edge:traverse} -> Stage <-- TRAVERSE {traversalConfig: Condition}
 
 ## Integration between different node types in mixed or separate subgraphs, according to the nodes' intended usage.
-- Middleware: execute
+- Middleware: execution of middleware with upstream and downstream support.
 - Condition: evaluate and control propagation. Conditionally skip the task execution
-    a graph that checks conditions while traversing and returns an answer to complex conditional relations with prerequisite conditions. e.g. could be used for routing to a desired value/callback/action.
+    a graph that checks conditions while traversing and returns an answer to complex conditional relations with prerequisite conditions. 
+    - Routing: could be used for routing to a desired value/callback/action.
 - Template: aggregation
-- Data query schema: execute
+- Data query schema: verification of data schema.
 
 ## General algorithm steps:
 - Supply with grpah.load graph into memory: 
