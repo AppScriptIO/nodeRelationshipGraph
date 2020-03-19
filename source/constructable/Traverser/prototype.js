@@ -49,6 +49,8 @@ export const { traverse } = {
     },
     { parentTraverserPosition, traverseCallContext } = {},
   ) {
+    // console.log(`\x1b[33m%s\x1b[0m  \x1b[90m- %s\x1b[0m`,  `🦚 [${nodeInstance.labels.join(', ')}]`, `${nodeInstance.properties.key}`)
+
     this.statistics.traversedNodeList.push(nodeInstance)
 
     // each call creates new traverser with calculation of traversal implementation hierarchy  and position evaluation for the current node
