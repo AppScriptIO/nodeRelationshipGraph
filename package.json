@@ -18,7 +18,7 @@
 		"@dependency/handleEventLoop": "https://github.com/AppScriptIO/handleEventLoop#semver:^1.x.x",
 		"@dependency/handleJSNativeDataStructure": "https://github.com/AppScriptIO/handleJSNativeDataStructure#semver:^2.x.x",
 		"@dependency/handlePrototypeDelegation": "https://github.com/AppScriptIO/handlePrototypeDelegation#semver:^1.x.x",
-		"underscore": "^1.9.1"
+		"underscore": "^1.12.1"
 	},
 	"devDependencies": {
 		"@dependency/handlePrototypeDelegation": "https://github.com/AppScriptIO/handlePrototypeDelegation#semver:^1.x.x",
